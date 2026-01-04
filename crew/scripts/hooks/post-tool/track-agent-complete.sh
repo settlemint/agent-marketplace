@@ -6,16 +6,18 @@
 set +e
 
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
-TOOL_INPUT="${CLAUDE_TOOL_INPUT:-}"
-TOOL_OUTPUT="${CLAUDE_TOOL_OUTPUT:-}"
+
+# Read hook input from stdin
+INPUT=$(cat)
 
 # Only process if we have input
-if [[ -z $TOOL_INPUT ]]; then
+if [[ -z $INPUT ]]; then
   exit 0
 fi
 
-# Extract task ID from input
-TASK_ID=$(echo "$TOOL_INPUT" | jq -r '.task_id // empty' 2>/dev/null)
+# Extract task ID and output from input
+TASK_ID=$(echo "$INPUT" | jq -r '.tool_input.task_id // empty' 2>/dev/null)
+TOOL_OUTPUT=$(echo "$INPUT" | jq -r '.tool_output // empty' 2>/dev/null)
 
 if [[ -z $TASK_ID || $TASK_ID == "null" ]]; then
   exit 0

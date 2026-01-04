@@ -6,18 +6,20 @@
 set +e
 
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
-TOOL_INPUT="${CLAUDE_TOOL_INPUT:-}"
+
+# Read hook input from stdin
+INPUT=$(cat)
 
 # Only track Task tool calls
-if [[ -z $TOOL_INPUT ]]; then
+if [[ -z $INPUT ]]; then
   exit 0
 fi
 
 # Extract agent details from tool input
-AGENT_ID=$(echo "$TOOL_INPUT" | jq -r '.task_id // empty' 2>/dev/null)
-SUBAGENT_TYPE=$(echo "$TOOL_INPUT" | jq -r '.subagent_type // "general-purpose"' 2>/dev/null)
-DESCRIPTION=$(echo "$TOOL_INPUT" | jq -r '.description // "unnamed"' 2>/dev/null)
-RUN_IN_BACKGROUND=$(echo "$TOOL_INPUT" | jq -r '.run_in_background // false' 2>/dev/null)
+AGENT_ID=$(echo "$INPUT" | jq -r '.tool_input.task_id // empty' 2>/dev/null)
+SUBAGENT_TYPE=$(echo "$INPUT" | jq -r '.tool_input.subagent_type // "general-purpose"' 2>/dev/null)
+DESCRIPTION=$(echo "$INPUT" | jq -r '.tool_input.description // "unnamed"' 2>/dev/null)
+RUN_IN_BACKGROUND=$(echo "$INPUT" | jq -r '.tool_input.run_in_background // false' 2>/dev/null)
 
 # Skip if no meaningful data
 if [[ -z $DESCRIPTION || $DESCRIPTION == "null" ]]; then
