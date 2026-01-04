@@ -10,6 +10,33 @@ argument-hint: "[PR number, GitHub URL, branch name, or latest]"
 
 <review_target>$ARGUMENTS</review_target>
 
+## Seven-Leg Review System
+
+This command uses the **Gastown Seven-Leg Code Review** pattern with consistent coverage:
+
+| Leg | Focus | Key Checks |
+|-----|-------|------------|
+| **Correctness** | Logic accuracy | Edge cases, null handling, type safety |
+| **Performance** | Speed/efficiency | Complexity, caching, queries, N+1 |
+| **Security** | Vulnerability prevention | OWASP, injection, auth, secrets |
+| **Elegance** | Design quality | SOLID, clean architecture, cohesion |
+| **Resilience** | Failure handling | Error recovery, cleanup, degradation |
+| **Style** | Conventions | Naming, formatting, idioms |
+| **Smells** | Debt indicators | Anti-patterns, duplication, complexity |
+
+### Severity Levels
+
+All reviewers output findings with consistent severity:
+
+- **P0**: Critical - Must fix before merge, blocks deployment
+- **P1**: High - Should fix, significant impact on quality
+- **P2**: Medium - Should address, lower priority
+- **Observation**: Note for consideration, not blocking
+
+### Output Format
+
+Each finding follows: `[Severity] file:line - Description`
+
 ## Native Tools
 
 ### AskUserQuestion - Gather Input (Main Thread Only)
@@ -36,9 +63,9 @@ TodoWrite({
   todos: [
     {content: "Determine review target", status: "in_progress", activeForm: "Determining target"},
     {content: "Gather changed files", status: "pending", activeForm: "Gathering files"},
-    {content: "Launch review agents", status: "pending", activeForm: "Launching reviewers"},
+    {content: "Launch 7-leg review agents", status: "pending", activeForm: "Launching reviewers"},
     {content: "Collect findings", status: "pending", activeForm: "Collecting findings"},
-    {content: "Triage and prioritize", status: "pending", activeForm: "Triaging findings"},
+    {content: "Triage by severity (P0/P1/P2)", status: "pending", activeForm: "Triaging findings"},
     {content: "Create todo files", status: "pending", activeForm: "Creating todos"}
   ]
 })
@@ -107,77 +134,115 @@ Bash({command: "git diff main...HEAD --name-only", description: "Get changed fil
 Bash({command: "git diff main...HEAD", description: "Get diff"})
 ```
 
-### Phase 3: Launch Parallel Review Agents
+### Phase 3: Launch Seven-Leg Review Agents
 
-Based on recommended reviewers, launch ALL in a **SINGLE message**:
+Launch ALL 7 canonical reviewers in a **SINGLE message** for maximum parallelism:
 
 ```javascript
-// CORE AGENTS - Always include
+// === SEVEN-LEG CANONICAL REVIEWERS ===
+// Always launch all 7 for complete coverage
+
+// LEG 1: CORRECTNESS
 Task({
-  subagent_type: "typescript-reviewer",
-  prompt: `CONTEXT: Code review for ${branchName}
-SCOPE: Review: ${tsFiles.join(', ')}
-CONSTRAINTS: Type safety, patterns, testability
-OUTPUT: P1/P2/P3 findings with file:line
+  subagent_type: "correctness-reviewer",
+  prompt: `CONTEXT: Correctness review for ${branchName}
+SCOPE: ${changedFiles.join(', ')}
+FOCUS: Logic errors, edge cases, null handling, type safety
+OUTPUT: [P0|P1|P2|Observation] file:line format
 
 Tools: Use Glob, Grep, Read (not bash find/grep/cat)`,
-  description: "TypeScript review",
+  description: "Correctness review",
   run_in_background: true
 })
 
+// LEG 2: PERFORMANCE
 Task({
-  subagent_type: "security-sentinel",
-  prompt: `CONTEXT: Security audit for ${branchName}
-SCOPE: Audit: ${changedFiles.join(', ')}
-CONSTRAINTS: OWASP Top 10, injection, auth, secrets
-OUTPUT: Vulnerabilities with severity and remediation
-
-MCP Tools: Use Codex for deep threat analysis if complex`,
-  description: "Security audit",
-  run_in_background: true
-})
-
-Task({
-  subagent_type: "code-simplicity-reviewer",
-  prompt: `CONTEXT: Simplicity review for ${branchName}
-SCOPE: Check: ${changedFiles.join(', ')}
-CONSTRAINTS: Flag complexity, YAGNI violations, over-engineering
-OUTPUT: Simplification opportunities with rationale`,
-  description: "Simplicity review",
-  run_in_background: true
-})
-
-Task({
-  subagent_type: "architecture-strategist",
-  prompt: `CONTEXT: Architecture review for ${branchName}
-SCOPE: Review: ${changedFiles.join(', ')}
-CONSTRAINTS: Patterns, layer boundaries, SOLID principles
-OUTPUT: Architectural concerns with recommendations
-
-MCP Tools: Use Codex for complex architectural analysis`,
-  description: "Architecture review",
-  run_in_background: true
-})
-
-Task({
-  subagent_type: "performance-oracle",
+  subagent_type: "performance-reviewer",
   prompt: `CONTEXT: Performance review for ${branchName}
-SCOPE: Analyze: ${changedFiles.join(', ')}
-CONSTRAINTS: Algorithmic complexity, queries, caching
-OUTPUT: Performance issues with optimization suggestions`,
+SCOPE: ${changedFiles.join(', ')}
+FOCUS: Algorithmic complexity, caching, N+1 queries, memory
+OUTPUT: [P0|P1|P2|Observation] file:line format
+
+Tools: Use Glob, Grep, Read (not bash find/grep/cat)`,
   description: "Performance review",
   run_in_background: true
 })
 
-// CONDITIONAL AGENTS - Based on file types
+// LEG 3: SECURITY
+Task({
+  subagent_type: "security-reviewer",
+  prompt: `CONTEXT: Security review for ${branchName}
+SCOPE: ${changedFiles.join(', ')}
+FOCUS: OWASP Top 10, injection, auth, secrets, access control
+OUTPUT: [P0|P1|P2|Observation] file:line format
+
+Tools: Use Glob, Grep, Read (not bash find/grep/cat)`,
+  description: "Security review",
+  run_in_background: true
+})
+
+// LEG 4: ELEGANCE
+Task({
+  subagent_type: "elegance-reviewer",
+  prompt: `CONTEXT: Elegance review for ${branchName}
+SCOPE: ${changedFiles.join(', ')}
+FOCUS: SOLID principles, clean architecture, design clarity
+OUTPUT: [P0|P1|P2|Observation] file:line format
+
+Tools: Use Glob, Grep, Read (not bash find/grep/cat)`,
+  description: "Elegance review",
+  run_in_background: true
+})
+
+// LEG 5: RESILIENCE
+Task({
+  subagent_type: "resilience-reviewer",
+  prompt: `CONTEXT: Resilience review for ${branchName}
+SCOPE: ${changedFiles.join(', ')}
+FOCUS: Error handling, recovery, cleanup, graceful degradation
+OUTPUT: [P0|P1|P2|Observation] file:line format
+
+Tools: Use Glob, Grep, Read (not bash find/grep/cat)`,
+  description: "Resilience review",
+  run_in_background: true
+})
+
+// LEG 6: STYLE
+Task({
+  subagent_type: "style-reviewer",
+  prompt: `CONTEXT: Style review for ${branchName}
+SCOPE: ${changedFiles.join(', ')}
+FOCUS: Naming conventions, formatting, idioms, documentation
+OUTPUT: [P0|P1|P2|Observation] file:line format
+
+Tools: Use Glob, Grep, Read (not bash find/grep/cat)`,
+  description: "Style review",
+  run_in_background: true
+})
+
+// LEG 7: SMELLS
+Task({
+  subagent_type: "smells-reviewer",
+  prompt: `CONTEXT: Code smells review for ${branchName}
+SCOPE: ${changedFiles.join(', ')}
+FOCUS: Anti-patterns, duplication, complexity, dead code
+OUTPUT: [P0|P1|P2|Observation] file:line format
+
+Tools: Use Glob, Grep, Read (not bash find/grep/cat)`,
+  description: "Smells review",
+  run_in_background: true
+})
+
+// === CONDITIONAL DOMAIN AGENTS ===
+// Add based on file types detected
 
 // If .sol files present:
 Task({
   subagent_type: "solidity-security-auditor",
   prompt: `CONTEXT: Smart contract audit for ${branchName}
-SCOPE: Audit: ${solFiles.join(', ')}
-CONSTRAINTS: OWASP SC Top 10, reentrancy, overflow
-OUTPUT: Security findings with severity`,
+SCOPE: ${solFiles.join(', ')}
+FOCUS: OWASP SC Top 10, reentrancy, overflow
+OUTPUT: [P0|P1|P2|Observation] file:line format`,
   description: "Solidity audit",
   run_in_background: true
 })
@@ -186,9 +251,9 @@ OUTPUT: Security findings with severity`,
 Task({
   subagent_type: "data-migration-expert",
   prompt: `CONTEXT: Migration review for ${branchName}
-SCOPE: Validate: ${migrationFiles.join(', ')}
-CONSTRAINTS: Mapping correctness, rollback safety, dual-write
-OUTPUT: Migration risks with verification SQL`,
+SCOPE: ${migrationFiles.join(', ')}
+FOCUS: Mapping correctness, rollback safety
+OUTPUT: [P0|P1|P2|Observation] file:line format`,
   description: "Migration review",
   run_in_background: true
 })
@@ -197,34 +262,10 @@ OUTPUT: Migration risks with verification SQL`,
 Task({
   subagent_type: "agent-context-reviewer",
   prompt: `CONTEXT: Agent/skill review for ${branchName}
-SCOPE: Check: ${claudeFiles.join(', ')}
-CONSTRAINTS: Context engineering patterns, prompt-native design
-OUTPUT: Pattern violations with fixes`,
+SCOPE: ${claudeFiles.join(', ')}
+FOCUS: Context engineering patterns, prompt-native design
+OUTPUT: [P0|P1|P2|Observation] file:line format`,
   description: "Agent review",
-  run_in_background: true
-})
-
-// For strict TypeScript review:
-Task({
-  subagent_type: "kieran-typescript-reviewer",
-  prompt: `CONTEXT: Strict TS review for ${branchName}
-SCOPE: Review: ${tsFiles.join(', ')}
-CONSTRAINTS: Kieran's quality bar - no any, 5-sec naming, testable
-OUTPUT: Quality issues that block merge`,
-  description: "Strict TS review",
-  run_in_background: true
-})
-
-// Pattern analysis:
-Task({
-  subagent_type: "pattern-recognition-specialist",
-  prompt: `CONTEXT: Pattern analysis for ${branchName}
-SCOPE: Analyze: ${changedFiles.join(', ')}
-CONSTRAINTS: Design patterns, anti-patterns, duplication
-
-Skills: Use ast-grep skill for structural code matching
-OUTPUT: Pattern issues with refactoring suggestions`,
-  description: "Pattern analysis",
   run_in_background: true
 })
 ```
@@ -241,34 +282,52 @@ TodoWrite({
   ]
 })
 
-// Collect from each agent
-const tsResults = TaskOutput({task_id: "ts-id", block: true})
-const secResults = TaskOutput({task_id: "sec-id", block: true})
-// ... collect all
+// Collect from all 7 canonical reviewers
+const correctnessResults = TaskOutput({task_id: "correctness-id", block: true})
+const performanceResults = TaskOutput({task_id: "performance-id", block: true})
+const securityResults = TaskOutput({task_id: "security-id", block: true})
+const eleganceResults = TaskOutput({task_id: "elegance-id", block: true})
+const resilienceResults = TaskOutput({task_id: "resilience-id", block: true})
+const styleResults = TaskOutput({task_id: "style-id", block: true})
+const smellsResults = TaskOutput({task_id: "smells-id", block: true})
 
-// Deduplicate and merge similar findings
-// Categorize: P1 (blocks merge), P2 (should fix), P3 (nice-to-have)
+// Collect any conditional domain agents
+// ... collect solidity, migration, agent reviewers if launched
+
+// Deduplicate and merge similar findings across legs
+// Categorize by severity:
+//   P0 (critical, blocks merge)
+//   P1 (high, should fix before merge)
+//   P2 (medium, address soon)
+//   Observation (note for consideration)
 ```
 
 ### Phase 5: Deep Meta-Analysis (Optional)
 
-For critical reviews, analyze cross-cutting concerns:
+For critical reviews with many findings, analyze cross-cutting concerns:
 
 ```javascript
 Task({
-  subagent_type: "codex-deep-reviewer",
-  prompt: `CONTEXT: Meta-analysis of code review findings
-SCOPE: Analyze synthesized findings:
-  Security: ${securityFindings}
+  subagent_type: "meta-reviewer",
+  prompt: `CONTEXT: Meta-analysis of seven-leg code review findings
+SCOPE: Synthesize findings from all 7 legs:
+  Correctness: ${correctnessFindings}
   Performance: ${performanceFindings}
-  Architecture: ${architectureFindings}
-  Quality: ${qualityFindings}
+  Security: ${securityFindings}
+  Elegance: ${eleganceFindings}
+  Resilience: ${resilienceFindings}
+  Style: ${styleFindings}
+  Smells: ${smellsFindings}
 
-CONSTRAINTS: Find emergent risks, priority adjustments, missed issues
-OUTPUT: Cross-cutting concerns, priority changes, additional findings
+CONSTRAINTS: Find emergent risks, priority adjustments, cross-cutting concerns
+OUTPUT:
+- Cross-leg patterns (same issue appearing in multiple dimensions)
+- Priority escalations (P2→P1 when combined risks compound)
+- Priority demotions (duplicate findings across legs)
+- Systemic issues not visible to individual reviewers
 
 MCP: Use Codex for deep reasoning about systemic issues`,
-  description: "Deep analysis",
+  description: "Meta-analysis",
   run_in_background: false  // Wait for this one
 })
 ```
@@ -278,12 +337,12 @@ MCP: Use Codex for deep reasoning about systemic issues`,
 ```javascript
 AskUserQuestion({
   questions: [{
-    question: `Found ${p1Count} critical, ${p2Count} important, ${p3Count} minor issues. How to proceed?`,
+    question: `Found ${p0Count} P0, ${p1Count} P1, ${p2Count} P2, ${obsCount} observations. How to proceed?`,
     header: "Action",
     options: [
-      {label: "Create todo files (Recommended)", description: "Write findings to .claude/todos/"},
-      {label: "Fix P1 issues now", description: "Immediately address critical issues"},
-      {label: "Show full report", description: "Display all findings in detail"},
+      {label: "Create todo files (Recommended)", description: "Write findings to .claude/branches/<branch>/tasks/"},
+      {label: "Fix P0 issues now", description: "Immediately address critical blockers"},
+      {label: "Show full report", description: "Display all findings grouped by leg"},
       {label: "Skip todo creation", description: "Just show summary"}
     ],
     multiSelect: false
@@ -291,32 +350,106 @@ AskUserQuestion({
 })
 ```
 
-### Phase 7: Create Todo Files
+### Phase 7: Create Task Files for Findings
 
-For each finding, create in `.claude/todos/`:
+Add findings as new task files in `.claude/branches/<branch>/tasks/`:
 
-```markdown
-# [NNN]-pending-[priority]-[brief-slug].md
+```javascript
+// Get current branch
+const branch = Bash({command: "git branch --show-current"})
 
-## Finding
-[Description of the issue]
+// Find next order number (start from 050 for findings)
+const existing = Glob({pattern: `.claude/branches/${branch}/tasks/*.md`})
+const nextOrder = getNextOrderNumber(existing, 50) // Start findings at 050
+
+// For each finding, create a task file
+for (const finding of findings) {
+  Write({
+    file_path: `.claude/branches/${branch}/tasks/${nextOrder}-pending-${finding.severity}-found-${finding.slug}.md`,
+    content: `---
+status: pending
+priority: ${finding.severity}
+leg: ${finding.leg}
+story: found
+parallel: true
+file_path: ${finding.file}
+depends_on: []
+---
+
+# T${nextOrder}: ${finding.title}
+
+## Description
+
+${finding.description}
 
 ## Location
-- File: [path]
-- Line: [number]
 
-## Fix
-[Recommended fix]
+- File: \`${finding.file}\`
+- Line: ${finding.line}
+
+## Review Dimension
+
+- **Leg:** ${finding.leg}
+- **Severity:** ${finding.severity}
+
+## Acceptance Criteria
+
+- [ ] Issue resolved
+- [ ] Tests pass
+- [ ] No regressions
+
+## Recommended Fix
+
+${finding.fix}
 
 ## Agent
-[Which agent found this]
+
+Found by: ${finding.leg}-reviewer
+
+## Work Log
+
+### ${date} - Created
+**By:** /crew:check (Seven-Leg Review)
+**Severity:** ${finding.severity}
+`
+  })
+  nextOrder++
+}
+```
+
+**File naming for findings:**
+
+```text
+050-pending-p0-found-fix-null-deref-auth.md
+051-pending-p1-found-add-rate-limiting.md
+052-pending-p2-found-simplify-conditional.md
+053-pending-obs-found-consider-memoization.md
 ```
 
 ## Success Criteria
 
 - [ ] AskUserQuestion used for target clarification
 - [ ] TodoWrite tracks progress throughout
-- [ ] All relevant agents launched in parallel (single message)
-- [ ] Findings deduplicated and prioritized (P1/P2/P3)
+- [ ] All 7 canonical reviewers launched in parallel (single message)
+- [ ] Conditional domain agents launched for relevant file types
+- [ ] Findings deduplicated and prioritized (P0/P1/P2/Observation)
+- [ ] Cross-leg patterns identified via meta-analysis (if needed)
 - [ ] AskUserQuestion confirms next steps
-- [ ] Todo files created for findings
+- [ ] Task files created for findings in `.claude/branches/<branch>/tasks/`
+- [ ] Task files follow naming: `{order}-pending-{severity}-found-{slug}.md`
+- [ ] Each finding includes leg dimension and severity
+- [ ] Each finding task has acceptance criteria
+
+## Seven-Leg Coverage Verification
+
+Ensure all 7 dimensions are covered:
+
+| Leg | Reviewer | Required |
+|-----|----------|----------|
+| Correctness | correctness-reviewer | ✓ Always |
+| Performance | performance-reviewer | ✓ Always |
+| Security | security-reviewer | ✓ Always |
+| Elegance | elegance-reviewer | ✓ Always |
+| Resilience | resilience-reviewer | ✓ Always |
+| Style | style-reviewer | ✓ Always |
+| Smells | smells-reviewer | ✓ Always |

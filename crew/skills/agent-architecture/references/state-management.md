@@ -55,6 +55,61 @@ Where `{branch}` is the sanitized branch name (slashes replaced with dashes).
 }
 ```
 
+## Agent Tracking (Witness Pattern)
+
+Background agents are tracked in a separate file:
+
+```
+.claude/branches/{branch}/agents.json
+```
+
+### Agent Schema
+
+```json
+{
+  "agents": [
+    {
+      "id": "agent-1234567890-12345",
+      "type": "general-purpose",
+      "description": "T001 - Create user model",
+      "spawned_at": "2024-01-01T00:00:00Z",
+      "spawned_epoch": 1704067200,
+      "background": true,
+      "status": "running",
+      "completed_at": null,
+      "result": null,
+      "nudge_count": 0,
+      "last_nudge": null
+    }
+  ],
+  "stats": {
+    "total_spawned": 10,
+    "completed": 8,
+    "failed": 1,
+    "stuck": 1
+  }
+}
+```
+
+### Agent States
+
+| Status | Description |
+|--------|-------------|
+| `running` | Agent is actively executing |
+| `completed` | Finished successfully |
+| `failed` | Encountered an error |
+
+### Stuck Detection
+
+Agents are considered stuck when:
+- Status is `running`
+- Elapsed time exceeds threshold (default: 5 minutes)
+
+On session resume, the witness hook automatically:
+1. Detects agents running past threshold
+2. Reports them with recovery options
+3. Marks them as `stuck` in the tracking file
+
 ## State Lifecycle
 
 ### Creation

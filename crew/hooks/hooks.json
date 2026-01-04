@@ -64,6 +64,24 @@
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/lint-modified-file.sh"
           }
         ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/track-agent-spawn.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "TaskOutput",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/track-agent-complete.sh"
+          }
+        ]
       }
     ]
   }

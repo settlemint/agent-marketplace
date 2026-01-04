@@ -147,6 +147,7 @@ This plugin builds on ideas and patterns from:
 
 - [compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) - Knowledge compounding and session handoffs
 - [ralph-wiggum](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/ralph-wiggum) - Iteration loop mechanics
+- [gas town](https://github.com/steveyegge/gastown) - Agent orchestration
 
 ## License
 

@@ -75,16 +75,6 @@ Hooks can output feedback that requires action:
 
 **Critical:** When you see `ACTION REQUIRED:`, you must address the issue immediately before continuing with other work.
 
-## Audit Trail
-
-All modifications to `.claude/` files are logged to `.claude/state/modifications.jsonl`.
-
-## Backup & Rollback
-
-The `backup-before-modify.sh` hook creates backups before modifying `.claude/` files.
-Backups stored in `.claude/backups/` with JSON index.
-Use `/context:rollback` to restore previous versions.
-
 ## Sub-Agent Warning
 
 `AskUserQuestion` calls from sub-agents trigger a warning - the UI won't display properly.
