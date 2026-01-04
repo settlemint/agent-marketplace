@@ -49,6 +49,13 @@ Unified orchestration for work execution, skill creation, git conventions, and s
 - Git commit and PR workflow validation
 - Auto-linting on file modifications
 
+## Acknowledgments
+
+This plugin builds on ideas and patterns from:
+
+- [compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) - Knowledge compounding and session handoffs
+- [ralph-wiggum](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/ralph-wiggum) - Iteration loop mechanics
+
 ## License
 
 MIT
