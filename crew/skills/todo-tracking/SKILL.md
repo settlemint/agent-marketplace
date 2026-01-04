@@ -11,9 +11,9 @@ triggers:
 
 <objective>
 
-All tasks live in `.claude/branches/<branch>/tasks/` as individual files with ordering support.
+All tasks live in `.claude/branches/<slugified-branch>/tasks/` as individual files with ordering support.
 
-**One location. One format. Always on a branch.**
+**One location. One format. Always on a branch. Branch names slugified (/ → -).**
 
 </objective>
 
@@ -21,11 +21,11 @@ All tasks live in `.claude/branches/<branch>/tasks/` as individual files with or
 
 ## Resources
 
-| Resource | Purpose |
-|----------|---------|
-| `references/branch-tasks.md` | Complete task system documentation |
-| `templates/task-file-template.md` | Individual task file format |
-| `templates/plan-template.md` | Plan document format |
+| Resource                          | Purpose                            |
+| --------------------------------- | ---------------------------------- |
+| `references/branch-tasks.md`      | Complete task system documentation |
+| `templates/task-file-template.md` | Individual task file format        |
+| `templates/plan-template.md`      | Plan document format               |
 
 </routing>
 
@@ -71,16 +71,21 @@ depends_on: []
 # T010: Create User model
 
 ## Description
+
 [What and why]
 
 ## Acceptance Criteria
+
 - [ ] **Given** X, **When** Y, **Then** Z
 
 ## File Path
+
 `src/models/user.ts`
 
 ## Work Log
+
 ### [DATE] - Created
+
 **By:** /crew:design
 ```
 
@@ -94,19 +99,35 @@ depends_on: []
 
 ```javascript
 // Launch all parallel tasks in SINGLE message
-Task({subagent_type: "general-purpose", prompt: "T001...", description: "T001", run_in_background: true})
-Task({subagent_type: "general-purpose", prompt: "T002...", description: "T002", run_in_background: true})
-Task({subagent_type: "general-purpose", prompt: "T003...", description: "T003", run_in_background: true})
+Task({
+  subagent_type: "general-purpose",
+  prompt: "T001...",
+  description: "T001",
+  run_in_background: true,
+});
+Task({
+  subagent_type: "general-purpose",
+  prompt: "T002...",
+  description: "T002",
+  run_in_background: true,
+});
+Task({
+  subagent_type: "general-purpose",
+  prompt: "T003...",
+  description: "T003",
+  run_in_background: true,
+});
 
 // Collect results
-TaskOutput({task_id: "t001-id", block: true})
-TaskOutput({task_id: "t002-id", block: true})
-TaskOutput({task_id: "t003-id", block: true})
+TaskOutput({ task_id: "t001-id", block: true });
+TaskOutput({ task_id: "t002-id", block: true });
+TaskOutput({ task_id: "t003-id", block: true });
 
 // Launch next batch...
 ```
 
 **Rules:**
+
 - Each task handles ONE small piece of work
 - Only launch tasks with `parallel: true`
 - Batch and collect before next batch
@@ -118,12 +139,12 @@ TaskOutput({task_id: "t003-id", block: true})
 
 ## Command Integration
 
-| Command | Action |
-|---------|--------|
-| `/crew:design` | Creates plan + individual task files |
-| `/crew:build` | Reads tasks, launches parallel agents by batch |
-| `/crew:check` | Adds finding files as new tasks |
-| `/crew:fix` | Works through pending tasks |
+| Command        | Action                                         |
+| -------------- | ---------------------------------------------- |
+| `/crew:design` | Creates plan + individual task files           |
+| `/crew:build`  | Reads tasks, launches parallel agents by batch |
+| `/crew:check`  | Adds finding files as new tasks                |
+| `/crew:fix`    | Works through pending tasks                    |
 
 </command_integration>
 
@@ -131,7 +152,7 @@ TaskOutput({task_id: "t003-id", block: true})
 
 ## Validation Checklist
 
-- [ ] Tasks in `.claude/branches/<branch>/tasks/`
+- [ ] Tasks in `.claude/branches/<slugified-branch>/tasks/` (feat/foo → feat-foo)
 - [ ] Filenames follow ordering convention
 - [ ] Status matches filename AND frontmatter
 - [ ] Each task has acceptance criteria

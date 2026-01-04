@@ -21,18 +21,20 @@ This command produces:
 
 ```javascript
 AskUserQuestion({
-  questions: [{
-    question: "What would you like to design?",
-    header: "Type",
-    options: [
-      {label: "New feature", description: "Add new functionality"},
-      {label: "Bug fix", description: "Fix an existing issue"},
-      {label: "Refactoring", description: "Improve code structure"},
-      {label: "Infrastructure", description: "DevOps or tooling"}
-    ],
-    multiSelect: false
-  }]
-})
+  questions: [
+    {
+      question: "What would you like to design?",
+      header: "Type",
+      options: [
+        { label: "New feature", description: "Add new functionality" },
+        { label: "Bug fix", description: "Fix an existing issue" },
+        { label: "Refactoring", description: "Improve code structure" },
+        { label: "Infrastructure", description: "DevOps or tooling" },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
 ```
 
 ### TodoWrite - Track Progress
@@ -40,15 +42,39 @@ AskUserQuestion({
 ```javascript
 TodoWrite({
   todos: [
-    {content: "Validate input", status: "in_progress", activeForm: "Validating input"},
-    {content: "Launch research agents", status: "pending", activeForm: "Researching"},
-    {content: "Launch dimension analysis", status: "pending", activeForm: "Analyzing dimensions"},
-    {content: "Synthesize findings", status: "pending", activeForm: "Synthesizing"},
-    {content: "Write plan", status: "pending", activeForm: "Writing plan"},
-    {content: "Generate tasks", status: "pending", activeForm: "Generating tasks"},
-    {content: "Create branch", status: "pending", activeForm: "Creating branch"}
-  ]
-})
+    {
+      content: "Validate input",
+      status: "in_progress",
+      activeForm: "Validating input",
+    },
+    {
+      content: "Launch research agents",
+      status: "pending",
+      activeForm: "Researching",
+    },
+    {
+      content: "Launch dimension analysis",
+      status: "pending",
+      activeForm: "Analyzing dimensions",
+    },
+    {
+      content: "Synthesize findings",
+      status: "pending",
+      activeForm: "Synthesizing",
+    },
+    { content: "Write plan", status: "pending", activeForm: "Writing plan" },
+    {
+      content: "Generate tasks",
+      status: "pending",
+      activeForm: "Generating tasks",
+    },
+    {
+      content: "Create branch",
+      status: "pending",
+      activeForm: "Creating branch",
+    },
+  ],
+});
 ```
 
 ### Task - Spawn Research Agents
@@ -65,8 +91,8 @@ OUTPUT: User stories (P1/P2/P3), functional requirements (FR-XXX), success crite
 
 Tools: Use Glob, Grep, Read (not bash)`,
   description: "Spec analysis",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 Task({
   subagent_type: "repo-research-analyst",
@@ -77,8 +103,8 @@ OUTPUT: Pattern analysis with file references
 
 Tools: Use Glob, Grep, Read (not bash)`,
   description: "Repo analysis",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 Task({
   subagent_type: "best-practices-researcher",
@@ -91,8 +117,8 @@ MCP Tools (prefer over WebFetch):
 - Context7 for library documentation
 - OctoCode for GitHub examples`,
   description: "Best practices",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 ```
 
 ## Process
@@ -103,18 +129,20 @@ If empty or unclear:
 
 ```javascript
 AskUserQuestion({
-  questions: [{
-    question: "What would you like to design?",
-    header: "Feature",
-    options: [
-      {label: "New feature", description: "Add new functionality"},
-      {label: "Bug fix", description: "Fix an existing issue"},
-      {label: "Refactoring", description: "Improve code structure"},
-      {label: "Infrastructure", description: "DevOps or tooling"}
-    ],
-    multiSelect: false
-  }]
-})
+  questions: [
+    {
+      question: "What would you like to design?",
+      header: "Feature",
+      options: [
+        { label: "New feature", description: "Add new functionality" },
+        { label: "Bug fix", description: "Fix an existing issue" },
+        { label: "Refactoring", description: "Improve code structure" },
+        { label: "Infrastructure", description: "DevOps or tooling" },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
 ```
 
 ### Phase 2: Parallel Research
@@ -143,8 +171,8 @@ OUTPUT:
 
 Tools: Glob, Grep, Read (not bash)`,
   description: "Spec analysis",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 // Research agent 2: Codebase patterns
 Task({
@@ -161,8 +189,8 @@ Tools:
 - ast-grep (sg) for structural patterns
 NEVER use bash find/grep/cat`,
   description: "Repo research",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 // Research agent 3: Best practices
 Task({
@@ -176,8 +204,8 @@ MCP Tools (prefer over WebFetch):
 - Context7 for library documentation
 - OctoCode for GitHub examples and implementations`,
   description: "Best practices",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 // Research agent 4: Git history context
 Task({
@@ -190,28 +218,40 @@ OUTPUT: Historical context and contributor insights
 Tools: Git commands via Bash
 MCP: OctoCode for PR discussions`,
   description: "History analysis",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 ```
 
 ### Phase 3: Collect Research
 
 ```javascript
 // Collect all research results
-const specAnalysis = TaskOutput({task_id: "spec-id", block: true})
-const repoResearch = TaskOutput({task_id: "repo-id", block: true})
-const bestPractices = TaskOutput({task_id: "bp-id", block: true})
-const historyAnalysis = TaskOutput({task_id: "hist-id", block: true})
+const specAnalysis = TaskOutput({ task_id: "spec-id", block: true });
+const repoResearch = TaskOutput({ task_id: "repo-id", block: true });
+const bestPractices = TaskOutput({ task_id: "bp-id", block: true });
+const historyAnalysis = TaskOutput({ task_id: "hist-id", block: true });
 
 // Update progress
 TodoWrite({
   todos: [
-    {content: "Validate input", status: "completed", activeForm: "Validating input"},
-    {content: "Launch research agents", status: "completed", activeForm: "Researching"},
-    {content: "Analyze user flows", status: "in_progress", activeForm: "Analyzing flows"},
+    {
+      content: "Validate input",
+      status: "completed",
+      activeForm: "Validating input",
+    },
+    {
+      content: "Launch research agents",
+      status: "completed",
+      activeForm: "Researching",
+    },
+    {
+      content: "Analyze user flows",
+      status: "in_progress",
+      activeForm: "Analyzing flows",
+    },
     // ...
-  ]
-})
+  ],
+});
 ```
 
 ### Phase 4: Parallel Dimension Analysis (6-Leg)
@@ -239,8 +279,8 @@ OUTPUT:
 
 Tools: Glob, Grep, Read (not bash)`,
   description: "API design",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 // Dimension 2: Data Models/Storage
 Task({
@@ -261,8 +301,8 @@ OUTPUT:
 
 Tools: Glob, Grep, Read (not bash)`,
   description: "Data modeling",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 // Dimension 3: UX/User Workflows
 Task({
@@ -283,8 +323,8 @@ OUTPUT:
 
 Tools: Glob, Grep, Read (not bash)`,
   description: "UX workflows",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 // Dimension 4: Scale/Performance
 Task({
@@ -305,8 +345,8 @@ OUTPUT:
 
 Tools: Glob, Grep, Read (not bash)`,
   description: "Scale analysis",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 // Dimension 5: Security/Threat Models
 Task({
@@ -327,8 +367,8 @@ OUTPUT:
 
 Tools: Glob, Grep, Read (not bash)`,
   description: "Security analysis",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 // Dimension 6: Integration/Dependencies
 Task({
@@ -350,31 +390,50 @@ OUTPUT:
 
 Tools: Glob, Grep, Read (not bash)`,
   description: "Integration analysis",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 ```
 
 ### Phase 5: Collect Dimension Analysis
 
 ```javascript
 // Collect all dimension analysis results
-const apiDesign = TaskOutput({task_id: "api-id", block: true})
-const dataModel = TaskOutput({task_id: "data-id", block: true})
-const uxWorkflows = TaskOutput({task_id: "ux-id", block: true})
-const scaleAnalysis = TaskOutput({task_id: "scale-id", block: true})
-const securityAnalysis = TaskOutput({task_id: "security-id", block: true})
-const integrationAnalysis = TaskOutput({task_id: "integration-id", block: true})
+const apiDesign = TaskOutput({ task_id: "api-id", block: true });
+const dataModel = TaskOutput({ task_id: "data-id", block: true });
+const uxWorkflows = TaskOutput({ task_id: "ux-id", block: true });
+const scaleAnalysis = TaskOutput({ task_id: "scale-id", block: true });
+const securityAnalysis = TaskOutput({ task_id: "security-id", block: true });
+const integrationAnalysis = TaskOutput({
+  task_id: "integration-id",
+  block: true,
+});
 
 // Update progress
 TodoWrite({
   todos: [
-    {content: "Validate input", status: "completed", activeForm: "Validating input"},
-    {content: "Launch research agents", status: "completed", activeForm: "Researching"},
-    {content: "Launch dimension analysis", status: "completed", activeForm: "Analyzing dimensions"},
-    {content: "Synthesize findings", status: "in_progress", activeForm: "Synthesizing"},
+    {
+      content: "Validate input",
+      status: "completed",
+      activeForm: "Validating input",
+    },
+    {
+      content: "Launch research agents",
+      status: "completed",
+      activeForm: "Researching",
+    },
+    {
+      content: "Launch dimension analysis",
+      status: "completed",
+      activeForm: "Analyzing dimensions",
+    },
+    {
+      content: "Synthesize findings",
+      status: "in_progress",
+      activeForm: "Synthesizing",
+    },
     // ...
-  ]
-})
+  ],
+});
 ```
 
 ### Phase 6: Synthesis & Gap Analysis (Optional)
@@ -412,8 +471,8 @@ OUTPUT:
 
 MCP: Use Codex for deep reasoning about architectural trade-offs`,
   description: "Architecture synthesis",
-  run_in_background: false  // Wait for this one
-})
+  run_in_background: false, // Wait for this one
+});
 ```
 
 ### Phase 7: Write Plan
@@ -429,18 +488,22 @@ Write plan to `.claude/plans/<feature-slug>.md` using template structure:
 **Tasks**: `.claude/branches/feature/<feature-slug>/tasks.md`
 
 ## Problem Statement
+
 [From spec analysis - what we're solving]
 
 ## User Stories
+
 [From spec-flow-analyzer - P1/P2/P3 with acceptance criteria]
 
 ### User Story 1 - [Title] (Priority: P1) 🎯 MVP
+
 [Description]
 
 **Why P1**: [Rationale]
 **Independent Test**: [How to verify]
 
 **Acceptance Scenarios**:
+
 1. **Given** [state], **When** [action], **Then** [outcome]
 
 ---
@@ -448,58 +511,74 @@ Write plan to `.claude/plans/<feature-slug>.md` using template structure:
 [More stories...]
 
 ## Functional Requirements
+
 [FR-XXX from spec analysis]
 
 ## Key Entities
+
 [From spec analysis]
 
 ## Technical Approach
+
 [From codex-architect synthesis]
 
 ## Dimension Analyses
 
 ### API Design
+
 [From api-interface-analyst - endpoints, schemas, versioning]
 
 ### Data Model
+
 [From data-model-architect - entities, schemas, migrations]
 
 ### UX Workflows
+
 [From ux-workflow-analyst - journeys, states, accessibility]
 
 ### Scale & Performance
+
 [From scale-performance-analyst - capacity, bottlenecks, caching]
 
 ### Security
+
 [From security-threat-analyst - STRIDE model, controls]
 
 ### Integrations
+
 [From integration-dependency-analyst - dependencies, failure modes]
 
 ## Success Criteria
+
 [SC-XXX from spec analysis]
 
 ## Risks & Mitigations
+
 [From dimension analyses and synthesis]
 
 ## Open Questions
+
 [Any remaining NEEDS CLARIFICATION - max 3]
 ```
 
 ### Phase 8: Generate Task Files
 
-Create individual task files in `.claude/branches/<branch>/tasks/`:
+Create individual task files in `.claude/branches/<slugified-branch>/tasks/`:
 
 ```javascript
+// CRITICAL: Slugify branch name (replace / with -)
+// Branch: feat/custom-indexer → Folder: feat-custom-indexer
+const branchSlug = `feature-${slug}`; // Already slugified since we use the slug
+
 // Ensure directory exists
-Bash({command: `mkdir -p .claude/branches/feature/${slug}/tasks`})
+Bash({ command: `mkdir -p .claude/branches/${branchSlug}/tasks` });
 
 // Write individual task files - ONE file per task
 // Naming: {order}-{status}-{priority}-{story}-{slug}.md
 
 // Setup tasks (001-009)
 Write({
-  file_path: `.claude/branches/feature/${slug}/tasks/001-pending-p1-setup-create-structure.md`,
+  file_path: `.claude/branches/${branchSlug}/tasks/001-pending-p1-setup-create-structure.md`,
   content: `---
 status: pending
 priority: p1
@@ -520,12 +599,12 @@ Initialize project structure per implementation plan.
 
 ## Work Log
 ### ${date} - Created
-**By:** /crew:design`
-})
+**By:** /crew:design`,
+});
 
 // User Story 1 tasks (010-019)
 Write({
-  file_path: `.claude/branches/feature/${slug}/tasks/010-pending-p1-us1-create-user-model.md`,
+  file_path: `.claude/branches/${branchSlug}/tasks/010-pending-p1-us1-create-user-model.md`,
   content: `---
 status: pending
 priority: p1
@@ -551,8 +630,8 @@ depends_on: []
 
 ## Work Log
 ### ${date} - Created
-**By:** /crew:design`
-})
+**By:** /crew:design`,
+});
 
 // Continue for each task...
 // User Story 2 tasks (020-029)
@@ -575,39 +654,50 @@ depends_on: []
 
 **Story Labels:**
 
-| Label | Phase |
-|-------|-------|
-| `setup` | Phase 1: Project setup |
-| `found` | Phase 2: Foundational |
-| `us1` | User Story 1 (P1/MVP) |
-| `us2` | User Story 2 (P2) |
-| `us3` | User Story 3 (P3) |
-| `polish` | Final: Cleanup |
+| Label    | Phase                  |
+| -------- | ---------------------- |
+| `setup`  | Phase 1: Project setup |
+| `found`  | Phase 2: Foundational  |
+| `us1`    | User Story 1 (P1/MVP)  |
+| `us2`    | User Story 2 (P2)      |
+| `us3`    | User Story 3 (P3)      |
+| `polish` | Final: Cleanup         |
 
 ### Phase 9: Branch Setup
 
 ```javascript
-Bash({command: `git checkout -b feature/${slug}`})
-Bash({command: `git add .claude/plans/${slug}.md .claude/branches/feature/${slug}/tasks/`})
-Bash({command: `git commit -m "docs(plan): add plan and tasks for ${slug}"`})
+// Note: Branch uses slash (feature/slug), but folder uses hyphen (feature-slug)
+Bash({ command: `git checkout -b feature/${slug}` });
+Bash({
+  command: `git add .claude/plans/${slug}.md .claude/branches/${branchSlug}/tasks/`,
+});
+Bash({ command: `git commit -m "docs(plan): add plan and tasks for ${slug}"` });
 ```
 
 ### Phase 10: Next Steps
 
 ```javascript
 AskUserQuestion({
-  questions: [{
-    question: "Plan and tasks created. What's next?",
-    header: "Next Step",
-    options: [
-      {label: "Start building (Recommended)", description: "Run /crew:build with this plan"},
-      {label: "Create GitHub issue", description: "Push plan for team review"},
-      {label: "Review the plan", description: "Walk through key sections"},
-      {label: "Done for now", description: "Save and exit"}
-    ],
-    multiSelect: false
-  }]
-})
+  questions: [
+    {
+      question: "Plan and tasks created. What's next?",
+      header: "Next Step",
+      options: [
+        {
+          label: "Start building (Recommended)",
+          description: "Run /crew:build with this plan",
+        },
+        {
+          label: "Create GitHub issue",
+          description: "Push plan for team review",
+        },
+        { label: "Review the plan", description: "Walk through key sections" },
+        { label: "Done for now", description: "Save and exit" },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
 ```
 
 ## Constraints
@@ -634,7 +724,7 @@ AskUserQuestion({
 - [ ] Plan contains functional requirements (FR-XXX)
 - [ ] Plan contains success criteria (SC-XXX)
 - [ ] **Plan contains Dimension Analyses section with all 6 dimensions**
-- [ ] Individual task files written to `.claude/branches/<branch>/tasks/`
+- [ ] Individual task files written to `.claude/branches/<slugified-branch>/tasks/`
 - [ ] Task files follow naming: `{order}-{status}-{priority}-{story}-{slug}.md`
 - [ ] Each task file has acceptance criteria
 - [ ] Parallel tasks marked with `parallel: true`

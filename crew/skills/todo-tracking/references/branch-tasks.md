@@ -1,7 +1,14 @@
 ---
 name: branch-tasks
 description: Branch-scoped task system. Individual task files in .claude/branches/<branch>/tasks/ with ordering support.
-triggers: ["branch task", "tasks/", "implementation task", "user story task", "task file"]
+triggers:
+  [
+    "branch task",
+    "tasks/",
+    "implementation task",
+    "user story task",
+    "task file",
+  ]
 depends_on: []
 ---
 
@@ -9,18 +16,30 @@ depends_on: []
 
 ## Branch-Scoped Task System
 
-All tasks live in `.claude/branches/<branch>/tasks/` as individual files.
+All tasks live in `.claude/branches/<slugified-branch>/tasks/` as individual files.
 
 **One location. One format. Always on a branch.**
 
 **Key Principles:**
+
 - **One file per task** - Easy to manage, merge, and track
 - **Ordered by filename** - Sequential numbering for execution order
 - **Small agent chunks** - Each task handled by focused parallel agent
+- **Slugified branch names** - Replace `/` with `-` in branch names for flat folder structure
 
-**Location:** `.claude/branches/<branch>/tasks/*.md`
+**Location:** `.claude/branches/<slugified-branch>/tasks/*.md`
+
+**CRITICAL: Branch Name Slugification**
+
+```javascript
+// Branch: feat/custom-indexer → Folder: feat-custom-indexer
+const branch = "$(git branch --show-current)";
+const slugifiedBranch = branch.replace(/\//g, "-"); // JS
+// OR in bash: SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-')
+```
 
 **Created by:**
+
 - `/crew:design` - Generates initial task files from plan
 - `/crew:check` - Adds finding files as additional tasks
 - `/crew:build` - May add discovered tasks during implementation
@@ -36,13 +55,13 @@ All tasks live in `.claude/branches/<branch>/tasks/` as individual files.
 {order}-{status}-{priority}-{story}-{slug}.md
 ```
 
-| Component | Values | Description |
-|-----------|--------|-------------|
-| `order` | 001, 002... | Execution order (3 digits) |
-| `status` | pending, ready, in_progress, complete | Current state |
-| `priority` | p1, p2, p3 | Priority level |
-| `story` | us1, us2, setup, found, polish | User story or phase |
-| `slug` | kebab-case | Brief description |
+| Component  | Values                                | Description                |
+| ---------- | ------------------------------------- | -------------------------- |
+| `order`    | 001, 002...                           | Execution order (3 digits) |
+| `status`   | pending, ready, in_progress, complete | Current state              |
+| `priority` | p1, p2, p3                            | Priority level             |
+| `story`    | us1, us2, setup, found, polish        | User story or phase        |
+| `slug`     | kebab-case                            | Brief description          |
 
 **Examples:**
 
@@ -58,15 +77,15 @@ All tasks live in `.claude/branches/<branch>/tasks/` as individual files.
 
 **Story Labels:**
 
-| Label | Meaning |
-|-------|---------|
-| `setup` | Phase 1: Project initialization |
-| `found` | Phase 2: Foundational/blocking |
-| `us1` | User Story 1 (P1/MVP) |
-| `us2` | User Story 2 (P2) |
-| `us3` | User Story 3 (P3) |
-| `found` | Check finding (added later) |
-| `polish` | Final phase: cleanup |
+| Label    | Meaning                         |
+| -------- | ------------------------------- |
+| `setup`  | Phase 1: Project initialization |
+| `found`  | Phase 2: Foundational/blocking  |
+| `us1`    | User Story 1 (P1/MVP)           |
+| `us2`    | User Story 2 (P2)               |
+| `us3`    | User Story 3 (P3)               |
+| `found`  | Check finding (added later)     |
+| `polish` | Final phase: cleanup            |
 
 </file_naming>
 
@@ -106,6 +125,7 @@ Create the User model with authentication fields.
 ## Work Log
 
 ### [DATE] - Created
+
 **By:** /crew:design
 **Status:** Generated from plan
 ```
@@ -129,18 +149,43 @@ Create the User model with authentication fields.
 
 ```javascript
 // Phase 1: Launch all parallel setup tasks
-Task({subagent_type: "implementer", prompt: "T001: Create project structure", description: "T001", run_in_background: true})
-Task({subagent_type: "implementer", prompt: "T002: Install dependencies", description: "T002", run_in_background: true})
-Task({subagent_type: "implementer", prompt: "T003: Configure linting", description: "T003", run_in_background: true})
+Task({
+  subagent_type: "implementer",
+  prompt: "T001: Create project structure",
+  description: "T001",
+  run_in_background: true,
+});
+Task({
+  subagent_type: "implementer",
+  prompt: "T002: Install dependencies",
+  description: "T002",
+  run_in_background: true,
+});
+Task({
+  subagent_type: "implementer",
+  prompt: "T003: Configure linting",
+  description: "T003",
+  run_in_background: true,
+});
 
 // Collect all results
-TaskOutput({task_id: "t001-id", block: true})
-TaskOutput({task_id: "t002-id", block: true})
-TaskOutput({task_id: "t003-id", block: true})
+TaskOutput({ task_id: "t001-id", block: true });
+TaskOutput({ task_id: "t002-id", block: true });
+TaskOutput({ task_id: "t003-id", block: true });
 
 // Phase 2: Launch next batch of parallel tasks
-Task({subagent_type: "implementer", prompt: "T010: Create User model", description: "T010", run_in_background: true})
-Task({subagent_type: "implementer", prompt: "T011: Create Profile model", description: "T011", run_in_background: true})
+Task({
+  subagent_type: "implementer",
+  prompt: "T010: Create User model",
+  description: "T010",
+  run_in_background: true,
+});
+Task({
+  subagent_type: "implementer",
+  prompt: "T011: Create Profile model",
+  description: "T011",
+  run_in_background: true,
+});
 
 // Continue batching...
 ```
@@ -170,8 +215,8 @@ OUTPUT:
 - Run tests
 - Report completion`,
   description: "T010: User model",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 ```
 
 </parallel_execution>
@@ -183,27 +228,35 @@ OUTPUT:
 ### /crew:design Creates Tasks
 
 ```javascript
+// CRITICAL: Slugify branch name (replace / with -)
+const branch = Bash({ command: "git branch --show-current" }).trim();
+const slugBranch = branch.replace(/\//g, "-"); // feat/foo → feat-foo
+
 // Ensure tasks directory exists
-Bash({command: `mkdir -p .claude/branches/${branch}/tasks`})
+Bash({ command: `mkdir -p .claude/branches/${slugBranch}/tasks` });
 
 // Write individual task files
 Write({
-  file_path: `.claude/branches/${branch}/tasks/001-pending-p1-setup-create-structure.md`,
-  content: taskContent
-})
+  file_path: `.claude/branches/${slugBranch}/tasks/001-pending-p1-setup-create-structure.md`,
+  content: taskContent,
+});
 
 Write({
-  file_path: `.claude/branches/${branch}/tasks/010-pending-p1-us1-create-user-model.md`,
-  content: taskContent
-})
+  file_path: `.claude/branches/${slugBranch}/tasks/010-pending-p1-us1-create-user-model.md`,
+  content: taskContent,
+});
 // ... one file per task
 ```
 
 ### /crew:build Consumes Tasks
 
 ```javascript
+// CRITICAL: Slugify branch name
+const branch = Bash({command: "git branch --show-current"}).trim()
+const slugBranch = branch.replace(/\//g, '-')
+
 // List all task files in order
-const taskFiles = Glob({pattern: `.claude/branches/${branch}/tasks/*.md`})
+const taskFiles = Glob({pattern: `.claude/branches/${slugBranch}/tasks/*.md`})
 
 // Read and sort by filename (already ordered)
 // Parse status from filename and frontmatter
@@ -221,15 +274,19 @@ parallelTasks.forEach(task => {
 ### /crew:check Adds Findings
 
 ```javascript
+// CRITICAL: Slugify branch name
+const branch = Bash({ command: "git branch --show-current" }).trim();
+const slugBranch = branch.replace(/\//g, "-");
+
 // Find next order number
-const existing = Glob({pattern: `.claude/branches/${branch}/tasks/*.md`})
-const nextOrder = getNextOrderNumber(existing)
+const existing = Glob({ pattern: `.claude/branches/${slugBranch}/tasks/*.md` });
+const nextOrder = getNextOrderNumber(existing);
 
 // Add finding as new task
 Write({
-  file_path: `.claude/branches/${branch}/tasks/${nextOrder}-pending-p1-found-fix-type-error.md`,
-  content: findingContent
-})
+  file_path: `.claude/branches/${slugBranch}/tasks/${nextOrder}-pending-p1-found-fix-type-error.md`,
+  content: findingContent,
+});
 ```
 
 </integration>
@@ -253,14 +310,14 @@ Status lives in BOTH filename and frontmatter. Update both:
 Edit({
   file_path: taskPath,
   old_string: "status: pending",
-  new_string: "status: in_progress"
-})
+  new_string: "status: in_progress",
+});
 
 // 2. Rename file
 Bash({
   command: `mv "${oldPath}" "${newPath}"`,
-  description: "Update task status"
-})
+  description: "Update task status",
+});
 // pending → in_progress
 // 010-pending-p1-us1-... → 010-in_progress-p1-us1-...
 ```
@@ -272,8 +329,8 @@ Bash({
 Edit({
   file_path: taskPath,
   old_string: "status: in_progress",
-  new_string: "status: complete"
-})
+  new_string: "status: complete",
+});
 
 // Rename
 // 010-in_progress-p1-us1-... → 010-complete-p1-us1-...
@@ -287,8 +344,8 @@ Edit({
 ### ${date} - Completed
 **By:** Agent
 **Changes:** Created src/models/user.ts
-**Tests:** All passing`
-})
+**Tests:** All passing`,
+});
 ```
 
 </status_transitions>
@@ -298,18 +355,21 @@ Edit({
 ## Quick Commands
 
 ```bash
+# CRITICAL: Slugify branch name (replace / with -)
+BRANCH=$(git branch --show-current | tr '/' '-')
+
 # List pending tasks in order
-ls .claude/branches/$(git branch --show-current)/tasks/*-pending-*.md
+ls .claude/branches/$BRANCH/tasks/*-pending-*.md
 
 # Count tasks by status
-ls .claude/branches/$(git branch --show-current)/tasks/ | grep -c pending
-ls .claude/branches/$(git branch --show-current)/tasks/ | grep -c complete
+ls .claude/branches/$BRANCH/tasks/ | grep -c pending
+ls .claude/branches/$BRANCH/tasks/ | grep -c complete
 
 # Find parallel tasks
-grep -l "parallel: true" .claude/branches/$(git branch --show-current)/tasks/*-pending-*.md
+grep -l "parallel: true" .claude/branches/$BRANCH/tasks/*-pending-*.md
 
 # Find tasks for specific story
-ls .claude/branches/$(git branch --show-current)/tasks/*-us1-*.md
+ls .claude/branches/$BRANCH/tasks/*-us1-*.md
 ```
 
 </quick_commands>
@@ -318,7 +378,8 @@ ls .claude/branches/$(git branch --show-current)/tasks/*-us1-*.md
 
 ## Validation Checklist
 
-- [ ] Task files in `.claude/branches/<branch>/tasks/`
+- [ ] Task files in `.claude/branches/<slugified-branch>/tasks/`
+- [ ] Branch names slugified (feat/foo → feat-foo)
 - [ ] Filenames follow ordering convention
 - [ ] Status matches in filename AND frontmatter
 - [ ] Each task has acceptance criteria

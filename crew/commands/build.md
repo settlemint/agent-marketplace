@@ -17,15 +17,35 @@ argument-hint: "[plan file, specification, or todo file path]"
 ```javascript
 TodoWrite({
   todos: [
-    {content: "Load work document", status: "in_progress", activeForm: "Loading document"},
-    {content: "Load task files", status: "pending", activeForm: "Loading tasks"},
-    {content: "Set up branch", status: "pending", activeForm: "Setting up branch"},
-    {content: "Execute task batch 1", status: "pending", activeForm: "Running batch 1"},
-    {content: "Run tests", status: "pending", activeForm: "Running tests"},
-    {content: "Run quality checks", status: "pending", activeForm: "Running quality checks"},
-    {content: "Create PR", status: "pending", activeForm: "Creating PR"}
-  ]
-})
+    {
+      content: "Load work document",
+      status: "in_progress",
+      activeForm: "Loading document",
+    },
+    {
+      content: "Load task files",
+      status: "pending",
+      activeForm: "Loading tasks",
+    },
+    {
+      content: "Set up branch",
+      status: "pending",
+      activeForm: "Setting up branch",
+    },
+    {
+      content: "Execute task batch 1",
+      status: "pending",
+      activeForm: "Running batch 1",
+    },
+    { content: "Run tests", status: "pending", activeForm: "Running tests" },
+    {
+      content: "Run quality checks",
+      status: "pending",
+      activeForm: "Running quality checks",
+    },
+    { content: "Create PR", status: "pending", activeForm: "Creating PR" },
+  ],
+});
 ```
 
 **Update IMMEDIATELY after each task. Never batch updates.**
@@ -44,8 +64,8 @@ ACCEPTANCE: Directory structure matches plan
 CONTEXT: [minimal context]
 OUTPUT: Create structure, report completion`,
   description: "T001",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 Task({
   subagent_type: "general-purpose",
@@ -55,12 +75,12 @@ ACCEPTANCE: All deps installed
 CONTEXT: [minimal context]
 OUTPUT: Install, report completion`,
   description: "T002",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 // Collect ALL results before next batch
-TaskOutput({task_id: "t001-id", block: true})
-TaskOutput({task_id: "t002-id", block: true})
+TaskOutput({ task_id: "t001-id", block: true });
+TaskOutput({ task_id: "t002-id", block: true });
 
 // Then launch next batch...
 ```
@@ -69,18 +89,20 @@ TaskOutput({task_id: "t002-id", block: true})
 
 ```javascript
 AskUserQuestion({
-  questions: [{
-    question: "Batch complete. Continue to next phase?",
-    header: "Next",
-    options: [
-      {label: "Continue (Recommended)", description: "Execute next batch"},
-      {label: "Review changes", description: "Show diff first"},
-      {label: "Run tests", description: "Validate before continuing"},
-      {label: "Stop here", description: "Pause work"}
-    ],
-    multiSelect: false
-  }]
-})
+  questions: [
+    {
+      question: "Batch complete. Continue to next phase?",
+      header: "Next",
+      options: [
+        { label: "Continue (Recommended)", description: "Execute next batch" },
+        { label: "Review changes", description: "Show diff first" },
+        { label: "Run tests", description: "Validate before continuing" },
+        { label: "Stop here", description: "Pause work" },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
 ```
 
 ## Process
@@ -90,25 +112,31 @@ AskUserQuestion({
 ```javascript
 TodoWrite({
   todos: [
-    {content: "Load work document", status: "in_progress", activeForm: "Loading document"},
+    {
+      content: "Load work document",
+      status: "in_progress",
+      activeForm: "Loading document",
+    },
     // ...
-  ]
-})
+  ],
+});
 
 // Read the plan
-Read({file_path: ".claude/plans/${planSlug}.md"})
+Read({ file_path: ".claude/plans/${planSlug}.md" });
 
 // If not found, ask
 AskUserQuestion({
-  questions: [{
-    question: "Which plan should we build?",
-    header: "Plan",
-    options: [
-      // List available plans from Glob
-    ],
-    multiSelect: false
-  }]
-})
+  questions: [
+    {
+      question: "Which plan should we build?",
+      header: "Plan",
+      options: [
+        // List available plans from Glob
+      ],
+      multiSelect: false,
+    },
+  ],
+});
 ```
 
 ### Phase 2: Load Task Files
@@ -116,11 +144,14 @@ AskUserQuestion({
 **CRITICAL**: Load individual task files from branch state
 
 ```javascript
-// Get current branch
-const branch = Bash({command: "git branch --show-current"})
+// Get current branch and slugify it (replace / with -)
+const branch = Bash({ command: "git branch --show-current" }).trim();
+const slugBranch = branch.replace(/\//g, "-"); // feat/foo → feat-foo
 
 // List all task files in order
-const taskFiles = Glob({pattern: `.claude/branches/${branch}/tasks/*.md`})
+const taskFiles = Glob({
+  pattern: `.claude/branches/${slugBranch}/tasks/*.md`,
+});
 
 // Files are already ordered by filename:
 // 001-pending-p1-setup-...
@@ -129,7 +160,7 @@ const taskFiles = Glob({pattern: `.claude/branches/${branch}/tasks/*.md`})
 
 // Read each task file and parse
 for (const file of taskFiles) {
-  Read({file_path: file})
+  Read({ file_path: file });
   // Parse status, priority, story, parallel from frontmatter
 }
 
@@ -149,18 +180,37 @@ for (const file of taskFiles) {
 
 ```javascript
 // Ensure on feature branch
-Bash({command: "git checkout feature/${slug} 2>/dev/null || git checkout -b feature/${slug}"})
+Bash({
+  command:
+    "git checkout feature/${slug} 2>/dev/null || git checkout -b feature/${slug}",
+});
 
 // Update progress
 TodoWrite({
   todos: [
-    {content: "Load work document", status: "completed", activeForm: "Loading document"},
-    {content: "Load task files", status: "completed", activeForm: "Loading tasks"},
-    {content: "Set up branch", status: "completed", activeForm: "Setting up branch"},
-    {content: "Execute batch 1 (setup)", status: "in_progress", activeForm: "Running setup"},
+    {
+      content: "Load work document",
+      status: "completed",
+      activeForm: "Loading document",
+    },
+    {
+      content: "Load task files",
+      status: "completed",
+      activeForm: "Loading tasks",
+    },
+    {
+      content: "Set up branch",
+      status: "completed",
+      activeForm: "Setting up branch",
+    },
+    {
+      content: "Execute batch 1 (setup)",
+      status: "in_progress",
+      activeForm: "Running setup",
+    },
     // ...
-  ]
-})
+  ],
+});
 ```
 
 ### Phase 4: Batch Execution Loop
@@ -171,11 +221,10 @@ TodoWrite({
 // For each batch of parallel tasks:
 
 // 1. Identify parallel tasks in current phase
-const batch = pendingTasks.filter(t =>
-  t.phase === currentPhase &&
-  t.parallel === true &&
-  t.status === 'pending'
-)
+const batch = pendingTasks.filter(
+  (t) =>
+    t.phase === currentPhase && t.parallel === true && t.status === "pending",
+);
 
 // 2. Launch ALL in SINGLE message
 for (const task of batch) {
@@ -199,28 +248,28 @@ INSTRUCTIONS:
 
 Keep it focused. One task only.`,
     description: task.id,
-    run_in_background: true
-  })
+    run_in_background: true,
+  });
 }
 
 // 3. Collect ALL results
 for (const task of batch) {
-  const result = TaskOutput({task_id: task.agentId, block: true})
+  const result = TaskOutput({ task_id: task.agentId, block: true });
 
   // 4. Update task file status
   if (result.success) {
-    // Rename: pending → complete
+    // Rename: pending → complete (use slugBranch, not branch)
     Bash({
-      command: `mv ".claude/branches/${branch}/tasks/${task.oldFilename}" ".claude/branches/${branch}/tasks/${task.newFilename}"`,
-      description: `Complete ${task.id}`
-    })
+      command: `mv ".claude/branches/${slugBranch}/tasks/${task.oldFilename}" ".claude/branches/${slugBranch}/tasks/${task.newFilename}"`,
+      description: `Complete ${task.id}`,
+    });
 
     // Update frontmatter
     Edit({
-      file_path: `.claude/branches/${branch}/tasks/${task.newFilename}`,
+      file_path: `.claude/branches/${slugBranch}/tasks/${task.newFilename}`,
       old_string: "status: pending",
-      new_string: "status: complete"
-    })
+      new_string: "status: complete",
+    });
   }
 }
 
@@ -228,11 +277,11 @@ for (const task of batch) {
 TodoWrite({
   todos: [
     // ... mark batch completed, next batch in_progress
-  ]
-})
+  ],
+});
 
 // 6. Run tests after each batch
-Bash({command: "bun run test", description: "Run tests"})
+Bash({ command: "bun run test", description: "Run tests" });
 
 // 7. Continue to next batch
 ```
@@ -245,26 +294,26 @@ Launch quality agents in **SINGLE message** (each agent = small scope):
 Task({
   subagent_type: "typescript-reviewer",
   prompt: `TASK: Type review
-SCOPE: ${changedFiles.slice(0, 5).join(', ')}  // Limit scope
+SCOPE: ${changedFiles.slice(0, 5).join(", ")}  // Limit scope
 OUTPUT: P1/P2/P3 findings with file:line
 Tools: Glob, Grep, Read (not bash)`,
   description: "TS review",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 Task({
   subagent_type: "security-sentinel",
   prompt: `TASK: Security audit
-SCOPE: ${changedFiles.slice(0, 5).join(', ')}  // Limit scope
+SCOPE: ${changedFiles.slice(0, 5).join(", ")}  // Limit scope
 OUTPUT: Vulnerabilities with severity
 MCP: Codex for threat analysis`,
   description: "Security",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 // Collect results
-const tsResults = TaskOutput({task_id: "ts-id", block: true})
-const secResults = TaskOutput({task_id: "sec-id", block: true})
+const tsResults = TaskOutput({ task_id: "ts-id", block: true });
+const secResults = TaskOutput({ task_id: "sec-id", block: true });
 ```
 
 ### Phase 6: Add Findings as Tasks
@@ -272,13 +321,13 @@ const secResults = TaskOutput({task_id: "sec-id", block: true})
 If quality issues found, add as new task files:
 
 ```javascript
-// Find next order number
-const existing = Glob({pattern: `.claude/branches/${branch}/tasks/*.md`})
-const nextOrder = getNextOrderNumber(existing) // e.g., 050
+// Find next order number (use slugBranch)
+const existing = Glob({ pattern: `.claude/branches/${slugBranch}/tasks/*.md` });
+const nextOrder = getNextOrderNumber(existing); // e.g., 050
 
 // Create finding task file
 Write({
-  file_path: `.claude/branches/${branch}/tasks/${nextOrder}-pending-p1-found-fix-type-error.md`,
+  file_path: `.claude/branches/${slugBranch}/tasks/${nextOrder}-pending-p1-found-fix-type-error.md`,
   content: `---
 status: pending
 priority: p1
@@ -302,18 +351,20 @@ ${finding.description}
 
 ## Work Log
 ### ${date} - Created
-**By:** /crew:check quality review`
-})
+**By:** /crew:check quality review`,
+});
 ```
 
 ### Phase 7: Final Validation
 
 ```javascript
 // Run full CI
-Bash({command: "bun run ci", description: "Run CI checks"})
+Bash({ command: "bun run ci", description: "Run CI checks" });
 
-// Verify all tasks complete
-const remaining = Glob({pattern: `.claude/branches/${branch}/tasks/*-pending-*.md`})
+// Verify all tasks complete (use slugBranch)
+const remaining = Glob({
+  pattern: `.claude/branches/${slugBranch}/tasks/*-pending-*.md`,
+});
 if (remaining.length > 0) {
   // Report incomplete tasks
 }
@@ -323,31 +374,36 @@ if (remaining.length > 0) {
 
 ```javascript
 AskUserQuestion({
-  questions: [{
-    question: `All tasks complete. ${taskCount} tasks done. Ready to ship?`,
-    header: "Ship",
-    options: [
-      {label: "Create PR (Recommended)", description: "Commit, push, and open PR"},
-      {label: "Commit only", description: "Create commit without PR"},
-      {label: "Review diff", description: "Show changes before committing"},
-      {label: "More work needed", description: "Continue editing"}
-    ],
-    multiSelect: false
-  }]
-})
+  questions: [
+    {
+      question: `All tasks complete. ${taskCount} tasks done. Ready to ship?`,
+      header: "Ship",
+      options: [
+        {
+          label: "Create PR (Recommended)",
+          description: "Commit, push, and open PR",
+        },
+        { label: "Commit only", description: "Create commit without PR" },
+        { label: "Review diff", description: "Show changes before committing" },
+        { label: "More work needed", description: "Continue editing" },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
 
-// If creating PR:
+// If creating PR (note: git branch uses slash, folder uses hyphen)
 Bash({
   command: `git add . && git commit -m "$(cat <<'EOF'
 feat(${scope}): ${description}
 
 ${body}
 
-Tasks: .claude/branches/${branch}/tasks/
+Tasks: .claude/branches/${slugBranch}/tasks/
 EOF
 )" && git push -u origin ${branch}`,
-  description: "Commit and push"
-})
+  description: "Commit and push",
+});
 
 Bash({
   command: `gh pr create --title "${title}" --body "$(cat <<'EOF'
@@ -358,11 +414,11 @@ ${summary}
 ${testPlan}
 
 ## Tasks Completed
-See: .claude/branches/${branch}/tasks/
+See: .claude/branches/${slugBranch}/tasks/
 EOF
 )"`,
-  description: "Create PR"
-})
+  description: "Create PR",
+});
 ```
 
 ## Parallel Batching Strategy
@@ -407,7 +463,7 @@ OUTPUT:
 ## Success Criteria
 
 - [ ] TodoWrite tracks ALL progress (updated after EVERY task)
-- [ ] Task files loaded from `.claude/branches/<branch>/tasks/`
+- [ ] Task files loaded from `.claude/branches/<slugified-branch>/tasks/`
 - [ ] Tasks executed in batches by phase
 - [ ] Each agent handles ONE small task
 - [ ] All parallel tasks launched in SINGLE message
