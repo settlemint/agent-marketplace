@@ -21,13 +21,13 @@ claude plugin marketplace add sawyerhood/dev-browser 2>/dev/null || true
 # Install plugins (idempotent)
 claude plugin install crew@settlemint 2>/dev/null || true
 claude plugin install devtools@settlemint 2>/dev/null || true
-claude plugin install typescript-lsp@anthropics-claude-plugins-official 2>/dev/null || true
-claude plugin install frontend-design@anthropics-claude-plugins-official 2>/dev/null || true
-claude plugin install dev-browser@sawyerhood-dev-browser 2>/dev/null || true
+claude plugin install typescript-lsp@claude-plugins-official 2>/dev/null || true
+claude plugin install frontend-design@claude-plugins-official 2>/dev/null || true
+claude plugin install dev-browser@dev-browser-marketplace 2>/dev/null || true
 
 # Trigger update for all marketplaces
 claude plugin marketplace update settlemint 2>/dev/null || true
-claude plugin marketplace update anthropics-claude-plugins-official 2>/dev/null || true
-claude plugin marketplace update sawyerhood-dev-browser 2>/dev/null || true
+claude plugin marketplace update claude-plugins-official 2>/dev/null || true
+claude plugin marketplace update dev-browser-marketplace 2>/dev/null || true
 
 exit 0

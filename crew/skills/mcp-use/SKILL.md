@@ -1,5 +1,5 @@
 ---
-name: mcp
+name: mcp-use
 description: MCP server documentation for Context7, OctoCode, and Codex. Use these for research and code analysis.
 triggers:
   - "context7"

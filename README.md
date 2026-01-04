@@ -7,13 +7,13 @@ SettleMint agent orchestration and development tools for Claude Code.
 **One-liner (all plugins):**
 
 ```bash
-claude plugin marketplace add settlemint/agent-marketplace && \
-claude plugin marketplace add anthropics/claude-plugins-official && \
-claude plugin marketplace add sawyerhood/dev-browser && \
-claude plugin install crew@settlemint devtools@settlemint typescript-lsp@anthropics-claude-plugins-official frontend-design@anthropics-claude-plugins-official dev-browser@sawyerhood-dev-browser && \
-claude plugin marketplace update settlemint && \
-claude plugin marketplace update anthropics-claude-plugins-official && \
-claude plugin marketplace update sawyerhood-dev-browser
+claude plugin marketplace add settlemint/agent-marketplace 2>/dev/null; \
+claude plugin marketplace add anthropics/claude-plugins-official 2>/dev/null; \
+claude plugin marketplace add sawyerhood/dev-browser 2>/dev/null; \
+claude plugin install crew@settlemint devtools@settlemint typescript-lsp@claude-plugins-official frontend-design@claude-plugins-official dev-browser@dev-browser-marketplace 2>/dev/null; \
+claude plugin marketplace update settlemint; \
+claude plugin marketplace update claude-plugins-official; \
+claude plugin marketplace update dev-browser-marketplace
 ```
 
 **Core plugin only:**
@@ -56,7 +56,7 @@ For the best experience, add these complementary plugins:
 ```bash
 claude plugin marketplace add anthropics/claude-plugins-official
 claude plugin marketplace add sawyerhood/dev-browser
-claude plugin install typescript-lsp@anthropics-claude-plugins-official frontend-design@anthropics-claude-plugins-official dev-browser@sawyerhood-dev-browser
+claude plugin install typescript-lsp@claude-plugins-official frontend-design@claude-plugins-official dev-browser@dev-browser-marketplace
 ```
 
 Or add to your `.claude/settings.json`:
@@ -64,13 +64,13 @@ Or add to your `.claude/settings.json`:
 ```json
 {
   "extraKnownMarketplaces": {
-    "anthropics-claude-plugins-official": {
+    "claude-plugins-official": {
       "source": {
         "source": "github",
         "repo": "anthropics/claude-plugins-official"
       }
     },
-    "sawyerhood-dev-browser": {
+    "dev-browser-marketplace": {
       "source": {
         "source": "github",
         "repo": "sawyerhood/dev-browser"
@@ -78,9 +78,9 @@ Or add to your `.claude/settings.json`:
     }
   },
   "enabledPlugins": {
-    "typescript-lsp@anthropics-claude-plugins-official": true,
-    "dev-browser@sawyerhood-dev-browser": true,
-    "frontend-design@anthropics-claude-plugins-official": true
+    "typescript-lsp@claude-plugins-official": true,
+    "dev-browser@dev-browser-marketplace": true,
+    "frontend-design@claude-plugins-official": true
   }
 }
 ```
