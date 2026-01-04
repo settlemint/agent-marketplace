@@ -28,10 +28,11 @@ echo
 
 echo "## Recommended Reviewers"
 echo '```'
-echo "Always: kieran-typescript-reviewer, security-sentinel, code-simplicity-reviewer, architecture-strategist"
+echo "Always: typescript-reviewer, security-sentinel, code-simplicity-reviewer, architecture-strategist, performance-oracle"
 # Conditional reviewers based on file types
 echo "$files" | grep -qE '\.sol$' && echo "Solidity: solidity-security-auditor"
-echo "$files" | grep -qE 'migrations?' && echo "Migrations: data-migration-expert"
+echo "$files" | grep -qE 'migrations?' && echo "Migrations: data-migration-expert, data-integrity-guardian"
 echo "$files" | grep -qE '(orpc|api)' && echo "API: data-integrity-guardian"
-echo "$files" | grep -qE '\.claude/' && echo "Skills: agent-context-reviewer"
+echo "$files" | grep -qE '\.claude/' && echo "Skills: agent-context-reviewer, agent-native-reviewer"
+echo "$files" | grep -qE '\.(ts|tsx)$' && echo "TypeScript (strict): kieran-typescript-reviewer"
 echo '```'
