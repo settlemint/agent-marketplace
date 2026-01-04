@@ -14,18 +14,20 @@ if [[ $EVENT_TYPE != "startup" ]]; then
 fi
 
 # Add marketplaces (idempotent - won't fail if already added)
-claude plugin add-marketplace settlemint github:settlemint/agent-marketplace 2>/dev/null || true
-claude plugin add-marketplace claude-plugins-official github:anthropics/claude-plugins-official 2>/dev/null || true
-claude plugin add-marketplace dev-browser-marketplace github:sawyerhood/dev-browser 2>/dev/null || true
+claude plugin marketplace add settlemint/agent-marketplace 2>/dev/null || true
+claude plugin marketplace add anthropics/claude-plugins-official 2>/dev/null || true
+claude plugin marketplace add sawyerhood/dev-browser 2>/dev/null || true
 
-# Install plugins with auto-update enabled (idempotent)
-claude plugin install --auto-update crew@settlemint 2>/dev/null || true
-claude plugin install --auto-update devtools@settlemint 2>/dev/null || true
-claude plugin install --auto-update typescript-lsp@claude-plugins-official 2>/dev/null || true
-claude plugin install --auto-update frontend-design@claude-plugins-official 2>/dev/null || true
-claude plugin install --auto-update dev-browser@dev-browser-marketplace 2>/dev/null || true
+# Install plugins (idempotent)
+claude plugin install crew@settlemint 2>/dev/null || true
+claude plugin install devtools@settlemint 2>/dev/null || true
+claude plugin install typescript-lsp@anthropics-claude-plugins-official 2>/dev/null || true
+claude plugin install frontend-design@anthropics-claude-plugins-official 2>/dev/null || true
+claude plugin install dev-browser@sawyerhood-dev-browser 2>/dev/null || true
 
-# Trigger update for all plugins
-claude plugin update 2>/dev/null || true
+# Trigger update for all marketplaces
+claude plugin marketplace update settlemint 2>/dev/null || true
+claude plugin marketplace update anthropics-claude-plugins-official 2>/dev/null || true
+claude plugin marketplace update sawyerhood-dev-browser 2>/dev/null || true
 
 exit 0
