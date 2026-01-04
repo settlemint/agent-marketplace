@@ -1,0 +1,151 @@
+---
+name: vitest
+description: Vitest unit testing patterns for TypeScript. Covers test structure, mocking, assertions, and coverage. Triggers on vitest, describe, it, expect, mock.
+triggers: ["vitest", "describe", "\\bit\\(", "expect", "mock", "\\.test\\.ts", "\\.spec\\.ts"]
+---
+
+<objective>
+Write effective unit tests using Vitest. Vitest is a fast, Vite-native test runner with Jest-compatible API and excellent TypeScript support.
+</objective>
+
+<mcp_first>
+**CRITICAL: Always fetch Vitest documentation for current API.**
+
+```
+MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
+```
+
+```typescript
+// Test patterns
+mcp__context7__query_docs({
+  context7CompatibleLibraryID: "/vitest-dev/vitest",
+  topic: "describe it expect beforeEach"
+})
+
+// Mocking
+mcp__context7__query_docs({
+  context7CompatibleLibraryID: "/vitest-dev/vitest",
+  topic: "vi.mock vi.fn vi.spyOn"
+})
+
+// Async testing
+mcp__context7__query_docs({
+  context7CompatibleLibraryID: "/vitest-dev/vitest",
+  topic: "async await rejects resolves"
+})
+```
+</mcp_first>
+
+<quick_start>
+**Basic test structure:**
+
+```typescript
+import { describe, expect, it, beforeEach, vi } from "vitest";
+
+describe("MyService", () => {
+  let service: MyService;
+
+  beforeEach(() => {
+    service = new MyService();
+  });
+
+  it("returns expected value", () => {
+    const result = service.process("input");
+    expect(result).toBe("expected");
+  });
+
+  it("throws on invalid input", () => {
+    expect(() => service.process("")).toThrow("Invalid input");
+  });
+
+  it("handles async operations", async () => {
+    const result = await service.fetchData();
+    expect(result).toBeDefined();
+  });
+});
+```
+</quick_start>
+
+<mocking>
+**Mock functions:**
+
+```typescript
+const mockFn = vi.fn();
+mockFn.mockReturnValue("mocked");
+mockFn.mockResolvedValue("async mocked");
+mockFn.mockImplementation((x) => x * 2);
+
+expect(mockFn).toHaveBeenCalled();
+expect(mockFn).toHaveBeenCalledWith("arg");
+expect(mockFn).toHaveBeenCalledTimes(1);
+```
+
+**Mock modules:**
+
+```typescript
+vi.mock("./myModule", () => ({
+  myFunction: vi.fn().mockReturnValue("mocked"),
+}));
+```
+
+**Spy on methods:**
+
+```typescript
+const spy = vi.spyOn(object, "method");
+spy.mockReturnValue("mocked");
+
+// Restore original
+spy.mockRestore();
+```
+</mocking>
+
+<assertions>
+**Common assertions:**
+
+```typescript
+expect(value).toBe(exact);           // ===
+expect(value).toEqual(deep);         // Deep equality
+expect(value).toBeDefined();
+expect(value).toBeNull();
+expect(value).toBeTruthy();
+expect(value).toContain(item);
+expect(value).toHaveLength(n);
+expect(value).toMatch(/regex/);
+
+// Objects
+expect(obj).toHaveProperty("key");
+expect(obj).toMatchObject({ partial: true });
+
+// Async
+await expect(promise).resolves.toBe(value);
+await expect(promise).rejects.toThrow("error");
+```
+</assertions>
+
+<constraints>
+**Required:**
+- One concept per test (single assertion focus)
+- Descriptive test names ("should X when Y")
+- Clean setup with beforeEach
+- No test interdependencies
+- Mock external services
+
+**Naming:** Test files=`*.test.ts` or `*.spec.ts`
+</constraints>
+
+<commands>
+```bash
+vitest                  # Run in watch mode
+vitest run              # Run once
+vitest run --coverage   # With coverage
+vitest run -t "pattern" # Filter by name
+```
+</commands>
+
+<success_criteria>
+- [ ] Context7 docs fetched for current API
+- [ ] Tests are isolated (no dependencies)
+- [ ] Mocks used for external services
+- [ ] Descriptive test names
+- [ ] Coverage for edge cases
+</success_criteria>
