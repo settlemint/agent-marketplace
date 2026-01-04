@@ -1,0 +1,26 @@
+{
+  "name": "agent-marketplace",
+  "owner": {
+    "name": "Roderik van der Veer",
+    "email": "roderik@settlemint.com"
+  },
+  "metadata": {
+    "description": "SettleMint agent orchestration and development tools",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "crew",
+      "source": "./crew",
+      "description": "Unified orchestration for work execution, skill creation, git conventions, and system management. Provides /design, /build, /check, /fix commands.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Roderik van der Veer"
+      },
+      "repository": "https://github.com/settlemint/agent-marketplace",
+      "license": "MIT",
+      "keywords": ["orchestration", "workflow", "planning", "review"],
+      "category": "development"
+    }
+  ]
+}

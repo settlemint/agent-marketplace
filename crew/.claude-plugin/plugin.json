@@ -1,0 +1,11 @@
+{
+  "name": "crew",
+  "description": "Unified orchestration for work execution, skill creation, git conventions, and system management. Provides /design, /build, /check, /fix commands.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Roderik van der Veer",
+    "email": "roderik@settlemint.com"
+  },
+  "repository": "https://github.com/settlemint/agent-marketplace",
+  "license": "MIT"
+}
