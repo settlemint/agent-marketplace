@@ -6,7 +6,7 @@ SettleMint agent orchestration and development tools for Claude Code.
 
 ```bash
 /plugin marketplace add settlemint/agent-marketplace
-/plugin install crew@settlemint-marketplace
+/plugin install crew@settlemint
 ```
 
 Or add to your project's `.claude/settings.json`:
@@ -14,7 +14,7 @@ Or add to your project's `.claude/settings.json`:
 ```json
 {
   "extraKnownMarketplaces": {
-    "settlemint-marketplace": {
+    "settlemint": {
       "source": {
         "source": "github",
         "repo": "settlemint/agent-marketplace"
@@ -22,7 +22,7 @@ Or add to your project's `.claude/settings.json`:
     }
   },
   "enabledPlugins": {
-    "crew@settlemint-marketplace": true
+    "crew@settlemint": true
   }
 }
 ```
