@@ -3,20 +3,17 @@
     "context7": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@context7/mcp@latest"],
-      "description": "Fetch up-to-date documentation for any library. ALWAYS use this before implementing features."
+      "args": ["-y", "@upstash/context7-mcp@latest"]
     },
     "octocode": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@anthropics/octocode-mcp@latest"],
-      "description": "Search GitHub repositories for code patterns and implementations."
+      "args": ["-y", "octocode-mcp@latest"]
     },
     "codex": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@anthropics/codex-mcp@latest"],
-      "description": "Deep code reasoning and analysis."
+      "command": "codex",
+      "args": ["-m", "gpt-5.2-codex", "-c", "model_reasoning_effort=xhigh", "mcp-server"]
     }
   }
 }
