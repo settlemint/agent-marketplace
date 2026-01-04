@@ -200,7 +200,53 @@ scripts/
 ### Todos (`references/todos/`)
 - `file-todos.md` - File-based todo tracking
 
+### MCP Servers (`references/mcp/`)
+- `context7.md` - Fetch up-to-date library documentation
+- `octocode.md` - GitHub code search and exploration
+- `codex.md` - Deep reasoning with OpenAI Codex
+
 </references>
+
+<mcp_servers>
+
+## MCP Servers
+
+This plugin provides two MCP servers for research:
+
+### Context7
+
+Fetch accurate, version-specific documentation for any library.
+
+```
+mcp__context7__resolve-library-id({ libraryName: "tanstack query" })
+mcp__context7__query-docs({ context7CompatibleLibraryID: "/tanstack/query", topic: "mutations" })
+```
+
+Reference: `references/mcp/context7.md`
+
+### OctoCode
+
+Search and analyze GitHub repositories.
+
+```
+mcp__octocode__packageSearch({ queries: [{ mainResearchGoal: "...", researchGoal: "...", reasoning: "...", name: "viem", ecosystem: "npm" }] })
+mcp__octocode__githubSearchCode({ queries: [{ ..., keywordsToSearch: ["pattern"], owner: "org", repo: "project" }] })
+```
+
+Reference: `references/mcp/octocode.md`
+
+### Codex
+
+Deep reasoning for complex analysis and code review.
+
+```
+mcp__codex__codex({ prompt: "Analyze this algorithm", cwd: "/project", sandbox: "read-only" })
+mcp__codex__codex-reply({ conversationId: "...", prompt: "Follow-up question" })
+```
+
+Reference: `references/mcp/codex.md`
+
+</mcp_servers>
 
 <quick_start>
 
@@ -226,7 +272,6 @@ scripts/
 
 <related_skills>
 
-- `context7` - Fetch framework documentation
-- `codex` - Deep reasoning delegation
+None - all MCP servers are bundled with this plugin.
 
 </related_skills>

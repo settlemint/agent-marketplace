@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    },
+    "octocode": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "octocode-mcp@latest"]
+    },
+    "codex": {
+      "type": "stdio",
+      "command": "codex",
+      "args": ["-m", "gpt-5.2-codex", "-c", "model_reasoning_effort=xhigh", "mcp-server"]
+    }
+  }
+}
