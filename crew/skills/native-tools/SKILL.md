@@ -48,14 +48,13 @@ Provide comprehensive guidance on Claude Code's native tools. These tools are op
 | User Interaction | `references/user-interaction.md` | AskUserQuestion, TodoWrite |
 | Agent Orchestration | `references/orchestration.md` | Task, TaskOutput |
 | External Resources | `references/external.md` | WebFetch, WebSearch, Bash |
-| MCP Tools | See `mcp` skill | Context7, OctoCode, Codex |
+| MCP Tools | `references/external.md` | Context7, OctoCode, Codex |
 
 ## Skill References
 
 | Skill | When to Use |
 |-------|-------------|
 | `ast-grep` | Structural code patterns (function calls, imports, types) |
-| `mcp` | Library docs (Context7), GitHub search (OctoCode), deep reasoning (Codex) |
 
 </routing>
 

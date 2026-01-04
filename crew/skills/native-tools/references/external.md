@@ -241,24 +241,64 @@ MCP (Model Context Protocol) tools provide specialized capabilities.
 
 ### Context7 — Library Documentation
 
+**Two-step process:**
+
 ```javascript
-// First resolve library ID
+// Step 1: Resolve library ID
 mcp__plugin_crew_context7__resolve-library-id({
   libraryName: "tanstack-query"
 })
 
-// Then query docs
+// Step 2: Query docs with resolved ID
 mcp__plugin_crew_context7__query-docs({
   context7CompatibleLibraryID: "/tanstack/query",
   topic: "query invalidation"
 })
 ```
 
+**Common Library IDs (skip resolve step for these):**
+
+| Library | Context7 ID |
+|---------|-------------|
+| React | /reactjs/react.dev |
+| TanStack Router | /tanstack/router |
+| TanStack Query | /tanstack/query |
+| TanStack Form | /tanstack/form |
+| TanStack Table | /tanstack/table |
+| TanStack Start | /tanstack/start |
+| Tailwind CSS | /tailwindlabs/tailwindcss |
+| Radix UI | /radix-ui/primitives |
+| Zod | /colinhacks/zod |
+| TypeScript | /microsoft/typescript |
+| Viem | /wevm/viem |
+| Wagmi | /wevm/wagmi |
+| Foundry | /foundry-rs/book |
+| OpenZeppelin | /openzeppelin/openzeppelin-contracts |
+| The Graph | /graphprotocol/docs |
+| Drizzle ORM | /drizzle-team/drizzle-orm |
+| Vitest | /vitest-dev/vitest |
+| Playwright | /microsoft/playwright |
+| Testing Library | /testing-library/testing-library-docs |
+| Vite | /vitejs/vite |
+| Turborepo | /vercel/turborepo |
+| Bun | /oven-sh/bun |
+
 ### OctoCode — GitHub Search
+
+**Required fields for all queries:**
+
+| Field | Description |
+|-------|-------------|
+| `mainResearchGoal` | High-level objective of the research |
+| `researchGoal` | Specific goal of this query |
+| `reasoning` | Why this query is needed |
 
 ```javascript
 // Search code across GitHub
 mcp__plugin_crew_octocode__githubSearchCode({
+  mainResearchGoal: "Find query patterns",
+  researchGoal: "Locate invalidation examples",
+  reasoning: "Need to understand query invalidation",
   keywordsToSearch: ["useQuery", "invalidateQueries"],
   owner: "tanstack",
   repo: "query"
@@ -266,6 +306,9 @@ mcp__plugin_crew_octocode__githubSearchCode({
 
 // Get file content
 mcp__plugin_crew_octocode__githubGetFileContent({
+  mainResearchGoal: "Understand hook implementation",
+  researchGoal: "Read useQuery source",
+  reasoning: "Need implementation details",
   owner: "tanstack",
   repo: "query",
   path: "packages/react-query/src/useQuery.ts"
@@ -273,13 +316,43 @@ mcp__plugin_crew_octocode__githubGetFileContent({
 
 // View repo structure
 mcp__plugin_crew_octocode__githubViewRepoStructure({
+  mainResearchGoal: "Understand project layout",
+  researchGoal: "Map source directory",
+  reasoning: "Need to find implementation files",
   owner: "tanstack",
   repo: "query",
   depth: 2
 })
+
+// Find package repository
+mcp__plugin_crew_octocode__packageSearch({
+  mainResearchGoal: "Find library source",
+  researchGoal: "Locate GitHub repository",
+  reasoning: "Need to explore internals",
+  name: "viem",
+  ecosystem: "npm"
+})
 ```
 
 ### Codex — Deep Reasoning
+
+Delegate complex tasks to OpenAI's Codex model for deep reasoning.
+
+**Parameters:**
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `prompt` | Yes | Task or question |
+| `cwd` | No | Working directory for file access |
+| `sandbox` | No | `read-only` / `workspace-write` / `danger-full-access` |
+
+**Sandbox modes:**
+
+| Mode | Access | Network | Use Case |
+|------|--------|---------|----------|
+| `read-only` | Read files only | No | Safe exploration, code review |
+| `workspace-write` | Read + write in cwd | No | File edits, refactoring |
+| `danger-full-access` | Full disk access | Yes | Container isolation only |
 
 ```javascript
 // Complex analysis
@@ -292,9 +365,31 @@ Questions:
 1. Are there security vulnerabilities?
 2. Does it follow OWASP guidelines?
 3. What improvements would you recommend?`,
+  cwd: "/project",
   sandbox: "read-only"
 })
+
+// Multi-turn investigation
+const result = mcp__plugin_crew_codex__codex({
+  prompt: "Analyze auth flow",
+  cwd: "/project"
+})
+mcp__plugin_crew_codex__codex-reply({
+  conversationId: result.id,
+  prompt: "What vulnerabilities exist?"
+})
 ```
+
+**When to use Codex:**
+- Complex algorithmic problems requiring deep reasoning
+- Code review for security or performance concerns
+- Architecture decisions with multiple trade-offs
+- Getting a second opinion on your approach
+
+**When NOT to use:**
+- Simple tasks Claude can handle quickly
+- Tasks requiring extensive local project context
+- When you need immediate results
 
 ### MCP Tool Loading
 
