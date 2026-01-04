@@ -1,34 +1,32 @@
 ---
-allowed-tools: Bash(git checkout:*), Bash(git add:*), Bash(git status:*), Bash(git push:*), Bash(git commit:*), Bash(git fetch:*), Bash(git log:*), Bash(git diff:*), Bash(gh pr create:*)
+allowed-tools: Bash(git checkout:*), Bash(git add:*), Bash(git status:*), Bash(git push:*), Bash(git commit:*), Bash(git fetch:*), Bash(gh pr create:*)
 description: Commit, push, and open a PR
 ---
 
-## Context
+!`../../scripts/git/pr-context.sh`
 
-- Current branch: !`git branch --show-current`
-- Git status: !`git status --short`
-- Diff stats: !`git diff --stat HEAD`
-- Commits ahead of origin/main: !`git log origin/main..HEAD --oneline 2>/dev/null || echo "N/A"`
-- Remote tracking: !`git status -sb | head -1`
-
-## PR Body Template
+## PR Template
 
 ```markdown
 ## Summary
-<2-3 bullet points describing the changes>
+<2-3 bullets>
 
 ## Test plan
-- [ ] <verification steps>
+- [ ] <verification>
 ```
 
-## Your Task
+## Task
 
-1. **If on main**: Create a new branch with a descriptive name based on the changes
-2. **Stage and commit**: Create a conventional commit (see /crew:git:commit for format)
-3. **Push**: Push the branch to origin with `-u` flag
-4. **Create PR**: Use `gh pr create` with:
-   - Clear, descriptive title
-   - Body following the template above
-   - Use HEREDOC for the body to preserve formatting
+1. **If on main**: `git checkout -b feat/<name>`
+2. **Stage & commit**: `git add . && git commit -m "type(scope): msg"`
+3. **Push**: `git push -u origin $(git branch --show-current)`
+4. **Create PR**: Use HEREDOC for body:
+   ```bash
+   gh pr create --title "..." --body "$(cat <<'EOF'
+   ## Summary
+   ...
+   EOF
+   )"
+   ```
 
-Execute all commands in a single response. Return the PR URL when complete.
+Execute all in a single response. Return the PR URL.

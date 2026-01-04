@@ -1,43 +1,22 @@
 ---
-allowed-tools: Bash(git reset:*), Bash(git log:*), Bash(git status:*), Bash(git reflog:*)
+allowed-tools: Bash(git reset:*), Bash(git status:*)
 description: Undo last commit (keeps changes staged)
 ---
 
-## Context
+!`../../scripts/git/undo-context.sh`
 
-- Current branch: !`git branch --show-current`
-- Last commit: !`git log -1 --oneline`
-- Remote tracking: !`git status -sb | head -1`
+## Task
 
-## Safety Check
+**If "COMMIT ALREADY PUSHED" above**: STOP. Tell user this requires force-push.
 
-**STOP if the commit has been pushed to remote.** Undoing pushed commits requires force-push which can break collaborators.
-
-Check with:
-```bash
-git log origin/$(git branch --show-current)..HEAD --oneline
-```
-
-If empty or error, the commit is pushed - warn user and abort.
-
-## Your Task
-
-If safe to proceed:
-
-1. **Soft reset** - keeps changes staged
-   ```bash
-   git reset --soft HEAD~1
-   ```
-
-2. **Show result**
-   ```bash
-   git status
-   ```
+**If "Safe to Undo"**:
+1. `git reset --soft HEAD~1`
+2. `git status`
 
 ## Recovery
 
-If user needs to recover the undone commit:
+If user needs the undone commit back:
 ```bash
-git reflog  # find the commit SHA
+git reflog  # find SHA
 git cherry-pick <sha>
 ```

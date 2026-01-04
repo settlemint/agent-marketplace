@@ -1,40 +1,27 @@
 ---
-allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*), Bash(git diff:*)
+allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*), Bash(git diff:*), Bash(git reset:*)
 description: Create a conventional commit
 ---
 
-## Context
+!`../../scripts/git/commit-context.sh`
 
-- Current branch: !`git branch --show-current`
-- Git status: !`git status --short`
-- Diff stats: !`git diff --stat HEAD`
-- Recent commits (for style reference): !`git log --oneline -5`
-
-## Commit Message Format
+## Commit Format
 
 Use conventional commits: `type(scope): description`
 
-Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `ci`, `build`
+| Type | Use For |
+|------|---------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `refactor` | Code restructuring |
+| `docs` | Documentation |
+| `test` | Tests |
+| `chore` | Maintenance |
 
-Examples:
-- `feat(auth): add OAuth2 login flow`
-- `fix(api): handle null response from payment service`
-- `refactor(db): simplify query builder interface`
+## Task
 
-## Safety Checks
+1. If sensitive files flagged above, run `git reset HEAD <file>` to unstage
+2. Stage files: `git add <files>`
+3. Commit: `git commit -m "type(scope): description"`
 
-Before committing, verify NO sensitive files are staged:
-- `.env*` files (except `.env.example`)
-- `*credentials*`, `*secret*`, `*.pem`, `*.key`
-- `node_modules/`, `.git/`
-
-If sensitive files are staged, unstage them and warn the user.
-
-## Your Task
-
-1. Review the diff to understand the changes
-2. Check for sensitive files - unstage if found
-3. Stage appropriate files with `git add`
-4. Create a single commit with a conventional commit message
-
-Execute all git commands in a single response. Do not output any other text.
+Execute in a single response.

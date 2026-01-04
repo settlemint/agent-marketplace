@@ -1,42 +1,25 @@
 ---
-allowed-tools: Bash(git checkout:*), Bash(git fetch:*), Bash(git branch:*), Bash(git status:*)
+allowed-tools: Bash(git checkout:*), Bash(git fetch:*), Bash(git branch:*)
 description: Create a feature branch from main
 ---
 
-## Context
+!`../../scripts/git/branch-context.sh`
 
-- Current branch: !`git branch --show-current`
-- Git status: !`git status --short`
+## Naming Convention
 
-## Branch Naming Convention
+`type/short-description`
 
-Use: `type/short-description`
+| Type | Use For |
+|------|---------|
+| `feat/` | New feature |
+| `fix/` | Bug fix |
+| `refactor/` | Restructuring |
+| `docs/` | Documentation |
+| `chore/` | Maintenance |
 
-Types:
-- `feat/` - New feature
-- `fix/` - Bug fix
-- `refactor/` - Code refactoring
-- `docs/` - Documentation
-- `test/` - Tests
-- `chore/` - Maintenance
+## Task
 
-Examples:
-- `feat/oauth-login`
-- `fix/null-pointer-api`
-- `refactor/query-builder`
+1. `git fetch origin main`
+2. `git checkout -b <type>/<name> origin/main`
 
-## Your Task
-
-1. **Check for uncommitted changes** - warn if working directory is dirty
-2. **Fetch latest main**
-   ```bash
-   git fetch origin main
-   ```
-3. **Create and checkout new branch from origin/main**
-   ```bash
-   git checkout -b <branch-name> origin/main
-   ```
-
-## Input
-
-If no branch name provided, ask the user what they're working on and suggest a name.
+If no name provided, ask user what they're working on.
