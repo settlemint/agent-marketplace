@@ -49,7 +49,6 @@ depends_on: []
 | `contracts` | Smart contracts      |
 | `dapp`      | Frontend application |
 | `subgraph`  | TheGraph indexer     |
-| `indexer`   | Ponder indexer       |
 | `charts`    | Helm charts          |
 | `e2e`       | End-to-end tests     |
 | `api`       | API/oRPC routes      |
