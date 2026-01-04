@@ -1,31 +1,29 @@
 ---
-description: Clean up git branches marked as [gone] (deleted on remote but exist locally), including associated worktrees.
+description: Clean up stale branches (deleted on remote) and prune remote tracking
 ---
 
 ## Your Task
 
-Execute the following bash commands to clean up stale local branches that have been deleted from the remote repository.
+Clean up local branches that have been deleted from the remote repository.
 
-## Commands to Execute
+## Steps
 
-1. **First, list branches to identify any with [gone] status**
+1. **Fetch and prune remote tracking branches**
    ```bash
-   git branch -v
+   git fetch --prune
    ```
 
-   Note: Branches with a '+' prefix have associated worktrees and must have their worktrees removed before deletion.
-
-2. **Next, identify worktrees that need to be removed for [gone] branches**
+2. **List branches to identify [gone] status**
    ```bash
-   git worktree list
+   git branch -vv
    ```
 
-3. **Finally, remove worktrees and delete [gone] branches**
+3. **Remove worktrees and delete [gone] branches**
    ```bash
-   git branch -v | grep '\[gone\]' | sed 's/^[+* ]//' | awk '{print $1}' | while read branch; do
-     echo "Processing branch: $branch"
+   git branch -vv | grep ': gone]' | awk '{print $1}' | while read branch; do
+     echo "Processing: $branch"
      worktree=$(git worktree list | grep "\\[$branch\\]" | awk '{print $1}')
-     if [ ! -z "$worktree" ] && [ "$worktree" != "$(git rev-parse --show-toplevel)" ]; then
+     if [ -n "$worktree" ] && [ "$worktree" != "$(git rev-parse --show-toplevel)" ]; then
        echo "  Removing worktree: $worktree"
        git worktree remove --force "$worktree"
      fi
@@ -34,13 +32,6 @@ Execute the following bash commands to clean up stale local branches that have b
    done
    ```
 
-## Expected Behavior
+## Expected Output
 
-After executing these commands, you will:
-
-- See a list of all local branches with their status
-- Identify and remove any worktrees associated with [gone] branches
-- Delete all branches marked as [gone]
-- Provide feedback on which worktrees and branches were removed
-
-If no branches are marked as [gone], report that no cleanup was needed.
+Report which branches were deleted. If none found, report "No stale branches to clean."
