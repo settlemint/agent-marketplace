@@ -4,7 +4,7 @@ description: Execute work plans with iteration loops and progress tracking
 argument-hint: "[plan file, specification, or todo file path]"
 ---
 
-!`../scripts/workflow/build-context.sh`
+!`scripts/workflow/build-context.sh`
 
 ## Input
 

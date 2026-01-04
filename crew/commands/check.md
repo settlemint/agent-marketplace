@@ -4,7 +4,7 @@ description: Multi-agent code review with automatic triage
 argument-hint: "[PR number, GitHub URL, branch name, or latest]"
 ---
 
-!`../scripts/workflow/check-context.sh`
+!`scripts/workflow/check-context.sh`
 
 ## Input
 

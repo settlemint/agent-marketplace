@@ -3,7 +3,7 @@ allowed-tools: Bash(git push:*)
 description: Push current branch to origin
 ---
 
-!`../../scripts/git/push-context.sh`
+!`scripts/git/push-context.sh`
 
 ## Task
 

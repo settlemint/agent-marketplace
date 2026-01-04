@@ -3,7 +3,7 @@ allowed-tools: Bash(git fetch:*), Bash(git rebase:*), Bash(git stash:*), Bash(gi
 description: Sync current branch with main
 ---
 
-!`../../scripts/git/sync-context.sh`
+!`scripts/git/sync-context.sh`
 
 ## Task
 

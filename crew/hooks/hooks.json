@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$PLUGIN_DIR/skills/crew/scripts/hooks/session-start/restore-session-state.sh\""
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start/restore-session-state.sh"
           }
         ]
       }
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$PLUGIN_DIR/skills/crew/scripts/hooks/pre-compact/save-session-state.sh\""
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-compact/save-session-state.sh"
           }
         ]
       }
@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$PLUGIN_DIR/skills/crew/scripts/hooks/stop/check-loop.sh\""
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/stop/check-loop.sh"
           }
         ]
       }
@@ -37,11 +37,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$PLUGIN_DIR/skills/crew/scripts/hooks/pre-tool/check-git-commit.sh\""
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-git-commit.sh"
           },
           {
             "type": "command",
-            "command": "\"$PLUGIN_DIR/skills/crew/scripts/hooks/pre-tool/check-gh-pr-create.sh\""
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-gh-pr-create.sh"
           }
         ]
       }
@@ -52,7 +52,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$PLUGIN_DIR/skills/crew/scripts/hooks/post-tool/lint-modified-file.sh\""
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/lint-modified-file.sh"
           }
         ]
       }

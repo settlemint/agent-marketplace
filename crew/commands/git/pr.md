@@ -3,7 +3,7 @@ allowed-tools: Bash(git checkout:*), Bash(git add:*), Bash(git status:*), Bash(g
 description: Commit, push, and open a PR
 ---
 
-!`../../scripts/git/pr-context.sh`
+!`scripts/git/pr-context.sh`
 
 ## PR Template
 
