@@ -61,10 +61,6 @@ Hooks are configured in `.claude/settings.json`:
 | PostToolUse      | Run after tool execution      |
 | PreCompact       | Run before context compaction |
 
-### Hook Logging
-
-All hooks use `lib/hook-logger.sh` for consistent logging to `.claude/state/hook-log.txt`.
-
 ### Hook Feedback
 
 Hooks can output feedback that requires action:

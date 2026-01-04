@@ -3,8 +3,6 @@
 # Hooks must never fail - use defensive error handling
 set +e
 
-source "$(dirname "$0")/../lib/hook-logger.sh" 2>/dev/null || true
-
 LINTERS=(actionlint shellcheck shfmt markdownlint)
 missing=()
 installed=()
@@ -36,13 +34,3 @@ if [[ ${#missing[@]} -gt 0 ]]; then
 	fi
 fi
 
-result="linters-ok"
-if [[ ${#missing[@]} -gt 0 ]]; then
-	if [[ ${#installed[@]} -gt 0 ]]; then
-		result="linters-installed:${installed[*]}"
-	else
-		result="linters-missing:${missing[*]}"
-	fi
-fi
-
-log_hook "SessionStart" "check-linters" "$result" "${missing[*]}" 2>/dev/null || true

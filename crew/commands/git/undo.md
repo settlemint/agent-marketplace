@@ -3,7 +3,7 @@ allowed-tools: Bash(git reset:*), Bash(git status:*)
 description: Undo last commit (keeps changes staged)
 ---
 
-!`scripts/git/undo-context.sh`
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/undo-context.sh`
 
 ## Task
 

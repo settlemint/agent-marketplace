@@ -41,6 +41,3 @@ if [[ -n $WORKFLOW && $WORKFLOW == workflows:* ]]; then
 		'{workflow: $workflow, args: $args, started_at: $time}' >"$WORKFLOW_FILE"
 fi
 
-# Log the hook
-source "$(dirname "$0")/../lib/hook-logger.sh" 2>/dev/null || true
-log_hook "UserPromptSubmit" "track-workflow" "success" "${WORKFLOW:-none}" 2>/dev/null || true

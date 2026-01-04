@@ -4,7 +4,7 @@ description: Repair skills, resolve blockers, tune the system
 argument-hint: "[skill name, issue description, or 'all' to fix pending todos]"
 ---
 
-!`scripts/workflow/fix-context.sh`
+!`${CLAUDE_PLUGIN_ROOT}/scripts/workflow/fix-context.sh`
 
 ## Input
 

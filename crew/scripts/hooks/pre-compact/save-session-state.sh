@@ -168,6 +168,3 @@ echo "  - Plan exists: $PLAN_EXISTS"
 echo "  - Pending todos: $PENDING_COUNT"
 echo "  - Completed todos: $COMPLETED_COUNT"
 
-# Log the hook
-source "$(dirname "$0")/../lib/hook-logger.sh" 2>/dev/null || true
-log_hook "PreCompact" "save-session-state" "success" "branch:$BRANCH,todos:$PENDING_COUNT" 2>/dev/null || true

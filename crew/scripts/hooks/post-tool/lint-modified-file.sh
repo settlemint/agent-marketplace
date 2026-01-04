@@ -3,8 +3,6 @@
 # Runs immediately after Edit/Write so issues can be fixed in same turn
 set +e
 
-source "$(dirname "$0")/../lib/hook-logger.sh" 2>/dev/null || true
-
 # Extract file path from tool input
 FILE_PATH=$(echo "$TOOL_INPUT" | jq -r '.file_path // empty' 2>/dev/null)
 
@@ -67,5 +65,3 @@ md)
 	fi
 	;;
 esac
-
-log_hook "PostTool" "lint-modified-file" "success" "file:$FILE_PATH" 2>/dev/null || true

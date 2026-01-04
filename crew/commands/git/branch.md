@@ -3,7 +3,7 @@ allowed-tools: Bash(git checkout:*), Bash(git fetch:*), Bash(git branch:*)
 description: Create a feature branch from main
 ---
 
-!`scripts/git/branch-context.sh`
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/branch-context.sh`
 
 ## Naming Convention
 

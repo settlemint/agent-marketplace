@@ -10,8 +10,6 @@
 # Hooks must never fail - use defensive error handling
 set +e
 
-source "$(dirname "$0")/../lib/hook-logger.sh" 2>/dev/null || true
-
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 
 # Read stdin to get event info
@@ -20,7 +18,6 @@ EVENT_TYPE=$(echo "$INPUT" | jq -r '.type // "unknown"' 2>/dev/null)
 
 # Only restore for compact/resume events, not fresh startup
 if [[ $EVENT_TYPE == "startup" ]]; then
-	log_hook "SessionStart" "restore-session-state" "skip-startup" "type:$EVENT_TYPE"
 	exit 0
 fi
 
@@ -41,7 +38,6 @@ if [[ -f $UNIFIED_STATE ]]; then
 elif [[ -f $LEGACY_STATE ]]; then
 	STATE_FILE="$LEGACY_STATE"
 else
-	log_hook "SessionStart" "restore-session-state" "no-state" "branch:$BRANCH,event:$EVENT_TYPE"
 	exit 0
 fi
 
@@ -103,5 +99,3 @@ if [[ $LOOP_ACTIVE == "true" ]]; then
 	echo "  Completion promise: <promise>$LOOP_PROMISE</promise>"
 	echo ""
 fi
-
-log_hook "SessionStart" "restore-session-state" "restored" "branch:$BRANCH,event:$EVENT_TYPE,workflow:${ACTIVE_WORKFLOW:-none},todos:$PENDING_COUNT,loop:$LOOP_ACTIVE" 2>/dev/null || true

@@ -3,7 +3,7 @@ allowed-tools: Bash(git push:*)
 description: Push current branch to origin
 ---
 
-!`scripts/git/push-context.sh`
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/push-context.sh`
 
 ## Task
 

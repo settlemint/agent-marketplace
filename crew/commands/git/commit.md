@@ -3,7 +3,7 @@ allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*), Bash(git
 description: Create a conventional commit
 ---
 
-!`scripts/git/commit-context.sh`
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/commit-context.sh`
 
 ## Commit Format
 

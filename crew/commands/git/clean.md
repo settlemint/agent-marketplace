@@ -2,7 +2,7 @@
 description: Clean up stale branches (deleted on remote)
 ---
 
-!`scripts/git/clean-context.sh`
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/clean-context.sh`
 
 ## Task
 
