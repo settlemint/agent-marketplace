@@ -1,6 +1,7 @@
 ---
-allowed-tools: Bash(git push:*)
+name: crew:git:push
 description: Push current branch to origin
+allowed-tools: Bash(git push:*)
 ---
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/push-context.sh`

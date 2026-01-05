@@ -1,6 +1,7 @@
 ---
-allowed-tools: Bash(git checkout:*), Bash(git fetch:*), Bash(git branch:*)
+name: crew:git:branch
 description: Create a feature branch from main
+allowed-tools: Bash(git checkout:*), Bash(git fetch:*), Bash(git branch:*)
 ---
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/branch-context.sh`
@@ -9,13 +10,13 @@ description: Create a feature branch from main
 
 `type/short-description`
 
-| Type | Use For |
-|------|---------|
-| `feat/` | New feature |
-| `fix/` | Bug fix |
+| Type        | Use For       |
+| ----------- | ------------- |
+| `feat/`     | New feature   |
+| `fix/`      | Bug fix       |
 | `refactor/` | Restructuring |
-| `docs/` | Documentation |
-| `chore/` | Maintenance |
+| `docs/`     | Documentation |
+| `chore/`    | Maintenance   |
 
 ## Task
 

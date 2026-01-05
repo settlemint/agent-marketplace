@@ -1,6 +1,7 @@
 ---
-allowed-tools: Bash(git checkout:*), Bash(git add:*), Bash(git status:*), Bash(git push:*), Bash(git commit:*), Bash(git fetch:*), Bash(gh pr create:*)
+name: crew:git:pr
 description: Commit, push, and open a PR
+allowed-tools: Bash(git checkout:*), Bash(git add:*), Bash(git status:*), Bash(git push:*), Bash(git commit:*), Bash(git fetch:*), Bash(gh pr create:*)
 ---
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/pr-context.sh`
@@ -9,9 +10,11 @@ description: Commit, push, and open a PR
 
 ```markdown
 ## Summary
+
 <2-3 bullets>
 
 ## Test plan
+
 - [ ] <verification>
 ```
 

@@ -1,4 +1,5 @@
 ---
+name: crew:skill:fix
 description: Repair skills, resolve skill blockers, tune skill configuration
 argument-hint: "[skill name or issue description]"
 ---
@@ -15,17 +16,28 @@ argument-hint: "[skill name or issue description]"
 
 ```javascript
 AskUserQuestion({
-  questions: [{
-    question: "What skill issue would you like to fix?",
-    header: "Target",
-    options: [
-      {label: "Skill issue (Recommended)", description: "Repair a broken or incorrect skill"},
-      {label: "Skill validation", description: "Validate skill structure and patterns"},
-      {label: "Describe issue", description: "I'll explain what needs fixing"}
-    ],
-    multiSelect: false
-  }]
-})
+  questions: [
+    {
+      question: "What skill issue would you like to fix?",
+      header: "Target",
+      options: [
+        {
+          label: "Skill issue (Recommended)",
+          description: "Repair a broken or incorrect skill",
+        },
+        {
+          label: "Skill validation",
+          description: "Validate skill structure and patterns",
+        },
+        {
+          label: "Describe issue",
+          description: "I'll explain what needs fixing",
+        },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
 ```
 
 ### TodoWrite - Track Progress
@@ -33,12 +45,28 @@ AskUserQuestion({
 ```javascript
 TodoWrite({
   todos: [
-    {content: "Identify skill issue", status: "in_progress", activeForm: "Identifying issue"},
-    {content: "Analyze skill structure", status: "pending", activeForm: "Analyzing structure"},
-    {content: "Implement fix", status: "pending", activeForm: "Implementing fix"},
-    {content: "Validate fix", status: "pending", activeForm: "Validating fix"}
-  ]
-})
+    {
+      content: "Identify skill issue",
+      status: "in_progress",
+      activeForm: "Identifying issue",
+    },
+    {
+      content: "Analyze skill structure",
+      status: "pending",
+      activeForm: "Analyzing structure",
+    },
+    {
+      content: "Implement fix",
+      status: "pending",
+      activeForm: "Implementing fix",
+    },
+    {
+      content: "Validate fix",
+      status: "pending",
+      activeForm: "Validating fix",
+    },
+  ],
+});
 ```
 
 ### Task - Spawn Fix Agents
@@ -55,8 +83,8 @@ Tools:
 - Glob/Grep/Read for skill files
 - Context7 MCP for library docs`,
   description: "Skill healing",
-  run_in_background: false
-})
+  run_in_background: false,
+});
 ```
 
 ## Process
@@ -65,17 +93,28 @@ Tools:
 
 ```javascript
 AskUserQuestion({
-  questions: [{
-    question: "What skill issue would you like to fix?",
-    header: "Target",
-    options: [
-      {label: "Skill issue (Recommended)", description: "Repair a broken or incorrect skill"},
-      {label: "Skill validation", description: "Validate skill structure and patterns"},
-      {label: "Describe issue", description: "I'll explain what needs fixing"}
-    ],
-    multiSelect: false
-  }]
-})
+  questions: [
+    {
+      question: "What skill issue would you like to fix?",
+      header: "Target",
+      options: [
+        {
+          label: "Skill issue (Recommended)",
+          description: "Repair a broken or incorrect skill",
+        },
+        {
+          label: "Skill validation",
+          description: "Validate skill structure and patterns",
+        },
+        {
+          label: "Describe issue",
+          description: "I'll explain what needs fixing",
+        },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
 ```
 
 ### Phase 2: Analyze and Fix Skill
@@ -101,8 +140,8 @@ mcp__plugin_crew_context7__query-docs({
   topic: "correct-api"
 })`,
   description: "Skill healing",
-  run_in_background: false
-})
+  run_in_background: false,
+});
 
 // Review proposed changes, then apply
 ```
@@ -111,36 +150,48 @@ mcp__plugin_crew_context7__query-docs({
 
 ```javascript
 // Validate skill structure
-Glob({pattern: `crew/skills/${skillName}/**/*.md`})
+Glob({ pattern: `crew/skills/${skillName}/**/*.md` });
 
 // Check required sections exist
-Read({file_path: `crew/skills/${skillName}/SKILL.md`})
+Read({ file_path: `crew/skills/${skillName}/SKILL.md` });
 
 // Update progress
 TodoWrite({
   todos: [
     // ... previous completed
-    {content: "Validate fix", status: "completed", activeForm: "Validating fix"}
-  ]
-})
+    {
+      content: "Validate fix",
+      status: "completed",
+      activeForm: "Validating fix",
+    },
+  ],
+});
 ```
 
 ### Phase 4: Confirm Completion
 
 ```javascript
 AskUserQuestion({
-  questions: [{
-    question: "Skill fix applied. What's next?",
-    header: "Next",
-    options: [
-      {label: "Commit changes (Recommended)", description: "Create a commit with the fix"},
-      {label: "More fixes needed", description: "Continue with additional issues"},
-      {label: "Review changes", description: "Show diff before committing"},
-      {label: "Done", description: "Exit without committing"}
-    ],
-    multiSelect: false
-  }]
-})
+  questions: [
+    {
+      question: "Skill fix applied. What's next?",
+      header: "Next",
+      options: [
+        {
+          label: "Commit changes (Recommended)",
+          description: "Create a commit with the fix",
+        },
+        {
+          label: "More fixes needed",
+          description: "Continue with additional issues",
+        },
+        { label: "Review changes", description: "Show diff before committing" },
+        { label: "Done", description: "Exit without committing" },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
 ```
 
 ## Success Criteria
