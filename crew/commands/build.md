@@ -4,6 +4,28 @@ description: Execute work plans with iteration loops and progress tracking
 argument-hint: "[plan file, specification, or todo file path]"
 ---
 
+## CRITICAL: Never Run CI Commands Directly
+
+**NEVER use Bash tool for:** `bun run test`, `vitest`, `jest`, `eslint`, `prettier`, `biome`, `ultracite`, or any test/lint/format commands.
+
+**ALWAYS use Task tool with haiku model** for test-runner agent. This is ENFORCED by PreToolUse hook - direct CI commands will be BLOCKED.
+
+```javascript
+// CORRECT - test-runner agent
+Task({
+  subagent_type: "general-purpose",
+  model: "haiku",
+  prompt: "Run tests, report ONLY failures...",
+  description: "test-runner",
+  run_in_background: false,
+});
+
+// WRONG - will be blocked
+Bash({ command: "bun run test" }); // BLOCKED
+```
+
+---
+
 !`${CLAUDE_PLUGIN_ROOT}/scripts/workflow/build-context.sh`
 
 ## Input
