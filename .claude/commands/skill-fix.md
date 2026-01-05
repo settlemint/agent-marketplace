@@ -4,7 +4,7 @@ description: Repair skills, resolve skill blockers, tune skill configuration (pr
 argument-hint: "[skill name or issue description]"
 ---
 
-!`${CLAUDE_PLUGIN_ROOT}/scripts/workflow/fix-context.sh`
+!`crew/scripts/workflow/fix-context.sh`
 
 ## Input
 

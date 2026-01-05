@@ -48,9 +48,14 @@ TodoWrite({
       activeForm: "Validating input",
     },
     {
-      content: "Launch research agents",
+      content: "Launch foundational research agents",
       status: "pending",
       activeForm: "Researching",
+    },
+    {
+      content: "Run spec/flow analysis",
+      status: "pending",
+      activeForm: "Analyzing spec/flows",
     },
     {
       content: "Launch dimension analysis",
@@ -77,23 +82,11 @@ TodoWrite({
 });
 ```
 
-### Task - Spawn Research Agents
+### Task - Spawn Foundational Research Agents
 
-Launch ALL research agents in a **SINGLE message** for parallelism:
+Launch foundational research agents in a **SINGLE message** for parallelism:
 
 ```javascript
-Task({
-  subagent_type: "spec-flow-analyzer",
-  prompt: `CONTEXT: Designing ${feature}
-SCOPE: Create prioritized user stories with acceptance criteria
-CONSTRAINTS: Max 3 NEEDS CLARIFICATION markers
-OUTPUT: User stories (P1/P2/P3), functional requirements (FR-XXX), success criteria (SC-XXX)
-
-Tools: Use Glob, Grep, Read (not bash)`,
-  description: "Spec analysis",
-  run_in_background: true,
-});
-
 Task({
   subagent_type: "repo-research-analyst",
   prompt: `CONTEXT: Designing ${feature}
@@ -118,6 +111,43 @@ MCP Tools (prefer over WebFetch):
 - OctoCode for GitHub examples`,
   description: "Best practices",
   run_in_background: true,
+});
+
+Task({
+  subagent_type: "git-history-analyzer",
+  prompt: `CONTEXT: Designing ${feature}
+SCOPE: Analyze history of related files
+CONSTRAINTS: Find past decisions, refactorings
+OUTPUT: Historical context and contributor insights
+
+Tools: Git commands via Bash
+MCP: OctoCode for PR discussions`,
+  description: "History analysis",
+  run_in_background: true,
+});
+```
+
+### Task - Spawn Spec/Flow Analysis (After Research)
+
+Launch spec-flow-analyzer AFTER foundational research completes:
+
+```javascript
+Task({
+  subagent_type: "spec-flow-analyzer",
+  prompt: `CONTEXT: Designing ${feature}
+
+FOUNDATIONAL RESEARCH:
+- Repo Patterns: ${repoResearch}
+- Best Practices: ${bestPractices}
+- History Context: ${historyAnalysis}
+
+SCOPE: Create prioritized user stories with acceptance criteria
+CONSTRAINTS: Max 3 NEEDS CLARIFICATION markers
+OUTPUT: User stories (P1/P2/P3), functional requirements (FR-XXX), success criteria (SC-XXX)
+
+Tools: Use Glob, Grep, Read (not bash)`,
+  description: "Spec analysis",
+  run_in_background: false, // Wait for completion before dimension analysis
 });
 ```
 
@@ -145,36 +175,12 @@ AskUserQuestion({
 });
 ```
 
-### Phase 2: Parallel Research
+### Phase 2: Foundational Research
 
-Launch ALL agents in a **SINGLE message**:
+Launch foundational research agents in a **SINGLE message**:
 
 ```javascript
-// Research agent 1: Spec/Flow Analysis (CRITICAL)
-Task({
-  subagent_type: "spec-flow-analyzer",
-  prompt: `CONTEXT: Designing ${feature}
-SCOPE: Create comprehensive user story analysis
-CONSTRAINTS:
-- Prioritize stories (P1=MVP, P2=Important, P3=Nice-to-have)
-- Given-When-Then acceptance scenarios
-- Max 3 NEEDS CLARIFICATION markers
-- Define measurable success criteria (SC-XXX)
-- Extract functional requirements (FR-XXX)
-OUTPUT:
-- User Stories with priorities and acceptance criteria
-- Functional Requirements (FR-XXX)
-- Success Criteria (SC-XXX)
-- Key Entities
-- Edge Cases
-- Gaps with NEEDS CLARIFICATION
-
-Tools: Glob, Grep, Read (not bash)`,
-  description: "Spec analysis",
-  run_in_background: true,
-});
-
-// Research agent 2: Codebase patterns
+// Research agent 1: Codebase patterns
 Task({
   subagent_type: "repo-research-analyst",
   prompt: `CONTEXT: Designing ${feature}
@@ -192,7 +198,7 @@ NEVER use bash find/grep/cat`,
   run_in_background: true,
 });
 
-// Research agent 3: Best practices
+// Research agent 2: Best practices
 Task({
   subagent_type: "best-practices-researcher",
   prompt: `CONTEXT: Designing ${feature}
@@ -207,7 +213,7 @@ MCP Tools (prefer over WebFetch):
   run_in_background: true,
 });
 
-// Research agent 4: Git history context
+// Research agent 3: Git history context
 Task({
   subagent_type: "git-history-analyzer",
   prompt: `CONTEXT: Designing ${feature}
@@ -222,11 +228,10 @@ MCP: OctoCode for PR discussions`,
 });
 ```
 
-### Phase 3: Collect Research
+### Phase 3: Collect Foundational Research
 
 ```javascript
-// Collect all research results
-const specAnalysis = TaskOutput({ task_id: "spec-id", block: true });
+// Collect foundational research results
 const repoResearch = TaskOutput({ task_id: "repo-id", block: true });
 const bestPractices = TaskOutput({ task_id: "bp-id", block: true });
 const historyAnalysis = TaskOutput({ task_id: "hist-id", block: true });
@@ -254,7 +259,78 @@ TodoWrite({
 });
 ```
 
-### Phase 4: Parallel Dimension Analysis (6-Leg)
+### Phase 4: Spec/Flow Analysis (Depends on Research)
+
+Launch spec-flow-analyzer AFTER foundational research completes, so it can incorporate findings:
+
+```javascript
+// Spec/Flow Analysis - runs AFTER foundational research
+Task({
+  subagent_type: "spec-flow-analyzer",
+  prompt: `CONTEXT: Designing ${feature}
+
+FOUNDATIONAL RESEARCH:
+- Repo Patterns: ${repoResearch}
+- Best Practices: ${bestPractices}
+- History Context: ${historyAnalysis}
+
+SCOPE: Create comprehensive user story analysis incorporating research findings
+CONSTRAINTS:
+- Prioritize stories (P1=MVP, P2=Important, P3=Nice-to-have)
+- Given-When-Then acceptance scenarios
+- Max 3 NEEDS CLARIFICATION markers
+- Define measurable success criteria (SC-XXX)
+- Extract functional requirements (FR-XXX)
+- Reference existing patterns found in research
+OUTPUT:
+- User Stories with priorities and acceptance criteria
+- Functional Requirements (FR-XXX)
+- Success Criteria (SC-XXX)
+- Key Entities
+- Edge Cases
+- Gaps with NEEDS CLARIFICATION
+
+Tools: Glob, Grep, Read (not bash)`,
+  description: "Spec analysis",
+  run_in_background: false, // Wait for this to complete before dimension analysis
+});
+```
+
+### Phase 5: Collect Spec Analysis
+
+```javascript
+// Spec analysis already collected (run_in_background: false)
+// Now we have all research context for dimension analysis
+
+// Update progress
+TodoWrite({
+  todos: [
+    {
+      content: "Validate input",
+      status: "completed",
+      activeForm: "Validating input",
+    },
+    {
+      content: "Launch research agents",
+      status: "completed",
+      activeForm: "Researching",
+    },
+    {
+      content: "Analyze user flows",
+      status: "completed",
+      activeForm: "Analyzing flows",
+    },
+    {
+      content: "Launch dimension analysis",
+      status: "in_progress",
+      activeForm: "Analyzing dimensions",
+    },
+    // ...
+  ],
+});
+```
+
+### Phase 6: Parallel Dimension Analysis (6-Leg)
 
 Launch ALL dimension analysis agents in a **SINGLE message** for parallelism.
 Each produces a dedicated analysis document covering one dimension of the design:
@@ -394,7 +470,7 @@ Tools: Glob, Grep, Read (not bash)`,
 });
 ```
 
-### Phase 5: Collect Dimension Analysis
+### Phase 7: Collect Dimension Analysis
 
 ```javascript
 // Collect all dimension analysis results
@@ -422,6 +498,11 @@ TodoWrite({
       activeForm: "Researching",
     },
     {
+      content: "Spec/flow analysis",
+      status: "completed",
+      activeForm: "Analyzing spec/flows",
+    },
+    {
       content: "Launch dimension analysis",
       status: "completed",
       activeForm: "Analyzing dimensions",
@@ -436,7 +517,7 @@ TodoWrite({
 });
 ```
 
-### Phase 6: Synthesis & Gap Analysis (Optional)
+### Phase 8: Synthesis & Gap Analysis (Optional)
 
 For complex features, synthesize dimension analyses and identify cross-cutting concerns:
 
@@ -475,7 +556,7 @@ MCP: Use Codex for deep reasoning about architectural trade-offs`,
 });
 ```
 
-### Phase 7: Write Plan
+### Phase 9: Write Plan
 
 Write plan to `.claude/plans/<feature-slug>.md` using template structure:
 
@@ -561,7 +642,7 @@ Write plan to `.claude/plans/<feature-slug>.md` using template structure:
 [Any remaining NEEDS CLARIFICATION - max 3]
 ```
 
-### Phase 8: Generate Task Files
+### Phase 10: Generate Task Files
 
 Create individual task files in `.claude/branches/<slugified-branch>/tasks/`:
 
@@ -663,7 +744,7 @@ depends_on: []
 | `us3`    | User Story 3 (P3)      |
 | `polish` | Final: Cleanup         |
 
-### Phase 9: Branch Setup
+### Phase 11: Branch Setup
 
 ```javascript
 // Note: Branch uses slash (feature/slug), but folder uses hyphen (feature-slug)
@@ -674,7 +755,7 @@ Bash({
 Bash({ command: `git commit -m "docs(plan): add plan and tasks for ${slug}"` });
 ```
 
-### Phase 10: Next Steps
+### Phase 12: Next Steps
 
 ```javascript
 AskUserQuestion({
@@ -708,8 +789,9 @@ AskUserQuestion({
 
 - [ ] AskUserQuestion used for type clarification
 - [ ] TodoWrite tracks progress throughout
-- [ ] Research agents launched in parallel (single message)
-- [ ] spec-flow-analyzer produces user stories with P1/P2/P3
+- [ ] **Foundational research agents launched in parallel (single message)**
+- [ ] **spec-flow-analyzer runs AFTER foundational research completes**
+- [ ] spec-flow-analyzer receives research context and produces user stories with P1/P2/P3
 - [ ] **6 dimension agents launched in parallel (single message)**
 - [ ] **api-interface-analyst produces endpoint specifications**
 - [ ] **data-model-architect produces entity schemas**
