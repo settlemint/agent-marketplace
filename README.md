@@ -10,10 +10,14 @@ SettleMint agent orchestration and development tools for Claude Code.
 claude plugin marketplace add settlemint/agent-marketplace 2>/dev/null; \
 claude plugin marketplace add anthropics/claude-plugins-official 2>/dev/null; \
 claude plugin marketplace add sawyerhood/dev-browser 2>/dev/null; \
-claude plugin install crew@settlemint devtools@settlemint typescript-lsp@claude-plugins-official frontend-design@claude-plugins-official dev-browser@dev-browser-marketplace 2>/dev/null; \
 claude plugin marketplace update settlemint; \
 claude plugin marketplace update claude-plugins-official; \
-claude plugin marketplace update dev-browser-marketplace
+claude plugin marketplace update dev-browser-marketplace; \
+claude plugin install crew@settlemint; \
+claude plugin install devtools@settlemint; \
+claude plugin install typescript-lsp@claude-plugins-official; \
+claude plugin install frontend-design@claude-plugins-official; \
+claude plugin install dev-browser@dev-browser-marketplace;
 ```
 
 **Core plugin only:**
