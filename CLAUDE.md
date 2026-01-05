@@ -100,10 +100,15 @@ shellcheck <file>           # Lint for issues
 
 ## Version Bumping (MANDATORY)
 
-**Every commit MUST include a version bump in `crew/.claude-plugin/plugin.json`.**
+**Every commit MUST include a version bump in the affected plugin's `plugin.json`.**
+
+| Plugin   | Manifest                              |
+| -------- | ------------------------------------- |
+| crew     | `crew/.claude-plugin/plugin.json`     |
+| devtools | `devtools/.claude-plugin/plugin.json` |
 
 ```bash
-# Before committing, update the version:
+# Before committing, update the version in ALL affected plugins:
 # patch: 1.1.0 → 1.1.1 (bug fixes)
 # minor: 1.1.0 → 1.2.0 (new features)
 # major: 1.1.0 → 2.0.0 (breaking changes)

@@ -1,9 +1,13 @@
 {
   "name": "devtools",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Modern development tools for React, APIs, blockchain, databases, and testing. MCP-first skills with Context7 integration for up-to-date documentation.",
   "homepage": "https://github.com/settlemint/agent-marketplace",
-  "author": "SettleMint",
-  "skills": "../skills",
-  "mcp": "../.mcp.json"
+  "author": {
+    "name": "SettleMint",
+    "email": "support@settlemint.com"
+  },
+  "repository": "https://github.com/settlemint/agent-marketplace",
+  "license": "MIT",
+  "skills": "./skills/**/*.md"
 }
