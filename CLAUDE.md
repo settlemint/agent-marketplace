@@ -34,32 +34,40 @@ crew/
 ## Architecture Concepts
 
 ### Commands (4-Phase Pattern)
+
 - `/crew:design` - Research and create plan in `.claude/plans/<slug>.md`
 - `/crew:build` - Execute plan with TodoWrite progress tracking
 - `/crew:check` - Multi-agent review, triage findings by severity (P1/P2/P3)
 - `/crew:fix` - Repair skills, resolve PR comments, run CI validation
 
 ### Skills
+
 Self-contained knowledge modules with:
+
 - YAML frontmatter (name, description, triggers)
 - XML semantic structure (no markdown headings in body)
 - Required tags: `<objective>`, `<quick_start>`, `<success_criteria>`
 - Optional: `<routing>`, `<workflow>`, `<references>`, `<templates>`, `<scripts>`
 
 ### State Management
+
 - Branch state: `.claude/branches/{branch}/state.json`
 - Session state: Saved on compaction, restored on resume
 - Plans stored in: `.claude/plans/`
 
 ### Hooks
+
 Lifecycle automation:
+
 - `SessionStart` - Restore state on startup
 - `PreCompact` - Save state before compaction
 - `PostToolUse` - Auto-lint on file modifications
 - `PreToolUse` - Validate commits and PRs
 
 ### MCP Servers
+
 Configured in `crew/.mcp.json`:
+
 - **Context7** - Library documentation lookup
 - **OctoCode** - GitHub repository search
 - **Codex** - Deep reasoning/code analysis
@@ -78,6 +86,7 @@ claude --plugin-dir ~/Development/agent-marketplace/crew
 ## Shell Script Quality
 
 When modifying any `.sh` file, always run:
+
 ```bash
 shfmt -w -i 2 -ci <file>   # Format with 2-space indent
 shellcheck <file>           # Lint for issues
@@ -89,12 +98,25 @@ shellcheck <file>           # Lint for issues
 - **Branches**: `<type>/<short-description>` from main
 - **Protected files**: `.env`, `.pem`, `.key`, credentials, secrets
 
+## Version Bumping (MANDATORY)
+
+**Every commit MUST include a version bump in `crew/.claude-plugin/plugin.json`.**
+
+```bash
+# Before committing, update the version:
+# patch: 1.1.0 → 1.1.1 (bug fixes)
+# minor: 1.1.0 → 1.2.0 (new features)
+# major: 1.1.0 → 2.0.0 (breaking changes)
+```
+
+This ensures users get the latest changes when the plugin syncs from the marketplace.
+
 ## Key Files
 
-| File | Purpose |
-|------|---------|
-| `crew/.claude-plugin/plugin.json` | Plugin metadata |
-| `crew/hooks/hooks.json` | Hook definitions |
-| `crew/.mcp.json` | MCP server config |
-| `.claude/settings.json` | Project Claude settings |
-| `.claude-plugin/marketplace.json` | Marketplace registry |
+| File                              | Purpose                 |
+| --------------------------------- | ----------------------- |
+| `crew/.claude-plugin/plugin.json` | Plugin metadata         |
+| `crew/hooks/hooks.json`           | Hook definitions        |
+| `crew/.mcp.json`                  | MCP server config       |
+| `.claude/settings.json`           | Project Claude settings |
+| `.claude-plugin/marketplace.json` | Marketplace registry    |
