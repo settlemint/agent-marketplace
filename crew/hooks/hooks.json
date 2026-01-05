@@ -50,6 +50,10 @@
         {
           "type": "command",
           "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-gh-pr-create.sh"
+        },
+        {
+          "type": "command",
+          "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-ci-commands.sh"
         }
       ]
     }

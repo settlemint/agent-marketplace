@@ -118,6 +118,7 @@ Unified orchestration for work execution, skill creation, git conventions, and s
 | `/crew:git:sync`            | `/crew:sync`            | Sync current branch with main             |
 | `/crew:git:undo`            | `/crew:undo`            | Undo last commit (keeps changes)          |
 | `/crew:git:clean`           | `/crew:clean`           | Clean up stale branches                   |
+| `/crew:ci`                  |                         | Run CI checks via background haiku agent  |
 
 **Features:**
 
