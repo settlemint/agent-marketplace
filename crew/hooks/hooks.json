@@ -1,90 +1,92 @@
 {
-  "SessionStart": [
-    {
-      "matcher": "startup",
-      "hooks": [
-        {
-          "type": "command",
-          "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start/setup-plugins.sh"
-        }
-      ]
-    },
-    {
-      "matcher": "startup|compact|resume",
-      "hooks": [
-        {
-          "type": "command",
-          "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start/restore-session-state.sh"
-        }
-      ]
-    }
-  ],
-  "PreCompact": [
-    {
-      "hooks": [
-        {
-          "type": "command",
-          "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-compact/save-session-state.sh"
-        }
-      ]
-    }
-  ],
-  "Stop": [
-    {
-      "hooks": [
-        {
-          "type": "command",
-          "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/stop/check-loop.sh"
-        }
-      ]
-    }
-  ],
-  "PreToolUse": [
-    {
-      "matcher": "Bash",
-      "hooks": [
-        {
-          "type": "command",
-          "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-git-commit.sh"
-        },
-        {
-          "type": "command",
-          "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-gh-pr-create.sh"
-        },
-        {
-          "type": "command",
-          "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-ci-commands.sh"
-        }
-      ]
-    }
-  ],
-  "PostToolUse": [
-    {
-      "matcher": "Edit|MultiEdit|Write",
-      "hooks": [
-        {
-          "type": "command",
-          "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/lint-modified-file.sh"
-        }
-      ]
-    },
-    {
-      "matcher": "Task",
-      "hooks": [
-        {
-          "type": "command",
-          "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/track-agent-spawn.sh"
-        }
-      ]
-    },
-    {
-      "matcher": "TaskOutput",
-      "hooks": [
-        {
-          "type": "command",
-          "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/track-agent-complete.sh"
-        }
-      ]
-    }
-  ]
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start/setup-plugins.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "startup|compact|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start/restore-session-state.sh"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-compact/save-session-state.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/stop/check-loop.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-git-commit.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-gh-pr-create.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-ci-commands.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/lint-modified-file.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/track-agent-spawn.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "TaskOutput",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/track-agent-complete.sh"
+          }
+        ]
+      }
+    ]
+  }
 }

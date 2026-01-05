@@ -1,5 +1,5 @@
 ---
-name: crew:skill:fix
+name: fix-skill
 description: Repair skills, resolve skill blockers, tune skill configuration
 argument-hint: "[skill name or issue description]"
 ---
