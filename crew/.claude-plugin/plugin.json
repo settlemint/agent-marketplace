@@ -8,5 +8,5 @@
   },
   "repository": "https://github.com/settlemint/agent-marketplace",
   "license": "MIT",
-  "agents": "./agents/**/*.md"
+  "agents": "agents/**/*.md"
 }
