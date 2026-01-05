@@ -480,12 +480,36 @@ EOF
 ### Rules
 
 1. **One task = One agent** - Never give agent multiple tasks
-2. **Max 6 agents per batch** - More causes context exhaustion
-3. **Inherit parent model** - Implementation agents use opus/sonnet
-4. **Agents do NOT run tests** - Test-runner agent (haiku) handles this
-5. **Limit file reads** - Max 2-3 files per agent
-6. **Collect before next** - Wait for batch + test-runner before next batch
-7. **Update immediately** - Mark tasks complete as agents finish
+2. **STRICT: Max 6 agents total at any time** - NEVER exceed this limit
+3. **NEVER launch "while waiting"** - Do NOT add more agents while others run
+4. **Inherit parent model** - Implementation agents use opus/sonnet
+5. **Agents do NOT run tests** - Test-runner agent (haiku) handles this
+6. **Limit file reads** - Max 2-3 files per agent
+7. **Collect ALL before next batch** - Wait for ENTIRE batch to complete
+8. **Update immediately** - Mark tasks complete as agents finish
+9. **Process outputs sequentially** - Collect one output at a time to manage context
+
+### Context Management
+
+**Why parallel agents exhaust context:**
+
+- Each TaskOutput returns full agent output to main thread
+- 10 agents × verbose output = context overflow
+- Non-blocking checks still add to context when collected
+
+**Prevention:**
+
+```javascript
+// WRONG - launches too many agents
+for (batch1) { Task(..., run_in_background: true) }
+// "while waiting, let me launch more..."
+for (batch2) { Task(..., run_in_background: true) }  // NO!
+
+// CORRECT - strict batch discipline
+for (batch) { Task(..., run_in_background: true) }  // max 6
+for (batch) { TaskOutput({ block: true }) }  // collect ALL
+// ONLY THEN launch next batch
+```
 
 ### Batch Order
 
@@ -543,7 +567,7 @@ If all pass: "ALL TESTS PASSING"`,
 - [ ] TodoWrite tracks ALL progress (updated after EVERY task)
 - [ ] Task files loaded from `.claude/branches/<slugified-branch>/tasks/`
 - [ ] Tasks executed in batches by phase
-- [ ] **Max 6 agents per batch** (split larger phases into sub-batches)
+- [ ] **STRICT: Max 6 agents total at any time** (NEVER launch more while waiting)
 - [ ] **Implementation agents inherit parent model** (opus/sonnet)
 - [ ] **Agents do NOT run tests** (constraints enforced in prompts)
 - [ ] **Agents output "SUCCESS:" or "FAILURE:" prefix** (mandatory for tracking)
