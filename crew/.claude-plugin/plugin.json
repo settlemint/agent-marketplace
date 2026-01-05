@@ -1,7 +1,7 @@
 {
   "name": "crew",
   "description": "Unified orchestration for work execution, skill creation, git conventions, and system management. Provides /design, /build, /check, /fix commands with parallel agent execution.",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "author": {
     "name": "Roderik van der Veer",
     "email": "roderik@settlemint.com"
@@ -10,5 +10,5 @@
   "license": "MIT",
   "commands": "./commands/",
   "skills": "./skills/",
-  "agents": "./agents/"
+  "agents": "./agents/**/*.md"
 }
