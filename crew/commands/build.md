@@ -66,7 +66,7 @@ CONSTRAINTS:
 - Read at most 2-3 files for context
 - Do NOT run tests (test-runner handles this)
 - Do NOT explore beyond target files
-OUTPUT: Create structure, report SUCCESS or FAILURE`,
+OUTPUT: Your FINAL message MUST start with "SUCCESS: <summary>" or "FAILURE: <reason>"`,
   description: "T001",
   run_in_background: true,
 });
@@ -80,7 +80,7 @@ ACCEPTANCE: All deps installed
 CONSTRAINTS:
 - Read at most 2-3 files for context
 - Do NOT run tests (test-runner handles this)
-OUTPUT: Install, report SUCCESS or FAILURE`,
+OUTPUT: Your FINAL message MUST start with "SUCCESS: <summary>" or "FAILURE: <reason>"`,
   description: "T002",
   run_in_background: true,
 });
@@ -255,32 +255,58 @@ CONSTRAINTS:
 - Do NOT explore beyond target files
 - Stop immediately after implementing
 
-OUTPUT: Report SUCCESS or FAILURE with brief summary`,
+OUTPUT FORMAT (MANDATORY):
+Your FINAL message MUST start with either:
+  "SUCCESS: <brief summary>"
+  "FAILURE: <reason>"
+This is required for task tracking.`,
     description: task.id,
     run_in_background: true,
   });
 }
 
-// 3. Collect ALL results
+// 3. Collect ALL results and update task files IMMEDIATELY
 for (const task of batch) {
-  const result = TaskOutput({ task_id: task.agentId, block: true });
+  const output = TaskOutput({ task_id: task.agentId, block: true });
 
-  // 4. Update task file status
-  if (result.success) {
-    // Rename: pending → complete (use slugBranch, not branch)
+  // 4. MANDATORY: Update task file status based on agent output
+  // Agent output contains "SUCCESS" or "FAILURE"
+  const succeeded = output.includes("SUCCESS");
+
+  if (succeeded) {
+    // Rename file: pending → complete
+    const oldFile = `.claude/branches/${slugBranch}/tasks/${task.filename}`;
+    const newFile = oldFile.replace("-pending-", "-complete-");
+
     Bash({
-      command: `mv ".claude/branches/${slugBranch}/tasks/${task.oldFilename}" ".claude/branches/${slugBranch}/tasks/${task.newFilename}"`,
-      description: `Complete ${task.id}`,
+      command: `mv "${oldFile}" "${newFile}"`,
+      description: `Mark ${task.id} complete`,
     });
 
     // Update frontmatter
     Edit({
-      file_path: `.claude/branches/${slugBranch}/tasks/${task.newFilename}`,
+      file_path: newFile,
       old_string: "status: pending",
       new_string: "status: complete",
     });
+
+    // Add completion to work log
+    Edit({
+      file_path: newFile,
+      old_string: "## Work Log",
+      new_string: `## Work Log\n\n### ${new Date().toISOString()} - Completed\n**By:** Agent\n**Result:** ${output.slice(0, 100)}`,
+    });
+  } else {
+    // Task failed - log but keep as pending for retry
+    console.log(`Task ${task.id} failed: ${output.slice(0, 200)}`);
   }
 }
+
+// VALIDATION: Verify task files were updated
+const stillPending = Glob({
+  pattern: `.claude/branches/${slugBranch}/tasks/*-pending-*.md`,
+});
+// If batch tasks still pending, something went wrong
 
 // 5. Launch test-runner agent (haiku) to validate batch
 Task({
@@ -488,8 +514,10 @@ CONSTRAINTS:
 - Read at most 2-3 files
 - Do NOT run tests
 - Stop after implementing
-OUTPUT:
-- Report SUCCESS or FAILURE
+OUTPUT FORMAT (MANDATORY):
+Your FINAL message MUST start with either:
+  "SUCCESS: <brief summary>"
+  "FAILURE: <reason>"
 ```
 
 ### Test-Runner Agent
@@ -518,10 +546,11 @@ If all pass: "ALL TESTS PASSING"`,
 - [ ] **Max 6 agents per batch** (split larger phases into sub-batches)
 - [ ] **Implementation agents inherit parent model** (opus/sonnet)
 - [ ] **Agents do NOT run tests** (constraints enforced in prompts)
+- [ ] **Agents output "SUCCESS:" or "FAILURE:" prefix** (mandatory for tracking)
+- [ ] **Task files renamed immediately after agent completes** (pending → complete)
 - [ ] **Test-runner agent (haiku) runs after each batch** - reports only failures
 - [ ] Each agent handles ONE small task
 - [ ] All parallel tasks launched in SINGLE message
-- [ ] Task files renamed on completion (pending → complete)
 - [ ] Quality findings added as new task files
 - [ ] Native tools used for file operations
 - [ ] AskUserQuestion at key decision points
