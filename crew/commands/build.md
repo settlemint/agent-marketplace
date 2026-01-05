@@ -208,11 +208,20 @@ for (const file of taskFiles) {
 ### Phase 3: Environment Setup
 
 ```javascript
-// Ensure on feature branch
-Bash({
-  command:
-    "git checkout feature/${slug} 2>/dev/null || git checkout -b feature/${slug}",
-});
+// Check if already on a feature branch (not main/master)
+const currentBranch = Bash({ command: "git branch --show-current" }).trim();
+const isMainBranch = currentBranch === "main" || currentBranch === "master";
+
+if (isMainBranch) {
+  // Create new feature branch only if on main/master
+  Bash({
+    command: `git checkout -b feature/${slug}`,
+    description: "Create feature branch",
+  });
+} else {
+  // Already on a feature branch - stay on it
+  console.log(`Staying on current branch: ${currentBranch}`);
+}
 
 // Update progress
 TodoWrite({
