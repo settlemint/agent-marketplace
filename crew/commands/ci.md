@@ -50,11 +50,11 @@ COMMAND: ${cmd}
 
 OUTPUT FORMAT:
 If all checks pass with no warnings: "ALL CHECKS PASSING"
-If warnings or failures exist, report:
+If warnings or failures exist, report ALL issues:
 - Check type (test/lint/format/typecheck)
 - Severity (ERROR or WARN)
 - File:line of issue (if available)
-- Brief message (1 line per issue, max 15 total)
+- Brief message (1 line per issue)
 
 Example:
   ERROR lint: src/utils.ts:42 - 'foo' is declared but never used
@@ -67,7 +67,7 @@ Do NOT include:
 - Timing information
 - Success messages for individual files
 
-Keep output minimal - only actionable issues (errors AND warnings).`,
+Report ALL errors and warnings - do not truncate or limit.`,
   description: `ci-${checkType}`,
   run_in_background: true,
 });
