@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "implement|add feature|build feature|create functionality|new feature|develop",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/enforce-tdd.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
