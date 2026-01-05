@@ -52,28 +52,35 @@ TodoWrite({
 
 ### Task - Parallel Agent Batching
 
-**CRITICAL: One task = One agent. Launch many in parallel. Small scope.**
+**CRITICAL: One task = One agent. Max 6 agents per batch. Small scope.**
 
 ```javascript
-// Launch ALL parallel tasks from current batch in SINGLE message
+// Launch parallel tasks from current batch in SINGLE message (max 6)
 Task({
   subagent_type: "general-purpose",
+  // model: inherits from parent (opus/sonnet)
   prompt: `TASK: T001 - Create project structure
 FILE: (project root)
 ACCEPTANCE: Directory structure matches plan
-CONTEXT: [minimal context]
-OUTPUT: Create structure, report completion`,
+CONSTRAINTS:
+- Read at most 2-3 files for context
+- Do NOT run tests (test-runner handles this)
+- Do NOT explore beyond target files
+OUTPUT: Create structure, report SUCCESS or FAILURE`,
   description: "T001",
   run_in_background: true,
 });
 
 Task({
   subagent_type: "general-purpose",
+  // model: inherits from parent
   prompt: `TASK: T002 - Install dependencies
 FILE: package.json
 ACCEPTANCE: All deps installed
-CONTEXT: [minimal context]
-OUTPUT: Install, report completion`,
+CONSTRAINTS:
+- Read at most 2-3 files for context
+- Do NOT run tests (test-runner handles this)
+OUTPUT: Install, report SUCCESS or FAILURE`,
   description: "T002",
   run_in_background: true,
 });
@@ -82,7 +89,7 @@ OUTPUT: Install, report completion`,
 TaskOutput({ task_id: "t001-id", block: true });
 TaskOutput({ task_id: "t002-id", block: true });
 
-// Then launch next batch...
+// Then launch test-runner agent...
 ```
 
 ### AskUserQuestion - Decision Points
@@ -215,21 +222,23 @@ TodoWrite({
 
 ### Phase 4: Batch Execution Loop
 
-**CRITICAL: Small agents, many in parallel, batch by phase**
+**CRITICAL: Max 6 agents per batch. Use haiku. Agents do NOT run tests.**
 
 ```javascript
 // For each batch of parallel tasks:
 
-// 1. Identify parallel tasks in current phase
-const batch = pendingTasks.filter(
+// 1. Identify parallel tasks in current phase (max 6 per batch)
+const allParallel = pendingTasks.filter(
   (t) =>
     t.phase === currentPhase && t.parallel === true && t.status === "pending",
 );
+const batch = allParallel.slice(0, 6); // Max 6 agents per batch
 
-// 2. Launch ALL in SINGLE message
+// 2. Launch batch in SINGLE message (max 6)
 for (const task of batch) {
   Task({
     subagent_type: "general-purpose",
+    // model: inherits from parent (opus/sonnet)
     prompt: `TASK: ${task.id} - ${task.title}
 
 FILE: ${task.file_path}
@@ -240,13 +249,13 @@ ${task.acceptanceCriteria}
 CONTEXT:
 ${task.implementationNotes}
 
-INSTRUCTIONS:
-1. Read the target file location
-2. Implement the change
-3. Run relevant tests
-4. Report: SUCCESS or FAILURE with details
+CONSTRAINTS:
+- Read at most 2-3 files for context
+- Do NOT run tests (test-runner agent handles this)
+- Do NOT explore beyond target files
+- Stop immediately after implementing
 
-Keep it focused. One task only.`,
+OUTPUT: Report SUCCESS or FAILURE with brief summary`,
     description: task.id,
     run_in_background: true,
   });
@@ -273,17 +282,34 @@ for (const task of batch) {
   }
 }
 
-// 5. Update TodoWrite
-TodoWrite({
-  todos: [
-    // ... mark batch completed, next batch in_progress
-  ],
+// 5. Launch test-runner agent (haiku) to validate batch
+Task({
+  subagent_type: "general-purpose",
+  model: "haiku", // Fast, focused on test output parsing
+  prompt: `TASK: Run tests and report failures only
+
+RUN: bun run test (or npm test / pnpm test)
+
+OUTPUT FORMAT:
+If all tests pass: "ALL TESTS PASSING"
+If failures exist, report ONLY:
+- Failed test name
+- File:line of failure
+- Brief error message (1 line)
+
+Do NOT include:
+- Passing tests
+- Full stack traces
+- Test coverage info
+- Timing information
+
+Keep output minimal - only actionable failures.`,
+  description: "test-runner",
+  run_in_background: false, // Wait for test results
 });
 
-// 6. Run tests after each batch
-Bash({ command: "bun run test", description: "Run tests" });
-
-// 7. Continue to next batch
+// 6. If test failures, create fix tasks or notify
+// 7. Update TodoWrite and continue to next batch
 ```
 
 ### Phase 5: Quality Checks
@@ -428,18 +454,22 @@ EOF
 ### Rules
 
 1. **One task = One agent** - Never give agent multiple tasks
-2. **Small scope** - Each task ~5-10 minutes of work
-3. **Batch by phase** - All parallel tasks in phase run together
-4. **Collect before next** - Wait for batch completion before next batch
-5. **Update immediately** - Mark tasks complete as agents finish
+2. **Max 6 agents per batch** - More causes context exhaustion
+3. **Inherit parent model** - Implementation agents use opus/sonnet
+4. **Agents do NOT run tests** - Test-runner agent (haiku) handles this
+5. **Limit file reads** - Max 2-3 files per agent
+6. **Collect before next** - Wait for batch + test-runner before next batch
+7. **Update immediately** - Mark tasks complete as agents finish
 
 ### Batch Order
 
-1. **Setup batch**: All `*-setup-*.md` with `parallel: true`
+1. **Setup batch**: All `*-setup-*.md` with `parallel: true` (max 6)
 2. **Foundational batch**: All `*-found-*.md` (may be sequential)
-3. **US1 batch**: All `*-us1-*.md` with `parallel: true`
-4. **US2 batch**: All `*-us2-*.md` with `parallel: true`
+3. **US1 batch**: All `*-us1-*.md` with `parallel: true` (max 6)
+4. **US2 batch**: All `*-us2-*.md` with `parallel: true` (max 6)
 5. **Polish batch**: All `*-polish-*.md`
+
+If more than 6 tasks in a phase, split into sub-batches.
 
 ### Agent Context Template
 
@@ -454,10 +484,30 @@ ACCEPTANCE:
 CONTEXT:
 - TypeScript, Prisma ORM
 - Pattern: see src/models/profile.ts
+CONSTRAINTS:
+- Read at most 2-3 files
+- Do NOT run tests
+- Stop after implementing
 OUTPUT:
-- Create file
-- Run tests
-- Report completion
+- Report SUCCESS or FAILURE
+```
+
+### Test-Runner Agent
+
+After each batch, launch a dedicated test-runner (haiku):
+
+```javascript
+Task({
+  subagent_type: "general-purpose",
+  model: "haiku",
+  prompt: `Run tests, report ONLY failures:
+- Failed test name
+- File:line
+- Error (1 line)
+If all pass: "ALL TESTS PASSING"`,
+  description: "test-runner",
+  run_in_background: false,
+});
 ```
 
 ## Success Criteria
@@ -465,10 +515,13 @@ OUTPUT:
 - [ ] TodoWrite tracks ALL progress (updated after EVERY task)
 - [ ] Task files loaded from `.claude/branches/<slugified-branch>/tasks/`
 - [ ] Tasks executed in batches by phase
+- [ ] **Max 6 agents per batch** (split larger phases into sub-batches)
+- [ ] **Implementation agents inherit parent model** (opus/sonnet)
+- [ ] **Agents do NOT run tests** (constraints enforced in prompts)
+- [ ] **Test-runner agent (haiku) runs after each batch** - reports only failures
 - [ ] Each agent handles ONE small task
 - [ ] All parallel tasks launched in SINGLE message
 - [ ] Task files renamed on completion (pending → complete)
-- [ ] Tests run after EACH batch
 - [ ] Quality findings added as new task files
 - [ ] Native tools used for file operations
 - [ ] AskUserQuestion at key decision points
