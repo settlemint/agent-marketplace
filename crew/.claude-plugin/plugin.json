@@ -1,7 +1,7 @@
 {
   "name": "crew",
   "description": "Unified orchestration for work execution, skill creation, git conventions, and system management. Provides /design, /build, /check, /fix commands with parallel agent execution.",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "author": {
     "name": "Roderik van der Veer",
     "email": "roderik@settlemint.com"
@@ -11,5 +11,6 @@
   "commands": "./commands/",
   "skills": "./skills/",
   "agents": "./agents/**/*.md",
-  "lspServers": "./.lsp.json"
+  "hooks": "./hooks/hooks.json",
+  "mcp": "./.mcp.json"
 }

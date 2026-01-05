@@ -89,11 +89,11 @@ Or add to your `.claude/settings.json`:
 }
 ```
 
-| Plugin | Source | Purpose |
-|--------|--------|---------|
-| `typescript-lsp` | claude-plugins-official | TypeScript language server integration |
-| `frontend-design` | claude-plugins-official | Frontend design assistance |
-| `dev-browser` | dev-browser-marketplace | Browser automation for development |
+| Plugin            | Source                  | Purpose                                |
+| ----------------- | ----------------------- | -------------------------------------- |
+| `typescript-lsp`  | claude-plugins-official | TypeScript language server integration |
+| `frontend-design` | claude-plugins-official | Frontend design assistance             |
+| `dev-browser`     | dev-browser-marketplace | Browser automation for development     |
 
 ## Plugins
 
@@ -103,14 +103,24 @@ Unified orchestration for work execution, skill creation, git conventions, and s
 
 **Commands:**
 
-| Command | Purpose |
-|---------|---------|
-| `/crew:design` | Create validated implementation plan |
-| `/crew:build` | Execute work with progress tracking |
-| `/crew:check` | Multi-agent code review + triage |
-| `/crew:fix` | Repair skills, resolve blockers |
+| Command                     | Alias                   | Purpose                                   |
+| --------------------------- | ----------------------- | ----------------------------------------- |
+| `/crew:design`              |                         | Create validated implementation plan      |
+| `/crew:build`               |                         | Execute work with progress tracking       |
+| `/crew:check`               |                         | Multi-agent code review + triage          |
+| `/crew:restart`             |                         | Resume pending work from previous session |
+| `/crew:skill:fix`           | `/crew:fix`             | Repair skills, resolve blockers           |
+| `/crew:git:commit`          | `/crew:commit`          | Create conventional commit                |
+| `/crew:git:push`            | `/crew:push`            | Push current branch to origin             |
+| `/crew:git:commit-and-push` | `/crew:commit-and-push` | Commit and push in one step               |
+| `/crew:git:branch`          | `/crew:branch`          | Create feature branch from main           |
+| `/crew:git:pr`              | `/crew:pr`              | Commit, push, and open PR                 |
+| `/crew:git:sync`            | `/crew:sync`            | Sync current branch with main             |
+| `/crew:git:undo`            | `/crew:undo`            | Undo last commit (keeps changes)          |
+| `/crew:git:clean`           | `/crew:clean`           | Clean up stale branches                   |
 
 **Features:**
+
 - Plan-driven development with progress tracking
 - Session state preservation across compactions
 - Iteration loops for autonomous completion
@@ -123,28 +133,28 @@ Modern development tools with MCP-first skills. Uses Context7 for up-to-date lib
 
 **Skills:**
 
-| Skill | Domain | MCP Source |
-|-------|--------|------------|
-| `react` | React components, Tailwind, TanStack | Context7 |
-| `tanstack-start` | Full-stack React framework | Context7 |
-| `radix` | Accessible UI primitives | Context7 |
-| `api` | oRPC API routes | OctoCode |
-| `drizzle` | Drizzle ORM, PostgreSQL | Context7 |
-| `zod` | Zod schemas | Context7 |
-| `viem` | Ethereum blockchain client | Context7 |
-| `solidity` | Smart contracts, Foundry | OctoCode |
-| `vitest` | Unit testing | Context7 |
-| `playwright` | E2E testing | Context7 |
-| `thegraph` | TheGraph subgraphs | OctoCode |
-| `helm` | Kubernetes Helm charts | OctoCode |
-| `turbo` | Turborepo builds | Context7 |
-| `restate` | Durable execution | OctoCode |
-| `better-auth` | Authentication | OctoCode |
-| `i18n` | Internationalization (i18next) | Context7 |
-| `motion` | Animations (Motion/Framer) | Context7 |
-| `recharts` | Data visualization | OctoCode |
-| `pino` | Structured logging | OctoCode |
-| `troubleshooting` | Debug patterns | - |
+| Skill             | Domain                               | MCP Source |
+| ----------------- | ------------------------------------ | ---------- |
+| `react`           | React components, Tailwind, TanStack | Context7   |
+| `tanstack-start`  | Full-stack React framework           | Context7   |
+| `radix`           | Accessible UI primitives             | Context7   |
+| `api`             | oRPC API routes                      | OctoCode   |
+| `drizzle`         | Drizzle ORM, PostgreSQL              | Context7   |
+| `zod`             | Zod schemas                          | Context7   |
+| `viem`            | Ethereum blockchain client           | Context7   |
+| `solidity`        | Smart contracts, Foundry             | OctoCode   |
+| `vitest`          | Unit testing                         | Context7   |
+| `playwright`      | E2E testing                          | Context7   |
+| `thegraph`        | TheGraph subgraphs                   | OctoCode   |
+| `helm`            | Kubernetes Helm charts               | OctoCode   |
+| `turbo`           | Turborepo builds                     | Context7   |
+| `restate`         | Durable execution                    | OctoCode   |
+| `better-auth`     | Authentication                       | OctoCode   |
+| `i18n`            | Internationalization (i18next)       | Context7   |
+| `motion`          | Animations (Motion/Framer)           | Context7   |
+| `recharts`        | Data visualization                   | OctoCode   |
+| `pino`            | Structured logging                   | OctoCode   |
+| `troubleshooting` | Debug patterns                       | -          |
 
 **Key feature:** Every skill fetches documentation from MCP before implementing, ensuring up-to-date API usage.
 
