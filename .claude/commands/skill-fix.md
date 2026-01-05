@@ -1,6 +1,6 @@
 ---
-name: fix-skill
-description: Repair skills, resolve skill blockers, tune skill configuration
+name: skill-fix
+description: Repair skills, resolve skill blockers, tune skill configuration (project)
 argument-hint: "[skill name or issue description]"
 ---
 
@@ -11,6 +11,30 @@ argument-hint: "[skill name or issue description]"
 <fix_target>$ARGUMENTS</fix_target>
 
 ## Native Tools
+
+### AskUserQuestion - Select Target Plugin
+
+```javascript
+AskUserQuestion({
+  questions: [
+    {
+      question: "Which plugin contains the skill to fix?",
+      header: "Plugin",
+      options: [
+        {
+          label: "crew (Recommended)",
+          description: "Orchestration, workflows, git, agents",
+        },
+        {
+          label: "devtools",
+          description: "Framework/library patterns (React, Drizzle, etc.)",
+        },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
+```
 
 ### AskUserQuestion - Determine Fix Type
 
@@ -89,7 +113,33 @@ Tools:
 
 ## Process
 
-### Phase 1: Determine Fix Type
+### Phase 1: Select Plugin and Determine Fix Type
+
+First, ask which plugin contains the skill:
+
+```javascript
+AskUserQuestion({
+  questions: [
+    {
+      question: "Which plugin contains the skill to fix?",
+      header: "Plugin",
+      options: [
+        {
+          label: "crew (Recommended)",
+          description: "Orchestration, workflows, git, agents",
+        },
+        {
+          label: "devtools",
+          description: "Framework/library patterns (React, Drizzle, etc.)",
+        },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
+```
+
+Then determine the fix type:
 
 ```javascript
 AskUserQuestion({
@@ -119,7 +169,7 @@ AskUserQuestion({
 
 ### Phase 2: Analyze and Fix Skill
 
-Use the skill-healer agent:
+Use the skill-healer agent with the selected plugin path:
 
 ```javascript
 Task({
@@ -130,7 +180,7 @@ CONSTRAINTS: Identify what's wrong, research correct patterns
 OUTPUT: Before/after diffs for each change
 
 Tools:
-- Glob({pattern: "crew/skills/${skillName}/**/*.md"})
+- Glob({pattern: "{selected_plugin}/skills/${skillName}/**/*.md"})
 - Read for file contents
 - Grep for pattern search
 
@@ -149,11 +199,11 @@ mcp__plugin_crew_context7__query-docs({
 ### Phase 3: Validate
 
 ```javascript
-// Validate skill structure
-Glob({ pattern: `crew/skills/${skillName}/**/*.md` });
+// Validate skill structure using selected plugin path
+Glob({ pattern: `{selected_plugin}/skills/${skillName}/**/*.md` });
 
 // Check required sections exist
-Read({ file_path: `crew/skills/${skillName}/SKILL.md` });
+Read({ file_path: `{selected_plugin}/skills/${skillName}/SKILL.md` });
 
 // Update progress
 TodoWrite({
@@ -196,6 +246,7 @@ AskUserQuestion({
 
 ## Success Criteria
 
+- [ ] AskUserQuestion determines target plugin
 - [ ] AskUserQuestion determines skill issue type
 - [ ] TodoWrite tracks all fixes
 - [ ] Skill-healer agent used for diagnosis
