@@ -16,11 +16,6 @@ PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 INPUT=$(cat)
 EVENT_TYPE=$(echo "$INPUT" | jq -r '.type // "unknown"' 2>/dev/null)
 
-# Only restore for compact/resume events, not fresh startup
-if [[ $EVENT_TYPE == "startup" ]]; then
-  exit 0
-fi
-
 # Get branch info (handle detached HEAD)
 BRANCH=$(git -C "$PROJECT_DIR" branch --show-current 2>/dev/null || echo '')
 if [[ -z $BRANCH ]]; then
@@ -31,7 +26,40 @@ SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-')
 # State location: .claude/branches/{branch}/state.json
 BRANCH_DIR="$PROJECT_DIR/.claude/branches/$SAFE_BRANCH"
 STATE_FILE="$BRANCH_DIR/state.json"
+TASKS_DIR="$BRANCH_DIR/tasks"
 
+# On fresh startup, still check for pending tasks (skip state.json restore)
+if [[ $EVENT_TYPE == "startup" ]]; then
+  # Scan for pending tasks even without state.json
+  if [[ -d $TASKS_DIR ]]; then
+    PENDING_FILES=$(find "$TASKS_DIR" -maxdepth 1 -name "*-pending-*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    if [[ $PENDING_FILES -gt 0 ]]; then
+      # Count by priority
+      P1_COUNT=$(find "$TASKS_DIR" -maxdepth 1 -name "*-pending-p1-*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+      P2_COUNT=$(find "$TASKS_DIR" -maxdepth 1 -name "*-pending-p2-*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+      P3_COUNT=$(find "$TASKS_DIR" -maxdepth 1 -name "*-pending-p3-*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+
+      # Get first pending task (sorted by name = by order)
+      NEXT_TASK=$(find "$TASKS_DIR" -maxdepth 1 -name "*-pending-*.md" -type f 2>/dev/null | sort | head -1 | xargs basename 2>/dev/null)
+
+      # Build priority breakdown
+      PRIORITY_BREAKDOWN=""
+      [[ $P1_COUNT -gt 0 ]] && PRIORITY_BREAKDOWN="${P1_COUNT} P1"
+      [[ $P2_COUNT -gt 0 ]] && PRIORITY_BREAKDOWN="${PRIORITY_BREAKDOWN:+$PRIORITY_BREAKDOWN, }${P2_COUNT} P2"
+      [[ $P3_COUNT -gt 0 ]] && PRIORITY_BREAKDOWN="${PRIORITY_BREAKDOWN:+$PRIORITY_BREAKDOWN, }${P3_COUNT} P3"
+
+      echo ""
+      echo "ACTION REQUIRED: Found $PENDING_FILES pending tasks ($PRIORITY_BREAKDOWN)"
+      echo "  Branch: $BRANCH"
+      echo "  Next: $NEXT_TASK"
+      echo "  Resume with: /crew:build"
+      echo ""
+    fi
+  fi
+  exit 0
+fi
+
+# For compact/resume events, also restore from state.json
 if [[ ! -f $STATE_FILE ]]; then
   exit 0
 fi
