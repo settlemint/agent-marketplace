@@ -1,7 +1,13 @@
 ---
 name: zod
-description: Zod v4 schema patterns with .meta() for OpenAPI, transforms, refinements, and custom serializers. Triggers on zod, z.object, z.string, schema, validator.
-triggers: ["zod", "z\\.object", "z\\.string", "z\\.number", "z\\.enum", "schema", "validator"]
+description: Zod v4 schema patterns. For projects using Zod validation library.
+triggers:
+  - "zod"
+  - "z\\.object"
+  - "z\\.string"
+  - "z\\.number"
+  - "z\\.enum"
+  - "z\\.infer"
 ---
 
 <objective>
@@ -19,21 +25,22 @@ MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 // Zod v4 schema patterns
 mcp__context7__query_docs({
   context7CompatibleLibraryID: "/colinhacks/zod",
-  topic: "z.object z.string z.number"
-})
+  topic: "z.object z.string z.number",
+});
 
 // .meta() usage (v4 specific)
 mcp__context7__query_docs({
   context7CompatibleLibraryID: "/colinhacks/zod",
-  topic: "meta description examples"
-})
+  topic: "meta description examples",
+});
 
 // Transforms and refinements
 mcp__context7__query_docs({
   context7CompatibleLibraryID: "/colinhacks/zod",
-  topic: "transform refine superRefine"
-})
+  topic: "transform refine superRefine",
+});
 ```
+
 </mcp_first>
 
 <quick_start>
@@ -69,6 +76,7 @@ export const mySchema = z
 export type MySchema = z.infer<typeof mySchema>;
 export type MySchemaInput = z.input<typeof mySchema>;
 ```
+
 </quick_start>
 
 <patterns>
@@ -86,7 +94,7 @@ export const UserBaseSchema = z.object({
 
 export const UserSchema = UserBaseSchema.refine(
   (data) => data.password === data.confirmPassword,
-  { message: "Passwords must match", path: ["confirmPassword"] }
+  { message: "Passwords must match", path: ["confirmPassword"] },
 );
 
 // Use base schema for composition
@@ -111,12 +119,12 @@ const PaymentMethod = z.xor([
 ```typescript
 const Schema = z.object({
   name: z.string(),
-  nickname: z.string().optional(),         // accepts undefined
-  middleName: z.string().exactOptional(),  // rejects undefined, allows omission
+  nickname: z.string().optional(), // accepts undefined
+  middleName: z.string().exactOptional(), // rejects undefined, allows omission
 });
 
-Schema.parse({ name: "Alice" });                       // ✅
-Schema.parse({ name: "Alice", nickname: undefined });  // ✅
+Schema.parse({ name: "Alice" }); // ✅
+Schema.parse({ name: "Alice", nickname: undefined }); // ✅
 Schema.parse({ name: "Alice", middleName: undefined }); // ❌
 ```
 
@@ -139,12 +147,15 @@ const EmailSchema = z.string().email().apply(withTrimAndLowercase);
 **Type predicates in refinements (v4.3+):**
 
 ```typescript
-const AdminUser = z.object({
-  role: z.string(),
-  permissions: z.array(z.string()),
-}).refine((user): user is { role: "admin"; permissions: string[] } =>
-  user.role === "admin"
-);
+const AdminUser = z
+  .object({
+    role: z.string(),
+    permissions: z.array(z.string()),
+  })
+  .refine(
+    (user): user is { role: "admin"; permissions: string[] } =>
+      user.role === "admin",
+  );
 
 type AdminOutput = z.output<typeof AdminUser>; // { role: "admin"; permissions: string[] }
 ```
@@ -153,10 +164,7 @@ type AdminOutput = z.output<typeof AdminUser>; // { role: "admin"; permissions: 
 
 ```typescript
 // Only validates keys matching the pattern, passes through others
-const EnvVars = z.looseRecord(
-  z.string().regex(/^APP_/),
-  z.string()
-);
+const EnvVars = z.looseRecord(z.string().regex(/^APP_/), z.string());
 
 EnvVars.parse({ APP_NAME: "myapp", OTHER: 123 });
 // ✅ { APP_NAME: "myapp", OTHER: 123 }
@@ -174,6 +182,7 @@ export const AssetTypeEnum = z.enum(AssetTypeValues).meta({
 
 export type AssetType = z.infer<typeof AssetTypeEnum>;
 ```
+
 </patterns>
 
 <constraints>
@@ -185,6 +194,7 @@ export type AssetType = z.infer<typeof AssetTypeEnum>;
 - Re-exports via barrel files (import from canonical source)
 
 **Required:**
+
 - Use `.meta({ description, examples })` on all schemas
 - Export inferred types with `z.infer<>`
 - Export input/output types for transforms: `z.input<>`, `z.output<>`
@@ -197,10 +207,11 @@ export type AssetType = z.infer<typeof AssetTypeEnum>;
 </constraints>
 
 <success_criteria>
+
 - [ ] Context7 docs fetched for current v4 API
 - [ ] Uses `.meta({ description, examples })` (not `.describe()`)
 - [ ] Exports inferred types with `z.infer<>`
 - [ ] Base and refined schemas split for composition
 - [ ] Uses v4.3+ features: `z.xor()`, `.exactOptional()`, `.apply()`
 - [ ] Has unit tests for valid/invalid cases
-</success_criteria>
+      </success_criteria>

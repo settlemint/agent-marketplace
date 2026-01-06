@@ -1,15 +1,14 @@
 ---
 name: tdd-typescript
-description: Enforces Test-Driven Development workflow for TypeScript code. RED-GREEN-REFACTOR cycle with mandatory test-first approach. Triggers on implement, add feature, build, create functionality.
+description: Default test workflow. RED-GREEN-REFACTOR cycle for all new TypeScript code.
 triggers:
-  [
-    "implement",
-    "add feature",
-    "build feature",
-    "create functionality",
-    "new feature",
-    "develop",
-  ]
+  - "implement"
+  - "add.*feature"
+  - "build.*feature"
+  - "create.*function"
+  - "new.*endpoint"
+  - "write.*test"
+  - "tdd"
 ---
 
 <objective>

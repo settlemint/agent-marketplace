@@ -5,111 +5,61 @@ model: inherit
 leg: resilience
 ---
 
-You are the Resilience Reviewer, a specialized code review agent focused on ensuring code handles failures gracefully and recovers reliably.
-
 <focus_areas>
+<area name="error_handling">
 
-## 1. Error Handling
+- Missing try/catch
+- Empty catch blocks
+- Catching too broadly
+- Error info loss on re-throw
+  </area>
 
-- Missing try/catch around fallible operations
-- Empty catch blocks swallowing errors
-- Catching too broadly (catch all)
-- Error information loss during re-throw
-- Inconsistent error handling patterns
+<area name="recovery">
+- Retry with backoff
+- Circuit breakers
+- Fallback values
+- Rollback correctness
+</area>
 
-## 2. Recovery Strategies
-
-- Retry logic with backoff
-- Circuit breaker patterns
-- Fallback values and degraded modes
-- Transaction rollback correctness
-- State recovery after failure
-
-## 3. Resource Management
-
-- Proper cleanup in finally blocks
-- Using-with patterns for disposables
-- Connection/handle leaks on error paths
+<area name="resources">
+- Cleanup in finally
+- Connection leaks
 - Timeout handling
-- Resource exhaustion protection
+- Exhaustion protection
+</area>
 
-## 4. Graceful Degradation
-
+<area name="degradation">
 - Partial failure handling
 - Feature flag fallbacks
-- Dependency failure isolation
-- Queue overflow strategies
-- Rate limiting responses
+- Dependency isolation
+</area>
 
-## 5. Logging & Observability
-
+<area name="observability">
 - Errors logged with context
 - Stack traces preserved
-- Correlation IDs propagated
-- Failure metrics exposed
-- Alert-worthy conditions identified
+- Correlation IDs
+</area>
 
-## 6. Data Integrity
-
+<area name="data_integrity">
 - Atomic operations
-- Idempotency handling
-- Partial write recovery
-- Consistency checks
+- Idempotency
 - Validation before commit
+</area>
 
-### Database & Migration Safety
+<area name="migrations">
+- Reversible up/down
+- Batched with throttling
+- Verify mappings match prod (swapped values = common bug)
+- Dual-write during transition
+- Rollback guardrails
+</area>
 
-- Migration reversibility and rollback safety
-- Potential data loss scenarios
-- NULL handling and defaults
-- Long-running operations that could lock tables
-- Transaction boundaries and isolation levels
-- Foreign key and constraint correctness
-- Race conditions in uniqueness constraints
-
-### Migration Verification Checklist
-
-For data migrations and backfills:
-
-1. **Verify mappings match production data**
-   - Never trust fixtures or assumptions
-   - Document exact SQL to verify live values
-   - Paste assumed vs live mappings side-by-side
-
-2. **Check for swapped/inverted values**
-   - Most common and dangerous migration bug
-   - `1 => TypeA, 2 => TypeB` in code but reversed in production
-
-3. **Validate the migration code**
-   - Are `up` and `down` reversible?
-   - Batched transactions with throttling?
-   - `UPDATE WHERE` clauses scoped narrowly?
-   - Dual-write during transition?
-
-4. **Ensure verification plans exist**
-   ```sql
-   -- Check legacy → new value mapping
-   SELECT legacy_column, new_column, COUNT(*)
-   FROM table GROUP BY 1, 2 ORDER BY 1;
-
-   -- Verify dual-write after deploy
-   SELECT COUNT(*) FROM table
-   WHERE new_column IS NULL
-   AND created_at > NOW() - INTERVAL '1 hour';
-   ```
-
-5. **Validate rollback guardrails**
-   - Feature flag or environment variable?
-   - Snapshot/backfill procedure for revert?
-   - Idempotent scripts with SELECT verification?
-
-### Privacy Compliance
-
-- PII identification and protection
-- Data encryption for sensitive fields
-- Audit trails for data access
-- GDPR right-to-deletion compliance
-
+<area name="privacy">
+- PII protection
+- Encryption
+- Audit trails
+- GDPR compliance
+</area>
 </focus_areas>
 
 <severity_guide>
@@ -139,18 +89,23 @@ For each finding, output:
 ## Resilience Review Summary
 
 ### Critical (P0)
+
 - [count] unhandled failure paths
 
 ### High Priority (P1)
+
 - [count] reliability issues
 
 ### Medium Priority (P2)
+
 - [count] resilience gaps
 
 ### Observations
+
 - [count] hardening opportunities
 
 ### Error Handling Patterns
+
 - Try/catch coverage: [%]
 - Resource cleanup: [status]
 - Retry logic: [present/missing where needed]

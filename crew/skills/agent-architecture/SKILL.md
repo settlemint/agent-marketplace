@@ -1,13 +1,12 @@
 ---
 name: agent-architecture
-description: Prompt-native architecture patterns, agent orchestration, iteration loops, and state management for autonomous work.
+description: Patterns for building autonomous agent workflows. Sub-agent orchestration, loops, state.
 triggers:
-  - "agent.*native"
-  - "prompt.*native"
-  - "orchestrat"
-  - "iteration loop"
-  - "state management"
-  - "handoff"
+  - "build.*agent"
+  - "agent.*workflow"
+  - "orchestrat.*agent"
+  - "sub.*agent"
+  - "agent.*loop"
 ---
 
 <objective>
@@ -41,6 +40,15 @@ Provide architectural guidance for prompt-native agent systems. This skill cover
 | State persistence     | `references/state-management.md` |
 | Architecture patterns | `references/architecture/`       |
 
+## Agent Definitions (`agents/`)
+
+| Category | Agents                                                                                                                                                                |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Research | `repo-research-analyst`, `best-practices-researcher`, `git-history-analyzer`, `framework-docs-researcher`                                                             |
+| Design   | `api-interface-analyst`, `data-model-architect`, `ux-workflow-analyst`, `scale-performance-analyst`, `security-threat-analyst`, `integration-dependency-analyst`      |
+| Review   | `correctness-reviewer`, `performance-reviewer`, `security-reviewer`, `elegance-reviewer`, `resilience-reviewer`, `style-reviewer`, `smells-reviewer`, `meta-reviewer` |
+| Workflow | `spec-flow-analyzer`, `work-orchestrator`, `pr-comment-resolver`, `bug-reproduction-validator`, `design-iterator`, `content-style-editor`                             |
+
 ## Workflows
 
 | Workflow         | Purpose                                    |
@@ -66,7 +74,6 @@ Provide architectural guidance for prompt-native agent systems. This skill cover
 ### Architecture (`references/architecture/`)
 
 - `architecture-patterns.md` - Prompt-native design
-- `orchestrator-patterns.md` - Agent orchestration
 - `system-prompt-design.md` - System prompts
 - `mcp-tool-design.md` - MCP tool patterns
 - `self-modification.md` - Self-modifying systems

@@ -6,23 +6,25 @@ allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*), Bash(git
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/commit-context.sh`
 
-## Commit Format
+<format>
 
-Use conventional commits: `type(scope): description`
+`type(scope): description`
 
-| Type       | Use For            |
-| ---------- | ------------------ |
-| `feat`     | New feature        |
-| `fix`      | Bug fix            |
-| `refactor` | Code restructuring |
-| `docs`     | Documentation      |
-| `test`     | Tests              |
-| `chore`    | Maintenance        |
+| Type       | Use           |
+| ---------- | ------------- |
+| `feat`     | New feature   |
+| `fix`      | Bug fix       |
+| `refactor` | Restructuring |
+| `docs`     | Documentation |
+| `test`     | Tests         |
+| `chore`    | Maintenance   |
 
-## Task
+</format>
 
-1. If sensitive files flagged above, run `git reset HEAD <file>` to unstage
-2. Stage files: `git add <files>`
-3. Commit: `git commit -m "type(scope): description"`
+<process>
 
-Execute in a single response.
+1. If sensitive files flagged → `git reset HEAD <file>`
+2. `git add <files>`
+3. `git commit -m "type(scope): description"`
+
+</process>

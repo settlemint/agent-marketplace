@@ -1,16 +1,12 @@
 ---
 name: api
-description: oRPC API routes with the 5-file pattern (contract, schema, router, impl, spec). Triggers on orpc, api, endpoint, router keywords.
+description: oRPC API routes with 5-file pattern. Only for projects using oRPC.
 triggers:
-  [
-    "orpc",
-    "api",
-    "endpoint",
-    "router",
-    "\\.contract\\.ts",
-    "\\.router\\.ts",
-    "\\.impl\\.ts",
-  ]
+  - "orpc"
+  - "\\.contract\\.ts"
+  - "\\.router\\.ts"
+  - "\\.impl\\.ts"
+  - "createProcedure"
 ---
 
 <objective>

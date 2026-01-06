@@ -7,7 +7,7 @@ allowed-tools: Bash(git checkout:*), Bash(git add:*), Bash(git status:*), Bash(g
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/pr-context.sh`
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 
-## PR Template
+<template>
 
 ```markdown
 ## Summary
@@ -19,54 +19,41 @@ allowed-tools: Bash(git checkout:*), Bash(git add:*), Bash(git status:*), Bash(g
 - [ ] <verification>
 ```
 
-## Task
+</template>
 
-### Step 1: Check Git State
+<process>
 
-```bash
-git branch --show-current
-git status --short
+1. Check state: `git branch --show-current && git status --short`
+2. If on main → create feature branch
+3. Stage & commit: `git add . && git commit -m "type(scope): msg"`
+4. Ask PR type:
+
+```javascript
+AskUserQuestion({
+  questions: [
+    {
+      question: "PR type?",
+      header: "Type",
+      options: [
+        { label: "Ready for review", description: "Ready to merge" },
+        { label: "Draft", description: "Work in progress" },
+      ],
+    },
+  ],
+});
 ```
 
-### Step 2: Handle Branch (if on main/master)
-
-If on main/master, create feature branch:
+5. **If machete-managed:**
 
 ```bash
-git checkout -b feat/<name>
-```
-
-### Step 3: Stage & Commit
-
-```bash
-git add . && git commit -m "type(scope): msg"
-```
-
-### Step 4: Ask PR Type
-
-Use AskUserQuestion to ask if this should be a draft PR or ready for review:
-
-- **Draft PR** - Work in progress, not ready for review
-- **Ready PR** - Ready for review and merge
-
-### Step 5: Check Machete Status
-
-**If branch is in machete layout** (`.git/machete` exists and branch is managed):
-
-```bash
-# Use git-machete for PR creation - uses parent from layout as base
-# Add --draft if user selected draft PR
 git machete github create-pr [--draft]
+git machete github anno-prs
 ```
 
-**If NOT in machete layout** (traditional PR):
+**If traditional:**
 
 ```bash
-# Push branch
 git push -u origin $(git branch --show-current)
-
-# Create PR with HEREDOC body
-# Add --draft if user selected draft PR
 gh pr create --title "..." --body "$(cat <<'EOF'
 ## Summary
 ...
@@ -74,31 +61,6 @@ EOF
 )" [--draft]
 ```
 
-### Step 6: Sync Stack (if machete)
+Return PR URL.
 
-If branch is in a stack, sync after PR creation:
-
-```bash
-git machete github anno-prs  # Add PR numbers to status
-git machete status           # Show updated stack
-```
-
-## Machete Benefits
-
-When using git-machete for PRs:
-
-- Automatically uses parent branch from layout as PR base
-- Adds PR chain description for stacked PRs
-- Enables easy retargeting with `git machete github retarget-pr`
-
-## Quick Reference
-
-```bash
-# Traditional PR (add --draft based on user choice)
-gh pr create --title "feat: thing" --body "..." [--draft]
-
-# Machete-managed PR (add --draft based on user choice)
-git machete github create-pr [--draft]
-```
-
-Return the PR URL when done.
+</process>

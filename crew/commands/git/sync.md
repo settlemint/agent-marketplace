@@ -6,17 +6,19 @@ allowed-tools: Bash(git fetch:*), Bash(git rebase:*), Bash(git stash:*), Bash(gi
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/sync-context.sh`
 
-## Task
+<process>
 
-1. **Stash** (if uncommitted changes): `git stash push -m "sync-stash"`
-2. **Fetch**: `git fetch origin main`
-3. **Rebase**: `git rebase origin/main`
-4. **Pop stash** (if stashed): `git stash pop`
+1. If uncommitted → `git stash push -m "sync-stash"`
+2. `git fetch origin main`
+3. `git rebase origin/main`
+4. If stashed → `git stash pop`
 
-## On Conflict
+</process>
 
-If rebase conflicts:
+<on_conflict>
 
 - Report conflicting files
 - Do NOT auto-resolve
-- Tell user to run `git rebase --continue` after fixing
+- Tell user: `git rebase --continue` after fixing
+
+</on_conflict>

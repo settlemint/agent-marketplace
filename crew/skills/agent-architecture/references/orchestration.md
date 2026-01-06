@@ -1,108 +1,109 @@
-# Agent Orchestration
+<overview>
 
-## Core Principle
+Agent orchestration patterns for crew workflows. **Agents work, you orchestrate.** Spawn agents for heavy lifting, keep main thread light for decisions.
 
-**Agents work, you orchestrate.** Spawn agents for heavy lifting, keep main thread light for decisions.
+</overview>
 
-## When to Use Agents
+<critical_limitation>
 
-| Task Type | Use Agent? | Reason |
-|-----------|------------|--------|
-| Multi-file implementation | Yes | Agent handles complexity |
-| Following a plan phase | Yes | Agent reads plan, implements |
-| New feature with tests | Yes | Agent can run tests |
-| Research / exploration | Yes | Agent gathers context |
-| Single-line fix | No | Faster to do directly |
-| Quick config change | No | Overhead not worth it |
-| Decisions requiring UI | No | AskUserQuestion needs main thread |
+**AskUserQuestion does NOT work from sub-agents.** It returns as plain text to parent - user never sees native UI.
 
-## The Pattern
+**Solutions:**
 
-**Wrong - burns context:**
-```
-Main: Read files → Understand → Make edits → Report
-  (2000+ tokens consumed in main context)
-```
+- Return findings to parent, let IT call AskUserQuestion
+- Proceed with reasonable defaults when straightforward
 
-**Right - preserves context:**
-```
-Main: Spawn agent("implement X per plan")
-  ↓
-Agent: Reads files → Understands → Edits → Tests
-  ↓
-Main: Gets summary (~200 tokens)
-```
+</critical_limitation>
 
-## Parallel vs Sequential
+<when_to_use_agents>
 
-### Parallel (Independent tasks)
+| Task                      | Agent? | Reason                            |
+| ------------------------- | ------ | --------------------------------- |
+| Multi-file implementation | Yes    | Agent handles complexity          |
+| Following a plan phase    | Yes    | Agent reads plan, implements      |
+| Research / exploration    | Yes    | Agent gathers context             |
+| Single-line fix           | No     | Faster directly                   |
+| Decisions requiring UI    | No     | AskUserQuestion needs main thread |
 
-Launch all at once in a single message:
+</when_to_use_agents>
+
+<parallel_vs_sequential>
+
+**Parallel (independent tasks):** Launch ALL in single message
 
 ```javascript
-Task({ subagent_type: "repo-research-analyst", prompt: "...", run_in_background: true });
-Task({ subagent_type: "best-practices-researcher", prompt: "...", run_in_background: true });
-Task({ subagent_type: "framework-docs-researcher", prompt: "...", run_in_background: true });
+Task({ subagent_type: "X", prompt: "...", run_in_background: true });
+Task({ subagent_type: "Y", prompt: "...", run_in_background: true });
 ```
 
-### Sequential (Dependent tasks)
-
-Wait for each before starting next:
+**Sequential (dependent):** Wait for each
 
 ```javascript
-const research = await Task({ subagent_type: "repo-research-analyst", prompt: "..." });
-// Use research results in next task
-const design = await Task({ subagent_type: "Plan", prompt: `Based on ${research}...` });
+const research = await Task({ subagent_type: "analyst", prompt: "..." });
+const design = await Task({
+  subagent_type: "Plan",
+  prompt: `Based on ${research}...`,
+});
 ```
 
-## Agent Types for Crew
+</parallel_vs_sequential>
 
-### Research Agents
+<agent_types>
 
-| Agent | Purpose |
-|-------|---------|
-| `repo-research-analyst` | Analyze repository patterns |
-| `best-practices-researcher` | Industry best practices |
-| `framework-docs-researcher` | Framework documentation |
-| `Explore` | Quick codebase exploration |
+| Type                        | Purpose                               |
+| --------------------------- | ------------------------------------- |
+| `Explore`                   | Quick codebase exploration            |
+| `Plan`                      | Architecture, implementation strategy |
+| `general-purpose`           | Complex multi-step implementation     |
+| `repo-research-analyst`     | Repository pattern analysis           |
+| `best-practices-researcher` | Industry best practices               |
+| `*-reviewer`                | Seven-leg review agents               |
 
-### Review Agents
+</agent_types>
 
-| Agent | Purpose |
-|-------|---------|
-| `kieran-typescript-reviewer` | TypeScript quality |
-| `security-sentinel` | Security audit |
-| `code-simplicity-reviewer` | YAGNI, complexity |
-| `architecture-strategist` | Architecture patterns |
-| `solidity-security-auditor` | Smart contract security |
+<todowrite_rules>
 
-### Implementation Agents
+- Mark `in_progress` BEFORE starting task
+- Mark `completed` IMMEDIATELY after finishing
+- **Never batch status updates**
+- Only ONE task `in_progress` at a time
 
-| Agent | Purpose |
-|-------|---------|
-| `general-purpose` | Multi-step implementations |
-| `Plan` | Design implementation approach |
+See `<pattern name="todo-progress"/>` in crew-patterns skill.
 
-## Handoff Between Agents
+</todowrite_rules>
 
-When spawning sequential agents, use handoff files:
+<orchestrator_workflow>
+
+1. **Setup**: TodoWrite with all phases, determine target, AskUserQuestion for scope
+2. **Parallel execution**: Launch ALL agents in ONE message, collect with TaskOutput
+3. **Synthesis**: Categorize, prioritize, deduplicate
+4. **Report**: AskUserQuestion for format, create artifacts, mark complete
+
+</orchestrator_workflow>
+
+<handoffs>
+
+For sequential agents:
 
 ```javascript
 // Agent 1 creates handoff
 Task({
-  subagent_type: "general-purpose",
-  prompt: `Implement Task 1. After completing:
-    Skill({skill: "crew:handoff", args: "task [description]"})`
+  prompt: `... After completing: Skill({skill: "crew:handoff", args: "task [description]"})`,
 });
 
-// Agent 2 reads previous handoff
+// Agent 2 reads previous
 Task({
-  subagent_type: "general-purpose",
-  prompt: `Implement Task 2.
-    Previous handoff: .claude/branches/{branch}/handoffs/task-*.md`
+  prompt: `... Previous handoff: .claude/branches/{branch}/handoffs/task-*.md`,
 });
 ```
 
-## Key Insight
+</handoffs>
 
-Agents read their own context. Don't read files in main chat just to understand what to pass to an agent - give them the task and they figure it out.
+<anti_patterns>
+
+- **AskUserQuestion in sub-agents** - Returns plain text, UI never shows
+- **Sequential when parallel possible** - Always launch together
+- **Batch TodoWrite updates** - Update immediately
+- **Vague prompts** - Must include CONTEXT, SCOPE, CONSTRAINTS, OUTPUT
+
+</anti_patterns>

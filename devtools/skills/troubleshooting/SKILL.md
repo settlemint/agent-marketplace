@@ -1,7 +1,12 @@
 ---
 name: troubleshooting
-description: Debugging patterns for common development issues across the stack. Triggers on error, debug, fix, issue, problem, not working.
-triggers: ["error", "debug", "fix", "issue", "problem", "not working", "failed", "broken"]
+description: Structured debugging workflow. Only when user explicitly asks for help debugging.
+triggers:
+  - "help.*debug"
+  - "how.*fix"
+  - "why.*not working"
+  - "troubleshoot"
+  - "debug.*this"
 ---
 
 <objective>
@@ -17,7 +22,7 @@ Systematically debug and resolve development issues across the stack. Use struct
 4. **Investigate** - Gather evidence
 5. **Fix** - Apply targeted solution
 6. **Verify** - Run quality gate before committing
-</quick_start>
+   </quick_start>
 
 <observe_before_editing>
 **CRITICAL: Confirm what the system actually produced before editing code.**
@@ -38,11 +43,12 @@ tail [logfile]
 ```
 
 **DON'T:**
+
 - Assume "hook didn't run" without checking outputs
-- Edit code based on what you *think* should happen
+- Edit code based on what you _think_ should happen
 - Confuse paths (project vs global, relative vs absolute)
 - Fix bugs you haven't reproduced
-</observe_before_editing>
+  </observe_before_editing>
 
 <quality_gate>
 **MANDATORY: Run CI before every commit. No exceptions.**
@@ -61,12 +67,13 @@ shfmt -w <file>
 ```
 
 **DON'T:**
+
 - Commit then run CI (wrong order)
 - Push then check if CI passes remotely
 - Skip quality checks "just this once"
 - Leave failing tests for "later"
 - Mark work complete before CI passes
-</quality_gate>
+  </quality_gate>
 
 <common_issues>
 **Build failures:**
@@ -106,81 +113,94 @@ bun run db:studio
 # Test endpoint directly with curl
 curl -X POST http://localhost:3000/api/route -H "Content-Type: application/json" -d '{}'
 ```
+
 </common_issues>
 
 <debugging_tools>
 **TypeScript:**
+
 - Use `console.log` strategically
 - Check TypeScript errors: `bun run typecheck`
 - Use debugger with breakpoints
 
 **React:**
+
 - React DevTools for component inspection
 - Check console for hydration mismatches
 - Verify props with console.log
 
 **Database:**
+
 - Drizzle Studio for data inspection
 - Check query with `.toSQL()`
 - Verify migrations ran
 
 **Network:**
+
 - Browser DevTools Network tab
 - Check request/response payloads
 - Verify CORS headers
 
 **Blockchain:**
+
 - Check transaction hash on explorer
 - Verify contract address
 - Check gas estimation
-</debugging_tools>
+  </debugging_tools>
 
 <error_patterns>
 **"Module not found":**
+
 - Check import path (case-sensitive on Linux)
 - Verify package is installed
 - Check tsconfig paths
 
 **"Type X is not assignable to Y":**
+
 - Check type definitions
 - Verify generic parameters
 - Look for version mismatches
 
 **"ECONNREFUSED":**
+
 - Service not running
 - Wrong port/host
 - Firewall blocking
 
 **"Hydration mismatch":**
+
 - Server/client render differently
 - Check conditional rendering
 - Verify date/time handling
-</error_patterns>
+  </error_patterns>
 
 <investigation_strategy>
+
 1. **Read the error message** - Often contains the solution
 2. **Check recent changes** - `git diff` what changed
 3. **Search codebase** - Find similar patterns
 4. **Check documentation** - Use Context7 MCP
 5. **Search issues** - GitHub issues, Stack Overflow
 6. **Isolate the problem** - Create minimal reproduction
-</investigation_strategy>
+   </investigation_strategy>
 
 <simplicity_first>
 **Always prefer the simplest change possible.**
 
 **DO:**
+
 - Make code readable above all else
 - Delete unused code completely (no `_unused` prefixes)
 - Use combined edits so linter can remove unused imports
 - Make bigger changes if they improve readability
 
 **DON'T:**
+
 - Add migration/backwards-compatibility shims
 - Keep code "just in case" (YAGNI)
 - Add abstractions for one-time operations
 - Create helpers for code used once
-</simplicity_first>
+  </simplicity_first>
 
 <mcp_for_debugging>
 **Use MCP to research error patterns:**
@@ -194,18 +214,20 @@ mcp__octocode__githubSearchCode({
   path: "issues",
   mainResearchGoal: "Find similar reported issues",
   researchGoal: "Get solutions from issues",
-  reasoning: "May find documented fix"
-})
+  reasoning: "May find documented fix",
+});
 
 // Get current documentation
 mcp__context7__query_docs({
   context7CompatibleLibraryID: "/library/id",
-  topic: "error handling troubleshooting"
-})
+  topic: "error handling troubleshooting",
+});
 ```
+
 </mcp_for_debugging>
 
 <success_criteria>
+
 - [ ] Observed actual output before editing code
 - [ ] Issue reproduced consistently
 - [ ] Root cause identified
@@ -213,4 +235,4 @@ mcp__context7__query_docs({
 - [ ] Quality gate passed (`bun run ci`)
 - [ ] Issue verified resolved
 - [ ] No regressions introduced
-</success_criteria>
+      </success_criteria>

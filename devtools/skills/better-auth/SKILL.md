@@ -1,7 +1,11 @@
 ---
 name: better-auth
-description: Better Auth authentication library for TypeScript. Covers session management, passkeys, social auth, and organization features. Triggers on better-auth, auth, session, passkey.
-triggers: ["better-auth", "auth", "session", "passkey", "signIn", "signOut", "useSession"]
+description: Better Auth library patterns. Only for projects using better-auth package.
+triggers:
+  - "better-auth"
+  - "betterAuth"
+  - "authClient"
+  - "auth\\.api"
 ---
 
 <objective>
@@ -24,8 +28,8 @@ mcp__octocode__githubSearchCode({
   path: "packages/better-auth/src",
   mainResearchGoal: "Understand Better Auth server configuration",
   researchGoal: "Find auth instance setup patterns",
-  reasoning: "Need current API for Better Auth setup"
-})
+  reasoning: "Need current API for Better Auth setup",
+});
 
 // Passkey configuration
 mcp__octocode__githubSearchCode({
@@ -35,8 +39,8 @@ mcp__octocode__githubSearchCode({
   path: "packages",
   mainResearchGoal: "Understand passkey implementation",
   researchGoal: "Find passkey plugin patterns",
-  reasoning: "Need current API for passkey authentication"
-})
+  reasoning: "Need current API for passkey authentication",
+});
 
 // React hooks
 mcp__octocode__githubSearchCode({
@@ -46,9 +50,10 @@ mcp__octocode__githubSearchCode({
   path: "packages/better-auth/src/client",
   mainResearchGoal: "Understand Better Auth React hooks",
   researchGoal: "Find client-side auth patterns",
-  reasoning: "Need current API for React integration"
-})
+  reasoning: "Need current API for React integration",
+});
 ```
+
 </mcp_first>
 
 <quick_start>
@@ -66,9 +71,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [
-    passkey(),
-  ],
+  plugins: [passkey()],
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -104,9 +107,12 @@ function LoginButton() {
     return <button onClick={() => signOut()}>Sign Out</button>;
   }
 
-  return <button onClick={() => signIn.email({ email, password })}>Sign In</button>;
+  return (
+    <button onClick={() => signIn.email({ email, password })}>Sign In</button>
+  );
 }
 ```
+
 </quick_start>
 
 <plugins>
@@ -120,6 +126,7 @@ function LoginButton() {
 </plugins>
 
 <social_providers>
+
 ```typescript
 socialProviders: {
   google: { clientId, clientSecret },
@@ -128,6 +135,7 @@ socialProviders: {
   apple: { clientId, clientSecret, teamId, keyId, privateKey },
 }
 ```
+
 </social_providers>
 
 <constraints>
@@ -138,10 +146,11 @@ socialProviders: {
 - Handle session in API routes via `auth.api.getSession`
 
 **Security:**
+
 - Never expose auth secret
 - Validate sessions on protected routes
 - Use HTTPS in production
-</constraints>
+  </constraints>
 
 <commands>
 ```bash
@@ -149,8 +158,10 @@ socialProviders: {
 bunx @better-auth/cli generate -y --config=src/lib/auth/index.ts
 
 # After schema changes
+
 bun run db:generate
 bun run db:migrate
+
 ```
 </commands>
 
@@ -161,3 +172,4 @@ bun run db:migrate
 - [ ] Protected routes check session
 - [ ] Social providers configured (if needed)
 </success_criteria>
+```
