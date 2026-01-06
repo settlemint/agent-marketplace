@@ -34,22 +34,22 @@ Provide architectural guidance for prompt-native agent systems. This skill cover
 
 ## Task Routing
 
-| Task | Resource |
-|------|----------|
-| Agent orchestration | `references/orchestration.md` |
-| Iteration loops | `references/iteration-loop.md` |
-| State persistence | `references/state-management.md` |
-| Architecture patterns | `references/architecture/` |
+| Task                  | Resource                         |
+| --------------------- | -------------------------------- |
+| Agent orchestration   | `references/orchestration.md`    |
+| Iteration loops       | `references/iteration-loop.md`   |
+| State persistence     | `references/state-management.md` |
+| Architecture patterns | `references/architecture/`       |
 
 ## Workflows
 
-| Workflow | Purpose |
-|----------|---------|
-| `loop.md` | Iteration loop for autonomous completion |
-| `cancel-loop.md` | Graceful loop termination |
-| `handoff.md` | Create context preservation documents |
-| `compound.md` | Extract learnings into permanent knowledge |
-| `triage.md` | Categorize and prioritize findings |
+| Workflow         | Purpose                                    |
+| ---------------- | ------------------------------------------ |
+| `loop.md`        | Iteration loop for autonomous completion   |
+| `cancel-loop.md` | Graceful loop termination                  |
+| `handoff.md`     | Create context preservation documents      |
+| `compound.md`    | Extract learnings into permanent knowledge |
+| `triage.md`      | Categorize and prioritize findings         |
 
 </routing>
 
@@ -58,11 +58,13 @@ Provide architectural guidance for prompt-native agent systems. This skill cover
 ## Domain Knowledge
 
 ### Core Patterns
+
 - `orchestration.md` - Agent spawning patterns
 - `iteration-loop.md` - Loop mechanics, completion promises
 - `state-management.md` - Unified state format
 
 ### Architecture (`references/architecture/`)
+
 - `architecture-patterns.md` - Prompt-native design
 - `orchestrator-patterns.md` - Agent orchestration
 - `system-prompt-design.md` - System prompts
@@ -73,3 +75,13 @@ Provide architectural guidance for prompt-native agent systems. This skill cover
 - `architecture-checklist.md` - Review checklist
 
 </references>
+
+<success_criteria>
+
+- Agent spawned for heavy lifting, main thread reserved for orchestration decisions
+- State persisted to `.claude/branches/{branch}/state.json` when modified
+- Handoff document created on task completion with context preserved
+- Iteration loop has verifiable completion criteria before starting
+- Parallel agents launched in single message block, not sequential calls
+
+</success_criteria>

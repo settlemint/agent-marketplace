@@ -160,3 +160,14 @@ TaskOutput({ task_id: "t003-id", block: true });
 - [ ] Work log updated on completion
 
 </checklist>
+
+<success_criteria>
+
+- Tasks in `.claude/branches/<slugified-branch>/tasks/`
+- Filename matches pattern `{order}-{status}-{priority}-{story}-{slug}.md`
+- Status in filename matches frontmatter status
+- Each task has acceptance criteria with Given/When/Then
+- Parallel tasks marked with `parallel: true`
+- Work log updated when task status changes
+
+</success_criteria>

@@ -25,14 +25,14 @@ Provide comprehensive guidance on Claude Code's native tools. These tools are op
 
 ## NEVER Use Bash For These Operations
 
-| Bad (Bash) | Good (Native) | Why |
-|------------|---------------|-----|
-| `find . -name "*.ts"` | `Glob({pattern: "**/*.ts"})` | Faster, respects gitignore |
-| `grep -r "pattern" .` | `Grep({pattern: "pattern"})` | Structured output, pagination |
-| `cat file.txt` | `Read({file_path: "file.txt"})` | Line numbers, handles images/PDFs |
-| `head -n 50 file.txt` | `Read({file_path: "file.txt", limit: 50})` | Native pagination |
-| `sed -i 's/old/new/'` | `Edit({old_string: "old", new_string: "new"})` | Safe, atomic, validated |
-| `echo "text" > file` | `Write({file_path: "file", content: "text"})` | Permission checked |
+| Bad (Bash)            | Good (Native)                                  | Why                               |
+| --------------------- | ---------------------------------------------- | --------------------------------- |
+| `find . -name "*.ts"` | `Glob({pattern: "**/*.ts"})`                   | Faster, respects gitignore        |
+| `grep -r "pattern" .` | `Grep({pattern: "pattern"})`                   | Structured output, pagination     |
+| `cat file.txt`        | `Read({file_path: "file.txt"})`                | Line numbers, handles images/PDFs |
+| `head -n 50 file.txt` | `Read({file_path: "file.txt", limit: 50})`     | Native pagination                 |
+| `sed -i 's/old/new/'` | `Edit({old_string: "old", new_string: "new"})` | Safe, atomic, validated           |
+| `echo "text" > file`  | `Write({file_path: "file", content: "text"})`  | Permission checked                |
 
 </critical_rule>
 
@@ -40,20 +40,20 @@ Provide comprehensive guidance on Claude Code's native tools. These tools are op
 
 ## Tool Categories
 
-| Category | Reference | Tools |
-|----------|-----------|-------|
-| File Search | `references/file-search.md` | Glob, Grep |
-| Structural Search | See `ast-grep` skill | ast-grep (sg) for AST patterns |
-| File Operations | `references/file-operations.md` | Read, Edit, Write |
-| User Interaction | `references/user-interaction.md` | AskUserQuestion, TodoWrite |
-| Agent Orchestration | `references/orchestration.md` | Task, TaskOutput |
-| External Resources | `references/external.md` | WebFetch, WebSearch, Bash |
-| MCP Tools | `references/external.md` | Context7, OctoCode, Codex |
+| Category            | Reference                        | Tools                          |
+| ------------------- | -------------------------------- | ------------------------------ |
+| File Search         | `references/file-search.md`      | Glob, Grep                     |
+| Structural Search   | See `ast-grep` skill             | ast-grep (sg) for AST patterns |
+| File Operations     | `references/file-operations.md`  | Read, Edit, Write              |
+| User Interaction    | `references/user-interaction.md` | AskUserQuestion, TodoWrite     |
+| Agent Orchestration | `references/orchestration.md`    | Task, TaskOutput               |
+| External Resources  | `references/external.md`         | WebFetch, WebSearch, Bash      |
+| MCP Tools           | `references/external.md`         | Context7, OctoCode, Codex      |
 
 ## Skill References
 
-| Skill | When to Use |
-|-------|-------------|
+| Skill      | When to Use                                               |
+| ---------- | --------------------------------------------------------- |
 | `ast-grep` | Structural code patterns (function calls, imports, types) |
 
 </routing>
@@ -62,21 +62,21 @@ Provide comprehensive guidance on Claude Code's native tools. These tools are op
 
 ## Tool Permission Matrix
 
-| Tool | Permission Required | Description |
-|------|-------------------|-------------|
-| **Glob** | No | Find files by pattern |
-| **Grep** | No | Search file contents |
-| **Read** | No | Read file contents |
-| **Edit** | Yes | Modify files |
-| **Write** | Yes | Create/overwrite files |
-| **AskUserQuestion** | No | Interactive questions |
-| **TodoWrite** | No | Task tracking |
-| **Task** | No | Spawn sub-agents |
-| **TaskOutput** | No | Get agent results |
-| **Bash** | Yes | Shell commands |
-| **WebFetch** | Yes | Fetch URLs |
-| **WebSearch** | Yes | Web search |
-| **NotebookEdit** | Yes | Edit Jupyter notebooks |
+| Tool                | Permission Required | Description            |
+| ------------------- | ------------------- | ---------------------- |
+| **Glob**            | No                  | Find files by pattern  |
+| **Grep**            | No                  | Search file contents   |
+| **Read**            | No                  | Read file contents     |
+| **Edit**            | Yes                 | Modify files           |
+| **Write**           | Yes                 | Create/overwrite files |
+| **AskUserQuestion** | No                  | Interactive questions  |
+| **TodoWrite**       | No                  | Task tracking          |
+| **Task**            | No                  | Spawn sub-agents       |
+| **TaskOutput**      | No                  | Get agent results      |
+| **Bash**            | Yes                 | Shell commands         |
+| **WebFetch**        | Yes                 | Fetch URLs             |
+| **WebSearch**       | Yes                 | Web search             |
+| **NotebookEdit**    | Yes                 | Edit Jupyter notebooks |
 
 </quick_reference>
 
@@ -86,13 +86,13 @@ Provide comprehensive guidance on Claude Code's native tools. These tools are op
 
 ```javascript
 // Find files matching pattern
-Glob({pattern: "src/**/*.ts"})
+Glob({ pattern: "src/**/*.ts" });
 
 // Search for content (text patterns)
-Grep({pattern: "function handleAuth", type: "ts"})
+Grep({ pattern: "function handleAuth", type: "ts" });
 
 // Read specific file
-Read({file_path: "src/auth/handler.ts"})
+Read({ file_path: "src/auth/handler.ts" });
 ```
 
 ## Structural Code Search (ast-grep skill)
@@ -116,55 +116,60 @@ sg -p 'import { $$$IMPORTS } from "react"' -l typescript
 
 ```javascript
 // Context7 for library documentation
-mcp__plugin_crew_context7__resolve-library-id({libraryName: "react-query"})
-mcp__plugin_crew_context7__query-docs({
-  context7CompatibleLibraryID: "/tanstack/query",
-  topic: "query invalidation"
-})
+mcp__plugin_crew_context7__resolve -
+  library -
+  id({ libraryName: "react-query" });
+mcp__plugin_crew_context7__query -
+  docs({
+    context7CompatibleLibraryID: "/tanstack/query",
+    topic: "query invalidation",
+  });
 
 // OctoCode for GitHub code search
 mcp__plugin_crew_octocode__githubSearchCode({
   keywordsToSearch: ["useQuery"],
   owner: "tanstack",
-  repo: "query"
-})
+  repo: "query",
+});
 
 // Codex for deep reasoning
 mcp__plugin_crew_codex__codex({
   prompt: "Analyze architectural trade-offs...",
-  sandbox: "read-only"
-})
+  sandbox: "read-only",
+});
 ```
 
 ## Edit Workflow
 
 ```javascript
 // ALWAYS read before edit
-Read({file_path: "path/to/file.ts"})
+Read({ file_path: "path/to/file.ts" });
 
 // Make targeted edit
 Edit({
   file_path: "path/to/file.ts",
   old_string: "const x = 1",
-  new_string: "const x = 2"
-})
+  new_string: "const x = 2",
+});
 ```
 
 ## User Decision Points
 
 ```javascript
 AskUserQuestion({
-  questions: [{
-    question: "Which approach should we use?",
-    header: "Approach",
-    options: [
-      {label: "Option A (Recommended)", description: "Fastest, simplest"},
-      {label: "Option B", description: "More flexible"},
-      {label: "Option C", description: "Most robust"}
-    ],
-    multiSelect: false
-  }]
-})
+  questions: [
+    {
+      question: "Which approach should we use?",
+      header: "Approach",
+      options: [
+        { label: "Option A (Recommended)", description: "Fastest, simplest" },
+        { label: "Option B", description: "More flexible" },
+        { label: "Option C", description: "Most robust" },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
 ```
 
 ## Agent Orchestration
@@ -175,12 +180,22 @@ Task({
   subagent_type: "Explore",
   prompt: "Find all API endpoints in src/",
   description: "Find API endpoints",
-  run_in_background: true
-})
+  run_in_background: true,
+});
 
 // Retrieve results
-TaskOutput({task_id: "abc123", block: true})
+TaskOutput({ task_id: "abc123", block: true });
 ```
 
 </common_patterns>
 
+<success_criteria>
+
+- File search uses Glob instead of `find` or `ls`
+- Content search uses Grep instead of `grep` or `rg`
+- File reading uses Read instead of `cat`, `head`, `tail`
+- File editing uses Edit instead of `sed`, `awk`
+- File writing uses Write instead of `echo >` or heredocs
+- Read tool called before any Edit operation
+
+</success_criteria>

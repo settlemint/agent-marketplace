@@ -19,18 +19,18 @@ Provide tools and guidance for creating, auditing, and maintaining skills. Inclu
 
 ## Task Routing
 
-| Task | Workflow |
-|------|----------|
-| Create new skill | `workflows/create-new-skill.md` |
+| Task                          | Workflow                                     |
+| ----------------------------- | -------------------------------------------- |
+| Create new skill              | `workflows/create-new-skill.md`              |
 | Create domain expertise skill | `workflows/create-domain-expertise-skill.md` |
-| Audit existing skill | `workflows/audit-skill.md` |
-| Add workflow to skill | `workflows/add-workflow.md` |
-| Add reference to skill | `workflows/add-reference.md` |
-| Add template to skill | `workflows/add-template.md` |
-| Add script to skill | `workflows/add-script.md` |
-| Upgrade to router | `workflows/upgrade-to-router.md` |
-| Verify skill | `workflows/verify-skill.md` |
-| Get guidance | `workflows/get-guidance.md` |
+| Audit existing skill          | `workflows/audit-skill.md`                   |
+| Add workflow to skill         | `workflows/add-workflow.md`                  |
+| Add reference to skill        | `workflows/add-reference.md`                 |
+| Add template to skill         | `workflows/add-template.md`                  |
+| Add script to skill           | `workflows/add-script.md`                    |
+| Upgrade to router             | `workflows/upgrade-to-router.md`             |
+| Verify skill                  | `workflows/verify-skill.md`                  |
+| Get guidance                  | `workflows/get-guidance.md`                  |
 
 </routing>
 
@@ -38,11 +38,11 @@ Provide tools and guidance for creating, auditing, and maintaining skills. Inclu
 
 ## Templates
 
-| Template | Purpose |
-|----------|---------|
-| `simple-skill.md` | Basic skill structure |
-| `router-skill.md` | Complex skill with routing |
-| `skill-template.md` | Generic skill template |
+| Template            | Purpose                    |
+| ------------------- | -------------------------- |
+| `simple-skill.md`   | Basic skill structure      |
+| `router-skill.md`   | Complex skill with routing |
+| `skill-template.md` | Generic skill template     |
 
 </templates>
 
@@ -72,10 +72,20 @@ Provide tools and guidance for creating, auditing, and maintaining skills. Inclu
 
 Helper scripts are available in `crew/scripts/skills/`:
 
-| Script | Purpose |
-|--------|---------|
-| `init_skill.py` | Initialize new skill structure |
-| `package_skill.py` | Package skill for distribution |
-| `quick_validate.py` | Validate skill structure |
+| Script              | Purpose                        |
+| ------------------- | ------------------------------ |
+| `init_skill.py`     | Initialize new skill structure |
+| `package_skill.py`  | Package skill for distribution |
+| `quick_validate.py` | Validate skill structure       |
 
 </scripts>
+
+<success_criteria>
+
+- SKILL.md has valid YAML frontmatter (name matches directory)
+- Required tags present: `<objective>`, `<quick_start>`, `<success_criteria>`
+- All XML tags properly closed, no markdown headings in body
+- Skill passes `quick_validate.py` without errors
+- Description includes trigger keywords for discovery
+
+</success_criteria>
