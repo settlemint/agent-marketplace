@@ -597,25 +597,60 @@ Use 'git log --oneline' to see all changes.
 
 ### Context Management
 
-**Why parallel agents exhaust context:**
+**Why sessions exhaust context (200K token limit):**
 
 - Each TaskOutput returns full agent output to main thread
+- Large file reads accumulate tokens rapidly
+- Multiple Grep results compound quickly
 - 10 agents × verbose output = context overflow
-- Non-blocking checks still add to context when collected
 
-**Prevention:**
+**Prevention Rules:**
 
-```javascript
-// WRONG - launches too many agents
-for (batch1) { Task(..., run_in_background: true) }
-// "while waiting, let me launch more..."
-for (batch2) { Task(..., run_in_background: true) }  // NO!
+1. **Limit file reads** - Always use `limit` parameter for large files:
 
-// CORRECT - strict batch discipline
-for (batch) { Task(..., run_in_background: true) }  // max 6
-for (batch) { TaskOutput({ block: true }) }  // collect ALL
-// ONLY THEN launch next batch
-```
+   ```javascript
+   // WRONG - reads entire 40KB file
+   Read({ file_path: "src/handlers/identity.ts" });
+
+   // CORRECT - reads first 200 lines
+   Read({ file_path: "src/handlers/identity.ts", limit: 200 });
+   ```
+
+2. **Use background agents** - They don't accumulate in main context:
+
+   ```javascript
+   Task({ ..., run_in_background: true });  // Results summarized
+   ```
+
+3. **Commit frequently** - Each commit is a checkpoint:
+   - Commit after each task completes (already in flow)
+   - Smaller uncommitted work = easier recovery
+
+4. **Manual `/compact` before large operations**:
+   - Before starting a new batch of 6 agents
+   - Before reading multiple large files
+   - When session feels "heavy"
+
+5. **Strict batch discipline** - Never launch while waiting:
+
+   ```javascript
+   // WRONG - launches too many agents
+   for (batch1) { Task(..., run_in_background: true) }
+   // "while waiting, let me launch more..."
+   for (batch2) { Task(..., run_in_background: true) }  // NO!
+
+   // CORRECT - collect ALL before next batch
+   for (batch) { Task(..., run_in_background: true) }  // max 6
+   for (batch) { TaskOutput({ block: true }) }  // collect ALL
+   // ONLY THEN launch next batch
+   ```
+
+**Recovery if context exhausted:**
+
+- Session auto-compacts and resumes
+- Check `.claude/branches/<branch>/tasks/` for progress
+- Completed tasks are renamed `*-complete-*`
+- Continue from first `*-pending-*` task
 
 ### Batch Order
 

@@ -850,6 +850,24 @@ Files created:
 - Tasks: .claude/branches/<branch>/tasks/*.md (X tasks)
 ```
 
+## Context Management
+
+**Prevention of context exhaustion (200K token limit):**
+
+1. **Research agents run in background** - Results summarized when collected
+2. **Use `limit` parameter for large files**:
+   ```javascript
+   Read({ file_path: "large-file.ts", limit: 200 }); // First 200 lines
+   ```
+3. **Manual `/compact` if session feels heavy** - Before launching dimension analysis
+4. **Agents use focused file reads** - Max 2-3 files per agent prompt
+
+**Recovery if context exhausted:**
+
+- Session auto-compacts and resumes with summary
+- Plan file and task files persist in `.claude/` directory
+- Continue from where you left off
+
 ## Constraints
 
 **NEVER CODE!** This command researches and writes plans only.
