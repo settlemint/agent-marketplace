@@ -53,34 +53,24 @@ AskUserQuestion({
 TodoWrite({
   todos: [
     {
-      content: "Validate input and understand current implementation",
+      content: "Validate input",
       status: "in_progress",
       activeForm: "Validating input",
     },
     {
-      content: "Set up branch (if needed)",
+      content: "Set up branch",
       status: "pending",
       activeForm: "Setting up branch",
     },
     {
-      content: "Launch foundational research agents",
+      content: "Launch research (9 agents + Codex)",
       status: "pending",
       activeForm: "Researching",
     },
     {
-      content: "Run spec/flow analysis",
+      content: "Collect research and run spec analysis",
       status: "pending",
-      activeForm: "Analyzing spec/flows",
-    },
-    {
-      content: "Launch dimension analysis",
-      status: "pending",
-      activeForm: "Analyzing dimensions",
-    },
-    {
-      content: "Synthesize findings",
-      status: "pending",
-      activeForm: "Synthesizing",
+      activeForm: "Analyzing specs",
     },
     { content: "Write plan", status: "pending", activeForm: "Writing plan" },
     {
@@ -263,12 +253,15 @@ if (isMainBranch) {
 - Task files need the branch directory to exist
 - Machete layout updated before work begins
 
-### Phase 3: Foundational Research
+### Phase 3: Parallel Research (9 Agents + Codex MCP)
 
-Launch foundational research agents in a **SINGLE message**:
+Launch ALL research agents in a **SINGLE message** for maximum parallelism.
+Then call Codex MCP directly for architectural synthesis:
 
 ```javascript
-// Research agent 1: Codebase patterns
+// ========== FOUNDATIONAL RESEARCH (3 agents) ==========
+
+// Research 1: Codebase patterns
 Task({
   subagent_type: "repo-research-analyst",
   prompt: `CONTEXT: Designing ${feature}
@@ -279,14 +272,14 @@ OUTPUT: Pattern analysis with specific file:line references
 Tools:
 - Glob for file discovery
 - Grep for content search
-- Read for file examination
+- Read with limit for large files
 - ast-grep (sg) for structural patterns
 NEVER use bash find/grep/cat`,
   description: "Repo research",
   run_in_background: true,
 });
 
-// Research agent 2: Best practices
+// Research 2: Best practices
 Task({
   subagent_type: "best-practices-researcher",
   prompt: `CONTEXT: Designing ${feature}
@@ -301,7 +294,7 @@ MCP Tools (prefer over WebFetch):
   run_in_background: true,
 });
 
-// Research agent 3: Git history context
+// Research 3: Git history context
 Task({
   subagent_type: "git-history-analyzer",
   prompt: `CONTEXT: Designing ${feature}
@@ -314,124 +307,13 @@ MCP: OctoCode for PR discussions`,
   description: "History analysis",
   run_in_background: true,
 });
-```
 
-### Phase 4: Collect Foundational Research
+// ========== DIMENSION ANALYSIS (6 agents) ==========
 
-```javascript
-// Collect foundational research results
-const repoResearch = TaskOutput({ task_id: "repo-id", block: true });
-const bestPractices = TaskOutput({ task_id: "bp-id", block: true });
-const historyAnalysis = TaskOutput({ task_id: "hist-id", block: true });
-
-// Update progress
-TodoWrite({
-  todos: [
-    {
-      content: "Validate input",
-      status: "completed",
-      activeForm: "Validating input",
-    },
-    {
-      content: "Launch research agents",
-      status: "completed",
-      activeForm: "Researching",
-    },
-    {
-      content: "Analyze user flows",
-      status: "in_progress",
-      activeForm: "Analyzing flows",
-    },
-    // ...
-  ],
-});
-```
-
-### Phase 5: Spec/Flow Analysis (Depends on Research)
-
-Launch spec-flow-analyzer AFTER foundational research completes, so it can incorporate findings:
-
-```javascript
-// Spec/Flow Analysis - runs AFTER foundational research
-Task({
-  subagent_type: "spec-flow-analyzer",
-  prompt: `CONTEXT: Designing ${feature}
-
-FOUNDATIONAL RESEARCH:
-- Repo Patterns: ${repoResearch}
-- Best Practices: ${bestPractices}
-- History Context: ${historyAnalysis}
-
-SCOPE: Create comprehensive user story analysis incorporating research findings
-CONSTRAINTS:
-- Prioritize stories (P1=MVP, P2=Important, P3=Nice-to-have)
-- Given-When-Then acceptance scenarios
-- Max 3 NEEDS CLARIFICATION markers
-- Define measurable success criteria (SC-XXX)
-- Extract functional requirements (FR-XXX)
-- Reference existing patterns found in research
-OUTPUT:
-- User Stories with priorities and acceptance criteria
-- Functional Requirements (FR-XXX)
-- Success Criteria (SC-XXX)
-- Key Entities
-- Edge Cases
-- Gaps with NEEDS CLARIFICATION
-
-Tools: Glob, Grep, Read (not bash)`,
-  description: "Spec analysis",
-  run_in_background: false, // Wait for this to complete before dimension analysis
-});
-```
-
-### Phase 6: Collect Spec Analysis
-
-```javascript
-// Spec analysis already collected (run_in_background: false)
-// Now we have all research context for dimension analysis
-
-// Update progress
-TodoWrite({
-  todos: [
-    {
-      content: "Validate input",
-      status: "completed",
-      activeForm: "Validating input",
-    },
-    {
-      content: "Launch research agents",
-      status: "completed",
-      activeForm: "Researching",
-    },
-    {
-      content: "Analyze user flows",
-      status: "completed",
-      activeForm: "Analyzing flows",
-    },
-    {
-      content: "Launch dimension analysis",
-      status: "in_progress",
-      activeForm: "Analyzing dimensions",
-    },
-    // ...
-  ],
-});
-```
-
-### Phase 7: Parallel Dimension Analysis (6-Leg)
-
-Launch ALL dimension analysis agents in a **SINGLE message** for parallelism.
-Each produces a dedicated analysis document covering one dimension of the design:
-
-```javascript
 // Dimension 1: API/Interface Design
 Task({
   subagent_type: "api-interface-analyst",
   prompt: `CONTEXT: Designing ${feature}
-RESEARCH CONTEXT:
-- Spec Analysis: ${specAnalysis}
-- Repo Patterns: ${repoResearch}
-
 SCOPE: Analyze API/interface design requirements
 CONSTRAINTS: Match existing API patterns in codebase
 OUTPUT:
@@ -439,9 +321,8 @@ OUTPUT:
 - Request/response schemas
 - Versioning strategy
 - Error handling conventions
-- API consistency assessment
 
-Tools: Glob, Grep, Read (not bash)`,
+Tools: Glob, Grep, Read with limit (not bash)`,
   description: "API design",
   run_in_background: true,
 });
@@ -450,20 +331,15 @@ Tools: Glob, Grep, Read (not bash)`,
 Task({
   subagent_type: "data-model-architect",
   prompt: `CONTEXT: Designing ${feature}
-RESEARCH CONTEXT:
-- Spec Analysis: ${specAnalysis}
-- Repo Patterns: ${repoResearch}
-
 SCOPE: Design data models and storage strategy
 CONSTRAINTS: Match existing ORM/database patterns
 OUTPUT:
 - Entity-relationship model
-- Schema definitions (matching ORM)
+- Schema definitions
 - Migration strategy
-- Index recommendations
 - Data integrity constraints
 
-Tools: Glob, Grep, Read (not bash)`,
+Tools: Glob, Grep, Read with limit (not bash)`,
   description: "Data modeling",
   run_in_background: true,
 });
@@ -472,20 +348,14 @@ Tools: Glob, Grep, Read (not bash)`,
 Task({
   subagent_type: "ux-workflow-analyst",
   prompt: `CONTEXT: Designing ${feature}
-RESEARCH CONTEXT:
-- Spec Analysis: ${specAnalysis}
-- User Stories: ${specAnalysis}
-
 SCOPE: Map user workflows and interaction patterns
 CONSTRAINTS: Match existing UX patterns, ensure accessibility
 OUTPUT:
 - User journey maps
 - Interaction state diagrams
-- Form specifications
 - Accessibility requirements (WCAG 2.1)
-- Error handling UX
 
-Tools: Glob, Grep, Read (not bash)`,
+Tools: Glob, Grep, Read with limit (not bash)`,
   description: "UX workflows",
   run_in_background: true,
 });
@@ -494,20 +364,15 @@ Tools: Glob, Grep, Read (not bash)`,
 Task({
   subagent_type: "scale-performance-analyst",
   prompt: `CONTEXT: Designing ${feature}
-RESEARCH CONTEXT:
-- Spec Analysis: ${specAnalysis}
-- Repo Patterns: ${repoResearch}
-
 SCOPE: Analyze scalability and performance requirements
 CONSTRAINTS: Identify bottlenecks before implementation
 OUTPUT:
-- Load capacity estimates (current, 10x, 100x)
+- Load capacity estimates
 - Bottleneck identification
 - Caching strategy
 - Performance budgets
-- Scaling roadmap
 
-Tools: Glob, Grep, Read (not bash)`,
+Tools: Glob, Grep, Read with limit (not bash)`,
   description: "Scale analysis",
   run_in_background: true,
 });
@@ -516,20 +381,15 @@ Tools: Glob, Grep, Read (not bash)`,
 Task({
   subagent_type: "security-threat-analyst",
   prompt: `CONTEXT: Designing ${feature}
-RESEARCH CONTEXT:
-- Spec Analysis: ${specAnalysis}
-- Repo Patterns: ${repoResearch}
-
 SCOPE: Perform threat modeling and security analysis
 CONSTRAINTS: STRIDE framework, OWASP compliance
 OUTPUT:
 - STRIDE threat model
 - Attack surface map
 - Security requirements
-- Authentication/authorization design
-- Data protection strategy
+- Auth design
 
-Tools: Glob, Grep, Read (not bash)`,
+Tools: Glob, Grep, Read with limit (not bash)`,
   description: "Security analysis",
   run_in_background: true,
 });
@@ -538,30 +398,49 @@ Tools: Glob, Grep, Read (not bash)`,
 Task({
   subagent_type: "integration-dependency-analyst",
   prompt: `CONTEXT: Designing ${feature}
-RESEARCH CONTEXT:
-- Spec Analysis: ${specAnalysis}
-- Repo Patterns: ${repoResearch}
-- Best Practices: ${bestPractices}
-
 SCOPE: Analyze integrations and dependencies
 CONSTRAINTS: Minimize new dependencies, plan for failures
 OUTPUT:
 - External service dependency map
-- Package requirements analysis
-- API integration specs
+- Package requirements
 - Failure modes and fallbacks
-- Version compatibility
 
-Tools: Glob, Grep, Read (not bash)`,
+Tools: Glob, Grep, Read with limit (not bash)`,
   description: "Integration analysis",
   run_in_background: true,
 });
+
+// ========== CODEX SYNTHESIS (direct MCP call) ==========
+
+// Use Codex MCP directly for deep architectural reasoning
+// NOTE: Not a Task - call MCPSearch then the Codex tool directly
+MCPSearch({ query: "select:mcp__plugin_crew_codex__codex" });
+
+// Then call Codex with architectural question
+mcp__plugin_crew_codex__codex({
+  question: `Architecture design for: ${feature}
+
+CONTEXT:
+- Feature: ${feature}
+- Codebase patterns being analyzed by other agents
+
+QUESTION:
+What are the key architectural decisions, trade-offs, and risks for this feature?
+Consider:
+- Cross-cutting concerns
+- Implementation priorities
+- Integration points
+- Potential bottlenecks`,
+});
 ```
 
-### Phase 8: Collect Dimension Analysis
+### Phase 4: Collect All Research
 
 ```javascript
-// Collect all dimension analysis results
+// Collect ALL research results (9 background agents)
+const repoResearch = TaskOutput({ task_id: "repo-id", block: true });
+const bestPractices = TaskOutput({ task_id: "bp-id", block: true });
+const historyAnalysis = TaskOutput({ task_id: "hist-id", block: true });
 const apiDesign = TaskOutput({ task_id: "api-id", block: true });
 const dataModel = TaskOutput({ task_id: "data-id", block: true });
 const uxWorkflows = TaskOutput({ task_id: "ux-id", block: true });
@@ -571,80 +450,79 @@ const integrationAnalysis = TaskOutput({
   task_id: "integration-id",
   block: true,
 });
+// Note: Codex synthesis was called directly via MCP, result available immediately
 
 // Update progress
 TodoWrite({
   todos: [
+    { content: "Validate input", status: "completed", activeForm: "Validated" },
     {
-      content: "Validate input",
+      content: "Set up branch",
       status: "completed",
-      activeForm: "Validating input",
+      activeForm: "Set up branch",
     },
     {
-      content: "Launch research agents",
+      content: "Launch research (9 agents + Codex)",
       status: "completed",
-      activeForm: "Researching",
+      activeForm: "Researched",
     },
     {
-      content: "Spec/flow analysis",
-      status: "completed",
-      activeForm: "Analyzing spec/flows",
-    },
-    {
-      content: "Launch dimension analysis",
-      status: "completed",
-      activeForm: "Analyzing dimensions",
-    },
-    {
-      content: "Synthesize findings",
+      content: "Create user stories",
       status: "in_progress",
-      activeForm: "Synthesizing",
+      activeForm: "Creating stories",
     },
-    // ...
+    { content: "Write plan", status: "pending", activeForm: "Writing plan" },
+    {
+      content: "Generate tasks",
+      status: "pending",
+      activeForm: "Generating tasks",
+    },
   ],
 });
 ```
 
-### Phase 9: Synthesis & Gap Analysis (Optional)
+### Phase 5: Spec/Flow Analysis (Uses Research Context)
 
-For complex features, synthesize dimension analyses and identify cross-cutting concerns:
+Launch spec-flow-analyzer with ALL research context to create prioritized user stories:
 
 ```javascript
 Task({
-  subagent_type: "codex-architect",
+  subagent_type: "spec-flow-analyzer",
   prompt: `CONTEXT: Designing ${feature}
 
-RESEARCH FINDINGS:
-- Spec Analysis: ${specAnalysis}
+RESEARCH CONTEXT:
 - Repo Patterns: ${repoResearch}
 - Best Practices: ${bestPractices}
 - History: ${historyAnalysis}
-
-DIMENSION ANALYSES:
 - API Design: ${apiDesign}
 - Data Model: ${dataModel}
 - UX Workflows: ${uxWorkflows}
-- Scale/Performance: ${scaleAnalysis}
-- Security/Threats: ${securityAnalysis}
+- Scale Analysis: ${scaleAnalysis}
+- Security: ${securityAnalysis}
 - Integrations: ${integrationAnalysis}
+- Architecture: ${codexSynthesis}
 
-SCOPE: Synthesize all findings into coherent technical approach
-CONSTRAINTS: Resolve conflicts between dimensions, identify trade-offs
+SCOPE: Create comprehensive user story analysis using ALL research
+CONSTRAINTS:
+- Prioritize stories (P1=MVP, P2=Important, P3=Nice-to-have)
+- Given-When-Then acceptance scenarios
+- Max 3 NEEDS CLARIFICATION markers
+- Define success criteria (SC-XXX)
+- Extract functional requirements (FR-XXX)
 OUTPUT:
-- Unified technical approach
-- Cross-cutting concerns
-- Dimension conflicts and resolutions
-- Architectural decisions with rationale
-- Risk assessment from all dimensions
-- Implementation phases
+- User Stories with priorities
+- Functional Requirements (FR-XXX)
+- Success Criteria (SC-XXX)
+- Key Entities
+- Gaps with NEEDS CLARIFICATION
 
-MCP: Use Codex for deep reasoning about architectural trade-offs`,
-  description: "Architecture synthesis",
-  run_in_background: false, // Wait for this one
+Tools: Glob, Grep, Read with limit (not bash)`,
+  description: "Spec analysis",
+  run_in_background: false, // Wait for completion
 });
 ```
 
-### Phase 10: Write Plan
+### Phase 6: Write Plan
 
 Write plan to `.claude/plans/<feature-slug>.md` using template structure:
 
@@ -730,7 +608,7 @@ Write plan to `.claude/plans/<feature-slug>.md` using template structure:
 [Any remaining NEEDS CLARIFICATION - max 3]
 ```
 
-### Phase 11: Generate Task Files
+### Phase 7: Generate Task Files
 
 Create individual task files in `.claude/branches/<slugified-branch>/tasks/`:
 
@@ -832,7 +710,7 @@ depends_on: []
 | `us3`    | User Story 3 (P3)      |
 | `polish` | Final: Cleanup         |
 
-### Phase 12: Exit Plan Mode
+### Phase 8: Exit Plan Mode
 
 Exit plan mode to present the plan for user approval:
 
@@ -878,18 +756,13 @@ Files created:
 - [ ] AskUserQuestion used for type clarification
 - [ ] TodoWrite tracks progress throughout
 - [ ] **Branch created early (Phase 2) before research so state writes to correct directory**
-- [ ] **Foundational research agents launched in parallel (single message)**
-- [ ] **spec-flow-analyzer runs AFTER foundational research completes**
-- [ ] spec-flow-analyzer receives research context and produces user stories with P1/P2/P3
-- [ ] **6 dimension agents launched in parallel (single message)**
-- [ ] **api-interface-analyst produces endpoint specifications**
-- [ ] **data-model-architect produces entity schemas**
-- [ ] **ux-workflow-analyst produces user journey maps**
-- [ ] **scale-performance-analyst produces capacity estimates**
-- [ ] **security-threat-analyst produces STRIDE analysis**
-- [ ] **integration-dependency-analyst produces dependency map**
-- [ ] **codex-architect synthesizes all dimension analyses**
-- [ ] MCP tools used for docs (Context7, OctoCode) instead of WebFetch
+- [ ] **All 9 research agents launched in parallel (single message):**
+  - [ ] 3 foundational: repo-research-analyst, best-practices-researcher, git-history-analyzer
+  - [ ] 6 dimension: api-interface-analyst, data-model-architect, ux-workflow-analyst, scale-performance-analyst, security-threat-analyst, integration-dependency-analyst
+- [ ] **Codex MCP called directly for architectural synthesis**
+- [ ] **spec-flow-analyzer runs AFTER all research collected**
+- [ ] spec-flow-analyzer receives ALL research context and produces user stories with P1/P2/P3
+- [ ] MCP tools used for docs (Context7, OctoCode, Codex) instead of WebFetch
 - [ ] Plan written to `.claude/plans/<feature-slug>.md`
 - [ ] Plan contains user stories with acceptance criteria
 - [ ] Plan contains functional requirements (FR-XXX)
