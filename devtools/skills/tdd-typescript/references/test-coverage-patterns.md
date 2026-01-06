@@ -4,6 +4,75 @@
 Comprehensive test suites converge on standard coverage categories. Use this reference to ensure no critical test cases are missed.
 </overview>
 
+<coverage_targets>
+**Coverage targets are minimum thresholds, not aspirational goals.**
+
+| Metric                | Minimum | Good | Excellent | Notes                                        |
+| --------------------- | ------- | ---- | --------- | -------------------------------------------- |
+| **Line coverage**     | 80%     | 85%  | 90%+      | Percentage of code lines executed            |
+| **Branch coverage**   | 75%     | 80%  | 85%+      | Critical for logic paths                     |
+| **Function coverage** | 90%     | 95%  | 98%+      | All public APIs must be tested               |
+| **Critical paths**    | 100%    | 100% | 100%      | Auth, payments, permissions — non-negotiable |
+
+<blocking_criteria>
+**Coverage gates that block merges:**
+
+```yaml
+# Example CI configuration
+coverage:
+  statements: 80
+  branches: 75
+  functions: 90
+  lines: 80
+  # Critical paths require 100%
+  critical:
+    - src/auth/**
+    - src/payments/**
+    - src/permissions/**
+```
+
+**Blocking conditions:**
+
+- PR cannot merge if coverage decreases below threshold
+- Critical path files must maintain 100% coverage
+- New code must have tests (no untested additions)
+- Flaky tests must be fixed, not skipped
+  </blocking_criteria>
+  </coverage_targets>
+
+<priority_analysis>
+**Prioritize test coverage by risk and change frequency.**
+
+| Priority | Weight | Criteria                          | Action                                     |
+| -------- | ------ | --------------------------------- | ------------------------------------------ |
+| **P1**   | 3x     | Critical paths (auth, payments)   | 100% coverage required                     |
+| **P2**   | 2x     | Recently changed (30 days)        | High-change files need tests               |
+| **P3**   | 1.5x   | High complexity (cyclomatic > 10) | Complex logic needs thorough testing       |
+| **P4**   | 2x     | Bug history (issues linked)       | Files with past bugs need regression tests |
+
+<gap_identification>
+**Finding untested code:**
+
+```bash
+# Generate coverage report
+bun run test -- --coverage
+
+# Check for uncovered lines
+# Look for files with < 80% in report
+
+# Priority formula:
+# Score = (Critical × 3) + (RecentChange × 2) + (Complexity × 1.5) + (BugHistory × 2)
+```
+
+**High-priority gaps to address first:**
+
+1. Uncovered error handling in critical paths
+2. Missing edge cases in recently modified code
+3. Untested branches in complex functions
+4. Files with past production bugs lacking regression tests
+   </gap_identification>
+   </priority_analysis>
+
 <coverage_categories>
 
 <category name="happy_path">

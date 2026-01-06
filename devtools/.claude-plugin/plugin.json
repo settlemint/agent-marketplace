@@ -1,7 +1,7 @@
 {
   "name": "devtools",
   "description": "Modern development tools for React, APIs, blockchain, databases, and testing. MCP-first skills with Context7 integration for up-to-date documentation.",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "author": {
     "name": "SettleMint",
     "email": "support@settlemint.com"
