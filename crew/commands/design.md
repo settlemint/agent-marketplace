@@ -180,26 +180,25 @@ AskUserQuestion({
 **IMPORTANT:** Set up the branch early so state files are written to the correct `.claude/branches/{branch}/` directory.
 
 ```javascript
-// Check if already on a feature branch (not main/master)
+// Check current branch
 const currentBranch = Bash({ command: "git branch --show-current" }).trim();
 const isMainBranch = currentBranch === "main" || currentBranch === "master";
 
 if (isMainBranch) {
-  // On main - ask about branch type
+  // On main - MUST create a new branch (never work directly on main)
   AskUserQuestion({
     questions: [
       {
-        question: "How should we set up the branch for this work?",
+        question: "Create a new branch for this work:",
         header: "Branch Type",
         options: [
           {
-            label: "Regular branch (Recommended)",
-            description: "Independent feature branch from main",
+            label: "Feature branch (Recommended)",
+            description: "Independent branch from main",
           },
           {
             label: "Stacked branch",
-            description:
-              "Create as child of an existing feature branch (for stacked PRs)",
+            description: "Child of existing feature branch (for stacked PRs)",
           },
         ],
         multiSelect: false,
@@ -207,36 +206,32 @@ if (isMainBranch) {
     ],
   });
 
-  // If regular branch:
-  Bash({
-    command: `git checkout -b feature/${slug}`,
-    description: "Create feature branch",
-  });
+  // Generate branch name from feature slug
+  const branchName = `feat/${slug}`;
 
-  // If stacked branch - ask for parent:
-  // 1. List existing branches in machete layout (or feature branches)
-  // 2. Create branch and add to machete layout:
-  //    git checkout -b feature/${slug}
-  //    git machete add --onto <selected-parent>
+  // If feature branch:
+  Bash({ command: `git checkout -b ${branchName}` });
+
+  // If stacked branch:
+  // 1. Show existing feature branches
+  // 2. Ask which to stack on
+  // 3. git checkout -b ${branchName}
+  // 4. git machete add --onto <parent>
 } else {
-  // Already on a feature branch - ask if they want to stack
+  // On a feature branch - ask whether to stay or create new
   AskUserQuestion({
     questions: [
       {
-        question: `You're on branch '${currentBranch}'. How should we proceed?`,
+        question: `You're on '${currentBranch}'. How should we proceed?`,
         header: "Branch",
         options: [
           {
-            label: "Stay on current branch",
-            description: "Continue work on this branch",
+            label: "Stay on this branch (Recommended)",
+            description: "Continue work here",
           },
           {
             label: "Create stacked branch",
-            description: `Create child branch of ${currentBranch} (for stacked PRs)`,
-          },
-          {
-            label: "Create independent branch",
-            description: "New branch from main (not stacked)",
+            description: `New branch stacked on ${currentBranch}`,
           },
         ],
         multiSelect: false,
@@ -244,22 +239,19 @@ if (isMainBranch) {
     ],
   });
 
-  // If stacked:
-  //    git checkout -b feature/${slug}
-  //    git machete add --onto ${currentBranch}
-}
+  // If staying: nothing to do, continue with current branch
 
-// Note: Plans and task files are NOT committed to git
-// - .claude/plans/ contains local working documents
-// - .claude/branches/ is gitignored
+  // If stacked:
+  // git checkout -b feat/${slug}
+  // git machete add --onto ${currentBranch}
+}
 ```
 
-**Stacked Branch Benefits:**
+**Why early branch setup:**
 
-- Parent branch from layout becomes PR base automatically
-- `git machete traverse` syncs all branches in stack
-- PR descriptions include stack visualization
-- Easy retargeting when parent is merged
+- State files go to `.claude/branches/{branch}/`
+- Task files need the branch directory to exist
+- Machete layout updated before work begins
 
 ### Phase 3: Foundational Research
 

@@ -45,14 +45,14 @@ TodoWrite({
       activeForm: "Loading document",
     },
     {
-      content: "Load task files",
-      status: "pending",
-      activeForm: "Loading tasks",
-    },
-    {
       content: "Set up branch",
       status: "pending",
       activeForm: "Setting up branch",
+    },
+    {
+      content: "Load task files",
+      status: "pending",
+      activeForm: "Loading tasks",
     },
     {
       content: "Execute task batch 1",
@@ -172,7 +172,90 @@ AskUserQuestion({
 });
 ```
 
-### Phase 2: Load Task Files
+### Phase 2: Branch Setup
+
+**IMPORTANT:** Set up the branch before loading task files (they live in `.claude/branches/{branch}/`).
+
+```javascript
+// Check current branch
+const currentBranch = Bash({ command: "git branch --show-current" }).trim();
+const isMainBranch = currentBranch === "main" || currentBranch === "master";
+
+if (isMainBranch) {
+  // On main - MUST create or switch to a feature branch
+  AskUserQuestion({
+    questions: [
+      {
+        question: "You're on main. Create a new branch for this work:",
+        header: "Branch Type",
+        options: [
+          {
+            label: "Feature branch (Recommended)",
+            description: "Independent branch from main",
+          },
+          {
+            label: "Stacked branch",
+            description: "Child of existing feature branch (for stacked PRs)",
+          },
+        ],
+        multiSelect: false,
+      },
+    ],
+  });
+
+  // Generate branch name from plan slug
+  const branchName = `feat/${planSlug}`;
+
+  // If feature branch:
+  Bash({ command: `git checkout -b ${branchName}` });
+
+  // If stacked branch:
+  // 1. Show existing feature branches
+  // 2. Ask which to stack on
+  // 3. git checkout -b ${branchName}
+  // 4. git machete add --onto <parent>
+} else {
+  // On a feature branch - ask whether to stay or create new
+  AskUserQuestion({
+    questions: [
+      {
+        question: `You're on '${currentBranch}'. How should we proceed?`,
+        header: "Branch",
+        options: [
+          {
+            label: "Stay on this branch (Recommended)",
+            description: "Continue work here",
+          },
+          {
+            label: "Create stacked branch",
+            description: `New branch stacked on ${currentBranch}`,
+          },
+        ],
+        multiSelect: false,
+      },
+    ],
+  });
+
+  // If staying: nothing to do, continue with current branch
+
+  // If stacked:
+  // git checkout -b feat/${planSlug}
+  // git machete add --onto ${currentBranch}
+}
+
+// Sync machete if on stacked branch
+const isStackedBranch =
+  Bash({
+    command:
+      "git machete is-managed $(git branch --show-current) 2>/dev/null && echo 'true' || echo 'false'",
+  }).trim() === "true";
+
+if (isStackedBranch) {
+  Bash({ command: "git machete status", description: "Check stack status" });
+}
+```
+
+### Phase 3: Load Task Files
 
 **CRITICAL**: Load individual task files from branch state
 
@@ -207,78 +290,6 @@ for (const file of taskFiles) {
 // Batch 2: Sequential foundational tasks
 // Batch 3: All parallel US1 tasks
 // etc.
-```
-
-### Phase 3: Environment Setup
-
-```javascript
-// Check if already on a feature branch (not main/master)
-const currentBranch = Bash({ command: "git branch --show-current" }).trim();
-const isMainBranch = currentBranch === "main" || currentBranch === "master";
-
-// Check if current branch is in machete layout (stacked branch)
-const isStackedBranch =
-  Bash({
-    command:
-      "git machete is-managed $(git branch --show-current) 2>/dev/null && echo 'true' || echo 'false'",
-  }).trim() === "true";
-
-if (isMainBranch) {
-  // On main - need to create or switch to feature branch
-  // Note: /crew:design should have already created the branch
-  // If we're here on main, ask user to specify branch
-  AskUserQuestion({
-    questions: [
-      {
-        question: "You're on main. Which branch should we build on?",
-        header: "Branch",
-        options: [
-          // List available feature branches from .claude/plans/ or git branches
-        ],
-        multiSelect: false,
-      },
-    ],
-  });
-} else if (isStackedBranch) {
-  // On a stacked branch - sync with parent before starting work
-  console.log(`On stacked branch: ${currentBranch}`);
-  // Check if out of sync with parent
-  Bash({
-    command: "git machete status",
-    description: "Check stack status",
-  });
-  // Optionally sync if needed (will be prompted by hook)
-} else {
-  // On regular feature branch - just stay on it
-  console.log(`Staying on current branch: ${currentBranch}`);
-}
-
-// Update progress
-TodoWrite({
-  todos: [
-    {
-      content: "Load work document",
-      status: "completed",
-      activeForm: "Loading document",
-    },
-    {
-      content: "Load task files",
-      status: "completed",
-      activeForm: "Loading tasks",
-    },
-    {
-      content: "Set up branch",
-      status: "completed",
-      activeForm: "Setting up branch",
-    },
-    {
-      content: "Execute batch 1 (setup)",
-      status: "in_progress",
-      activeForm: "Running setup",
-    },
-    // ...
-  ],
-});
 ```
 
 ### Phase 4: Batch Execution Loop
