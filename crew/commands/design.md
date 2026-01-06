@@ -17,6 +17,16 @@ This command produces:
 
 ## Native Tools
 
+### EnterPlanMode - Start Planning
+
+Call this FIRST to enter plan mode before any research or writing:
+
+```javascript
+EnterPlanMode();
+```
+
+This signals to Claude Code that we're in planning mode. All research, plan writing, and task generation happens within plan mode. At the end, `ExitPlanMode` will present the plan for user approval.
+
 ### AskUserQuestion - Gather Input
 
 ```javascript
@@ -822,30 +832,22 @@ depends_on: []
 | `us3`    | User Story 3 (P3)      |
 | `polish` | Final: Cleanup         |
 
-### Phase 12: Next Steps
+### Phase 12: Exit Plan Mode
+
+Exit plan mode to present the plan for user approval:
 
 ```javascript
-AskUserQuestion({
-  questions: [
-    {
-      question: "Plan and tasks created. What's next?",
-      header: "Next Step",
-      options: [
-        {
-          label: "Start building (Recommended)",
-          description: "Run /crew:build with this plan",
-        },
-        {
-          label: "Create GitHub issue",
-          description: "Push plan for team review",
-        },
-        { label: "Review the plan", description: "Walk through key sections" },
-        { label: "Done for now", description: "Save and exit" },
-      ],
-      multiSelect: false,
-    },
-  ],
-});
+ExitPlanMode();
+```
+
+After user approves the plan, output:
+
+```
+Plan approved. To start building, run: /crew:build
+
+Files created:
+- Plan: .claude/plans/<slug>.md
+- Tasks: .claude/branches/<branch>/tasks/*.md (X tasks)
 ```
 
 ## Constraints
@@ -854,6 +856,7 @@ AskUserQuestion({
 
 ## Success Criteria
 
+- [ ] **EnterPlanMode called at start (before any research)**
 - [ ] AskUserQuestion used for type clarification
 - [ ] TodoWrite tracks progress throughout
 - [ ] **Branch created early (Phase 2) before research so state writes to correct directory**
@@ -880,4 +883,4 @@ AskUserQuestion({
 - [ ] Parallel tasks marked with `parallel: true`
 - [ ] Branch created (only if on main/master)
 - [ ] Stacked branch option offered (with machete integration)
-- [ ] AskUserQuestion confirms next steps
+- [ ] **ExitPlanMode called at end (presents plan for user approval)**
