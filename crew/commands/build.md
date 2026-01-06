@@ -65,7 +65,11 @@ TodoWrite({
       status: "pending",
       activeForm: "Running quality checks",
     },
-    { content: "Create PR", status: "pending", activeForm: "Creating PR" },
+    {
+      content: "Show summary",
+      status: "pending",
+      activeForm: "Showing summary",
+    },
   ],
 });
 ```
@@ -327,6 +331,22 @@ for (const task of batch) {
       old_string: "## Work Log",
       new_string: `## Work Log\n\n### ${new Date().toISOString()} - Completed\n**By:** Agent\n**Result:** ${output.slice(0, 100)}`,
     });
+
+    // GRANULAR COMMIT: Commit this task immediately
+    // This creates a detailed git history of each change
+    Bash({
+      command: `git add . && git commit -m "$(cat <<'EOF'
+feat(${task.scope}): ${task.title}
+
+Task: ${task.id}
+File: ${task.file_path}
+Status: Complete
+
+${output.slice(0, 200)}
+EOF
+)"`,
+      description: `Commit ${task.id}`,
+    });
   } else {
     // Task failed - log but keep as pending for retry
     console.log(`Task ${task.id} failed: ${output.slice(0, 200)}`);
@@ -438,13 +458,39 @@ ${finding.description}
 });
 ```
 
-### Phase 7: Final Validation
+### Phase 7: Final Validation (MANDATORY - Fix ALL Issues)
+
+**CRITICAL: This phase is NON-NEGOTIABLE. You MUST fix ALL issues found, even those unrelated to the current changes.**
 
 ```javascript
-// Run full CI
-Bash({ command: "bun run ci", description: "Run CI checks" });
+// STEP 1: Run CI checks from repository root
+Bash({
+  command: "cd $(git rev-parse --show-toplevel) && bun run ci",
+  description: "Run CI checks from root",
+});
 
-// Verify all tasks complete (use slugBranch)
+// STEP 2: Run integration tests from repository root
+Bash({
+  command: "cd $(git rev-parse --show-toplevel) && bun run test:integration",
+  description: "Run integration tests from root",
+});
+
+// STEP 3: FIX ALL FAILURES
+// If ANY failures occur:
+// - Type errors: Fix them ALL, even in files you didn't touch
+// - Lint errors: Fix them ALL, even pre-existing ones
+// - Test failures: Fix them ALL, regardless of origin
+// - Integration test failures: Fix them ALL
+
+// STEP 4: Re-run until clean
+// Loop until BOTH commands pass with zero errors:
+while (!ciPassing || !integrationPassing) {
+  // Fix identified issues
+  // Re-run: bun run ci
+  // Re-run: bun run test:integration
+}
+
+// STEP 5: Verify all tasks complete (use slugBranch)
 const remaining = Glob({
   pattern: `.claude/branches/${slugBranch}/tasks/*-pending-*.md`,
 });
@@ -453,56 +499,48 @@ if (remaining.length > 0) {
 }
 ```
 
-### Phase 8: Ship It
+**Why fix unrelated issues?**
+
+- Keeps the codebase healthy
+- Prevents tech debt accumulation
+- Ensures every PR improves overall quality
+- The branch should leave the repo better than it found it
+
+### Phase 8: Summary
+
+**Note: Each task was already committed individually during execution for detailed git history.**
 
 ```javascript
-AskUserQuestion({
-  questions: [
-    {
-      question: `All tasks complete. ${taskCount} tasks done. Ready to ship?`,
-      header: "Ship",
-      options: [
-        {
-          label: "Create PR (Recommended)",
-          description: "Commit, push, and open PR",
-        },
-        { label: "Commit only", description: "Create commit without PR" },
-        { label: "Review diff", description: "Show changes before committing" },
-        { label: "More work needed", description: "Continue editing" },
-      ],
-      multiSelect: false,
-    },
-  ],
-});
-
-// If creating PR (note: git branch uses slash, folder uses hyphen)
+// Show summary of all commits made during this build
 Bash({
-  command: `git add . && git commit -m "$(cat <<'EOF'
-feat(${scope}): ${description}
-
-${body}
-
-Tasks: .claude/branches/${slugBranch}/tasks/
-EOF
-)" && git push -u origin ${branch}`,
-  description: "Commit and push",
+  command: `git log --oneline $(git merge-base HEAD main)..HEAD`,
+  description: "Show commits from this build",
 });
 
-Bash({
-  command: `gh pr create --title "${title}" --body "$(cat <<'EOF'
-## Summary
-${summary}
+// Output summary
+console.log(`
+Build Complete!
+- Branch: ${branch}
+- Commits: ${commitCount}
+- Tasks: .claude/branches/${slugBranch}/tasks/
 
-## Test Plan
-${testPlan}
-
-## Tasks Completed
-See: .claude/branches/${slugBranch}/tasks/
-EOF
-)"`,
-  description: "Create PR",
-});
+Each task has its own commit for detailed history.
+Use 'git log --oneline' to see all changes.
+`);
 ```
+
+**Granular Commit Benefits:**
+
+- Full traceability of each change
+- Easy to revert specific tasks
+- Clear history for code review
+- Bisect-friendly for debugging
+
+**Next Steps (manual):**
+
+- Review commits: `git log --oneline`
+- Push when ready: `git push -u origin <branch>`
+- Create PR: `gh pr create`
 
 ## Parallel Batching Strategy
 
@@ -609,4 +647,6 @@ If all pass: "ALL TESTS PASSING"`,
 - [ ] Quality findings added as new task files
 - [ ] Native tools used for file operations
 - [ ] AskUserQuestion at key decision points
-- [ ] PR created with conventional commit
+- [ ] **MANDATORY: `bun run ci` passes from root** (fix ALL errors, even unrelated)
+- [ ] **MANDATORY: `bun run test:integration` passes from root** (fix ALL errors, even unrelated)
+- [ ] **Granular commits created for each task** (detailed git history)
