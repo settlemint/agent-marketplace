@@ -3,7 +3,25 @@ name: crew:restart
 description: Resume pending work from a previous session
 ---
 
+<prerequisite>
+
+**Load patterns skill first:**
+
+```javascript
+Skill({ skill: "crew:crew-patterns" });
+```
+
+This provides: `<pattern name="user-questions-constraint"/>`.
+
+</prerequisite>
+
 !`${CLAUDE_PLUGIN_ROOT}/scripts/workflow/restart-context.sh`
+
+<constraints>
+
+**CRITICAL: Follow `<pattern name="user-questions-constraint"/>` - NEVER output plain text questions.**
+
+</constraints>
 
 <process>
 
@@ -42,14 +60,35 @@ TodoWrite({ todos: state.todos });
 // Resume from last in_progress item
 ```
 
-**If nothing pending:**
+**If nothing pending but context shows actionable items (PRs, branches, etc.):**
 
 ```javascript
-// Inform user - no pending work to resume
+AskUserQuestion({
+  questions: [
+    {
+      question: "What would you like to do?",
+      header: "Action",
+      options: [
+        {
+          label: "Create PR",
+          description: "Open pull request for current branch",
+        },
+        {
+          label: "Clean branches",
+          description: "Remove stale/merged branches",
+        },
+        { label: "Sync stack", description: "Traverse and sync branch stack" },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
 ```
 
-</phase>
+**If truly nothing to resume:**
 
-Execute immediately without confirmation.
+Report: "No pending work found."
+
+</phase>
 
 </process>

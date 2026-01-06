@@ -4,6 +4,12 @@ description: Remove merged branches from stack and reconnect children
 allowed-tools: Bash(git machete:*), Bash(git branch:*), Bash(git fetch:*)
 ---
 
+<constraints>
+
+**CRITICAL: NEVER output plain text questions. Use AskUserQuestion tool for all user choices.**
+
+</constraints>
+
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 
 <what_happens>

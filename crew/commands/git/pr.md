@@ -4,6 +4,12 @@ description: Commit, push, and open a PR
 allowed-tools: Bash(git checkout:*), Bash(git add:*), Bash(git status:*), Bash(git push:*), Bash(git commit:*), Bash(git fetch:*), Bash(gh pr create:*), Bash(git machete:*), AskUserQuestion
 ---
 
+<constraints>
+
+**CRITICAL: NEVER output plain text questions. Use AskUserQuestion tool for all user choices.**
+
+</constraints>
+
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/pr-context.sh`
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 
