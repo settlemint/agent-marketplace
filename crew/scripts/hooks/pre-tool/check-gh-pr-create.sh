@@ -1,10 +1,20 @@
 #!/bin/bash
-# Block direct gh pr create and suggest skill instead
-# Hooks must never fail - use defensive error handling
+# Block direct gh pr create and guide to /crew:git:pr skill
+# Uses JSON permissionDecision for clean UX (no red error blocks)
 set +e
 
 input=$(cat)
+cmd=$(echo "$input" | jq -r '.tool_input.command // empty' 2>/dev/null)
 
-if echo "$input" | jq -r '.tool_input.command // empty' 2>/dev/null | grep -qE 'gh pr create'; then
-	echo 'STOP: Use Skill({skill: "commit-commands:commit-push-pr"}) instead for templated PRs with proper summary and test plan format.'
+if echo "$cmd" | grep -qE 'gh pr create'; then
+	cat <<'EOF'
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "deny",
+    "permissionDecisionReason": "Use the /crew:git:pr skill for templated PRs with proper summary and test plan.\n\nInvoke: Skill({skill: \"crew:git:pr\"})\n\nThis creates PRs with consistent formatting and handles machete stacks automatically."
+  }
+}
+EOF
+	exit 0
 fi

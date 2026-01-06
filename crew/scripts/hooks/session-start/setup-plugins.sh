@@ -1,33 +1,200 @@
 #!/usr/bin/env bash
-# Setup and update plugins on session startup
-# Ensures all recommended plugins are installed with auto-update enabled
+#
+# Setup and update plugins for Claude Code
+# Can be run as:
+#   1. SessionStart hook (stdin contains event JSON)
+#   2. Direct execution via curl for initial setup
+#
+set -euo pipefail
 
-set +e
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-# Read stdin to get event info
-INPUT=$(cat)
-EVENT_TYPE=$(echo "$INPUT" | jq -r '.type // "unknown"' 2>/dev/null)
+# Status symbols
+CHECK="${GREEN}✓${NC}"
+CROSS="${RED}✗${NC}"
+ARROW="${BLUE}→${NC}"
+WARN="${YELLOW}⚠${NC}"
 
-# Only run on fresh startup, not compact/resume
-if [[ $EVENT_TYPE != "startup" ]]; then
-  exit 0
+# Track errors
+ERRORS=()
+
+info() { echo -e "${ARROW} $1"; }
+success() { echo -e "${CHECK} $1"; }
+warn() { echo -e "${WARN} $1"; }
+error() {
+	echo -e "${CROSS} $1" >&2
+	ERRORS+=("$1")
+}
+
+# Check if running as hook - skip on compact/resume events
+if [[ ! -t 0 ]]; then
+	# Pipe/stdin - likely hook, check event type
+	INPUT=$(cat)
+	EVENT_TYPE=$(echo "$INPUT" | jq -r '.type // "unknown"' 2>/dev/null || echo "direct")
+
+	if [[ $EVENT_TYPE == "compact" || $EVENT_TYPE == "resume" ]]; then
+		# Skip on compact/resume - only run on fresh startup or direct execution
+		exit 0
+	fi
 fi
 
-# Add marketplaces (idempotent - won't fail if already added)
-claude plugin marketplace add settlemint/agent-marketplace 2>/dev/null || true
-claude plugin marketplace add anthropics/claude-plugins-official 2>/dev/null || true
-claude plugin marketplace add sawyerhood/dev-browser 2>/dev/null || true
+# Check if claude CLI is available
+if ! command -v claude &>/dev/null; then
+	error "Claude CLI not found. Please install Claude Code first."
+	echo "  Visit: https://claude.ai/code"
+	exit 1
+fi
 
-# Install plugins (idempotent)
-claude plugin install crew@settlemint 2>/dev/null || true
-claude plugin install devtools@settlemint 2>/dev/null || true
-claude plugin install typescript-lsp@claude-plugins-official 2>/dev/null || true
-claude plugin install frontend-design@claude-plugins-official 2>/dev/null || true
-claude plugin install dev-browser@dev-browser-marketplace 2>/dev/null || true
+echo ""
+echo "================================"
+echo "  Claude Code Plugin Setup"
+echo "================================"
+echo ""
 
-# Trigger update for all marketplaces
-claude plugin marketplace update settlemint 2>/dev/null || true
-claude plugin marketplace update claude-plugins-official 2>/dev/null || true
-claude plugin marketplace update dev-browser-marketplace 2>/dev/null || true
+# Function to add marketplace
+add_marketplace() {
+	local repo="$1"
+	local name="$2"
 
-exit 0
+	info "Adding marketplace: $name"
+
+	output=$(claude plugin marketplace add "$repo" 2>&1) || true
+
+	if echo "$output" | grep -qi "already added\|already exists\|already registered"; then
+		success "$name marketplace already configured"
+		return 0
+	elif echo "$output" | grep -qi "added\|success"; then
+		success "$name marketplace added"
+		return 0
+	elif [[ -z "$output" ]]; then
+		success "$name marketplace configured"
+		return 0
+	else
+		# Check if it's a real error
+		if echo "$output" | grep -qi "error\|fail\|not found\|invalid"; then
+			error "Failed to add $name marketplace: $output"
+			return 1
+		else
+			# Unknown output, assume success
+			success "$name marketplace configured"
+			return 0
+		fi
+	fi
+}
+
+# Function to update marketplace
+update_marketplace() {
+	local name="$1"
+
+	info "Updating marketplace: $name"
+
+	output=$(claude plugin marketplace update "$name" 2>&1) || true
+
+	if echo "$output" | grep -qi "up to date\|already up\|no updates"; then
+		success "$name is up to date"
+		return 0
+	elif echo "$output" | grep -qi "updated\|success"; then
+		success "$name updated"
+		return 0
+	elif [[ -z "$output" ]]; then
+		success "$name checked"
+		return 0
+	else
+		if echo "$output" | grep -qi "error\|fail\|not found"; then
+			warn "Could not update $name: $output"
+			return 0 # Non-fatal
+		else
+			success "$name checked"
+			return 0
+		fi
+	fi
+}
+
+# Function to install plugin
+install_plugin() {
+	local plugin="$1"
+	local display_name="${2:-$plugin}"
+
+	info "Installing plugin: $display_name"
+
+	output=$(claude plugin install "$plugin" 2>&1) || true
+
+	if echo "$output" | grep -qi "already installed\|already enabled"; then
+		success "$display_name already installed"
+		return 0
+	elif echo "$output" | grep -qi "installed\|enabled\|success"; then
+		success "$display_name installed"
+		return 0
+	elif [[ -z "$output" ]]; then
+		success "$display_name configured"
+		return 0
+	else
+		if echo "$output" | grep -qi "error\|fail\|not found\|invalid"; then
+			error "Failed to install $display_name: $output"
+			return 1
+		else
+			success "$display_name configured"
+			return 0
+		fi
+	fi
+}
+
+echo "Step 1: Adding Marketplaces"
+echo "----------------------------"
+add_marketplace "settlemint/agent-marketplace" "SettleMint"
+add_marketplace "anthropics/claude-plugins-official" "Anthropic Official"
+add_marketplace "sawyerhood/dev-browser" "Dev Browser"
+echo ""
+
+echo "Step 2: Updating Marketplaces"
+echo "-----------------------------"
+update_marketplace "settlemint"
+update_marketplace "claude-plugins-official"
+update_marketplace "dev-browser-marketplace"
+echo ""
+
+echo "Step 3: Installing Plugins"
+echo "--------------------------"
+echo ""
+echo "Core plugins:"
+install_plugin "crew@settlemint" "crew (orchestration)"
+install_plugin "devtools@settlemint" "devtools (development skills)"
+echo ""
+echo "Additional plugins:"
+install_plugin "typescript-lsp@claude-plugins-official" "typescript-lsp"
+install_plugin "frontend-design@claude-plugins-official" "frontend-design"
+install_plugin "dev-browser@dev-browser-marketplace" "dev-browser"
+echo ""
+
+# Summary
+echo "================================"
+if [[ ${#ERRORS[@]} -eq 0 ]]; then
+	echo -e "${GREEN}Setup complete!${NC}"
+	echo ""
+	echo "Installed plugins:"
+	echo "  • crew@settlemint - Work orchestration (/design, /build, /check)"
+	echo "  • devtools@settlemint - Development skills (React, API, etc.)"
+	echo "  • typescript-lsp - TypeScript language server"
+	echo "  • frontend-design - UI/UX assistance"
+	echo "  • dev-browser - Browser automation"
+	echo ""
+	echo "Get started:"
+	echo "  /crew:design <feature>  - Plan a feature"
+	echo "  /crew:build             - Execute the plan"
+	echo "  /crew:check             - Review code quality"
+	echo "================================"
+	exit 0
+else
+	echo -e "${RED}Setup completed with ${#ERRORS[@]} error(s):${NC}"
+	for err in "${ERRORS[@]}"; do
+		echo -e "  ${CROSS} $err"
+	done
+	echo "================================"
+	exit 1
+fi
+

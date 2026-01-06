@@ -2,6 +2,8 @@
 # Stop hook: Check if iteration loop should continue
 # This intercepts session exits and re-feeds prompts if loop is active
 # State is stored in unified branch state: .claude/branches/{branch}/state.json
+#
+# PERFORMANCE: Single jq call to extract all loop fields
 
 set -euo pipefail
 
@@ -20,13 +22,16 @@ if [ ! -f "$STATE_FILE" ]; then
 	exit 0
 fi
 
-# Read loop state from unified state file
-STATE=$(cat "$STATE_FILE")
-ACTIVE=$(echo "$STATE" | jq -r '.loop.active // false')
-ITERATION=$(echo "$STATE" | jq -r '.loop.iteration // 1')
-MAX_ITERATIONS=$(echo "$STATE" | jq -r '.loop.maxIterations // 10')
-COMPLETION_PROMISE=$(echo "$STATE" | jq -r '.loop.completionPromise // "COMPLETE"')
-PROMPT=$(echo "$STATE" | jq -r '.loop.prompt // ""')
+# PERFORMANCE: Single jq call extracts all loop fields at once
+LOOP_DATA=$(jq -r '[
+  (.loop.active // false | tostring),
+  (.loop.iteration // 1 | tostring),
+  (.loop.maxIterations // 10 | tostring),
+  .loop.completionPromise // "COMPLETE",
+  .loop.prompt // ""
+] | @tsv' "$STATE_FILE" 2>/dev/null)
+
+IFS=$'\t' read -r ACTIVE ITERATION MAX_ITERATIONS COMPLETION_PROMISE PROMPT <<<"$LOOP_DATA"
 
 # Loop not active - allow exit
 if [ "$ACTIVE" != "true" ]; then
@@ -46,9 +51,9 @@ if [ "$ITERATION" -ge "$MAX_ITERATIONS" ]; then
 	echo ""
 	echo "The loop has completed its maximum iterations."
 	echo "Review progress and decide next steps:"
-	echo "  - Continue manually from current state"
-	echo "  - Start new loop: /workflows:loop \"...\""
-	echo "  - Create handoff: /workflows:handoff session"
+	echo "  - Continue manually with /crew:build"
+	echo "  - Commit progress: /crew:git:commit"
+	echo "  - Review code: /crew:check"
 	echo ""
 	exit 0
 fi
@@ -69,8 +74,8 @@ if [ -n "${CLAUDE_STOP_TRANSCRIPT:-}" ]; then
 		echo "Completion promise detected: <promise>$COMPLETION_PROMISE</promise>"
 		echo ""
 		echo "Next steps:"
-		echo "  - Create handoff: /workflows:handoff task \"Loop completed\""
-		echo "  - Compound learnings: /workflows:compound"
+		echo "  - Commit progress: /crew:git:commit"
+		echo "  - Create PR: /crew:git:pr"
 		echo ""
 		exit 0
 	fi
@@ -102,7 +107,7 @@ echo "  - Check CI status: bun run ci"
 echo "  - If complete, output the promise tag"
 echo "  - If not, continue working"
 echo ""
-echo "To stop early: /workflows:cancel-loop"
+echo "To stop: Output the promise tag or let iterations complete"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
