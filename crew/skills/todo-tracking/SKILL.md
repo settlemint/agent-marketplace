@@ -1,64 +1,54 @@
 ---
 name: todo-tracking
-description: Branch-scoped task system for persistent task management across sessions.
+description: Persistent task files in .claude/branches/. Use for multi-session work tracking.
 triggers:
-  - "todo"
-  - "task"
+  - "persistent task"
+  - "save progress"
+  - "branch.*task"
+  - "\\.claude/branches"
   - "task file"
-  - "branch task"
-  - "tasks/"
 ---
 
 <objective>
 
-All tasks live in `.claude/branches/<slugified-branch>/tasks/` as individual files with ordering support.
+Tasks in `.claude/branches/<slugified-branch>/tasks/` as individual files with ordering.
 
-**One location. One format. Always on a branch. Branch names slugified (/ → -).**
+**One location. One format. Always on branch. Slugified (/ → -).**
 
 </objective>
 
 <routing>
 
-## Resources
-
-| Resource                          | Purpose                            |
-| --------------------------------- | ---------------------------------- |
-| `references/branch-tasks.md`      | Complete task system documentation |
-| `templates/task-file-template.md` | Individual task file format        |
-| `templates/plan-template.md`      | Plan document format               |
+| Resource                          | Purpose                |
+| --------------------------------- | ---------------------- |
+| `references/branch-tasks.md`      | Complete documentation |
+| `templates/task-file-template.md` | Task file format       |
+| `templates/plan-template.md`      | Plan document format   |
 
 </routing>
 
 <quick_start>
 
-## Quick Start
-
-### File Location
+**Location:**
 
 ```text
 .claude/branches/<branch>/tasks/
 ├── 001-pending-p1-setup-create-structure.md
-├── 002-pending-p1-setup-install-deps.md
 ├── 010-pending-p1-us1-create-user-model.md
-├── 011-complete-p1-us1-implement-auth.md
-├── 050-pending-p1-found-fix-type-error.md  # From /crew:check
+├── 050-pending-p1-found-fix-type-error.md
 └── 099-pending-p3-polish-update-docs.md
 ```
 
-### File Naming
+**Naming:** `{order}-{status}-{priority}-{story}-{slug}.md`
 
-```text
-{order}-{status}-{priority}-{story}-{slug}.md
-```
+- order: 001, 002... (3 digits)
+- status: pending, in_progress, complete
+- priority: p1, p2, p3
+- story: setup, found, us1, us2, polish
 
-- **order**: 001, 002... (3 digits)
-- **status**: pending, in_progress, complete
-- **priority**: p1, p2, p3
-- **story**: setup, found, us1, us2, polish
+**Frontmatter:**
 
-### Task File Structure
-
-```markdown
+```yaml
 ---
 status: pending
 priority: p1
@@ -67,96 +57,49 @@ parallel: true
 file_path: src/models/user.ts
 depends_on: []
 ---
-
-# T010: Create User model
-
-## Description
-
-[What and why]
-
-## Acceptance Criteria
-
-- [ ] **Given** X, **When** Y, **Then** Z
-
-## File Path
-
-`src/models/user.ts`
-
-## Work Log
-
-### [DATE] - Created
-
-**By:** /crew:design
 ```
 
 </quick_start>
 
 <parallel_strategy>
 
-## Parallel Agent Strategy
-
-**One task = One agent. Launch many in parallel.**
+One task = One agent. Launch many in parallel.
 
 ```javascript
-// Launch all parallel tasks in SINGLE message
+// Launch ALL parallel tasks in SINGLE message
 Task({
   subagent_type: "general-purpose",
   prompt: "T001...",
-  description: "T001",
   run_in_background: true,
 });
 Task({
   subagent_type: "general-purpose",
   prompt: "T002...",
-  description: "T002",
   run_in_background: true,
 });
-Task({
-  subagent_type: "general-purpose",
-  prompt: "T003...",
-  description: "T003",
-  run_in_background: true,
-});
-
-// Collect results
-TaskOutput({ task_id: "t001-id", block: true });
-TaskOutput({ task_id: "t002-id", block: true });
-TaskOutput({ task_id: "t003-id", block: true });
-
-// Launch next batch...
+// Collect ALL before next batch
+TaskOutput({ task_id: "t001", block: true });
+TaskOutput({ task_id: "t002", block: true });
 ```
-
-**Rules:**
-
-- Each task handles ONE small piece of work
-- Only launch tasks with `parallel: true`
-- Batch and collect before next batch
-- Small scope = faster completion = less context exhaustion
 
 </parallel_strategy>
 
 <command_integration>
 
-## Command Integration
-
-| Command        | Action                                         |
-| -------------- | ---------------------------------------------- |
-| `/crew:design` | Creates plan + individual task files           |
-| `/crew:build`  | Reads tasks, launches parallel agents by batch |
-| `/crew:check`  | Adds finding files as new tasks                |
-| `/crew:fix`    | Works through pending tasks                    |
+| Command        | Action                             |
+| -------------- | ---------------------------------- |
+| `/crew:design` | Creates plan + task files          |
+| `/crew:build`  | Executes tasks in parallel batches |
+| `/crew:check`  | Adds findings as tasks             |
 
 </command_integration>
 
-<checklist>
+<success_criteria>
 
-## Validation Checklist
+- Tasks in `.claude/branches/<slugified-branch>/tasks/`
+- Filename: `{order}-{status}-{priority}-{story}-{slug}.md`
+- Status in filename matches frontmatter
+- Each task has acceptance criteria
+- Parallel tasks marked `parallel: true`
 
-- [ ] Tasks in `.claude/branches/<slugified-branch>/tasks/` (feat/foo → feat-foo)
-- [ ] Filenames follow ordering convention
-- [ ] Status matches filename AND frontmatter
-- [ ] Each task has acceptance criteria
-- [ ] Parallel tasks marked appropriately
-- [ ] Work log updated on completion
-
-</checklist>
+</success_criteria>

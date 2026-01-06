@@ -57,12 +57,13 @@ Self-contained knowledge modules with:
 
 ### Hooks
 
-Lifecycle automation:
+Lifecycle automation (non-blocking):
 
-- `SessionStart` - Restore state on startup
+- `SessionStart` - Restore state on startup, check available linters
 - `PreCompact` - Save state before compaction
-- `PostToolUse` - Auto-lint on file modifications
-- `PreToolUse` - Validate commits and PRs
+- `PreToolUse` - Suggest relevant skills (e.g., /crew:ci for test commands)
+- `PostToolUse` - Auto-lint on file edits, sync machete stack, track agents
+- `Stop` - Check for agent loops
 
 ### MCP Servers
 

@@ -101,35 +101,15 @@ Examples:
 
 ## Helper Scripts
 
-```bash
-# Get repo info
-.claude/skills/crew/scripts/git/gh-repo-info.sh
+Available in the plugin's `scripts/git/` directory:
 
-# Get PR info for current branch
-.claude/skills/crew/scripts/git/gh-pr-info.sh
-
-# Get unresolved PR comments
-.claude/skills/crew/scripts/git/gh-pr-threads.sh
-
-# Resolve a PR thread
-.claude/skills/crew/scripts/git/gh-pr-resolve-thread.sh <thread_id>
-```
+| Script                    | Purpose                        |
+| ------------------------- | ------------------------------ |
+| `gh-pr-info.sh`           | Get PR info for current branch |
+| `gh-pr-threads.sh`        | Get unresolved PR comments     |
+| `gh-pr-resolve-thread.sh` | Resolve a PR thread            |
 
 </github_scripts>
-
-<hooks>
-
-## Automated Guardrails
-
-| Hook                 | Trigger            | Action                          |
-| -------------------- | ------------------ | ------------------------------- |
-| `check-git-commit`   | PreToolUse (Bash)  | Validates commit message format |
-| `check-gh-pr-create` | PreToolUse (Bash)  | Validates PR creation           |
-| `post-push-review`   | PostToolUse (Bash) | Suggests PR review after push   |
-
-Located in: `.claude/skills/crew/scripts/hooks/`
-
-</hooks>
 
 <related_skills>
 

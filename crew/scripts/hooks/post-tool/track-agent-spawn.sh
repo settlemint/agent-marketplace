@@ -31,7 +31,7 @@ IFS=$'\t' read -r AGENT_ID SUBAGENT_TYPE DESCRIPTION RUN_IN_BACKGROUND <<<"$PARS
 # Get branch info
 BRANCH=$(git -C "$PROJECT_DIR" branch --show-current 2>/dev/null || echo '')
 if [[ -z $BRANCH ]]; then
-  BRANCH=$(git -C "$PROJECT_DIR" rev-parse --short HEAD 2>/dev/null || echo 'unknown')
+	BRANCH=$(git -C "$PROJECT_DIR" rev-parse --short HEAD 2>/dev/null || echo 'unknown')
 fi
 SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-')
 
@@ -42,12 +42,12 @@ AGENTS_FILE="$BRANCH_DIR/agents.json"
 
 # Initialize agents file if doesn't exist or is invalid JSON
 if [[ ! -f $AGENTS_FILE ]] || ! jq empty "$AGENTS_FILE" 2>/dev/null; then
-  echo '{"agents":[],"stats":{"total_spawned":0,"completed":0,"failed":0,"stuck":0}}' >"$AGENTS_FILE"
+	echo '{"agents":[],"stats":{"total_spawned":0,"completed":0,"failed":0,"stuck":0}}' >"$AGENTS_FILE"
 fi
 
 # Generate unique ID if not provided
 if [[ -z $AGENT_ID || $AGENT_ID == "null" ]]; then
-  AGENT_ID="agent-$(date +%s)-$$"
+	AGENT_ID="agent-$(date +%s)-$$"
 fi
 
 # Add new agent entry
@@ -59,13 +59,14 @@ SPAWN_EPOCH=$(date +%s)
 [[ -z $RUN_IN_BACKGROUND || $RUN_IN_BACKGROUND == "null" ]] && RUN_IN_BACKGROUND="false"
 
 # Add new agent entry (suppress errors to avoid polluting context)
+TMP_FILE="${AGENTS_FILE}.tmp"
 if jq --arg id "$AGENT_ID" \
-  --arg type "$SUBAGENT_TYPE" \
-  --arg desc "$DESCRIPTION" \
-  --arg time "$SPAWN_TIME" \
-  --argjson epoch "$SPAWN_EPOCH" \
-  --argjson background "$RUN_IN_BACKGROUND" \
-  '.agents += [{
+	--arg type "$SUBAGENT_TYPE" \
+	--arg desc "$DESCRIPTION" \
+	--arg time "$SPAWN_TIME" \
+	--argjson epoch "$SPAWN_EPOCH" \
+	--argjson background "$RUN_IN_BACKGROUND" \
+	'.agents += [{
     "id": $id,
     "type": $type,
     "description": $desc,
@@ -76,10 +77,10 @@ if jq --arg id "$AGENT_ID" \
     "completed_at": null,
     "result": null,
     "nudge_count": 0
-  }] | .stats.total_spawned += 1' "$AGENTS_FILE" >"${AGENTS_FILE}.tmp" 2>/dev/null; then
-  mv "${AGENTS_FILE}.tmp" "$AGENTS_FILE"
+  }] | .stats.total_spawned += 1' "$AGENTS_FILE" >"$TMP_FILE" 2>/dev/null && [[ -s $TMP_FILE ]]; then
+	mv "$TMP_FILE" "$AGENTS_FILE" 2>/dev/null || rm -f "$TMP_FILE"
 else
-  rm -f "${AGENTS_FILE}.tmp"
+	rm -f "$TMP_FILE"
 fi
 
 # Silent tracking - no output to keep context clean

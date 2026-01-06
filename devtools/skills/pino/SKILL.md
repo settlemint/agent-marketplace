@@ -1,7 +1,8 @@
 ---
 name: pino
 description: Pino fast JSON logger for Node.js. Covers log levels, child loggers, transports, and redaction. Triggers on pino, logger, log.info, log.error.
-triggers: ["pino", "logger", "log\\.info", "log\\.error", "log\\.warn", "log\\.debug"]
+triggers:
+  ["pino", "logger", "log\\.info", "log\\.error", "log\\.warn", "log\\.debug"]
 ---
 
 <objective>
@@ -24,8 +25,8 @@ mcp__octocode__githubSearchCode({
   path: "lib",
   mainResearchGoal: "Understand Pino logger configuration",
   researchGoal: "Find logger setup patterns",
-  reasoning: "Need current API for Pino setup"
-})
+  reasoning: "Need current API for Pino setup",
+});
 
 // Transports
 mcp__octocode__githubSearchCode({
@@ -35,24 +36,27 @@ mcp__octocode__githubSearchCode({
   path: "docs",
   mainResearchGoal: "Understand Pino transports",
   researchGoal: "Find transport configuration patterns",
-  reasoning: "Need current API for log transports"
-})
+  reasoning: "Need current API for log transports",
+});
 ```
+
 </mcp_first>
 
 <quick_start>
-**Basic setup:**
+**Templates:**
+
+| Template                         | Purpose                             |
+| -------------------------------- | ----------------------------------- |
+| `templates/logger-setup.ts.md`   | Logger configuration with redaction |
+| `templates/request-logger.ts.md` | HTTP request middleware             |
+
+**Basic usage:**
 
 ```typescript
-import pino from "pino";
-
-const logger = pino({
-  level: process.env.LOG_LEVEL || "info",
-});
+import { logger } from "./logger";
 
 logger.info("Server started");
 logger.error({ err }, "Database connection failed");
-logger.debug({ userId }, "User authenticated");
 ```
 
 **With pretty printing (development):**
@@ -80,6 +84,7 @@ const requestLogger = logger.child({ requestId: req.id });
 requestLogger.info("Processing request");
 // Output: {"level":30,"requestId":"abc123","msg":"Processing request"}
 ```
+
 </quick_start>
 
 <log_levels>
@@ -123,12 +128,15 @@ function requestLogger(req, res, next) {
   const log = logger.child({ requestId: req.id });
 
   res.on("finish", () => {
-    log.info({
-      method: req.method,
-      url: req.url,
-      status: res.statusCode,
-      duration: Date.now() - start,
-    }, "Request completed");
+    log.info(
+      {
+        method: req.method,
+        url: req.url,
+        status: res.statusCode,
+        duration: Date.now() - start,
+      },
+      "Request completed",
+    );
   });
 
   req.log = log;
@@ -145,6 +153,7 @@ const logger = pino({
 
 logger.info({ password: "secret123" }); // password: "[Redacted]"
 ```
+
 </patterns>
 
 <transports>
@@ -181,6 +190,7 @@ const logger = pino({
   },
 });
 ```
+
 </transports>
 
 <constraints>
@@ -192,15 +202,17 @@ const logger = pino({
 - Set appropriate log level per environment
 
 **Performance:**
+
 - Pino is async by default
 - Use `pino.destination()` for sync in critical paths
 - Avoid logging in hot paths
-</constraints>
+  </constraints>
 
 <success_criteria>
+
 - [ ] Logger configured with appropriate level
 - [ ] Structured logging (not string interpolation)
 - [ ] Errors passed as `err` property
 - [ ] Sensitive data redacted
 - [ ] Pretty printing in development only
-</success_criteria>
+      </success_criteria>

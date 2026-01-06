@@ -11,71 +11,65 @@ triggers:
 
 <objective>
 
-Provide tools and guidance for creating, auditing, and maintaining skills. Includes templates, workflows, and best practices for prompt-native skill development.
+Create, audit, and maintain skills. Includes templates, workflows, and best practices for prompt-native skill development.
 
 </objective>
 
 <routing>
 
-## Task Routing
-
-| Task | Workflow |
-|------|----------|
-| Create new skill | `workflows/create-new-skill.md` |
-| Create domain expertise skill | `workflows/create-domain-expertise-skill.md` |
-| Audit existing skill | `workflows/audit-skill.md` |
-| Add workflow to skill | `workflows/add-workflow.md` |
-| Add reference to skill | `workflows/add-reference.md` |
-| Add template to skill | `workflows/add-template.md` |
-| Add script to skill | `workflows/add-script.md` |
-| Upgrade to router | `workflows/upgrade-to-router.md` |
-| Verify skill | `workflows/verify-skill.md` |
-| Get guidance | `workflows/get-guidance.md` |
+| Task                | Workflow                                     |
+| ------------------- | -------------------------------------------- |
+| Create new skill    | `workflows/create-new-skill.md`              |
+| Create domain skill | `workflows/create-domain-expertise-skill.md` |
+| Audit skill         | `workflows/audit-skill.md`                   |
+| Add workflow        | `workflows/add-workflow.md`                  |
+| Add reference       | `workflows/add-reference.md`                 |
+| Add template        | `workflows/add-template.md`                  |
+| Add script          | `workflows/add-script.md`                    |
+| Upgrade to router   | `workflows/upgrade-to-router.md`             |
+| Verify skill        | `workflows/verify-skill.md`                  |
 
 </routing>
 
 <templates>
 
-## Templates
-
-| Template | Purpose |
-|----------|---------|
-| `simple-skill.md` | Basic skill structure |
-| `router-skill.md` | Complex skill with routing |
-| `skill-template.md` | Generic skill template |
+| Template            | Purpose              |
+| ------------------- | -------------------- |
+| `simple-skill.md`   | Basic structure      |
+| `router-skill.md`   | Complex with routing |
+| `skill-template.md` | Generic template     |
 
 </templates>
 
 <references>
 
-## Domain Knowledge
-
-- `references/skill-structure.md` - SKILL.md format
-- `references/recommended-structure.md` - Recommended skill structure
-- `references/core-principles.md` - Skill design principles
-- `references/common-patterns.md` - Reusable patterns
-- `references/native-ui-components.md` - UI integration
-- `references/using-templates.md` - Template usage
-- `references/using-scripts.md` - Script integration
-- `references/workflows-and-validation.md` - Workflow patterns
-- `references/iteration-and-testing.md` - Testing skills
-- `references/use-xml-tags.md` - XML tag conventions
-- `references/be-clear-and-direct.md` - Writing style
-- `references/executable-code.md` - Code in skills
-- `references/api-security.md` - Security considerations
+- `skill-structure.md` - SKILL.md format
+- `core-principles.md` - Design principles
+- `use-xml-tags.md` - XML conventions
+- `be-clear-and-direct.md` - Writing style
+- `common-patterns.md` - Reusable patterns
+- `native-ui-components.md` - UI integration
+- `using-templates.md` - Template usage
+- `using-scripts.md` - Script integration
+- `workflows-and-validation.md` - Workflow patterns
 
 </references>
 
 <scripts>
 
-## Skill Scripts
-
-Helper scripts are available in `crew/scripts/skills/`:
-
-| Script | Purpose |
-|--------|---------|
-| `init_skill.py` | Initialize new skill structure |
-| `package_skill.py` | Package skill for distribution |
-| `quick_validate.py` | Validate skill structure |
+| Script              | Purpose                  |
+| ------------------- | ------------------------ |
+| `init_skill.py`     | Initialize structure     |
+| `package_skill.py`  | Package for distribution |
+| `quick_validate.py` | Validate structure       |
 
 </scripts>
+
+<success_criteria>
+
+- Valid YAML frontmatter (name matches directory)
+- Required tags: `<objective>`, `<quick_start>`, `<success_criteria>`
+- All XML tags closed, no markdown headings in body
+- Passes `quick_validate.py`
+
+</success_criteria>

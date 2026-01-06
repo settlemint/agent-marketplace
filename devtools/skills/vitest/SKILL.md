@@ -47,34 +47,15 @@ mcp__context7__query_docs({
 </mcp_first>
 
 <quick_start>
-**Basic test structure:**
+**Templates for common test patterns:**
 
-```typescript
-import { describe, expect, it, beforeEach, vi } from "vitest";
+| Pattern            | Template                       | Use When                     |
+| ------------------ | ------------------------------ | ---------------------------- |
+| Service/Unit tests | `templates/service-test.ts.md` | Testing classes/functions    |
+| Module mocking     | `templates/mock-module.ts.md`  | Mocking dependencies         |
+| Timer mocking      | `templates/mock-timers.ts.md`  | Testing setTimeout/intervals |
 
-describe("MyService", () => {
-  let service: MyService;
-
-  beforeEach(() => {
-    service = new MyService();
-  });
-
-  it("returns expected value", () => {
-    const result = service.process("input");
-    expect(result).toBe("expected");
-  });
-
-  it("throws on invalid input", () => {
-    expect(() => service.process("")).toThrow("Invalid input");
-  });
-
-  it("handles async operations", async () => {
-    const result = await service.fetchData();
-    expect(result).toBeDefined();
-  });
-});
-```
-
+**Read the templates for scaffolding new tests.** Each includes placeholders and examples.
 </quick_start>
 
 <mocking>

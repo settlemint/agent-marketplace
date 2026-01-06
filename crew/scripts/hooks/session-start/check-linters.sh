@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Check and install required linters for CI
 # Only runs on fresh startup (not compact/resume)
 # Fast path: exits immediately if all linters present

@@ -62,30 +62,11 @@ export function MyComponent() {
 <cn_utility>
 **Always use `cn()` for class management.**
 
-```typescript
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-```
-
-Usage patterns:
+See `templates/cn-utility.ts.md` for setup and usage patterns.
 
 ```typescript
-// Conditional classes
 className={cn("base-class", isActive && "active-class")}
-
-// Override with custom classes
 className={cn(buttonVariants({ variant, size }), className)}
-
-// Multiple conditions
-className={cn(
-  "rounded-lg border p-4",
-  variant === "compact" && "p-2",
-  isDisabled && "opacity-50 cursor-not-allowed"
-)}
 ```
 
 </cn_utility>
@@ -93,45 +74,18 @@ className={cn(
 <cva_variants>
 **Use CVA (Class Variance Authority) for component variants.**
 
+See `templates/cva-component.tsx.md` for full pattern with placeholders.
+
 ```typescript
 import { cva, type VariantProps } from "class-variance-authority";
 
-const buttonVariants = cva(
-  // Base styles (always applied)
-  "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
+const buttonVariants = cva("base-styles", {
+  variants: {
+    variant: { default: "...", outline: "..." },
+    size: { default: "...", sm: "...", lg: "..." },
   },
-);
-
-interface ButtonProps
-  extends
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean;
-}
+  defaultVariants: { variant: "default", size: "default" },
+});
 ```
 
 </cva_variants>
@@ -139,48 +93,15 @@ interface ButtonProps
 <compound_components>
 **Build compound components with data-slot attributes.**
 
+See `templates/compound-component.tsx.md` for full pattern with placeholders.
+
 ```typescript
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
-      data-slot="card"
-      className={cn("rounded-xl border bg-card text-card-foreground shadow", className)}
-      {...props}
-    />
+    <div data-slot="card" className={cn("rounded-xl border bg-card", className)} {...props} />
   );
 }
-
-function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-header"
-      className={cn("flex flex-col space-y-1.5 p-6", className)}
-      {...props}
-    />
-  );
-}
-
-function CardTitle({ className, ...props }: React.ComponentProps<"h3">) {
-  return (
-    <h3
-      data-slot="card-title"
-      className={cn("text-2xl font-semibold leading-none tracking-tight", className)}
-      {...props}
-    />
-  );
-}
-
-function CardContent({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-content"
-      className={cn("p-6 pt-0", className)}
-      {...props}
-    />
-  );
-}
-
-export { Card, CardHeader, CardTitle, CardContent };
+// CardHeader, CardTitle, CardContent, CardFooter follow same pattern
 ```
 
 </compound_components>
@@ -238,40 +159,11 @@ function Button({ className, variant, size, asChild = false, ...props }: ButtonP
 <theming>
 **shadcn uses CSS variables for theming.**
 
-```css
-/* app.css or globals.css */
-:root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --primary: 222.2 47.4% 11.2%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 222.2 84% 4.9%;
-  --radius: 0.5rem;
-}
-
-.dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  /* ... dark mode values */
-}
-```
-
-Reference in Tailwind:
+See `templates/theme-variables.css.md` for complete light/dark theme setup.
 
 ```typescript
-className = "bg-background text-foreground border-border";
+// Reference in Tailwind
+className = "bg-background text-foreground";
 className = "bg-primary text-primary-foreground";
 className = "bg-muted text-muted-foreground";
 ```
@@ -329,40 +221,10 @@ className="[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
 <form_integration>
 **Wrap shadcn components for form fields.**
 
+See `templates/form-field.tsx.md` for text/select field wrappers with accessibility.
+
 ```typescript
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-interface TextFieldProps {
-  label: string;
-  name: string;
-  error?: string;
-  required?: boolean;
-}
-
-export function TextField({ label, name, error, required, ...props }: TextFieldProps) {
-  return (
-    <div className="space-y-2">
-      <Label htmlFor={name}>
-        {label}
-        {required && <span className="text-destructive ml-1">*</span>}
-      </Label>
-      <Input
-        id={name}
-        name={name}
-        aria-invalid={!!error}
-        aria-describedby={error ? `${name}-error` : undefined}
-        className={cn(error && "border-destructive")}
-        {...props}
-      />
-      {error && (
-        <p id={`${name}-error`} className="text-sm text-destructive">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
+<TextField label="Email" name="email" error={errors.email} required />
 ```
 
 </form_integration>

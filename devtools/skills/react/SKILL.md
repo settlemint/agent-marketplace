@@ -1,7 +1,18 @@
 ---
 name: react
 description: React 19 components with Tailwind CSS v4, shadcn/ui, forms, tables, routing, data fetching, and i18n. Triggers on .tsx files, component, tailwind, tanstack, form, table, router.
-triggers: ["\\.tsx", "component", "tailwind", "tanstack", "form", "table", "router", "react", "shadcn"]
+triggers:
+  [
+    "\\.tsx",
+    "component",
+    "tailwind",
+    "tanstack",
+    "form",
+    "table",
+    "router",
+    "react",
+    "shadcn",
+  ]
 ---
 
 <objective>
@@ -28,48 +39,50 @@ MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 // React 19 patterns
 mcp__context7__query_docs({
   context7CompatibleLibraryID: "/reactjs/react.dev",
-  topic: "use hook server components actions"
-})
+  topic: "use hook server components actions",
+});
 
 // Tailwind v4
 mcp__context7__query_docs({
   context7CompatibleLibraryID: "/tailwindlabs/tailwindcss",
-  topic: "v4 theme colors"
-})
+  topic: "v4 theme colors",
+});
 
 // TanStack Router
 mcp__context7__query_docs({
   context7CompatibleLibraryID: "/tanstack/router",
-  topic: "createFileRoute useNavigate"
-})
+  topic: "createFileRoute useNavigate",
+});
 
 // TanStack Query
 mcp__context7__query_docs({
   context7CompatibleLibraryID: "/tanstack/query",
-  topic: "useQuery useMutation queryClient"
-})
+  topic: "useQuery useMutation queryClient",
+});
 
 // TanStack Form
 mcp__context7__query_docs({
   context7CompatibleLibraryID: "/tanstack/form",
-  topic: "useForm field validation"
-})
+  topic: "useForm field validation",
+});
 
 // TanStack Table
 mcp__context7__query_docs({
   context7CompatibleLibraryID: "/tanstack/table",
-  topic: "useReactTable columnDef"
-})
+  topic: "useReactTable columnDef",
+});
 ```
 
 **Step 3: Implement with verified patterns**
+
+**Component template:** See `templates/component.tsx.md` for scaffolding.
 </quick_start>
 
 <library_ids>
 Skip resolve step for these known IDs:
 
 | Library         | Context7 ID               |
-|-----------------|---------------------------|
+| --------------- | ------------------------- |
 | React           | /reactjs/react.dev        |
 | Tailwind CSS    | /tailwindlabs/tailwindcss |
 | TanStack Router | /tanstack/router          |
@@ -77,6 +90,7 @@ Skip resolve step for these known IDs:
 | TanStack Form   | /tanstack/form            |
 | TanStack Table  | /tanstack/table           |
 | Radix UI        | /radix-ui/primitives      |
+
 </library_ids>
 
 <constraints>
@@ -93,6 +107,7 @@ Skip resolve step for these known IDs:
 - Backwards-compatibility shims
 
 **Required:**
+
 - Check existing components before creating new ones
 - Use Tailwind for all styling (no inline styles)
 - Export prop types for all components
@@ -116,6 +131,7 @@ Skip resolve step for these known IDs:
 </routing>
 
 <component_pattern>
+
 ```typescript
 import { type ComponentProps } from "react";
 import { cn } from "@/lib/utils";
@@ -142,12 +158,14 @@ export function MyComponent({
   );
 }
 ```
+
 </component_pattern>
 
 <success_criteria>
+
 - [ ] Context7 docs fetched before implementation
 - [ ] Component under 150 lines, max 5 props
 - [ ] Uses Tailwind (no inline styles)
 - [ ] Exports prop types
 - [ ] Uses existing UI primitives where available
-</success_criteria>
+      </success_criteria>

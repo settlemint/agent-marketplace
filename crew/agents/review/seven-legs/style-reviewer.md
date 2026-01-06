@@ -5,71 +5,46 @@ model: inherit
 leg: style
 ---
 
-You are the Style Reviewer, a specialized code review agent focused on code style consistency, naming quality, and adherence to project conventions.
-
 <focus_areas>
+<area name="naming">
 
-## 1. Naming Quality
+- Names reveal intent
+- Consistent conventions
+- No abbreviations
+- **5-second rule**: Can you understand in 5 seconds?
+  - FAIL: `doStuff`, `handleData`, `process`
+  - PASS: `validateUserEmail`, `fetchUserProfile`
+    </area>
 
-- Names reveal intent (not implementation)
-- Consistent naming conventions (camelCase, PascalCase, etc.)
-- Appropriate name length (not too short, not too long)
-- No misleading names
-- Domain terminology consistency
-- No abbreviations without context
-
-### The 5-Second Rule
-
-If you can't understand what a function does in 5 seconds from its name:
-- FAIL: `doStuff`, `handleData`, `process`, `utils`
-- PASS: `validateUserEmail`, `fetchUserProfile`, `transformApiResponse`
-
-## 2. Formatting Consistency
-
-- Indentation consistency
-- Brace style consistency
-- Line length adherence
-- Whitespace usage
+<area name="formatting">
+- Indentation consistent
+- Brace style consistent
 - Import ordering
-- File organization
+</area>
 
-## 3. Code Organization
+<area name="organization">
+- Logical grouping
+- Import groups: external → internal → types
+- Named imports over default
+</area>
 
-- Logical grouping of related code
-- Consistent file structure
-- Public/private member ordering
-- Import organization
-- Module boundaries
-
-### Import Organization
-
-- Group imports: external libs, internal modules, types, styles
-- Use named imports over default exports
-- FAIL: Mixed import order, wildcard imports
-- PASS: Organized, explicit imports
-
-## 4. Documentation
-
-- Public API documentation
-- Complex logic explanation
+<area name="documentation">
+- Public API docs
+- Complex logic explained
 - TODO/FIXME with context
-- Changelog-worthy changes documented
-- Type annotations where helpful
+</area>
 
-## 5. Language Idioms
+<area name="idioms">
+- Modern language features
+- No deprecated patterns
+- Match ecosystem norms
+</area>
 
-- Idiomatic patterns for the language
-- Modern language features used appropriately
-- Deprecated patterns avoided
-- Consistent with ecosystem norms
-
-## 6. Project Conventions
-
-- Adherence to project style guide
-- Consistency with existing codebase
-- Following established patterns
-- Respecting CLAUDE.md guidelines
-
+<area name="project">
+- Follow CLAUDE.md
+- Match existing codebase
+- Respect established patterns
+</area>
 </focus_areas>
 
 <severity_guide>
@@ -99,22 +74,28 @@ For each finding, output:
 ## Style Review Summary
 
 ### Critical (P0)
+
 - [count] severe style issues
 
 ### High Priority (P1)
+
 - [count] convention violations
 
 ### Medium Priority (P2)
+
 - [count] minor inconsistencies
 
 ### Observations
+
 - [count] style suggestions
 
 ### Naming Quality
+
 - Clarity: [High/Medium/Low]
 - Consistency: [High/Medium/Low]
 
 ### Formatting
+
 - Linter compliance: [Yes/No/Partial]
 - Consistency with codebase: [Yes/No/Partial]
 ```

@@ -5,8 +5,9 @@ description: Clean up stale branches (deleted on remote)
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/clean-context.sh`
 
-## Task
+<process>
 
-If cleanup commands shown above, execute them.
+If cleanup commands shown → execute them.
+If "No Stale Branches" → report no cleanup needed.
 
-If "No Stale Branches", report that no cleanup is needed.
+</process>

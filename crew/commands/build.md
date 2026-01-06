@@ -1,678 +1,185 @@
 ---
 name: crew:build
 description: Execute work plans with iteration loops and progress tracking
-argument-hint: "[plan file, specification, or todo file path]"
+argument-hint: "[plan] [--loop] [--max-iterations N]"
 ---
 
-## CRITICAL: Never Run CI Commands Directly
+<critical_rules>
 
-**NEVER use Bash tool for:** `bun run test`, `vitest`, `jest`, `eslint`, `prettier`, `biome`, `ultracite`, or any test/lint/format commands.
+**NEVER use Bash for CI commands.** These are BLOCKED by PreToolUse hook:
 
-**ALWAYS use Task tool with haiku model** for test-runner agent. This is ENFORCED by PreToolUse hook - direct CI commands will be BLOCKED.
+- `bun run test`, `vitest`, `jest`, `eslint`, `prettier`, `biome`, `ultracite`
 
-```javascript
-// CORRECT - test-runner agent
-Task({
-  subagent_type: "general-purpose",
-  model: "haiku",
-  prompt: "Run tests, report ONLY failures...",
-  description: "test-runner",
-  run_in_background: false,
-});
+**ALWAYS use** `<pattern name="test-runner"/>` from crew-patterns skill.
 
-// WRONG - will be blocked
-Bash({ command: "bun run test" }); // BLOCKED
-```
-
----
+</critical_rules>
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/workflow/build-context.sh`
 
-## Input
-
+<input>
 <work_document>$ARGUMENTS</work_document>
+</input>
 
-## Native Tools
+<constraints>
 
-### TodoWrite - Track Progress (CRITICAL)
+- **Max 6 agents** concurrent (NEVER exceed, NEVER launch while waiting)
+- **Agents inherit parent model** (opus/sonnet) - only test-runner uses haiku
+- **Agents do NOT run tests** - test-runner agent handles this
+- **Output format mandatory**: Agents must output `SUCCESS: <summary>` or `FAILURE: <reason>`
+- **Update immediately**: Mark tasks complete as agents finish, commit each task
+- **Collect ALL before next batch**: Wait for entire batch before launching more
+
+</constraints>
+
+<loop_mode>
+
+Enabled with `--loop` flag. Stop hook re-feeds prompt until completion.
+
+**State file**: `.claude/branches/{slugified-branch}/state.json`
+See `<pattern name="branch-state"/>` for format.
+
+**Completion criteria** (ALL required):
+
+- All task files renamed `*-pending-*` → `*-complete-*`
+- `bun run ci` passes
+- `bun run test:integration` passes
+- Output: `<promise>BUILD COMPLETE</promise>`
+
+**Cancel**: `/crew:cancel-loop "reason"`
+
+</loop_mode>
+
+<process>
+
+<phase name="init-loop">
+If `--loop` flag present:
 
 ```javascript
-TodoWrite({
-  todos: [
-    {
-      content: "Load work document",
-      status: "in_progress",
-      activeForm: "Loading document",
-    },
-    {
-      content: "Load task files",
-      status: "pending",
-      activeForm: "Loading tasks",
-    },
-    {
-      content: "Set up branch",
-      status: "pending",
-      activeForm: "Setting up branch",
-    },
-    {
-      content: "Execute task batch 1",
-      status: "pending",
-      activeForm: "Running batch 1",
-    },
-    { content: "Run tests", status: "pending", activeForm: "Running tests" },
-    {
-      content: "Run quality checks",
-      status: "pending",
-      activeForm: "Running quality checks",
-    },
-    {
-      content: "Show summary",
-      status: "pending",
-      activeForm: "Showing summary",
-    },
-  ],
-});
+const stateFile = `.claude/branches/${slugBranch}/state.json`;
+// Check existing state for resume
+// If new: initialize loop state with iteration=1
+// If resuming: log iteration number, check task files for progress
 ```
 
-**Update IMMEDIATELY after each task. Never batch updates.**
+</phase>
 
-### Task - Parallel Agent Batching
-
-**CRITICAL: One task = One agent. Max 6 agents per batch. Small scope.**
-
+<phase name="load-work">
 ```javascript
-// Launch parallel tasks from current batch in SINGLE message (max 6)
-Task({
-  subagent_type: "general-purpose",
-  // model: inherits from parent (opus/sonnet)
-  prompt: `TASK: T001 - Create project structure
-FILE: (project root)
-ACCEPTANCE: Directory structure matches plan
-CONSTRAINTS:
-- Read at most 2-3 files for context
-- Do NOT run tests (test-runner handles this)
-- Do NOT explore beyond target files
-OUTPUT: Your FINAL message MUST start with "SUCCESS: <summary>" or "FAILURE: <reason>"`,
-  description: "T001",
-  run_in_background: true,
-});
-
-Task({
-  subagent_type: "general-purpose",
-  // model: inherits from parent
-  prompt: `TASK: T002 - Install dependencies
-FILE: package.json
-ACCEPTANCE: All deps installed
-CONSTRAINTS:
-- Read at most 2-3 files for context
-- Do NOT run tests (test-runner handles this)
-OUTPUT: Your FINAL message MUST start with "SUCCESS: <summary>" or "FAILURE: <reason>"`,
-  description: "T002",
-  run_in_background: true,
-});
-
-// Collect ALL results before next batch
-TaskOutput({ task_id: "t001-id", block: true });
-TaskOutput({ task_id: "t002-id", block: true });
-
-// Then launch test-runner agent...
-```
-
-### AskUserQuestion - Decision Points
-
-```javascript
-AskUserQuestion({
-  questions: [
-    {
-      question: "Batch complete. Continue to next phase?",
-      header: "Next",
-      options: [
-        { label: "Continue (Recommended)", description: "Execute next batch" },
-        { label: "Review changes", description: "Show diff first" },
-        { label: "Run tests", description: "Validate before continuing" },
-        { label: "Stop here", description: "Pause work" },
-      ],
-      multiSelect: false,
-    },
-  ],
-});
-```
-
-## Process
-
-### Phase 1: Load Work Document
-
-```javascript
-TodoWrite({
-  todos: [
-    {
-      content: "Load work document",
-      status: "in_progress",
-      activeForm: "Loading document",
-    },
-    // ...
-  ],
-});
-
-// Read the plan
 Read({ file_path: ".claude/plans/${planSlug}.md" });
-
-// If not found, ask
-AskUserQuestion({
-  questions: [
-    {
-      question: "Which plan should we build?",
-      header: "Plan",
-      options: [
-        // List available plans from Glob
-      ],
-      multiSelect: false,
-    },
-  ],
-});
+// If not found: AskUserQuestion for plan selection
 ```
+Use `<pattern name="todo-progress"/>` to track.
+</phase>
 
-### Phase 2: Load Task Files
-
-**CRITICAL**: Load individual task files from branch state
-
+<phase name="branch-setup">
 ```javascript
-// Get current branch and slugify it (replace / with -)
 const branch = Bash({ command: "git branch --show-current" }).trim();
-const slugBranch = branch.replace(/\//g, "-"); // feat/foo → feat-foo
-
-// List all task files in order
-const taskFiles = Glob({
-  pattern: `.claude/branches/${slugBranch}/tasks/*.md`,
-});
-
-// Files are already ordered by filename:
-// 001-pending-p1-setup-...
-// 002-pending-p1-setup-...
-// 010-pending-p1-us1-...
-
-// Read each task file and parse
-for (const file of taskFiles) {
-  Read({ file_path: file });
-  // Parse status, priority, story, parallel from frontmatter
+if (branch === "main" || branch === "master") {
+  // AskUserQuestion: feature branch or stacked branch
+  Bash({ command: `git checkout -b feat/${planSlug}` });
 }
-
-// Group tasks by:
-// 1. Phase (setup, found, us1, us2, polish)
-// 2. Parallel capability (parallel: true)
-// 3. Status (pending, in_progress, complete)
-
-// Create execution plan:
-// Batch 1: All parallel setup tasks
-// Batch 2: Sequential foundational tasks
-// Batch 3: All parallel US1 tasks
-// etc.
+// If stacked: git machete add --onto <parent>
 ```
+</phase>
 
-### Phase 3: Environment Setup
+<phase name="load-tasks">
+```javascript
+const slugBranch = branch.replace(/\//g, "-");
+const taskFiles = Glob({ pattern: `.claude/branches/${slugBranch}/tasks/*.md` });
+// Group by: phase (setup/found/us1/us2/polish), parallel capability, status
+// Create execution plan: parallel tasks in batches of max 6
+```
+</phase>
+
+<phase name="batch-execution">
+For each batch of parallel tasks (max 6):
+
+1. **Launch batch** using `<pattern name="spawn-batch"/>` - ALL in single message
+2. **Collect results** using `<pattern name="collect-results"/>`
+3. **Update task files**: rename `*-pending-*` → `*-complete-*`, update frontmatter
+4. **Commit each task**:
+   ```bash
+   git add . && git commit -m "feat(${scope}): ${title}"
+   ```
+5. **Run test-runner** using `<pattern name="test-runner"/>`
+6. **Handle failures**: Create fix task files for next iteration
+
+Batch order: setup → found → us1 → us2 → polish
+</phase>
+
+<phase name="quality-checks">
+Launch quality agents using `<pattern name="quality-agents"/>`.
 
 ```javascript
-// Check if already on a feature branch (not main/master)
-const currentBranch = Bash({ command: "git branch --show-current" }).trim();
-const isMainBranch = currentBranch === "main" || currentBranch === "master";
+// Collect results, triage by severity (P0/P1/P2)
+// Add P0/P1 findings as new task files in current branch
+```
 
-// Check if current branch is in machete layout (stacked branch)
-const isStackedBranch =
-  Bash({
-    command:
-      "git machete is-managed $(git branch --show-current) 2>/dev/null && echo 'true' || echo 'false'",
-  }).trim() === "true";
+</phase>
 
-if (isMainBranch) {
-  // On main - need to create or switch to feature branch
-  // Note: /crew:design should have already created the branch
-  // If we're here on main, ask user to specify branch
-  AskUserQuestion({
-    questions: [
-      {
-        question: "You're on main. Which branch should we build on?",
-        header: "Branch",
-        options: [
-          // List available feature branches from .claude/plans/ or git branches
-        ],
-        multiSelect: false,
-      },
-    ],
-  });
-} else if (isStackedBranch) {
-  // On a stacked branch - sync with parent before starting work
-  console.log(`On stacked branch: ${currentBranch}`);
-  // Check if out of sync with parent
-  Bash({
-    command: "git machete status",
-    description: "Check stack status",
-  });
-  // Optionally sync if needed (will be prompted by hook)
+<phase name="final-validation">
+**MANDATORY: Fix ALL issues, even unrelated ones.**
+
+```bash
+cd $(git rev-parse --show-toplevel) && bun run ci
+cd $(git rev-parse --show-toplevel) && bun run test:integration
+```
+
+Loop until BOTH pass with zero errors.
+</phase>
+
+<phase name="completion">
+```javascript
+const pending = Glob({ pattern: `.claude/branches/${slugBranch}/tasks/*-pending-*.md` });
+
+if (pending.length === 0 && ciPassing && integrationPassing) {
+// Clear loop state if active
+// Output completion
+console.log("<promise>BUILD COMPLETE</promise>");
 } else {
-  // On regular feature branch - just stay on it
-  console.log(`Staying on current branch: ${currentBranch}`);
+// Log remaining tasks
+// If loop mode: /compact then Stop hook re-feeds
 }
 
-// Update progress
-TodoWrite({
-  todos: [
-    {
-      content: "Load work document",
-      status: "completed",
-      activeForm: "Loading document",
-    },
-    {
-      content: "Load task files",
-      status: "completed",
-      activeForm: "Loading tasks",
-    },
-    {
-      content: "Set up branch",
-      status: "completed",
-      activeForm: "Setting up branch",
-    },
-    {
-      content: "Execute batch 1 (setup)",
-      status: "in_progress",
-      activeForm: "Running setup",
-    },
-    // ...
-  ],
-});
+```
+</phase>
+
+</process>
+
+<task_prompt_template>
+
+Agent prompts must follow this format:
+
 ```
 
-### Phase 4: Batch Execution Loop
-
-**CRITICAL: Max 6 agents per batch. Use haiku. Agents do NOT run tests.**
-
-```javascript
-// For each batch of parallel tasks:
-
-// 1. Identify parallel tasks in current phase (max 6 per batch)
-const allParallel = pendingTasks.filter(
-  (t) =>
-    t.phase === currentPhase && t.parallel === true && t.status === "pending",
-);
-const batch = allParallel.slice(0, 6); // Max 6 agents per batch
-
-// 2. Launch batch in SINGLE message (max 6)
-for (const task of batch) {
-  Task({
-    subagent_type: "general-purpose",
-    // model: inherits from parent (opus/sonnet)
-    prompt: `TASK: ${task.id} - ${task.title}
-
-FILE: ${task.file_path}
-
-ACCEPTANCE CRITERIA:
-${task.acceptanceCriteria}
-
-CONTEXT:
-${task.implementationNotes}
-
+TASK: ${id} - ${title}
+FILE: ${file_path}
+ACCEPTANCE: ${criteria}
 CONSTRAINTS:
-- Read at most 2-3 files for context
-- Do NOT run tests (test-runner agent handles this)
-- Do NOT explore beyond target files
-- Stop immediately after implementing
 
-OUTPUT FORMAT (MANDATORY):
-Your FINAL message MUST start with either:
-  "SUCCESS: <brief summary>"
-  "FAILURE: <reason>"
-This is required for task tracking.`,
-    description: task.id,
-    run_in_background: true,
-  });
-}
-
-// 3. Collect ALL results and update task files IMMEDIATELY
-for (const task of batch) {
-  const output = TaskOutput({ task_id: task.agentId, block: true });
-
-  // 4. MANDATORY: Update task file status based on agent output
-  // Agent output contains "SUCCESS" or "FAILURE"
-  const succeeded = output.includes("SUCCESS");
-
-  if (succeeded) {
-    // Rename file: pending → complete
-    const oldFile = `.claude/branches/${slugBranch}/tasks/${task.filename}`;
-    const newFile = oldFile.replace("-pending-", "-complete-");
-
-    Bash({
-      command: `mv "${oldFile}" "${newFile}"`,
-      description: `Mark ${task.id} complete`,
-    });
-
-    // Update frontmatter
-    Edit({
-      file_path: newFile,
-      old_string: "status: pending",
-      new_string: "status: complete",
-    });
-
-    // Add completion to work log
-    Edit({
-      file_path: newFile,
-      old_string: "## Work Log",
-      new_string: `## Work Log\n\n### ${new Date().toISOString()} - Completed\n**By:** Agent\n**Result:** ${output.slice(0, 100)}`,
-    });
-
-    // GRANULAR COMMIT: Commit this task immediately
-    // This creates a detailed git history of each change
-    Bash({
-      command: `git add . && git commit -m "$(cat <<'EOF'
-feat(${task.scope}): ${task.title}
-
-Task: ${task.id}
-File: ${task.file_path}
-Status: Complete
-
-${output.slice(0, 200)}
-EOF
-)"`,
-      description: `Commit ${task.id}`,
-    });
-  } else {
-    // Task failed - log but keep as pending for retry
-    console.log(`Task ${task.id} failed: ${output.slice(0, 200)}`);
-  }
-}
-
-// VALIDATION: Verify task files were updated
-const stillPending = Glob({
-  pattern: `.claude/branches/${slugBranch}/tasks/*-pending-*.md`,
-});
-// If batch tasks still pending, something went wrong
-
-// 5. Launch test-runner agent (haiku) to validate batch
-Task({
-  subagent_type: "general-purpose",
-  model: "haiku", // Fast, focused on test output parsing
-  prompt: `TASK: Run tests and report failures only
-
-RUN: bun run test (or npm test / pnpm test)
-
-OUTPUT FORMAT:
-If all tests pass: "ALL TESTS PASSING"
-If failures exist, report ONLY:
-- Failed test name
-- File:line of failure
-- Brief error message (1 line)
-
-Do NOT include:
-- Passing tests
-- Full stack traces
-- Test coverage info
-- Timing information
-
-Keep output minimal - only actionable failures.`,
-  description: "test-runner",
-  run_in_background: false, // Wait for test results
-});
-
-// 6. If test failures, create fix tasks or notify
-// 7. Update TodoWrite and continue to next batch
-```
-
-### Phase 5: Quality Checks
-
-Launch quality agents in **SINGLE message** (each agent = small scope):
-
-```javascript
-Task({
-  subagent_type: "typescript-reviewer",
-  prompt: `TASK: Type review
-SCOPE: ${changedFiles.slice(0, 5).join(", ")}  // Limit scope
-OUTPUT: P1/P2/P3 findings with file:line
-Tools: Glob, Grep, Read (not bash)`,
-  description: "TS review",
-  run_in_background: true,
-});
-
-Task({
-  subagent_type: "security-sentinel",
-  prompt: `TASK: Security audit
-SCOPE: ${changedFiles.slice(0, 5).join(", ")}  // Limit scope
-OUTPUT: Vulnerabilities with severity
-MCP: Codex for threat analysis`,
-  description: "Security",
-  run_in_background: true,
-});
-
-// Collect results
-const tsResults = TaskOutput({ task_id: "ts-id", block: true });
-const secResults = TaskOutput({ task_id: "sec-id", block: true });
-```
-
-### Phase 6: Add Findings as Tasks
-
-If quality issues found, add as new task files:
-
-```javascript
-// Find next order number (use slugBranch)
-const existing = Glob({ pattern: `.claude/branches/${slugBranch}/tasks/*.md` });
-const nextOrder = getNextOrderNumber(existing); // e.g., 050
-
-// Create finding task file
-Write({
-  file_path: `.claude/branches/${slugBranch}/tasks/${nextOrder}-pending-p1-found-fix-type-error.md`,
-  content: `---
-status: pending
-priority: p1
-story: found
-parallel: true
-file_path: ${finding.file}
-depends_on: []
----
-
-# T${nextOrder}: Fix type error in ${finding.file}
-
-## Description
-${finding.description}
-
-## Acceptance Criteria
-- [ ] Type error resolved
-- [ ] Tests pass
-
-## File Path
-\`${finding.file}:${finding.line}\`
-
-## Work Log
-### ${date} - Created
-**By:** /crew:check quality review`,
-});
-```
-
-### Phase 7: Final Validation (MANDATORY - Fix ALL Issues)
-
-**CRITICAL: This phase is NON-NEGOTIABLE. You MUST fix ALL issues found, even those unrelated to the current changes.**
-
-```javascript
-// STEP 1: Run CI checks from repository root
-Bash({
-  command: "cd $(git rev-parse --show-toplevel) && bun run ci",
-  description: "Run CI checks from root",
-});
-
-// STEP 2: Run integration tests from repository root
-Bash({
-  command: "cd $(git rev-parse --show-toplevel) && bun run test:integration",
-  description: "Run integration tests from root",
-});
-
-// STEP 3: FIX ALL FAILURES
-// If ANY failures occur:
-// - Type errors: Fix them ALL, even in files you didn't touch
-// - Lint errors: Fix them ALL, even pre-existing ones
-// - Test failures: Fix them ALL, regardless of origin
-// - Integration test failures: Fix them ALL
-
-// STEP 4: Re-run until clean
-// Loop until BOTH commands pass with zero errors:
-while (!ciPassing || !integrationPassing) {
-  // Fix identified issues
-  // Re-run: bun run ci
-  // Re-run: bun run test:integration
-}
-
-// STEP 5: Verify all tasks complete (use slugBranch)
-const remaining = Glob({
-  pattern: `.claude/branches/${slugBranch}/tasks/*-pending-*.md`,
-});
-if (remaining.length > 0) {
-  // Report incomplete tasks
-}
-```
-
-**Why fix unrelated issues?**
-
-- Keeps the codebase healthy
-- Prevents tech debt accumulation
-- Ensures every PR improves overall quality
-- The branch should leave the repo better than it found it
-
-### Phase 8: Summary
-
-**Note: Each task was already committed individually during execution for detailed git history.**
-
-```javascript
-// Show summary of all commits made during this build
-Bash({
-  command: `git log --oneline $(git merge-base HEAD main)..HEAD`,
-  description: "Show commits from this build",
-});
-
-// Output summary
-console.log(`
-Build Complete!
-- Branch: ${branch}
-- Commits: ${commitCount}
-- Tasks: .claude/branches/${slugBranch}/tasks/
-
-Each task has its own commit for detailed history.
-Use 'git log --oneline' to see all changes.
-`);
-```
-
-**Granular Commit Benefits:**
-
-- Full traceability of each change
-- Easy to revert specific tasks
-- Clear history for code review
-- Bisect-friendly for debugging
-
-**Next Steps (manual):**
-
-- Review commits: `git log --oneline`
-- Push when ready: `git push -u origin <branch>`
-- Create PR: `gh pr create`
-
-## Parallel Batching Strategy
-
-**CRITICAL: Prevent context exhaustion with small agents**
-
-### Rules
-
-1. **One task = One agent** - Never give agent multiple tasks
-2. **STRICT: Max 6 agents total at any time** - NEVER exceed this limit
-3. **NEVER launch "while waiting"** - Do NOT add more agents while others run
-4. **Inherit parent model** - Implementation agents use opus/sonnet
-5. **Agents do NOT run tests** - Test-runner agent (haiku) handles this
-6. **Limit file reads** - Max 2-3 files per agent
-7. **Collect ALL before next batch** - Wait for ENTIRE batch to complete
-8. **Update immediately** - Mark tasks complete as agents finish
-9. **Process outputs sequentially** - Collect one output at a time to manage context
-
-### Context Management
-
-**Why parallel agents exhaust context:**
-
-- Each TaskOutput returns full agent output to main thread
-- 10 agents × verbose output = context overflow
-- Non-blocking checks still add to context when collected
-
-**Prevention:**
-
-```javascript
-// WRONG - launches too many agents
-for (batch1) { Task(..., run_in_background: true) }
-// "while waiting, let me launch more..."
-for (batch2) { Task(..., run_in_background: true) }  // NO!
-
-// CORRECT - strict batch discipline
-for (batch) { Task(..., run_in_background: true) }  // max 6
-for (batch) { TaskOutput({ block: true }) }  // collect ALL
-// ONLY THEN launch next batch
-```
-
-### Batch Order
-
-1. **Setup batch**: All `*-setup-*.md` with `parallel: true` (max 6)
-2. **Foundational batch**: All `*-found-*.md` (may be sequential)
-3. **US1 batch**: All `*-us1-*.md` with `parallel: true` (max 6)
-4. **US2 batch**: All `*-us2-*.md` with `parallel: true` (max 6)
-5. **Polish batch**: All `*-polish-*.md`
-
-If more than 6 tasks in a phase, split into sub-batches.
-
-### Agent Context Template
-
-Keep agent prompts minimal and focused:
-
-```text
-TASK: T010 - Create User model
-FILE: src/models/user.ts
-ACCEPTANCE:
-- Field: id, email, passwordHash, createdAt
-- Validation: required fields
-CONTEXT:
-- TypeScript, Prisma ORM
-- Pattern: see src/models/profile.ts
-CONSTRAINTS:
-- Read at most 2-3 files
-- Do NOT run tests
+- Do NOT run tests (test-runner handles this)
 - Stop after implementing
-OUTPUT FORMAT (MANDATORY):
-Your FINAL message MUST start with either:
-  "SUCCESS: <brief summary>"
-  "FAILURE: <reason>"
+  OUTPUT: "SUCCESS: <summary>" or "FAILURE: <reason>"
+
 ```
 
-### Test-Runner Agent
+</task_prompt_template>
 
-After each batch, launch a dedicated test-runner (haiku):
+<success_criteria>
 
-```javascript
-Task({
-  subagent_type: "general-purpose",
-  model: "haiku",
-  prompt: `Run tests, report ONLY failures:
-- Failed test name
-- File:line
-- Error (1 line)
-If all pass: "ALL TESTS PASSING"`,
-  description: "test-runner",
-  run_in_background: false,
-});
+**Core execution:**
+- [ ] TodoWrite updated after EVERY task
+- [ ] Max 6 agents concurrent (NEVER exceeded)
+- [ ] All agents in batch launched in SINGLE message
+- [ ] Task files renamed immediately on completion
+- [ ] Granular commit per task
+- [ ] `bun run ci` passes
+- [ ] `bun run test:integration` passes
+
+**Loop mode (if enabled):**
+- [ ] State file updated each iteration
+- [ ] `/compact` before next iteration
+- [ ] `<promise>BUILD COMPLETE</promise>` only when ALL criteria met
+
+</success_criteria>
 ```
-
-## Success Criteria
-
-- [ ] TodoWrite tracks ALL progress (updated after EVERY task)
-- [ ] Task files loaded from `.claude/branches/<slugified-branch>/tasks/`
-- [ ] Tasks executed in batches by phase
-- [ ] **STRICT: Max 6 agents total at any time** (NEVER launch more while waiting)
-- [ ] **Implementation agents inherit parent model** (opus/sonnet)
-- [ ] **Agents do NOT run tests** (constraints enforced in prompts)
-- [ ] **Agents output "SUCCESS:" or "FAILURE:" prefix** (mandatory for tracking)
-- [ ] **Task files renamed immediately after agent completes** (pending → complete)
-- [ ] **Test-runner agent (haiku) runs after each batch** - reports only failures
-- [ ] Each agent handles ONE small task
-- [ ] All parallel tasks launched in SINGLE message
-- [ ] Quality findings added as new task files
-- [ ] Native tools used for file operations
-- [ ] AskUserQuestion at key decision points
-- [ ] **MANDATORY: `bun run ci` passes from root** (fix ALL errors, even unrelated)
-- [ ] **MANDATORY: `bun run test:integration` passes from root** (fix ALL errors, even unrelated)
-- [ ] **Granular commits created for each task** (detailed git history)

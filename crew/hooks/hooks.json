@@ -11,6 +11,10 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start/check-linters.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start/inject-skills.sh"
           }
         ]
       }
@@ -41,11 +45,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/redirect-ci-to-skill.sh"
-          },
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-git-commit.sh"
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/suggest-skill.sh"
           }
         ]
       }
@@ -84,6 +84,16 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/track-agent-complete.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/user-prompt-submit/enforce-task-first.sh"
           }
         ]
       }

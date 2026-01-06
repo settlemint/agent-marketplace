@@ -6,76 +6,43 @@ allowed-tools: Bash(git machete:*), Bash(git fetch:*), Bash(git rebase:*), Bash(
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 
-## Purpose
+<flags>
 
-Sync all branches in the git-machete layout with their parents and remote tracking branches. This is the core command for keeping stacked branches in sync.
+| Flag | Effect                        |
+| ---- | ----------------------------- |
+| `-W` | Fetch + traverse entire tree  |
+| `-y` | Auto-confirm                  |
+| `-H` | Include GitHub PR retargeting |
 
-## Options
+</flags>
 
-| Flag | Effect                                             |
-| ---- | -------------------------------------------------- |
-| `-W` | `--fetch --whole` - fetch and traverse entire tree |
-| `-y` | Auto-confirm all actions                           |
-| `-H` | Include GitHub PR retargeting                      |
-| `-L` | Include GitLab MR retargeting                      |
+<process>
 
-## Task
+**If no layout:**
 
-1. **If no machete layout exists**, offer to set one up:
+```javascript
+AskUserQuestion({
+  questions: [
+    {
+      question: "No git-machete layout. What to do?",
+      header: "Setup",
+      options: [
+        { label: "Discover layout", description: "Auto-detect from history" },
+        { label: "Create manually", description: "Open editor" },
+        { label: "Skip", description: "Continue without machete" },
+      ],
+    },
+  ],
+});
+```
 
-   ```javascript
-   AskUserQuestion({
-     questions: [
-       {
-         question: "No git-machete layout found. What would you like to do?",
-         header: "Setup",
-         options: [
-           {
-             label: "Discover layout",
-             description: "Auto-detect from commit history",
-           },
-           {
-             label: "Create manually",
-             description: "Open editor to define layout",
-           },
-           { label: "Skip", description: "Continue without machete" },
-         ],
-         multiSelect: false,
-       },
-     ],
-   });
-   ```
-
-2. **If machete layout exists**, run traverse:
-
-   ```bash
-   # Fetch and sync all branches, auto-confirm
-   git machete traverse -W -y
-   ```
-
-3. **If GitHub PRs exist**, also retarget:
-
-   ```bash
-   git machete traverse -W -y -H
-   ```
-
-4. **Report results**:
-   - List branches that were rebased
-   - List branches that were pushed
-   - Flag any that need manual intervention
-
-## Common Workflows
+**If layout exists:**
 
 ```bash
-# Quick sync (fetch + traverse all + auto-confirm)
-git machete traverse -W -y
-
-# Sync with GitHub PR retargeting
-git machete traverse -W -y -H
-
-# Interactive mode (confirms each action)
-git machete traverse -W
-
-# Just sync current branch subtree
-git machete traverse
+git machete traverse -W -y      # Basic sync
+git machete traverse -W -y -H   # With PR retargeting
 ```
+
+Report: branches rebased, pushed, needing manual intervention.
+
+</process>
