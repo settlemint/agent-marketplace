@@ -11,8 +11,8 @@ PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 # Get branch info (handle detached HEAD where --show-current returns empty)
 BRANCH=$(git -C "$PROJECT_DIR" branch --show-current 2>/dev/null || echo '')
 if [[ -z $BRANCH ]]; then
-  # Detached HEAD - use short commit hash instead
-  BRANCH=$(git -C "$PROJECT_DIR" rev-parse --short HEAD 2>/dev/null || echo 'unknown')
+	# Detached HEAD - use short commit hash instead
+	BRANCH=$(git -C "$PROJECT_DIR" rev-parse --short HEAD 2>/dev/null || echo 'unknown')
 fi
 SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-')
 
@@ -29,26 +29,26 @@ WIP_TASK_CREATED="false"
 
 # Get uncommitted changes (staged + unstaged + untracked)
 if git -C "$PROJECT_DIR" rev-parse --git-dir >/dev/null 2>&1; then
-  # Count modified/staged files
-  STAGED=$(git -C "$PROJECT_DIR" diff --cached --name-only 2>/dev/null | wc -l | tr -d ' ')
-  UNSTAGED=$(git -C "$PROJECT_DIR" diff --name-only 2>/dev/null | wc -l | tr -d ' ')
-  UNTRACKED=$(git -C "$PROJECT_DIR" ls-files --others --exclude-standard 2>/dev/null | wc -l | tr -d ' ')
-  UNCOMMITTED_COUNT=$((STAGED + UNSTAGED + UNTRACKED))
+	# Count modified/staged files
+	STAGED=$(git -C "$PROJECT_DIR" diff --cached --name-only 2>/dev/null | wc -l | tr -d ' ')
+	UNSTAGED=$(git -C "$PROJECT_DIR" diff --name-only 2>/dev/null | wc -l | tr -d ' ')
+	UNTRACKED=$(git -C "$PROJECT_DIR" ls-files --others --exclude-standard 2>/dev/null | wc -l | tr -d ' ')
+	UNCOMMITTED_COUNT=$((STAGED + UNSTAGED + UNTRACKED))
 
-  if [[ $UNCOMMITTED_COUNT -gt 0 ]]; then
-    # Get file list for WIP task (limit to 20 files)
-    UNCOMMITTED_FILES=$(git -C "$PROJECT_DIR" status --porcelain 2>/dev/null | head -20 | sed 's/^/  /')
+	if [[ $UNCOMMITTED_COUNT -gt 0 ]]; then
+		# Get file list for WIP task (limit to 20 files)
+		UNCOMMITTED_FILES=$(git -C "$PROJECT_DIR" status --porcelain 2>/dev/null | head -20 | sed 's/^/  /')
 
-    # Create WIP task for next session
-    TASKS_DIR="$BRANCH_DIR/tasks"
-    mkdir -p "$TASKS_DIR"
+		# Create WIP task for next session
+		TASKS_DIR="$BRANCH_DIR/tasks"
+		mkdir -p "$TASKS_DIR"
 
-    # Find next available order number (start at 000 for WIP - highest priority)
-    WIP_FILE="$TASKS_DIR/000-pending-p1-found-commit-wip-changes.md"
+		# Find next available order number (start at 000 for WIP - highest priority)
+		WIP_FILE="$TASKS_DIR/000-pending-p1-found-commit-wip-changes.md"
 
-    # Only create if doesn't already exist (avoid duplicates)
-    if [[ ! -f $WIP_FILE ]]; then
-      cat >"$WIP_FILE" <<EOF
+		# Only create if doesn't already exist (avoid duplicates)
+		if [[ ! -f $WIP_FILE ]]; then
+			cat >"$WIP_FILE" <<EOF
 ---
 status: pending
 priority: p1
@@ -77,9 +77,9 @@ $UNCOMMITTED_FILES
 **By:** PreCompact hook
 **Status:** Auto-generated due to uncommitted work
 EOF
-      WIP_TASK_CREATED="true"
-    fi
-  fi
+			WIP_TASK_CREATED="true"
+		fi
+	fi
 fi
 
 # Get plan file content (first 100 lines)
@@ -94,29 +94,29 @@ PLAN_EXISTS="false"
 
 # First try: branch-based with slashes preserved (creates subdirectories)
 if [[ -f "$PROJECT_DIR/.claude/plans/${BRANCH}.plan.md" ]]; then
-  PLAN_FILE="$PROJECT_DIR/.claude/plans/${BRANCH}.plan.md"
+	PLAN_FILE="$PROJECT_DIR/.claude/plans/${BRANCH}.plan.md"
 # Second try: sanitized branch name (flat structure)
 elif [[ -f "$PROJECT_DIR/.claude/plans/${SAFE_BRANCH}.plan.md" ]]; then
-  PLAN_FILE="$PROJECT_DIR/.claude/plans/${SAFE_BRANCH}.plan.md"
+	PLAN_FILE="$PROJECT_DIR/.claude/plans/${SAFE_BRANCH}.plan.md"
 # Third try: find most recently modified .md file in plans directory
-# Use stat for modification time (macOS compatible)
+# Use ls -t for cross-platform sorting by modification time
 else
-  PLAN_FILE=$(find "$PROJECT_DIR/.claude/plans" -maxdepth 1 -name "*.md" -type f -exec stat -f '%m %N' {} \; 2>/dev/null | sort -rn | head -1 | sed 's/^[0-9]* //' || echo '')
+	PLAN_FILE=$(find "$PROJECT_DIR/.claude/plans" -maxdepth 1 -name "*.md" -type f 2>/dev/null | xargs ls -t 2>/dev/null | head -1 || echo '')
 fi
 
 if [[ -n $PLAN_FILE && -f $PLAN_FILE ]]; then
-  PLAN_CONTENT=$(head -100 "$PLAN_FILE" 2>/dev/null || echo "")
-  PLAN_EXISTS="true"
+	PLAN_CONTENT=$(head -100 "$PLAN_FILE" 2>/dev/null || echo "")
+	PLAN_EXISTS="true"
 fi
 
 # Get active workflow
-WORKFLOW_FILE="$STATE_DIR/current-workflow.json"
+WORKFLOW_FILE="$BRANCH_DIR/current-workflow.json"
 if [[ -f $WORKFLOW_FILE ]]; then
-  ACTIVE_WORKFLOW=$(jq -r '.workflow // empty' "$WORKFLOW_FILE" 2>/dev/null)
-  WORKFLOW_ARGS=$(jq -r '.args // empty' "$WORKFLOW_FILE" 2>/dev/null)
+	ACTIVE_WORKFLOW=$(jq -r '.workflow // empty' "$WORKFLOW_FILE" 2>/dev/null)
+	WORKFLOW_ARGS=$(jq -r '.args // empty' "$WORKFLOW_FILE" 2>/dev/null)
 else
-  ACTIVE_WORKFLOW=""
-  WORKFLOW_ARGS=""
+	ACTIVE_WORKFLOW=""
+	WORKFLOW_ARGS=""
 fi
 
 # Get pending todos from .claude/todos/ directory
@@ -127,11 +127,11 @@ PENDING_COUNT=0
 COMPLETED_COUNT=0
 
 if [[ -d $TODO_DIR ]]; then
-  TODOS_ARRAY="[]"
-  while IFS= read -r -d '' file; do
-    filename=$(basename "$file")
-    # Extract title from todo file (skip YAML frontmatter if present)
-    title=$(awk '
+	TODOS_ARRAY="[]"
+	while IFS= read -r -d '' file; do
+		filename=$(basename "$file")
+		# Extract title from todo file (skip YAML frontmatter if present)
+		title=$(awk '
         BEGIN { in_frontmatter=0; found=0 }
         /^---$/ && NR==1 { in_frontmatter=1; next }
         /^---$/ && in_frontmatter { in_frontmatter=0; next }
@@ -140,28 +140,28 @@ if [[ -d $TODO_DIR ]]; then
         !found && NF { print; found=1; exit }
       ' "$file" 2>/dev/null)
 
-    # Determine status based on filename
-    if [[ $filename == *complete* ]]; then
-      status="completed"
-      ((COMPLETED_COUNT++)) || true
-    else
-      status="pending"
-      ((PENDING_COUNT++)) || true
-    fi
+		# Determine status based on filename
+		if [[ $filename == *complete* ]]; then
+			status="completed"
+			((COMPLETED_COUNT++)) || true
+		else
+			status="pending"
+			((PENDING_COUNT++)) || true
+		fi
 
-    # Add to todos array (TodoWrite format: content, status, activeForm)
-    # For activeForm, prefix with "Working on: " to avoid malformed gerunds
-    TODOS_ARRAY=$(echo "$TODOS_ARRAY" | jq --arg content "$title" --arg status "$status" --arg activeForm "Working on: $title" \
-      '. + [{"content": $content, "status": $status, "activeForm": $activeForm}]' 2>/dev/null || echo "$TODOS_ARRAY")
-  done < <(find "$TODO_DIR" -name '*.md' -print0 2>/dev/null)
-  TODOS_JSON="$TODOS_ARRAY"
+		# Add to todos array (TodoWrite format: content, status, activeForm)
+		# For activeForm, prefix with "Working on: " to avoid malformed gerunds
+		TODOS_ARRAY=$(echo "$TODOS_ARRAY" | jq --arg content "$title" --arg status "$status" --arg activeForm "Working on: $title" \
+			'. + [{"content": $content, "status": $status, "activeForm": $activeForm}]' 2>/dev/null || echo "$TODOS_ARRAY")
+	done < <(find "$TODO_DIR" -name '*.md' -print0 2>/dev/null)
+	TODOS_JSON="$TODOS_ARRAY"
 fi
 
 # Get loop state from legacy locations (check both old formats)
 LOOP_STATE='{"active":false,"iteration":0,"maxIterations":10}'
 OLD_LOOP_FILE="$PROJECT_DIR/.claude/handoffs/$SAFE_BRANCH/loop-state.json"
 if [[ -f $OLD_LOOP_FILE ]]; then
-  LOOP_STATE=$(cat "$OLD_LOOP_FILE" 2>/dev/null || echo "$LOOP_STATE")
+	LOOP_STATE=$(cat "$OLD_LOOP_FILE" 2>/dev/null || echo "$LOOP_STATE")
 fi
 
 # Get handoff info from legacy location
@@ -169,8 +169,8 @@ HANDOFF_DIR="$PROJECT_DIR/.claude/handoffs/$SAFE_BRANCH"
 HANDOFF_COUNT=0
 LAST_HANDOFF=""
 if [[ -d $HANDOFF_DIR ]]; then
-  HANDOFF_COUNT=$(find "$HANDOFF_DIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-  LAST_HANDOFF=$(find "$HANDOFF_DIR" -maxdepth 1 -name "*.md" -type f -exec stat -f '%m %N' {} \; 2>/dev/null | sort -rn | head -1 | sed 's/^[0-9]* //' || echo "")
+	HANDOFF_COUNT=$(find "$HANDOFF_DIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+	LAST_HANDOFF=$(find "$HANDOFF_DIR" -maxdepth 1 -name "*.md" -type f 2>/dev/null | xargs ls -t 2>/dev/null | head -1 || echo "")
 fi
 
 # Scan task files in .claude/branches/{branch}/tasks/
@@ -183,49 +183,49 @@ TASKS_P3=0
 NEXT_TASK=""
 
 if [[ -d $TASKS_DIR ]]; then
-  # Count pending tasks by priority from filenames
-  while IFS= read -r filename; do
-    # Match pattern: ###-pending-p#-*
-    if [[ $filename =~ ^[0-9]+-pending-p([123])- ]]; then
-      ((TASKS_PENDING++)) || true
-      priority="${BASH_REMATCH[1]}"
-      case $priority in
-        1) ((TASKS_P1++)) || true ;;
-        2) ((TASKS_P2++)) || true ;;
-        3) ((TASKS_P3++)) || true ;;
-      esac
-      # Track first pending task (lowest order number)
-      if [[ -z $NEXT_TASK ]]; then
-        NEXT_TASK="$filename"
-      fi
-    fi
-  done < <(find "$TASKS_DIR" -maxdepth 1 -name "*.md" -type f -exec basename {} \; 2>/dev/null | sort)
+	# Count pending tasks by priority from filenames
+	while IFS= read -r filename; do
+		# Match pattern: ###-pending-p#-*
+		if [[ $filename =~ ^[0-9]+-pending-p([123])- ]]; then
+			((TASKS_PENDING++)) || true
+			priority="${BASH_REMATCH[1]}"
+			case $priority in
+			1) ((TASKS_P1++)) || true ;;
+			2) ((TASKS_P2++)) || true ;;
+			3) ((TASKS_P3++)) || true ;;
+			esac
+			# Track first pending task (lowest order number)
+			if [[ -z $NEXT_TASK ]]; then
+				NEXT_TASK="$filename"
+			fi
+		fi
+	done < <(find "$TASKS_DIR" -maxdepth 1 -name "*.md" -type f -exec basename {} \; 2>/dev/null | sort)
 fi
 
 # Build the unified state JSON
 jq -n \
-  --arg branch "$BRANCH" \
-  --arg session "${CLAUDE_SESSION_ID:-unknown}" \
-  --arg time "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-  --arg plan_exists "$PLAN_EXISTS" \
-  --arg plan_file "$PLAN_FILE" \
-  --arg plan_content "$PLAN_CONTENT" \
-  --argjson todos "$TODOS_JSON" \
-  --argjson pending_count "$PENDING_COUNT" \
-  --argjson completed_count "$COMPLETED_COUNT" \
-  --arg active_workflow "$ACTIVE_WORKFLOW" \
-  --arg workflow_args "$WORKFLOW_ARGS" \
-  --argjson loop "$LOOP_STATE" \
-  --argjson handoff_count "$HANDOFF_COUNT" \
-  --arg last_handoff "$LAST_HANDOFF" \
-  --argjson tasks_pending "$TASKS_PENDING" \
-  --argjson tasks_p1 "$TASKS_P1" \
-  --argjson tasks_p2 "$TASKS_P2" \
-  --argjson tasks_p3 "$TASKS_P3" \
-  --arg next_task "$NEXT_TASK" \
-  --argjson uncommitted_count "$UNCOMMITTED_COUNT" \
-  --arg wip_task_created "$WIP_TASK_CREATED" \
-  '{
+	--arg branch "$BRANCH" \
+	--arg session "${CLAUDE_SESSION_ID:-unknown}" \
+	--arg time "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+	--arg plan_exists "$PLAN_EXISTS" \
+	--arg plan_file "$PLAN_FILE" \
+	--arg plan_content "$PLAN_CONTENT" \
+	--argjson todos "$TODOS_JSON" \
+	--argjson pending_count "$PENDING_COUNT" \
+	--argjson completed_count "$COMPLETED_COUNT" \
+	--arg active_workflow "$ACTIVE_WORKFLOW" \
+	--arg workflow_args "$WORKFLOW_ARGS" \
+	--argjson loop "$LOOP_STATE" \
+	--argjson handoff_count "$HANDOFF_COUNT" \
+	--arg last_handoff "$LAST_HANDOFF" \
+	--argjson tasks_pending "$TASKS_PENDING" \
+	--argjson tasks_p1 "$TASKS_P1" \
+	--argjson tasks_p2 "$TASKS_P2" \
+	--argjson tasks_p3 "$TASKS_P3" \
+	--arg next_task "$NEXT_TASK" \
+	--argjson uncommitted_count "$UNCOMMITTED_COUNT" \
+	--arg wip_task_created "$WIP_TASK_CREATED" \
+	'{
     branch: $branch,
     session: $session,
     compacted_at: $time,
@@ -272,13 +272,13 @@ echo "  - Pending tasks: $TASKS_PENDING (P1:$TASKS_P1 P2:$TASKS_P2 P3:$TASKS_P3)
 
 # Session Completion Discipline: Warn about uncommitted work
 if [[ $UNCOMMITTED_COUNT -gt 0 ]]; then
-  echo ""
-  echo "⚠️  SESSION COMPLETION WARNING: $UNCOMMITTED_COUNT uncommitted files"
-  echo "    Work is NOT complete until git commit succeeds."
-  if [[ $WIP_TASK_CREATED == "true" ]]; then
-    echo "    Created WIP task: 000-pending-p1-found-commit-wip-changes.md"
-  fi
-  echo ""
-  echo "    To complete session properly, run: /crew:git:commit"
-  echo ""
+	echo ""
+	echo "⚠️  SESSION COMPLETION WARNING: $UNCOMMITTED_COUNT uncommitted files"
+	echo "    Work is NOT complete until git commit succeeds."
+	if [[ $WIP_TASK_CREATED == "true" ]]; then
+		echo "    Created WIP task: 000-pending-p1-found-commit-wip-changes.md"
+	fi
+	echo ""
+	echo "    To complete session properly, run: /crew:git:commit"
+	echo ""
 fi

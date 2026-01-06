@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Enforce TDD workflow for implementation requests
 # Triggered on UserPromptSubmit for implementation-related prompts
 
 # Check if this looks like an implementation request
 if echo "$CLAUDE_USER_PROMPT" | grep -qiE "implement|add feature|build feature|create functionality|new feature|develop"; then
-  cat <<'EOF'
+	cat <<'EOF'
 CONTEXT: TDD Workflow Required
 
 Before implementing, you MUST follow the RED-GREEN-REFACTOR cycle:

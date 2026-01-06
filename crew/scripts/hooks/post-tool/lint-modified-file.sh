@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Lint and format the file that was just modified
 # Runs immediately after Edit/Write so issues can be fixed in same turn
 #

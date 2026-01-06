@@ -5,8 +5,9 @@
 set +e
 
 INPUT=$(cat)
-TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
-COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null)
+
+# Single jq call to extract both fields (performance optimization)
+read -r TOOL_NAME COMMAND < <(echo "$INPUT" | jq -r '[.tool_name // "", .tool_input.command // ""] | @tsv' 2>/dev/null)
 
 # Only check Bash tool
 [[ $TOOL_NAME != "Bash" ]] && exit 0
