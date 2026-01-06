@@ -31,7 +31,7 @@ IFS=$'\t' read -r AGENT_ID SUBAGENT_TYPE DESCRIPTION RUN_IN_BACKGROUND <<<"$PARS
 # Get branch info
 BRANCH=$(git -C "$PROJECT_DIR" branch --show-current 2>/dev/null || echo '')
 if [[ -z $BRANCH ]]; then
-	BRANCH=$(git -C "$PROJECT_DIR" rev-parse --short HEAD 2>/dev/null || echo 'unknown')
+  BRANCH=$(git -C "$PROJECT_DIR" rev-parse --short HEAD 2>/dev/null || echo 'unknown')
 fi
 SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-')
 
@@ -40,27 +40,32 @@ BRANCH_DIR="$PROJECT_DIR/.claude/branches/$SAFE_BRANCH"
 mkdir -p "$BRANCH_DIR"
 AGENTS_FILE="$BRANCH_DIR/agents.json"
 
-# Initialize agents file if doesn't exist
-if [[ ! -f $AGENTS_FILE ]]; then
-	echo '{"agents":[],"stats":{"total_spawned":0,"completed":0,"failed":0,"stuck":0}}' >"$AGENTS_FILE"
+# Initialize agents file if doesn't exist or is invalid JSON
+if [[ ! -f $AGENTS_FILE ]] || ! jq empty "$AGENTS_FILE" 2>/dev/null; then
+  echo '{"agents":[],"stats":{"total_spawned":0,"completed":0,"failed":0,"stuck":0}}' >"$AGENTS_FILE"
 fi
 
 # Generate unique ID if not provided
 if [[ -z $AGENT_ID || $AGENT_ID == "null" ]]; then
-	AGENT_ID="agent-$(date +%s)-$$"
+  AGENT_ID="agent-$(date +%s)-$$"
 fi
 
 # Add new agent entry
 SPAWN_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 SPAWN_EPOCH=$(date +%s)
 
-jq --arg id "$AGENT_ID" \
-	--arg type "$SUBAGENT_TYPE" \
-	--arg desc "$DESCRIPTION" \
-	--arg time "$SPAWN_TIME" \
-	--argjson epoch "$SPAWN_EPOCH" \
-	--argjson background "$RUN_IN_BACKGROUND" \
-	'.agents += [{
+# Ensure variables have valid JSON values for argjson
+[[ -z $SPAWN_EPOCH ]] && SPAWN_EPOCH=0
+[[ -z $RUN_IN_BACKGROUND || $RUN_IN_BACKGROUND == "null" ]] && RUN_IN_BACKGROUND="false"
+
+# Add new agent entry (suppress errors to avoid polluting context)
+if jq --arg id "$AGENT_ID" \
+  --arg type "$SUBAGENT_TYPE" \
+  --arg desc "$DESCRIPTION" \
+  --arg time "$SPAWN_TIME" \
+  --argjson epoch "$SPAWN_EPOCH" \
+  --argjson background "$RUN_IN_BACKGROUND" \
+  '.agents += [{
     "id": $id,
     "type": $type,
     "description": $desc,
@@ -71,6 +76,10 @@ jq --arg id "$AGENT_ID" \
     "completed_at": null,
     "result": null,
     "nudge_count": 0
-  }] | .stats.total_spawned += 1' "$AGENTS_FILE" >"${AGENTS_FILE}.tmp" && mv "${AGENTS_FILE}.tmp" "$AGENTS_FILE"
+  }] | .stats.total_spawned += 1' "$AGENTS_FILE" >"${AGENTS_FILE}.tmp" 2>/dev/null; then
+  mv "${AGENTS_FILE}.tmp" "$AGENTS_FILE"
+else
+  rm -f "${AGENTS_FILE}.tmp"
+fi
 
 # Silent tracking - no output to keep context clean

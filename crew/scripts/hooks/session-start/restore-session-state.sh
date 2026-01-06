@@ -29,7 +29,6 @@ SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-')
 # State location: .claude/branches/{branch}/state.json
 BRANCH_DIR="$PROJECT_DIR/.claude/branches/$SAFE_BRANCH"
 STATE_FILE="$BRANCH_DIR/state.json"
-TASKS_DIR="$BRANCH_DIR/tasks"
 
 # On fresh startup, skip - user should run /crew:restart manually
 # Hook output on startup is not actionable by Claude
@@ -38,7 +37,8 @@ if [[ $EVENT_TYPE == "startup" ]]; then
 fi
 
 # For compact/resume events, also restore from state.json
-if [[ ! -f $STATE_FILE ]]; then
+# Exit if file doesn't exist or contains invalid JSON
+if [[ ! -f $STATE_FILE ]] || ! jq empty "$STATE_FILE" 2>/dev/null; then
 	exit 0
 fi
 
@@ -129,7 +129,7 @@ fi
 
 # Witness: Check for stuck agents from previous session
 AGENTS_FILE="$BRANCH_DIR/agents.json"
-if [[ -f $AGENTS_FILE ]]; then
+if [[ -f $AGENTS_FILE ]] && jq empty "$AGENTS_FILE" 2>/dev/null; then
 	CURRENT_EPOCH=$(date +%s)
 	TIMEOUT_SECONDS=300 # 5 minutes
 
@@ -158,10 +158,14 @@ if [[ -f $AGENTS_FILE ]]; then
 			echo "    KillShell({shell_id: \"<id>\"}) - Terminate stuck agent"
 			echo ""
 
-			# Mark as stuck in the file
-			jq --argjson now "$CURRENT_EPOCH" --argjson timeout "$TIMEOUT_SECONDS" \
+			# Mark as stuck in the file (suppress errors to avoid polluting context)
+			if jq --argjson now "$CURRENT_EPOCH" --argjson timeout "$TIMEOUT_SECONDS" \
 				'(.agents[] | select(.status == "running" and ($now - .spawned_epoch) > $timeout)) |= . + {"status": "stuck"}' \
-				"$AGENTS_FILE" >"${AGENTS_FILE}.tmp" && mv "${AGENTS_FILE}.tmp" "$AGENTS_FILE"
+				"$AGENTS_FILE" >"${AGENTS_FILE}.tmp" 2>/dev/null; then
+				mv "${AGENTS_FILE}.tmp" "$AGENTS_FILE"
+			else
+				rm -f "${AGENTS_FILE}.tmp"
+			fi
 		fi
 
 		# Show agent stats
