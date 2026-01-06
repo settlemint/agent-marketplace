@@ -2,20 +2,15 @@
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "startup",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start/setup-plugins.sh"
-          }
-        ]
-      },
-      {
         "matcher": "startup|compact|resume",
         "hooks": [
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start/restore-session-state.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start/check-linters.sh"
           }
         ]
       }
@@ -46,6 +41,10 @@
         "hooks": [
           {
             "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-ci-commands.sh"
+          },
+          {
+            "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-git-commit.sh"
           },
           {
@@ -62,6 +61,15 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/lint-modified-file.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/sync-machete-stack.sh"
           }
         ]
       },

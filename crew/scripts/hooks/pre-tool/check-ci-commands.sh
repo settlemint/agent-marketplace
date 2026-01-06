@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# Warn when running CI commands (test, lint, format, typecheck) in main thread
-# These should run in background haiku agents via /crew:ci
+# Intercept CI commands (test, lint, format, typecheck) in main thread
+# Guide Claude to use /crew:ci background agents instead
+#
+# PERFORMANCE: Uses JSON permissionDecision instead of exit 2 for cleaner UX
+# This avoids ugly red error blocks while still blocking the command
 
 set +e
 
@@ -9,68 +12,24 @@ TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null)
 
 # Only check Bash tool
-if [[ $TOOL_NAME != "Bash" ]]; then
-  exit 0
-fi
+[[ $TOOL_NAME != "Bash" ]] && exit 0
 
-# Check for CI-related commands
-CI_PATTERNS=(
-  "bun run test"
-  "bun test"
-  "npm run test"
-  "npm test"
-  "pnpm run test"
-  "pnpm test"
-  "yarn test"
-  "bun run lint"
-  "npm run lint"
-  "pnpm run lint"
-  "yarn lint"
-  "bun run format"
-  "npm run format"
-  "pnpm run format"
-  "yarn format"
-  "bun run typecheck"
-  "npm run typecheck"
-  "pnpm run typecheck"
-  "yarn typecheck"
-  "bun run ci"
-  "npm run ci"
-  "pnpm run ci"
-  "yarn ci"
-  "tsc --noEmit"
-  "eslint "
-  "prettier --check"
-  "vitest run"
-  "vitest --run"
-  "bunx vitest"
-  "npx vitest"
-  "pnpm exec vitest"
-  "jest "
-  "npx jest"
-  "bunx jest"
-  "biome check"
-  "biome lint"
-  "biome format"
-  "bunx biome"
-  "npx biome"
-  "pnpm exec biome"
-  "ultracite"
-  "bunx ultracite"
-  "npx ultracite"
-  "pnpm exec ultracite"
-)
+# Fast regex check for CI-related commands (avoids array iteration)
+if [[ $COMMAND =~ (npm|bun|pnpm|yarn)[[:space:]]+(run[[:space:]]+)?(test|lint|format|typecheck|ci)([[:space:]]|$) ]] ||
+	[[ $COMMAND =~ (vitest|jest|biome|eslint|prettier|ultracite|tsc)[[:space:]] ]] ||
+	[[ $COMMAND =~ (bunx|npx|pnpm[[:space:]]exec)[[:space:]]+(vitest|jest|biome|ultracite) ]]; then
 
-for pattern in "${CI_PATTERNS[@]}"; do
-  if [[ $COMMAND == *"$pattern"* ]]; then
-    cat <<'EOF'
+	# Use JSON response with permissionDecision for clean UX (no red error block)
+	cat <<'EOF'
 {
-  "decision": "block",
-  "reason": "CI commands (test/lint/format/typecheck) should not run in main thread.\n\nUse one of these instead:\n  - Task tool with haiku model for test-runner agent\n  - /crew:ci command for interactive CI runs\n\nThis saves context and keeps the main thread responsive."
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "deny",
+    "permissionDecisionReason": "CI commands should run in background agents to keep context focused.\n\nInvoke the /crew:ci skill instead:\n  Skill({skill: \"crew:ci\"})\n\nThis runs tests/lint/typecheck in parallel haiku agents with automatic result tracking."
+  }
 }
 EOF
-    exit 0
-  fi
-done
+	exit 0
+fi
 
 exit 0

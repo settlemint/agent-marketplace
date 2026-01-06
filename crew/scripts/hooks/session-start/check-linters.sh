@@ -1,36 +1,37 @@
 #!/bin/bash
 # Check and install required linters for CI
-# Hooks must never fail - use defensive error handling
+# Only runs on fresh startup (not compact/resume)
+# Fast path: exits immediately if all linters present
 set +e
 
+# Read event type from stdin
+INPUT=$(cat)
+EVENT_TYPE=$(echo "$INPUT" | jq -r '.type // "startup"' 2>/dev/null)
+
+# Only run on fresh startup
+[[ $EVENT_TYPE != "startup" ]] && exit 0
+
+# Check for missing linters
 LINTERS=(actionlint shellcheck shfmt markdownlint)
 missing=()
-installed=()
 
 for linter in "${LINTERS[@]}"; do
-	if ! command -v "$linter" &>/dev/null; then
-		missing+=("$linter")
-	fi
+	command -v "$linter" &>/dev/null || missing+=("$linter")
 done
 
-if [[ ${#missing[@]} -gt 0 ]]; then
-	echo "CONTEXT: Installing missing linters: ${missing[*]}"
+# Fast path: all present
+[[ ${#missing[@]} -eq 0 ]] && exit 0
 
-	# Map markdownlint to its brew package name
-	brew_packages=()
-	for linter in "${missing[@]}"; do
-		if [[ $linter == "markdownlint" ]]; then
-			brew_packages+=("markdownlint-cli")
-		else
-			brew_packages+=("$linter")
-		fi
-	done
+echo "CONTEXT: Installing missing linters: ${missing[*]}"
 
-	if brew install "${brew_packages[@]}" 2>/dev/null; then
-		installed=("${missing[@]}")
-		echo "CONTEXT: Installed linters: ${installed[*]}"
-	else
-		echo "CONTEXT: Failed to install some linters. Run 'brew install ${brew_packages[*]}' manually."
-	fi
+# Map markdownlint to its brew package name
+brew_packages=()
+for linter in "${missing[@]}"; do
+	[[ $linter == "markdownlint" ]] && brew_packages+=("markdownlint-cli") || brew_packages+=("$linter")
+done
+
+if brew install "${brew_packages[@]}" 2>/dev/null; then
+	echo "CONTEXT: Installed linters: ${missing[*]}"
+else
+	echo "CONTEXT: Failed to install some linters. Run 'brew install ${brew_packages[*]}' manually."
 fi
-

@@ -216,14 +216,40 @@ for (const file of taskFiles) {
 const currentBranch = Bash({ command: "git branch --show-current" }).trim();
 const isMainBranch = currentBranch === "main" || currentBranch === "master";
 
-if (isMainBranch) {
-  // Create new feature branch only if on main/master
+// Check if current branch is in machete layout (stacked branch)
+const isStackedBranch =
   Bash({
-    command: `git checkout -b feature/${slug}`,
-    description: "Create feature branch",
+    command:
+      "git machete is-managed $(git branch --show-current) 2>/dev/null && echo 'true' || echo 'false'",
+  }).trim() === "true";
+
+if (isMainBranch) {
+  // On main - need to create or switch to feature branch
+  // Note: /crew:design should have already created the branch
+  // If we're here on main, ask user to specify branch
+  AskUserQuestion({
+    questions: [
+      {
+        question: "You're on main. Which branch should we build on?",
+        header: "Branch",
+        options: [
+          // List available feature branches from .claude/plans/ or git branches
+        ],
+        multiSelect: false,
+      },
+    ],
   });
+} else if (isStackedBranch) {
+  // On a stacked branch - sync with parent before starting work
+  console.log(`On stacked branch: ${currentBranch}`);
+  // Check if out of sync with parent
+  Bash({
+    command: "git machete status",
+    description: "Check stack status",
+  });
+  // Optionally sync if needed (will be prompted by hook)
 } else {
-  // Already on a feature branch - stay on it
+  // On regular feature branch - just stay on it
   console.log(`Staying on current branch: ${currentBranch}`);
 }
 

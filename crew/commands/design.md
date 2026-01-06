@@ -752,21 +752,81 @@ const currentBranch = Bash({ command: "git branch --show-current" }).trim();
 const isMainBranch = currentBranch === "main" || currentBranch === "master";
 
 if (isMainBranch) {
-  // Create new feature branch only if on main/master
-  // Note: Branch uses slash (feature/slug), but folder uses hyphen (feature-slug)
+  // On main - ask about branch type
+  AskUserQuestion({
+    questions: [
+      {
+        question: "How should we set up the branch for this work?",
+        header: "Branch Type",
+        options: [
+          {
+            label: "Regular branch (Recommended)",
+            description: "Independent feature branch from main",
+          },
+          {
+            label: "Stacked branch",
+            description:
+              "Create as child of an existing feature branch (for stacked PRs)",
+          },
+        ],
+        multiSelect: false,
+      },
+    ],
+  });
+
+  // If regular branch:
   Bash({
     command: `git checkout -b feature/${slug}`,
     description: "Create feature branch",
   });
+
+  // If stacked branch - ask for parent:
+  // 1. List existing branches in machete layout (or feature branches)
+  // 2. Create branch and add to machete layout:
+  //    git checkout -b feature/${slug}
+  //    git machete add --onto <selected-parent>
 } else {
-  // Already on a feature branch - stay on it
-  console.log(`Staying on current branch: ${currentBranch}`);
+  // Already on a feature branch - ask if they want to stack
+  AskUserQuestion({
+    questions: [
+      {
+        question: `You're on branch '${currentBranch}'. How should we proceed?`,
+        header: "Branch",
+        options: [
+          {
+            label: "Stay on current branch",
+            description: "Continue work on this branch",
+          },
+          {
+            label: "Create stacked branch",
+            description: `Create child branch of ${currentBranch} (for stacked PRs)`,
+          },
+          {
+            label: "Create independent branch",
+            description: "New branch from main (not stacked)",
+          },
+        ],
+        multiSelect: false,
+      },
+    ],
+  });
+
+  // If stacked:
+  //    git checkout -b feature/${slug}
+  //    git machete add --onto ${currentBranch}
 }
 
 // Note: Plans and task files are NOT committed to git
 // - .claude/plans/ contains local working documents
 // - .claude/branches/ is gitignored
 ```
+
+**Stacked Branch Benefits:**
+
+- Parent branch from layout becomes PR base automatically
+- `git machete traverse` syncs all branches in stack
+- PR descriptions include stack visualization
+- Easy retargeting when parent is merged
 
 ### Phase 12: Next Steps
 
@@ -824,4 +884,5 @@ AskUserQuestion({
 - [ ] Each task file has acceptance criteria
 - [ ] Parallel tasks marked with `parallel: true`
 - [ ] Branch created (only if on main/master)
+- [ ] Stacked branch option offered (with machete integration)
 - [ ] AskUserQuestion confirms next steps
