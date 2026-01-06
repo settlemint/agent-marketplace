@@ -74,9 +74,9 @@ TodoWrite({
       activeForm: "Generating tasks",
     },
     {
-      content: "Create branch",
+      content: "Set up branch (if needed)",
       status: "pending",
-      activeForm: "Creating branch",
+      activeForm: "Setting up branch",
     },
   ],
 });
@@ -747,12 +747,25 @@ depends_on: []
 ### Phase 11: Branch Setup
 
 ```javascript
-// Note: Branch uses slash (feature/slug), but folder uses hyphen (feature-slug)
-Bash({ command: `git checkout -b feature/${slug}` });
-Bash({
-  command: `git add .claude/plans/${slug}.md .claude/branches/${branchSlug}/tasks/`,
-});
-Bash({ command: `git commit -m "docs(plan): add plan and tasks for ${slug}"` });
+// Check if already on a feature branch (not main/master)
+const currentBranch = Bash({ command: "git branch --show-current" }).trim();
+const isMainBranch = currentBranch === "main" || currentBranch === "master";
+
+if (isMainBranch) {
+  // Create new feature branch only if on main/master
+  // Note: Branch uses slash (feature/slug), but folder uses hyphen (feature-slug)
+  Bash({
+    command: `git checkout -b feature/${slug}`,
+    description: "Create feature branch",
+  });
+} else {
+  // Already on a feature branch - stay on it
+  console.log(`Staying on current branch: ${currentBranch}`);
+}
+
+// Note: Plans and task files are NOT committed to git
+// - .claude/plans/ contains local working documents
+// - .claude/branches/ is gitignored
 ```
 
 ### Phase 12: Next Steps
@@ -810,5 +823,5 @@ AskUserQuestion({
 - [ ] Task files follow naming: `{order}-{status}-{priority}-{story}-{slug}.md`
 - [ ] Each task file has acceptance criteria
 - [ ] Parallel tasks marked with `parallel: true`
-- [ ] Branch created and files committed
+- [ ] Branch created (only if on main/master)
 - [ ] AskUserQuestion confirms next steps
