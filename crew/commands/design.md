@@ -4,6 +4,18 @@ description: Create validated implementation plans with research
 argument-hint: "[feature description, bug report, or improvement idea]"
 ---
 
+<prerequisite>
+
+**Load patterns skill first:**
+
+```javascript
+Skill({ skill: "crew:crew-patterns" });
+```
+
+This provides: `<pattern name="research-agents"/>`, `<pattern name="task-file"/>`.
+
+</prerequisite>
+
 <input>
 <feature_description>$ARGUMENTS</feature_description>
 </input>
@@ -188,6 +200,12 @@ Plan approved. To start building, run: /crew:build
 Files created:
 - Plan: .claude/plans/<slug>.md
 - Tasks: .claude/branches/<branch>/tasks/*.md (X tasks)
+```
+
+**If user confirms to start building:**
+
+```javascript
+Skill({ skill: "crew:build", args: "<slug>" });
 ```
 
 </phase>

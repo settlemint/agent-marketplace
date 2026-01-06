@@ -4,6 +4,18 @@ description: Execute work plans with iteration loops and progress tracking
 argument-hint: "[plan] [--loop] [--max-iterations N]"
 ---
 
+<prerequisite>
+
+**Load patterns skill first:**
+
+```javascript
+Skill({ skill: "crew:crew-patterns" });
+```
+
+This provides: `<pattern name="test-runner"/>`, `<pattern name="spawn-batch"/>`, `<pattern name="collect-results"/>`, `<pattern name="todo-progress"/>`, `<pattern name="task-file"/>`, `<pattern name="quality-agents"/>`, `<pattern name="branch-state"/>`.
+
+</prerequisite>
+
 <critical_rules>
 
 **NEVER use Bash for CI commands.** These are BLOCKED by PreToolUse hook:
