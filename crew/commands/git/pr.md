@@ -1,7 +1,7 @@
 ---
 name: crew:git:pr
 description: Commit, push, and open a PR
-allowed-tools: Bash(git checkout:*), Bash(git add:*), Bash(git status:*), Bash(git push:*), Bash(git commit:*), Bash(git fetch:*), Bash(gh pr create:*), Bash(git machete:*)
+allowed-tools: Bash(git checkout:*), Bash(git add:*), Bash(git status:*), Bash(git push:*), Bash(git commit:*), Bash(git fetch:*), Bash(gh pr create:*), Bash(git machete:*), AskUserQuestion
 ---
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/pr-context.sh`
@@ -42,13 +42,21 @@ git checkout -b feat/<name>
 git add . && git commit -m "type(scope): msg"
 ```
 
-### Step 4: Check Machete Status
+### Step 4: Ask PR Type
+
+Use AskUserQuestion to ask if this should be a draft PR or ready for review:
+
+- **Draft PR** - Work in progress, not ready for review
+- **Ready PR** - Ready for review and merge
+
+### Step 5: Check Machete Status
 
 **If branch is in machete layout** (`.git/machete` exists and branch is managed):
 
 ```bash
 # Use git-machete for PR creation - uses parent from layout as base
-git machete github create-pr
+# Add --draft if user selected draft PR
+git machete github create-pr [--draft]
 ```
 
 **If NOT in machete layout** (traditional PR):
@@ -58,14 +66,15 @@ git machete github create-pr
 git push -u origin $(git branch --show-current)
 
 # Create PR with HEREDOC body
+# Add --draft if user selected draft PR
 gh pr create --title "..." --body "$(cat <<'EOF'
 ## Summary
 ...
 EOF
-)"
+)" [--draft]
 ```
 
-### Step 5: Sync Stack (if machete)
+### Step 6: Sync Stack (if machete)
 
 If branch is in a stack, sync after PR creation:
 
@@ -85,14 +94,11 @@ When using git-machete for PRs:
 ## Quick Reference
 
 ```bash
-# Traditional PR
-gh pr create --title "feat: thing" --body "..."
+# Traditional PR (add --draft based on user choice)
+gh pr create --title "feat: thing" --body "..." [--draft]
 
-# Machete-managed PR (uses layout for base branch)
-git machete github create-pr
-
-# Draft PR
-git machete github create-pr --draft
+# Machete-managed PR (add --draft based on user choice)
+git machete github create-pr [--draft]
 ```
 
 Return the PR URL when done.
