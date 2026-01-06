@@ -95,27 +95,8 @@ shellcheck <file>           # Lint for issues
 ## Git Conventions
 
 - **Commits**: Conventional format `type(scope): description`
-- **Branches**: `feat/<short-description>` or `fix/<short-description>` from main
-- **Protected files**: Never commit `.env`, `.pem`, `.key`, credentials, secrets
-- **Before committing**: Run `git status` and `git diff --stat` to review changes
-- **Commit messages**: Look at recent commits (`git log --oneline -5`) to match style
-
-| Type     | Use For            |
-| -------- | ------------------ |
-| feat     | New feature        |
-| fix      | Bug fix            |
-| refactor | Code restructuring |
-| docs     | Documentation      |
-| test     | Tests              |
-| chore    | Maintenance        |
-
-## CI Best Practices
-
-When running tests, linting, or type checking:
-
-- **Use `/crew:ci`** to run CI in a background haiku agent (keeps main thread responsive)
-- Or use `Task` with `model: "haiku"` for CI operations
-- Report only failures, not full output
+- **Branches**: `<type>/<short-description>` from main
+- **Protected files**: `.env`, `.pem`, `.key`, credentials, secrets
 
 ## Version Bumping (MANDATORY)
 
