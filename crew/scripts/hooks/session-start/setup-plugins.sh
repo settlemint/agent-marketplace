@@ -32,8 +32,10 @@ error() {
 }
 
 # Check if running as hook - skip on compact/resume events
-if [[ ! -t 0 ]]; then
-	# Pipe/stdin - likely hook, check event type
+# Only attempt to read stdin if CLAUDE_HOOK environment variable is set
+# This avoids consuming stdin when run via "curl ... | bash"
+if [[ -n "${CLAUDE_HOOK:-}" ]] && [[ ! -t 0 ]]; then
+	# Running as Claude hook with piped input
 	INPUT=$(cat)
 	EVENT_TYPE=$(echo "$INPUT" | jq -r '.type // "unknown"' 2>/dev/null || echo "direct")
 
@@ -197,4 +199,3 @@ else
 	echo "================================"
 	exit 1
 fi
-
