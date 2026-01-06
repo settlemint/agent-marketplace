@@ -11,6 +11,10 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start/check-linters.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start/inject-skills.sh"
           }
         ]
       }
