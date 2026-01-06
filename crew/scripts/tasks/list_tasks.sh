@@ -29,19 +29,19 @@ echo ""
 # List in progress first
 if [[ "$in_progress" -gt 0 ]]; then
 	echo "=== In Progress ==="
-	ls -1 "$tasks_dir"/*-in_progress-*.md 2>/dev/null | xargs -n1 basename
+	find "$tasks_dir" -name '*-in_progress-*.md' -exec basename {} \; | sort
 	echo ""
 fi
 
 # Then pending
 if [[ "$pending" -gt 0 ]]; then
 	echo "=== Pending ==="
-	ls -1 "$tasks_dir"/*-pending-*.md 2>/dev/null | xargs -n1 basename
+	find "$tasks_dir" -name '*-pending-*.md' -exec basename {} \; | sort
 	echo ""
 fi
 
 # Completed last (optional, often long)
 if [[ "$complete" -gt 0 ]] && [[ "${SHOW_COMPLETE:-0}" == "1" ]]; then
 	echo "=== Complete ==="
-	ls -1 "$tasks_dir"/*-complete-*.md 2>/dev/null | xargs -n1 basename
+	find "$tasks_dir" -name '*-complete-*.md' -exec basename {} \; | sort
 fi
