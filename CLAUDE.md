@@ -57,10 +57,11 @@ Self-contained knowledge modules with:
 
 ### Hooks
 
-Lifecycle automation (non-blocking, side effects only):
+Lifecycle automation (non-blocking):
 
 - `SessionStart` - Restore state on startup, check available linters
 - `PreCompact` - Save state before compaction
+- `PreToolUse` - Suggest relevant skills (e.g., /crew:ci for test commands)
 - `PostToolUse` - Auto-lint on file edits, sync machete stack, track agents
 - `Stop` - Check for agent loops
 
