@@ -161,6 +161,19 @@ TaskOutput({ task_id: "t003-id", block: true });
 
 </checklist>
 
+<scripts>
+
+## Helper Scripts
+
+Scripts in `crew/scripts/tasks/`:
+
+| Script              | Purpose                                   |
+| ------------------- | ----------------------------------------- |
+| `list_tasks.sh`     | List tasks with status summary            |
+| `validate_tasks.py` | Validate task files (naming, frontmatter) |
+
+</scripts>
+
 <success_criteria>
 
 - Tasks in `.claude/branches/<slugified-branch>/tasks/`
