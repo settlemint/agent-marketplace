@@ -1,7 +1,16 @@
 ---
 name: vitest
 description: Vitest unit testing patterns for TypeScript. Covers test structure, mocking, assertions, and coverage. Triggers on vitest, describe, it, expect, mock.
-triggers: ["vitest", "describe", "\\bit\\(", "expect", "mock", "\\.test\\.ts", "\\.spec\\.ts"]
+triggers:
+  [
+    "vitest",
+    "describe",
+    "\\bit\\(",
+    "expect",
+    "mock",
+    "\\.test\\.ts",
+    "\\.spec\\.ts",
+  ]
 ---
 
 <objective>
@@ -19,21 +28,22 @@ MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 // Test patterns
 mcp__context7__query_docs({
   context7CompatibleLibraryID: "/vitest-dev/vitest",
-  topic: "describe it expect beforeEach"
-})
+  topic: "describe it expect beforeEach",
+});
 
 // Mocking
 mcp__context7__query_docs({
   context7CompatibleLibraryID: "/vitest-dev/vitest",
-  topic: "vi.mock vi.fn vi.spyOn"
-})
+  topic: "vi.mock vi.fn vi.spyOn",
+});
 
 // Async testing
 mcp__context7__query_docs({
   context7CompatibleLibraryID: "/vitest-dev/vitest",
-  topic: "async await rejects resolves"
-})
+  topic: "async await rejects resolves",
+});
 ```
+
 </mcp_first>
 
 <quick_start>
@@ -64,6 +74,7 @@ describe("MyService", () => {
   });
 });
 ```
+
 </quick_start>
 
 <mocking>
@@ -86,6 +97,15 @@ expect(mockFn).toHaveBeenCalledTimes(1);
 vi.mock("./myModule", () => ({
   myFunction: vi.fn().mockReturnValue("mocked"),
 }));
+
+// Partial mock (keep some real implementations)
+vi.mock("./myModule", async () => {
+  const actual = await vi.importActual("./myModule");
+  return {
+    ...actual,
+    specificFunction: vi.fn(),
+  };
+});
 ```
 
 **Spy on methods:**
@@ -97,14 +117,108 @@ spy.mockReturnValue("mocked");
 // Restore original
 spy.mockRestore();
 ```
+
+**Mock timers:**
+
+```typescript
+beforeEach(() => {
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+
+it("handles timeouts", async () => {
+  const callback = vi.fn();
+  setTimeout(callback, 1000);
+
+  vi.advanceTimersByTime(1000);
+  expect(callback).toHaveBeenCalled();
+});
+
+it("handles dates", () => {
+  vi.setSystemTime(new Date("2024-01-15"));
+  expect(new Date().toISOString()).toContain("2024-01-15");
+});
+```
+
+**Mock environment variables:**
+
+```typescript
+beforeEach(() => {
+  vi.stubEnv("API_KEY", "test-key");
+});
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
+```
+
 </mocking>
+
+<advanced_mocking>
+**Conditional mock behavior:**
+
+```typescript
+const mockDb = {
+  query: vi.fn(),
+};
+
+// Different responses for different inputs
+mockDb.query.mockImplementation((sql: string) => {
+  if (sql.includes("SELECT")) return Promise.resolve([{ id: 1 }]);
+  if (sql.includes("INSERT")) return Promise.resolve({ insertId: 1 });
+  return Promise.reject(new Error("Unknown query"));
+});
+```
+
+**Mock sequences:**
+
+```typescript
+const mockFetch = vi
+  .fn()
+  .mockResolvedValueOnce({ status: 500 }) // First call fails
+  .mockResolvedValueOnce({ status: 200 }); // Retry succeeds
+
+await expect(fetchWithRetry()).resolves.toEqual({ status: 200 });
+expect(mockFetch).toHaveBeenCalledTimes(2);
+```
+
+**Mock classes:**
+
+```typescript
+vi.mock("./EmailService", () => ({
+  EmailService: vi.fn().mockImplementation(() => ({
+    send: vi.fn().mockResolvedValue({ sent: true }),
+    verify: vi.fn().mockResolvedValue(true),
+  })),
+}));
+```
+
+**Verify call order:**
+
+```typescript
+const mockA = vi.fn();
+const mockB = vi.fn();
+
+await service.process(); // Should call A then B
+
+const callOrder = [
+  ...mockA.mock.invocationCallOrder,
+  ...mockB.mock.invocationCallOrder,
+];
+expect(callOrder).toEqual([1, 2]); // A called first, then B
+```
+
+</advanced_mocking>
 
 <assertions>
 **Common assertions:**
 
 ```typescript
-expect(value).toBe(exact);           // ===
-expect(value).toEqual(deep);         // Deep equality
+expect(value).toBe(exact); // ===
+expect(value).toEqual(deep); // Deep equality
 expect(value).toBeDefined();
 expect(value).toBeNull();
 expect(value).toBeTruthy();
@@ -120,6 +234,7 @@ expect(obj).toMatchObject({ partial: true });
 await expect(promise).resolves.toBe(value);
 await expect(promise).rejects.toThrow("error");
 ```
+
 </assertions>
 
 <constraints>
@@ -143,9 +258,10 @@ vitest run -t "pattern" # Filter by name
 </commands>
 
 <success_criteria>
+
 - [ ] Context7 docs fetched for current API
 - [ ] Tests are isolated (no dependencies)
 - [ ] Mocks used for external services
 - [ ] Descriptive test names
 - [ ] Coverage for edge cases
-</success_criteria>
+      </success_criteria>
