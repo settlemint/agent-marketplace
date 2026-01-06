@@ -43,9 +43,14 @@ AskUserQuestion({
 TodoWrite({
   todos: [
     {
-      content: "Validate input",
+      content: "Validate input and understand current implementation",
       status: "in_progress",
       activeForm: "Validating input",
+    },
+    {
+      content: "Set up branch (if needed)",
+      status: "pending",
+      activeForm: "Setting up branch",
     },
     {
       content: "Launch foundational research agents",
@@ -72,11 +77,6 @@ TodoWrite({
       content: "Generate tasks",
       status: "pending",
       activeForm: "Generating tasks",
-    },
-    {
-      content: "Set up branch (if needed)",
-      status: "pending",
-      activeForm: "Setting up branch",
     },
   ],
 });
@@ -175,7 +175,93 @@ AskUserQuestion({
 });
 ```
 
-### Phase 2: Foundational Research
+### Phase 2: Branch Setup
+
+**IMPORTANT:** Set up the branch early so state files are written to the correct `.claude/branches/{branch}/` directory.
+
+```javascript
+// Check if already on a feature branch (not main/master)
+const currentBranch = Bash({ command: "git branch --show-current" }).trim();
+const isMainBranch = currentBranch === "main" || currentBranch === "master";
+
+if (isMainBranch) {
+  // On main - ask about branch type
+  AskUserQuestion({
+    questions: [
+      {
+        question: "How should we set up the branch for this work?",
+        header: "Branch Type",
+        options: [
+          {
+            label: "Regular branch (Recommended)",
+            description: "Independent feature branch from main",
+          },
+          {
+            label: "Stacked branch",
+            description:
+              "Create as child of an existing feature branch (for stacked PRs)",
+          },
+        ],
+        multiSelect: false,
+      },
+    ],
+  });
+
+  // If regular branch:
+  Bash({
+    command: `git checkout -b feature/${slug}`,
+    description: "Create feature branch",
+  });
+
+  // If stacked branch - ask for parent:
+  // 1. List existing branches in machete layout (or feature branches)
+  // 2. Create branch and add to machete layout:
+  //    git checkout -b feature/${slug}
+  //    git machete add --onto <selected-parent>
+} else {
+  // Already on a feature branch - ask if they want to stack
+  AskUserQuestion({
+    questions: [
+      {
+        question: `You're on branch '${currentBranch}'. How should we proceed?`,
+        header: "Branch",
+        options: [
+          {
+            label: "Stay on current branch",
+            description: "Continue work on this branch",
+          },
+          {
+            label: "Create stacked branch",
+            description: `Create child branch of ${currentBranch} (for stacked PRs)`,
+          },
+          {
+            label: "Create independent branch",
+            description: "New branch from main (not stacked)",
+          },
+        ],
+        multiSelect: false,
+      },
+    ],
+  });
+
+  // If stacked:
+  //    git checkout -b feature/${slug}
+  //    git machete add --onto ${currentBranch}
+}
+
+// Note: Plans and task files are NOT committed to git
+// - .claude/plans/ contains local working documents
+// - .claude/branches/ is gitignored
+```
+
+**Stacked Branch Benefits:**
+
+- Parent branch from layout becomes PR base automatically
+- `git machete traverse` syncs all branches in stack
+- PR descriptions include stack visualization
+- Easy retargeting when parent is merged
+
+### Phase 3: Foundational Research
 
 Launch foundational research agents in a **SINGLE message**:
 
@@ -228,7 +314,7 @@ MCP: OctoCode for PR discussions`,
 });
 ```
 
-### Phase 3: Collect Foundational Research
+### Phase 4: Collect Foundational Research
 
 ```javascript
 // Collect foundational research results
@@ -259,7 +345,7 @@ TodoWrite({
 });
 ```
 
-### Phase 4: Spec/Flow Analysis (Depends on Research)
+### Phase 5: Spec/Flow Analysis (Depends on Research)
 
 Launch spec-flow-analyzer AFTER foundational research completes, so it can incorporate findings:
 
@@ -296,7 +382,7 @@ Tools: Glob, Grep, Read (not bash)`,
 });
 ```
 
-### Phase 5: Collect Spec Analysis
+### Phase 6: Collect Spec Analysis
 
 ```javascript
 // Spec analysis already collected (run_in_background: false)
@@ -330,7 +416,7 @@ TodoWrite({
 });
 ```
 
-### Phase 6: Parallel Dimension Analysis (6-Leg)
+### Phase 7: Parallel Dimension Analysis (6-Leg)
 
 Launch ALL dimension analysis agents in a **SINGLE message** for parallelism.
 Each produces a dedicated analysis document covering one dimension of the design:
@@ -470,7 +556,7 @@ Tools: Glob, Grep, Read (not bash)`,
 });
 ```
 
-### Phase 7: Collect Dimension Analysis
+### Phase 8: Collect Dimension Analysis
 
 ```javascript
 // Collect all dimension analysis results
@@ -517,7 +603,7 @@ TodoWrite({
 });
 ```
 
-### Phase 8: Synthesis & Gap Analysis (Optional)
+### Phase 9: Synthesis & Gap Analysis (Optional)
 
 For complex features, synthesize dimension analyses and identify cross-cutting concerns:
 
@@ -556,7 +642,7 @@ MCP: Use Codex for deep reasoning about architectural trade-offs`,
 });
 ```
 
-### Phase 9: Write Plan
+### Phase 10: Write Plan
 
 Write plan to `.claude/plans/<feature-slug>.md` using template structure:
 
@@ -642,7 +728,7 @@ Write plan to `.claude/plans/<feature-slug>.md` using template structure:
 [Any remaining NEEDS CLARIFICATION - max 3]
 ```
 
-### Phase 10: Generate Task Files
+### Phase 11: Generate Task Files
 
 Create individual task files in `.claude/branches/<slugified-branch>/tasks/`:
 
@@ -744,90 +830,6 @@ depends_on: []
 | `us3`    | User Story 3 (P3)      |
 | `polish` | Final: Cleanup         |
 
-### Phase 11: Branch Setup
-
-```javascript
-// Check if already on a feature branch (not main/master)
-const currentBranch = Bash({ command: "git branch --show-current" }).trim();
-const isMainBranch = currentBranch === "main" || currentBranch === "master";
-
-if (isMainBranch) {
-  // On main - ask about branch type
-  AskUserQuestion({
-    questions: [
-      {
-        question: "How should we set up the branch for this work?",
-        header: "Branch Type",
-        options: [
-          {
-            label: "Regular branch (Recommended)",
-            description: "Independent feature branch from main",
-          },
-          {
-            label: "Stacked branch",
-            description:
-              "Create as child of an existing feature branch (for stacked PRs)",
-          },
-        ],
-        multiSelect: false,
-      },
-    ],
-  });
-
-  // If regular branch:
-  Bash({
-    command: `git checkout -b feature/${slug}`,
-    description: "Create feature branch",
-  });
-
-  // If stacked branch - ask for parent:
-  // 1. List existing branches in machete layout (or feature branches)
-  // 2. Create branch and add to machete layout:
-  //    git checkout -b feature/${slug}
-  //    git machete add --onto <selected-parent>
-} else {
-  // Already on a feature branch - ask if they want to stack
-  AskUserQuestion({
-    questions: [
-      {
-        question: `You're on branch '${currentBranch}'. How should we proceed?`,
-        header: "Branch",
-        options: [
-          {
-            label: "Stay on current branch",
-            description: "Continue work on this branch",
-          },
-          {
-            label: "Create stacked branch",
-            description: `Create child branch of ${currentBranch} (for stacked PRs)`,
-          },
-          {
-            label: "Create independent branch",
-            description: "New branch from main (not stacked)",
-          },
-        ],
-        multiSelect: false,
-      },
-    ],
-  });
-
-  // If stacked:
-  //    git checkout -b feature/${slug}
-  //    git machete add --onto ${currentBranch}
-}
-
-// Note: Plans and task files are NOT committed to git
-// - .claude/plans/ contains local working documents
-// - .claude/branches/ is gitignored
-```
-
-**Stacked Branch Benefits:**
-
-- Parent branch from layout becomes PR base automatically
-- `git machete traverse` syncs all branches in stack
-- PR descriptions include stack visualization
-- Easy retargeting when parent is merged
-
 ### Phase 12: Next Steps
 
 ```javascript
@@ -862,6 +864,7 @@ AskUserQuestion({
 
 - [ ] AskUserQuestion used for type clarification
 - [ ] TodoWrite tracks progress throughout
+- [ ] **Branch created early (Phase 2) before research so state writes to correct directory**
 - [ ] **Foundational research agents launched in parallel (single message)**
 - [ ] **spec-flow-analyzer runs AFTER foundational research completes**
 - [ ] spec-flow-analyzer receives research context and produces user stories with P1/P2/P3
