@@ -4,6 +4,18 @@ description: Multi-agent code review with automatic triage
 argument-hint: "[PR number, GitHub URL, branch name, or latest]"
 ---
 
+<prerequisite>
+
+**Load patterns skill first:**
+
+```javascript
+Skill({ skill: "crew:crew-patterns" });
+```
+
+This provides: `<pattern name="quality-agents"/>`, `<pattern name="task-file"/>`.
+
+</prerequisite>
+
 !`${CLAUDE_PLUGIN_ROOT}/scripts/workflow/check-context.sh`
 
 <input>
