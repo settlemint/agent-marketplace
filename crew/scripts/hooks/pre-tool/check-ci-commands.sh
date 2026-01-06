@@ -14,6 +14,12 @@ COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null)
 # Only check Bash tool
 [[ $TOOL_NAME != "Bash" ]] && exit 0
 
+# Skip if this is a subagent running via /crew:ci (prevents recursion)
+# The ci.md skill prefixes commands with CREW_CI_SUBAGENT=1
+if [[ $COMMAND == *"CREW_CI_SUBAGENT=1"* ]]; then
+  exit 0
+fi
+
 # Extract just the command portion (before any heredoc or quoted string body)
 # This prevents matching tool names in PR bodies, commit messages, etc.
 CMD_FIRST_LINE="${COMMAND%%$'\n'*}"
