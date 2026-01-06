@@ -20,10 +20,11 @@ allowed-tools: Bash(git checkout:*), Bash(git add:*), Bash(git status:*), Bash(g
 
 ## Task
 
-1. **If on main**: `git checkout -b feat/<name>`
-2. **Stage & commit**: `git add . && git commit -m "type(scope): msg"`
-3. **Push**: `git push -u origin $(git branch --show-current)`
-4. **Create PR**: Use HEREDOC for body:
+1. Check current branch: `git branch --show-current`
+2. **If on main/master**: Create feature branch with `git checkout -b feat/<name>` (otherwise stay on current branch)
+3. **Stage & commit**: `git add . && git commit -m "type(scope): msg"`
+4. **Push**: `git push -u origin $(git branch --show-current)`
+5. **Create PR**: Use HEREDOC for body:
    ```bash
    gh pr create --title "..." --body "$(cat <<'EOF'
    ## Summary

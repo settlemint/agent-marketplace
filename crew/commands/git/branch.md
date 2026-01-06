@@ -20,7 +20,9 @@ allowed-tools: Bash(git checkout:*), Bash(git fetch:*), Bash(git branch:*)
 
 ## Task
 
-1. `git fetch origin main`
-2. `git checkout -b <type>/<name> origin/main`
+1. Check current branch: `git branch --show-current`
+2. **If NOT on main/master**: Warn user they're on a feature branch and ask to confirm switching
+3. `git fetch origin main`
+4. `git checkout -b <type>/<name> origin/main`
 
 If no name provided, ask user what they're working on.
