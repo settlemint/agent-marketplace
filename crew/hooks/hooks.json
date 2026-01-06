@@ -46,10 +46,6 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-git-commit.sh"
-          },
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-gh-pr-create.sh"
           }
         ]
       }
