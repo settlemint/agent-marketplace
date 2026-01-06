@@ -1,7 +1,16 @@
 ---
 name: api
 description: oRPC API routes with the 5-file pattern (contract, schema, router, impl, spec). Triggers on orpc, api, endpoint, router keywords.
-triggers: ["orpc", "api", "endpoint", "router", "\\.contract\\.ts", "\\.router\\.ts", "\\.impl\\.ts"]
+triggers:
+  [
+    "orpc",
+    "api",
+    "endpoint",
+    "router",
+    "\\.contract\\.ts",
+    "\\.router\\.ts",
+    "\\.impl\\.ts",
+  ]
 ---
 
 <objective>
@@ -25,9 +34,10 @@ mcp__octocode__githubSearchCode({
   path: "packages/contract/src",
   mainResearchGoal: "Understand oRPC contract definition",
   researchGoal: "Find route contract patterns",
-  reasoning: "Need current API for oRPC contracts"
-})
+  reasoning: "Need current API for oRPC contracts",
+});
 ```
+
 </mcp_first>
 
 <quick_start>
@@ -41,77 +51,21 @@ routes/token/
 ├── token.transfer.impl.ts       # Business logic
 └── token.transfer.spec.ts       # Tests
 ```
+
 </quick_start>
 
 <five_file_pattern>
-**1. Contract (`.contract.ts`)**
+**Files to create for each route:**
 
-```typescript
-import { oc } from "@orpc/contract";
-import { TransferInputSchema, TransferOutputSchema } from "./token.transfer.schema";
+| File                            | Template                   | Purpose                     |
+| ------------------------------- | -------------------------- | --------------------------- |
+| `{domain}.{action}.contract.ts` | `templates/contract.ts.md` | API shape (OpenAPI)         |
+| `{domain}.{action}.schema.ts`   | `templates/schema.ts.md`   | Zod input/output validation |
+| `{domain}.{action}.router.ts`   | `templates/router.ts.md`   | Connects contract → impl    |
+| `{domain}.{action}.impl.ts`     | `templates/impl.ts.md`     | Business logic handler      |
+| `{domain}.{action}.spec.ts`     | `templates/spec.ts.md`     | Tests                       |
 
-export const transferContract = oc
-  .route({ method: "POST", path: "/token/transfer" })
-  .input(TransferInputSchema)
-  .output(TransferOutputSchema);
-```
-
-**2. Schema (`.schema.ts`)**
-
-```typescript
-import { z } from "zod";
-
-export const TransferInputSchema = z.object({
-  to: z.string().meta({ description: "Recipient address" }),
-  amount: z.bigint().meta({ description: "Amount to transfer" }),
-});
-
-export type TransferInput = z.infer<typeof TransferInputSchema>;
-```
-
-**3. Router (`.router.ts`)**
-
-```typescript
-import { onboardedRouter } from "../../procedures/onboarded.router";
-import { transferContract } from "./token.transfer.contract";
-import { transferHandler } from "./token.transfer.impl";
-
-export const transferRouter = onboardedRouter
-  .contract(transferContract)
-  .handler(transferHandler);
-```
-
-**4. Implementation (`.impl.ts`)**
-
-```typescript
-export const transferHandler = async ({ input, context }) => {
-  const { to, amount } = input;
-  const { wallet } = context;
-
-  await tokenService.transfer(wallet, to, amount);
-  return { success: true };
-};
-```
-
-**5. Spec (`.spec.ts`)**
-
-```typescript
-import { describe, expect, it, beforeAll } from "vitest";
-import { getOrpcClient } from "@test/fixtures/orpc-client";
-
-describe("Token transfer", () => {
-  let client: ReturnType<typeof getOrpcClient>;
-
-  beforeAll(async () => {
-    client = getOrpcClient(await getAuthHeaders());
-  });
-
-  it("returns expected response", async () => {
-    const result = await client.token.transfer({ to: "0x...", amount: 100n });
-    expect(result.success).toBe(true);
-  });
-});
-```
+**Read the templates for scaffolding new routes.** Each template includes placeholders and documentation.
 </five_file_pattern>
 
 <router_layers>
@@ -135,6 +89,7 @@ describe("Token transfer", () => {
 - Migration/backwards-compatibility shims
 
 **Required:**
+
 - Every route uses 5-file pattern
 - Choose correct router layer
 - Register route in domain's `routes.ts`
@@ -148,9 +103,10 @@ describe("Token transfer", () => {
 </constraints>
 
 <success_criteria>
+
 - [ ] All 5 files created (contract, schema, router, impl, spec)
 - [ ] Correct router layer chosen
 - [ ] Route registered in `routes.ts`
 - [ ] Schema uses `.meta({ description })`
 - [ ] Spec has success and error test cases
-</success_criteria>
+      </success_criteria>
