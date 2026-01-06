@@ -1,7 +1,7 @@
 ---
 name: crew:build
 description: Execute work plans with iteration loops and progress tracking
-argument-hint: "[plan file, specification, or todo file path]"
+argument-hint: "[plan] [--loop] [--max-iterations N]"
 ---
 
 ## CRITICAL: Never Run CI Commands Directly
@@ -27,6 +27,88 @@ Bash({ command: "bun run test" }); // BLOCKED
 ---
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/workflow/build-context.sh`
+
+## Loop Integration (Ralph Wiggum Technique)
+
+This build command supports two levels of iteration loops:
+
+### 1. Full Build Loop (`--loop` flag)
+
+Wraps the entire build in an iteration loop. The Stop hook intercepts exits and re-feeds the prompt until completion.
+
+```bash
+/crew:build .claude/plans/feature.md --loop --max-iterations 15
+```
+
+**How it works:**
+
+1. Build initializes loop state in `.claude/branches/{branch}/state.json`
+2. Work proceeds through phases
+3. If you try to exit before completion, Stop hook re-feeds the prompt
+4. Only `<promise>BUILD COMPLETE</promise>` ends the loop
+5. Previous work persists in files - each iteration reads prior progress
+
+**Completion criteria:**
+
+- All task files renamed from `*-pending-*` to `*-complete-*`
+- `bun run ci` passes
+- `bun run test:integration` passes
+- Output: `<promise>BUILD COMPLETE</promise>`
+
+### 2. Per-Batch Retry Loop (automatic)
+
+Each batch automatically retries until tests pass:
+
+```
+Batch N:
+  → Execute parallel tasks (max 6)
+  → Run test-runner agent
+  → If tests fail:
+      → Create fix tasks for failures
+      → Re-execute fix tasks
+      → Loop until tests pass (max 3 retries)
+  → Output: <promise>BATCH N COMPLETE</promise>
+  → Continue to next batch
+```
+
+**Batch completion promise:**
+
+- Intermediate promises (`BATCH 1 COMPLETE`, etc.) are logged but don't end the main loop
+- Only `BUILD COMPLETE` ends the full build loop
+
+### Loop State
+
+Both loops use unified state at `.claude/branches/{branch}/state.json`:
+
+```json
+{
+  "branch": "feat/my-feature",
+  "loop": {
+    "active": true,
+    "iteration": 2,
+    "maxIterations": 15,
+    "completionPromise": "BUILD COMPLETE",
+    "prompt": "/crew:build .claude/plans/feature.md --loop",
+    "startedAt": "2024-01-01T00:00:00Z"
+  },
+  "build": {
+    "currentPhase": "us1",
+    "currentBatch": 3,
+    "batchRetries": 1,
+    "completedBatches": ["setup", "found"]
+  }
+}
+```
+
+### Cancellation
+
+To stop the loop early:
+
+```bash
+/crew:cancel-loop "reason for stopping"
+```
+
+This creates a handoff document, clears loop state, and returns control.
 
 ## Input
 
@@ -139,6 +221,90 @@ AskUserQuestion({
 ```
 
 ## Process
+
+### Phase 0: Initialize Loop State (if `--loop` flag)
+
+**Only runs when `--loop` flag is present in arguments.**
+
+```javascript
+// Parse arguments for --loop flag
+const hasLoopFlag = "$ARGUMENTS".includes("--loop");
+const maxIterations = parseInt(
+  "$ARGUMENTS".match(/--max-iterations\s+(\d+)/)?.[1] || "15",
+);
+
+if (hasLoopFlag) {
+  // Get branch for state file
+  const branch = Bash({ command: "git branch --show-current" }).trim();
+  const slugBranch = branch.replace(/\//g, "-");
+  const stateFile = `.claude/branches/${slugBranch}/state.json`;
+
+  // Ensure directory exists
+  Bash({ command: `mkdir -p .claude/branches/${slugBranch}` });
+
+  // Check if loop already active (resuming)
+  let existingState = {};
+  try {
+    existingState = JSON.parse(Read({ file_path: stateFile }));
+  } catch {}
+
+  if (existingState?.loop?.active) {
+    // Resuming existing loop - read iteration count
+    console.log(`
+═══════════════════════════════════════════════════════════
+RESUMING BUILD LOOP (Iteration ${existingState.loop.iteration} of ${existingState.loop.maxIterations})
+═══════════════════════════════════════════════════════════
+
+Previous work detected. Checking task files for progress...
+`);
+  } else {
+    // Initialize new loop
+    const loopState = {
+      branch: branch,
+      loop: {
+        active: true,
+        iteration: 1,
+        maxIterations: maxIterations,
+        completionPromise: "BUILD COMPLETE",
+        prompt: `/crew:build $ARGUMENTS`,
+        startedAt: new Date().toISOString(),
+      },
+      build: {
+        currentPhase: null,
+        currentBatch: 0,
+        batchRetries: 0,
+        completedBatches: [],
+      },
+    };
+
+    Write({
+      file_path: stateFile,
+      content: JSON.stringify(loopState, null, 2),
+    });
+
+    console.log(`
+═══════════════════════════════════════════════════════════
+BUILD LOOP INITIALIZED (1 of ${maxIterations} iterations)
+═══════════════════════════════════════════════════════════
+
+COMPLETION CRITERIA:
+- All tasks complete (files renamed *-pending-* → *-complete-*)
+- bun run ci passes
+- bun run test:integration passes
+
+TO COMPLETE: Output <promise>BUILD COMPLETE</promise>
+
+STRICT REQUIREMENTS:
+  ✓ Use <promise> XML tags EXACTLY as shown
+  ✓ Statement MUST be TRUE (all criteria met)
+  ✓ Do NOT output false promises to exit early
+
+TO CANCEL: /crew:cancel-loop "reason"
+═══════════════════════════════════════════════════════════
+`);
+  }
+}
+```
 
 ### Phase 1: Load Work Document
 
@@ -422,8 +588,126 @@ Keep output minimal - only actionable failures.`,
   run_in_background: false, // Wait for test results
 });
 
-// 6. If test failures, create fix tasks or notify
-// 7. Update TodoWrite and continue to next batch
+// 6. Per-Batch Retry Loop (max 3 retries)
+const testOutput = TaskOutput({ task_id: "test-runner-id", block: true });
+let batchRetries = 0;
+const MAX_BATCH_RETRIES = 3;
+
+while (!testOutput.includes("ALL TESTS PASSING") && batchRetries < MAX_BATCH_RETRIES) {
+  batchRetries++;
+
+  // Update build state with retry count
+  const stateFile = `.claude/branches/${slugBranch}/state.json`;
+  const state = JSON.parse(Read({ file_path: stateFile }));
+  state.build.batchRetries = batchRetries;
+  Write({ file_path: stateFile, content: JSON.stringify(state, null, 2) });
+
+  console.log(`
+───────────────────────────────────────────────────────────
+BATCH RETRY ${batchRetries}/${MAX_BATCH_RETRIES}
+───────────────────────────────────────────────────────────
+Test failures detected. Creating fix tasks...
+`);
+
+  // Parse failures from test output and create fix tasks
+  const failures = parseTestFailures(testOutput);
+
+  for (const failure of failures) {
+    // Create fix task file
+    const nextOrder = getNextOrderNumber(existingTasks);
+    Write({
+      file_path: `.claude/branches/${slugBranch}/tasks/${nextOrder}-pending-p1-fix-${failure.slug}.md`,
+      content: `---
+status: pending
+priority: p1
+story: fix
+parallel: true
+file_path: ${failure.file}
+---
+
+# T${nextOrder}: Fix test failure
+
+## Description
+${failure.testName} failed: ${failure.error}
+
+## File Path
+\`${failure.file}:${failure.line}\`
+
+## Acceptance Criteria
+- [ ] Test passes
+`
+    });
+  }
+
+  // Re-execute fix tasks (same batch pattern)
+  const fixTasks = Glob({ pattern: `.claude/branches/${slugBranch}/tasks/*-pending-p1-fix-*.md` });
+
+  for (const fixTask of fixTasks.slice(0, 6)) {
+    Task({
+      subagent_type: "general-purpose",
+      prompt: `TASK: Fix test failure
+FILE: ${fixTask.file_path}
+ERROR: ${fixTask.error}
+OUTPUT: "SUCCESS: fixed" or "FAILURE: reason"`,
+      description: fixTask.id,
+      run_in_background: true,
+    });
+  }
+
+  // Collect fix results
+  for (const fixTask of fixTasks.slice(0, 6)) {
+    TaskOutput({ task_id: fixTask.agentId, block: true });
+  }
+
+  // Re-run tests
+  Task({
+    subagent_type: "general-purpose",
+    model: "haiku",
+    prompt: `Run tests, report ONLY failures. If all pass: "ALL TESTS PASSING"`,
+    description: "test-runner",
+    run_in_background: false,
+  });
+
+  testOutput = TaskOutput({ task_id: "test-runner-id", block: true });
+}
+
+// 7. Batch complete - output promise and update state
+const batchNum = state.build.currentBatch;
+const phaseName = state.build.currentPhase;
+
+if (testOutput.includes("ALL TESTS PASSING")) {
+  // Update state - mark batch complete
+  state.build.completedBatches.push(`${phaseName}-batch-${batchNum}`);
+  state.build.batchRetries = 0;
+  Write({ file_path: stateFile, content: JSON.stringify(state, null, 2) });
+
+  console.log(`<promise>BATCH ${batchNum} COMPLETE</promise>`);
+
+  // Continue to next batch
+  TodoWrite({ todos: /* update with next batch */ });
+} else {
+  // Max retries exceeded - need intervention
+  console.log(`
+═══════════════════════════════════════════════════════════
+BATCH ${batchNum} BLOCKED - Max retries exceeded
+═══════════════════════════════════════════════════════════
+Failures persisting after ${MAX_BATCH_RETRIES} retries.
+Manual intervention required.
+`);
+
+  AskUserQuestion({
+    questions: [{
+      question: "Batch failed after max retries. How to proceed?",
+      header: "Blocked",
+      options: [
+        { label: "Continue anyway", description: "Skip failing tests, proceed" },
+        { label: "Stop build", description: "Pause for manual fixes" },
+        { label: "More retries", description: "Allow 3 more retry attempts" }
+      ],
+      multiSelect: false
+    }]
+  });
+}
 ```
 
 ### Phase 5: Quality Checks
@@ -543,7 +827,7 @@ if (remaining.length > 0) {
 - Ensures every PR improves overall quality
 - The branch should leave the repo better than it found it
 
-### Phase 8: Summary
+### Phase 8: Summary & Completion Promise
 
 **Note: Each task was already committed individually during execution for detailed git history.**
 
@@ -554,16 +838,57 @@ Bash({
   description: "Show commits from this build",
 });
 
-// Output summary
-console.log(`
-Build Complete!
+// Verify all tasks complete
+const pendingTasks = Glob({
+  pattern: `.claude/branches/${slugBranch}/tasks/*-pending-*.md`,
+});
+const allTasksComplete = pendingTasks.length === 0;
+
+// Check if loop mode is active
+const stateFile = `.claude/branches/${slugBranch}/state.json`;
+let loopActive = false;
+try {
+  const state = JSON.parse(Read({ file_path: stateFile }));
+  loopActive = state?.loop?.active === true;
+} catch {}
+
+if (allTasksComplete) {
+  // Clear loop state if active
+  if (loopActive) {
+    const state = JSON.parse(Read({ file_path: stateFile }));
+    state.loop.active = false;
+    Write({ file_path: stateFile, content: JSON.stringify(state, null, 2) });
+  }
+
+  // Output completion promise (ends the iteration loop)
+  console.log(`
+═══════════════════════════════════════════════════════════
+BUILD COMPLETE
+═══════════════════════════════════════════════════════════
+
+✓ All tasks complete
+✓ CI passing
+✓ Integration tests passing
+
 - Branch: ${branch}
 - Commits: ${commitCount}
 - Tasks: .claude/branches/${slugBranch}/tasks/
 
-Each task has its own commit for detailed history.
-Use 'git log --oneline' to see all changes.
+<promise>BUILD COMPLETE</promise>
 `);
+} else {
+  // Tasks still pending - don't output promise
+  console.log(`
+───────────────────────────────────────────────────────────
+BUILD INCOMPLETE - ${pendingTasks.length} tasks remaining
+───────────────────────────────────────────────────────────
+
+Pending tasks:
+${pendingTasks.map((t) => `  - ${t}`).join("\n")}
+
+${loopActive ? "Loop will continue to next iteration..." : "Run /crew:build to continue."}
+`);
+}
 ```
 
 **Granular Commit Benefits:**
@@ -705,6 +1030,8 @@ If all pass: "ALL TESTS PASSING"`,
 
 ## Success Criteria
 
+### Core Execution
+
 - [ ] TodoWrite tracks ALL progress (updated after EVERY task)
 - [ ] Task files loaded from `.claude/branches/<slugified-branch>/tasks/`
 - [ ] Tasks executed in batches by phase
@@ -722,3 +1049,13 @@ If all pass: "ALL TESTS PASSING"`,
 - [ ] **MANDATORY: `bun run ci` passes from root** (fix ALL errors, even unrelated)
 - [ ] **MANDATORY: `bun run test:integration` passes from root** (fix ALL errors, even unrelated)
 - [ ] **Granular commits created for each task** (detailed git history)
+
+### Loop Integration (if `--loop` flag)
+
+- [ ] Loop state initialized in `.claude/branches/{branch}/state.json`
+- [ ] Build state tracks currentPhase, currentBatch, completedBatches
+- [ ] Per-batch retry loop (max 3) creates fix tasks and re-executes
+- [ ] `<promise>BATCH N COMPLETE</promise>` output after each successful batch
+- [ ] `<promise>BUILD COMPLETE</promise>` output ONLY when ALL criteria met
+- [ ] Loop state cleared when build completes or cancelled
+- [ ] Resuming loop reads prior progress from task files
