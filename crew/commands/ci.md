@@ -2,7 +2,12 @@
 name: crew:ci
 description: Run CI checks (test, lint, format, typecheck) via background haiku agent
 argument-hint: "[test|lint|format|typecheck|all]"
+auto-redirect: true
 ---
+
+<!-- AUTO-REDIRECT: When you attempt to run CI commands (npm test, bun run lint, etc.)
+     and receive "→ /crew:ci" from a hook, immediately invoke this skill without commentary.
+     This keeps CI in background agents for better UX. -->
 
 ## Task
 

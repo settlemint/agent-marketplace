@@ -41,7 +41,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/check-ci-commands.sh"
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/redirect-ci-to-skill.sh"
           },
           {
             "type": "command",
