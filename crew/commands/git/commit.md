@@ -23,8 +23,6 @@ Use conventional commits: `type(scope): description`
 
 1. If sensitive files flagged above, run `git reset HEAD <file>` to unstage
 2. Stage files: `git add <files>`
-3. Commit with `[skill]` marker to bypass hook: `git commit -m "[skill] type(scope): description"`
-
-**IMPORTANT:** The `[skill]` prefix is required to bypass the git commit hook that redirects to this skill. Without it, the commit will be blocked.
+3. Commit: `git commit -m "type(scope): description"`
 
 Execute in a single response.

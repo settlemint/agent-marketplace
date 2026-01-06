@@ -2,12 +2,7 @@
 name: crew:ci
 description: Run CI checks (test, lint, format, typecheck) via background haiku agent
 argument-hint: "[test|lint|format|typecheck|all]"
-auto-redirect: true
 ---
-
-<!-- AUTO-REDIRECT: When you attempt to run CI commands (npm test, bun run lint, etc.)
-     and receive "→ /crew:ci" from a hook, immediately invoke this skill without commentary.
-     This keeps CI in background agents for better UX. -->
 
 ## Task
 
@@ -35,14 +30,12 @@ const pm = Bash({
 }).trim();
 
 // Map check type to command (supports eslint/prettier and biome)
-// Prefix with CREW_CI_SUBAGENT=1 to bypass the PreToolUse hook that would otherwise
-// intercept these commands and cause recursion
 const commands = {
-  test: `CREW_CI_SUBAGENT=1 ${pm} run test || CREW_CI_SUBAGENT=1 ${pm} exec vitest run`,
-  lint: `CREW_CI_SUBAGENT=1 ${pm} run lint || CREW_CI_SUBAGENT=1 ${pm} exec biome lint .`,
-  format: `CREW_CI_SUBAGENT=1 ${pm} run format:check || CREW_CI_SUBAGENT=1 ${pm} run format --check || CREW_CI_SUBAGENT=1 ${pm} exec biome format . --check`,
-  typecheck: `CREW_CI_SUBAGENT=1 ${pm} run typecheck || CREW_CI_SUBAGENT=1 ${pm} exec tsc --noEmit`,
-  all: `CREW_CI_SUBAGENT=1 ${pm} run ci || (CREW_CI_SUBAGENT=1 ${pm} run lint && CREW_CI_SUBAGENT=1 ${pm} run test && CREW_CI_SUBAGENT=1 ${pm} run typecheck)`,
+  test: `${pm} run test || ${pm} exec vitest run`,
+  lint: `${pm} run lint || ${pm} exec biome lint .`,
+  format: `${pm} run format:check || ${pm} run format --check || ${pm} exec biome format . --check`,
+  typecheck: `${pm} run typecheck || ${pm} exec tsc --noEmit`,
+  all: `${pm} run ci || (${pm} run lint && ${pm} run test && ${pm} run typecheck)`,
 };
 
 const checkType = "$ARGUMENTS" || "all";
