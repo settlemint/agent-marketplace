@@ -10,6 +10,7 @@ description: Create a feature branch from main
 </constraints>
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/branch-context.sh`
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 
 <naming>
@@ -28,7 +29,49 @@ description: Create a feature branch from main
 
 <process>
 
-Ask branch type:
+**If in a WORKTREE:**
+
+When working with worktrees, you typically want each branch in its own worktree:
+
+```javascript
+AskUserQuestion({
+  questions: [
+    {
+      question: "You're in a worktree. How do you want to create the branch?",
+      header: "Method",
+      options: [
+        {
+          label: "Create worktree (Recommended)",
+          description: "New branch in a new worktree directory",
+        },
+        {
+          label: "Stacked branch here",
+          description: "Child of current branch, stay in this worktree",
+        },
+        {
+          label: "Switch branch (not recommended)",
+          description: "Checkout new branch in this worktree",
+        },
+      ],
+    },
+  ],
+});
+```
+
+**Create worktree:**
+
+```bash
+# For stacked branch (child of current)
+git worktree add ../<new-branch-name> -b <type>/<name>
+git machete add <type>/<name> --onto $(git branch --show-current)
+
+# For regular branch (from main)
+git worktree add ../<new-branch-name> -b <type>/<name> origin/main
+```
+
+Tell user: `cd ../<new-branch-name>` to work in the new worktree.
+
+**If NOT in a worktree (main checkout):**
 
 ```javascript
 AskUserQuestion({
