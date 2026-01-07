@@ -117,21 +117,22 @@ flowchart LR
 </phase>
 
 <phase name="update-pr">
+
+Update PR title:
+
 ```bash
 PR_NUM=$(gh pr view --json number -q '.number')
-
-# Update title
-
 gh pr edit $PR_NUM --title "type(scope): description"
+```
 
-# Update body (preserve machete markers if present)
+Update PR body (preserve machete markers if present):
 
+```bash
 gh pr edit $PR_NUM --body "$(cat <<'EOF'
 [Generated PR body]
 EOF
 )"
-
-````
+```
 
 </phase>
 
@@ -139,10 +140,7 @@ EOF
 **If machete-managed:**
 
 ```bash
-# Update PR annotations in title
 git machete github anno-prs
-
-# Update stack descriptions in all related PRs
 git machete github update-pr-descriptions --related
 ```
 
@@ -160,4 +158,3 @@ git machete github update-pr-descriptions --related
 - [ ] Stack annotations updated (if machete-managed)
 
 </success_criteria>
-````
