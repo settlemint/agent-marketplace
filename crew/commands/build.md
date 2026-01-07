@@ -2,6 +2,7 @@
 name: crew:build
 description: Execute work plans with iteration loops and progress tracking
 argument-hint: "[plan] [--loop] [--max-iterations N]"
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
 <prerequisite>
@@ -26,7 +27,9 @@ This provides: `<pattern name="test-runner"/>`, `<pattern name="spawn-batch"/>`,
 
 </critical_rules>
 
+<build_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/workflow/build-context.sh`
+</build_context>
 
 <input>
 <work_document>$ARGUMENTS</work_document>
@@ -132,12 +135,21 @@ Launch quality agents using `<pattern name="quality-agents"/>`.
 <phase name="final-validation">
 **MANDATORY: Fix ALL issues, even unrelated ones.**
 
+Use `<pattern name="large-output"/>` to capture full results:
+
 ```bash
-cd $(git rev-parse --show-toplevel) && bun run ci
-cd $(git rev-parse --show-toplevel) && bun run test:integration
+cd $(git rev-parse --show-toplevel)
+LOG_CI=$(mktemp /tmp/ci-final-XXXXXX.log)
+LOG_INT=$(mktemp /tmp/integration-XXXXXX.log)
+
+bun run ci 2>&1 | tee $LOG_CI
+bun run test:integration 2>&1 | tee $LOG_INT
+
+echo "CI log: $LOG_CI"
+echo "Integration log: $LOG_INT"
 ```
 
-Loop until BOTH pass with zero errors.
+Loop until BOTH pass with zero errors. Log files allow re-reading errors without re-running.
 </phase>
 
 <phase name="completion">

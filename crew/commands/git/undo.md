@@ -1,9 +1,12 @@
 ---
 name: crew:git:undo
 description: Undo last commit (keeps changes staged)
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
+<undo_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/undo-context.sh`
+</undo_context>
 
 <process>
 

@@ -2,6 +2,7 @@
 name: crew:check
 description: Multi-agent code review with automatic triage
 argument-hint: "[PR number, GitHub URL, branch name, or latest]"
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
 <prerequisite>
@@ -16,7 +17,9 @@ This provides: `<pattern name="quality-agents"/>`, `<pattern name="task-file"/>`
 
 </prerequisite>
 
+<check_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/workflow/check-context.sh`
+</check_context>
 
 <input>
 <review_target>$ARGUMENTS</review_target>

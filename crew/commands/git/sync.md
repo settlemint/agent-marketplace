@@ -1,11 +1,20 @@
 ---
 name: crew:git:sync
 description: Sync current branch with main
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
+<sync_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/sync-context.sh`
+</sync_context>
+
+<worktree_status>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
+</worktree_status>
+
+<stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
+</stack_context>
 
 <process>
 

@@ -1,6 +1,7 @@
 ---
 name: crew:restart
 description: Resume pending work from a previous session
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
 <prerequisite>
@@ -15,8 +16,13 @@ This provides: `<pattern name="user-questions-constraint"/>`.
 
 </prerequisite>
 
+<restart_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/workflow/restart-context.sh`
+</restart_context>
+
+<stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
+</stack_context>
 
 <constraints>
 
@@ -84,6 +90,11 @@ AskUserQuestion({
     },
   ],
 });
+
+// Based on selection:
+// Create PR → Skill({ skill: "crew:git:pr" });
+// Clean branches → Skill({ skill: "crew:git:clean" });
+// Sync stack → Skill({ skill: "crew:git:traverse" });
 ```
 
 **If truly nothing to resume:**

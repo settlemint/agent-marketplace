@@ -2,6 +2,7 @@
 name: crew:design
 description: Create validated implementation plans with research
 argument-hint: "[feature description, bug report, or improvement idea]"
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill, EnterPlanMode, ExitPlanMode
 ---
 
 <prerequisite>
@@ -126,46 +127,22 @@ Task({
 </phase>
 
 <phase name="write-plan">
-Write to `.claude/plans/<feature-slug>.md`:
+Write to `.claude/plans/<feature-slug>.md` using the plan template:
 
-```markdown
-# Plan: [Feature Name]
+```javascript
+// Read template and populate with research findings
+Read({
+  file_path: `${CLAUDE_PLUGIN_ROOT}/skills/todo-tracking/templates/plan-template.md`,
+});
 
-**Branch**: `feat/<slug>`
-**Status**: Draft
-
-## Problem Statement
-
-[From spec analysis]
-
-## User Stories
-
-### US1 - [Title] (P1) 🎯 MVP
-
-[Description]
-**Acceptance**: Given X, When Y, Then Z
-
-## Functional Requirements
-
-- FR-001: [requirement]
-
-## Technical Approach
-
-[From Codex synthesis]
-
-## Dimension Analyses
-
-### API Design | Data Model | UX | Scale | Security | Integrations
-
-[From respective analysts]
-
-## Success Criteria
-
-- SC-001: [criterion]
-
-## Open Questions
-
-[Max 3 NEEDS CLARIFICATION items]
+// Fill in template with:
+// - Problem Statement: From spec analysis
+// - User Stories: From spec-flow-analyzer (P1/P2/P3 priorities)
+// - Functional Requirements: FR-XXX requirements
+// - Technical Approach: From Codex synthesis
+// - Dimension Analyses: From respective analysts (API, Data, UX, Scale, Security, Integrations)
+// - Success Criteria: SC-XXX criteria
+// - Open Questions: Max 3 NEEDS CLARIFICATION items
 ```
 
 </phase>

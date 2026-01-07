@@ -1,6 +1,7 @@
 ---
 name: crew:git:stack-status
 description: Show git-machete branch stack status
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
 <constraints>
@@ -9,7 +10,9 @@ description: Show git-machete branch stack status
 
 </constraints>
 
+<stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
+</stack_context>
 
 <indicators>
 

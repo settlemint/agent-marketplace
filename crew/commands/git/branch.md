@@ -1,6 +1,7 @@
 ---
 name: crew:git:branch
 description: Create a feature branch from main
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
 <constraints>
@@ -9,9 +10,17 @@ description: Create a feature branch from main
 
 </constraints>
 
+<branch_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/branch-context.sh`
+</branch_context>
+
+<worktree_status>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
+</worktree_status>
+
+<stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
+</stack_context>
 
 <naming>
 

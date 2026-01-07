@@ -1,6 +1,7 @@
 ---
 name: crew:git:pr
 description: Commit, push, and open a PR
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
 <constraints>
@@ -9,8 +10,17 @@ description: Commit, push, and open a PR
 
 </constraints>
 
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/pr-context.sh`
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
+<worktree_status>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh 2>&1`
+</worktree_status>
+
+<stack_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh 2>&1`
+</stack_context>
+
+<pr_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/pr-context.sh 2>&1`
+</pr_context>
 
 <context_sources>
 
@@ -64,9 +74,29 @@ Follow SettleMint style guide (see `crew:workflow:content-style-editor`):
    - Check for plan file: `ls .claude/plans/*.md 2>/dev/null`
    - If plan exists, extract: motivation, design decisions, considerations
    - Analyze commits to select template and summarize changes
-5. Ask PR details:
+5. **Gather reviewer suggestions:**
+
+```bash
+# Get repo collaborators with push access
+gh api repos/{owner}/{repo}/collaborators --jq '.[].login' | head -10
+
+# Get last editors of changed files (for relevant expertise)
+git log --pretty=format:"%ae" --diff-filter=M -- $(git diff --name-only origin/main..HEAD) | sort | uniq -c | sort -rn | head -5
+```
+
+6. Ask PR details:
 
 ```javascript
+// Build reviewer options from GitHub collaborators and recent editors
+const reviewerOptions = [
+  { label: "None", description: "Skip reviewer assignment" },
+  // Add suggested reviewers from collaborators/editors
+  ...suggestedReviewers.map((r) => ({
+    label: r.login,
+    description: r.reason, // "Collaborator" or "Recent editor of changed files"
+  })),
+];
+
 AskUserQuestion({
   questions: [
     {
@@ -76,12 +106,31 @@ AskUserQuestion({
         { label: "Ready for review", description: "Ready to merge" },
         { label: "Draft", description: "Work in progress" },
       ],
+      multiSelect: false,
+    },
+    {
+      question: "Who should review this PR?",
+      header: "Reviewers",
+      options: reviewerOptions.slice(0, 4), // Max 4 options
+      multiSelect: true,
+    },
+    {
+      question: "Enable auto-merge when checks pass?",
+      header: "Auto-merge",
+      options: [
+        { label: "No", description: "Manual merge required" },
+        {
+          label: "Yes",
+          description: "Auto-merge with squash when checks pass",
+        },
+      ],
+      multiSelect: false,
     },
   ],
 });
 ```
 
-6. Generate PR body using selected template:
+7. Generate PR body using selected template:
    - **Summary**: Synthesize from commits and plan
    - **Why**: Pull from plan's motivation/rationale section
    - **Design decisions**: Pull from plan's approach/considerations
@@ -90,7 +139,9 @@ AskUserQuestion({
    - Remove template HTML comments (`<!-- ... -->`) but preserve machete markers
    - Keep checklist items
 
-7. **If machete-managed:**
+8. **Create PR:**
+
+**If machete-managed:**
 
 ```bash
 git machete github create-pr [--draft]
@@ -107,7 +158,32 @@ EOF
 )" [--draft]
 ```
 
-8. Return PR URL.
+9. **Apply reviewers (if selected):**
+
+```bash
+# Get PR number
+PR_NUM=$(gh pr view --json number -q '.number')
+
+# Add reviewers (skip if "None" selected)
+gh pr edit $PR_NUM --add-reviewer "reviewer1,reviewer2"
+```
+
+10. **Enable auto-merge (if selected):**
+
+```bash
+# Enable auto-merge with squash
+gh pr merge $PR_NUM --auto --squash
+```
+
+Note: Auto-merge requires repository to have this feature enabled in settings.
+
+11. **Update PR annotations:**
+
+```javascript
+Skill({ skill: "crew:git:update-pr" });
+```
+
+12. Return PR URL.
 
 </process>
 

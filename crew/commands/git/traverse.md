@@ -1,6 +1,7 @@
 ---
 name: crew:git:traverse
 description: Sync all stacked branches with parents and remotes
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
 <constraints>
@@ -9,8 +10,13 @@ description: Sync all stacked branches with parents and remotes
 
 </constraints>
 
+<worktree_status>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
+</worktree_status>
+
+<stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
+</stack_context>
 
 <process>
 
