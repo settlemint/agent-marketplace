@@ -85,50 +85,34 @@ The log file allows re-reading without re-running tests.`,
 </pattern>
 
 <pattern name="large-output">
-**For commands with potentially large output (tests, lint, build):**
+**AUTOMATED:** The `wrap-long-output.sh` PreToolUse hook automatically wraps long-running commands.
 
-Capture output to a temp file to:
+**What it does:**
 
-- Avoid truncation in terminal
-- Allow re-reading without re-running
-- Preserve full stack traces and error details
+- Detects patterns: `bun run test`, `turbo build`, `bun run dev`, etc.
+- Wraps with: `{ command; } 2>&1 | tee /tmp/claude-{slug}-{time}.log`
+- Outputs: "📄 Full output saved: /tmp/..."
 
-```bash
-# Create temp log file
-LOG=$(mktemp /tmp/${cmd}-XXXXXX.log)
-echo "Output will be logged to: $LOG"
+**Covered patterns:**
 
-# Run command, capture everything (pipefail ensures we get command's exit code, not tee's)
-set -o pipefail
-${command} 2>&1 | tee $LOG
-EXIT_CODE=$?
-set +o pipefail
+- Test runs (`bun run test`, `vitest`, `jest`, `playwright`)
+- Linting (`eslint`, `biome lint`, `tsc`)
+- Build processes (`bun run build`, `turbo build`)
+- Dev servers (`bun run dev`, `npm run start`)
+- Package installs (`bun install`, `npm i`)
+- Docker builds (`docker build`, `docker compose up`)
+- Database ops (`prisma migrate`, `drizzle-kit push`)
 
-# Parse results from file
-if [ $EXIT_CODE -eq 0 ]; then
-  echo "SUCCESS - see $LOG for details"
-else
-  echo "FAILED - analyzing $LOG..."
-  # Extract relevant errors from $LOG
-  grep -E "ERROR|FAIL|error:" $LOG | head -20
-  echo "Full output: $LOG"
-fi
-```
+**Skipped (already has redirect):**
 
-**When to use:**
-
-- Test runs (`bun run test`, `vitest`, `jest`)
-- Linting (`eslint`, `biome lint`)
-- Type checking (`tsc --noEmit`)
-- Build processes (`bun run build`)
-- Any command that may produce >100 lines of output
+- Commands with `|`, `>`, `>>`, `2>`, `&>`, `tee`
 
 **Benefits:**
 
-- Full stack traces preserved
-- No need to re-run to get more details
-- Can grep/search the log file
-- Multiple reads without re-execution
+- Automatic - no manual wrapping needed
+- Full stack traces preserved in log file
+- `Read` the log file if terminal output truncated
+- Re-read without re-running
 
 </pattern>
 
