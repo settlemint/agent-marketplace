@@ -9,16 +9,16 @@ set -euo pipefail
 
 # Check if git-machete is installed
 if ! command -v git-machete &>/dev/null; then
-  echo "## Git Machete"
-  echo "⚠️ git-machete is not installed."
-  echo "Install with: \`brew install git-machete\` or \`pip install git-machete\`"
-  echo
-  exit 0
+	echo "## Git Machete"
+	echo "⚠️ git-machete is not installed."
+	echo "Install with: \`brew install git-machete\` or \`pip install git-machete\`"
+	echo
+	exit 0
 fi
 
 # Check if in a git repo
 if ! git rev-parse --git-dir &>/dev/null; then
-  exit 0
+	exit 0
 fi
 
 branch=$(git branch --show-current 2>/dev/null || echo "")
@@ -33,59 +33,87 @@ echo
 
 # Check if machete file exists
 if [[ -f "$machete_file" ]]; then
-  echo "**Layout file:** \`${machete_file}\`"
-  echo
+	echo "**Layout file:** \`${machete_file}\`"
+	echo
 
-  # Check if current branch is in machete layout
-  if git machete is-managed "$branch" 2>/dev/null; then
-    echo "**Current branch:** \`$branch\` is in machete layout"
+	# Check if current branch is in machete layout
+	if git machete is-managed "$branch" 2>/dev/null; then
+		echo "**Current branch:** \`$branch\` is in machete layout"
 
-    # Get parent branch
-    parent=$(git machete show up 2>/dev/null || echo "")
-    if [[ -n "$parent" ]]; then
-      echo "**Parent branch:** \`$parent\`"
-    else
-      echo "**Parent branch:** (root branch)"
-    fi
+		# Get parent branch
+		parent=$(git machete show up 2>/dev/null || echo "")
+		if [[ -n "$parent" ]]; then
+			echo "**Parent branch:** \`$parent\`"
+		else
+			echo "**Parent branch:** (root branch)"
+		fi
 
-    # Get child branches
-    children=$(git machete show down 2>/dev/null || echo "")
-    if [[ -n "$children" ]]; then
-      echo "**Child branches:** \`$children\`"
-    fi
+		# Get child branches
+		children=$(git machete show down 2>/dev/null || echo "")
+		if [[ -n "$children" ]]; then
+			echo "**Child branches:** \`$children\`"
+		fi
 
-    # Check sync status
-    echo
-    echo "### Sync Status"
-    echo '```'
-    git machete status 2>/dev/null | head -20 || echo "(unable to get status)"
-    echo '```'
+		# Check sync status
+		echo
+		echo "### Sync Status"
+		echo '```'
+		git machete status 2>/dev/null | head -20 || echo "(unable to get status)"
+		echo '```'
 
-    # Check if out of sync with parent
-    if [[ -n "$parent" ]]; then
-      if ! git machete is-ancestor "$parent" "$branch" 2>/dev/null; then
-        echo
-        echo "⚠️ **Out of sync with parent** - consider running \`git machete update\`"
-      fi
-    fi
-  else
-    echo "**Current branch:** \`$branch\` is NOT in machete layout"
-    echo
-    echo "To add to stack: \`git machete add --onto <parent-branch>\`"
-    echo
-    echo "### Current Layout"
-    echo '```'
-    cat "$machete_file" 2>/dev/null | head -20 || echo "(unable to read)"
-    echo '```'
-  fi
+		# Check if out of sync with parent
+		if [[ -n "$parent" ]]; then
+			if ! git machete is-ancestor "$parent" "$branch" 2>/dev/null; then
+				echo
+				echo "⚠️ **Out of sync with parent** - consider running \`git machete update\`"
+			fi
+		fi
+	else
+		echo "**Current branch:** \`$branch\` is NOT in machete layout"
+		echo
+		echo "To add to stack: \`git machete add --onto <parent-branch>\`"
+		echo
+		echo "### Current Layout"
+		echo '```'
+		cat "$machete_file" 2>/dev/null | head -20 || echo "(unable to read)"
+		echo '```'
+		echo
+		echo "### Available Parent Branches"
+		echo "Use these to populate stacking question options:"
+		echo '```json'
+		echo "["
+		echo '  { "branch": "main", "description": "Main branch" }'
+
+		# Get open PRs that could be parent branches
+		if command -v gh &>/dev/null; then
+			gh pr list --state open --json number,headRefName,title --limit 10 2>/dev/null | jq -r '.[] | ",  { \"branch\": \"\(.headRefName)\", \"description\": \"PR #\(.number): \(.title | .[0:50])\" }"' 2>/dev/null || true
+		fi
+
+		echo "]"
+		echo '```'
+	fi
 else
-  echo "**No machete layout** - \`${machete_file}\` does not exist"
-  echo
-  echo "To set up stacked branches:"
-  echo "1. \`git machete discover\` - auto-detect layout"
-  echo "2. \`git machete edit\` - manually define layout"
-  echo
-  echo "**Note:** In worktrees, the machete file is shared with the main repo."
+	echo "**No machete layout** - \`${machete_file}\` does not exist"
+	echo
+	echo "To set up stacked branches:"
+	echo "1. \`git machete discover\` - auto-detect layout"
+	echo "2. \`git machete edit\` - manually define layout"
+	echo
+	echo "**Note:** In worktrees, the machete file is shared with the main repo."
+	echo
+	echo "### Available Parent Branches"
+	echo "Use these to populate stacking question options:"
+	echo '```json'
+	echo "["
+	echo '  { "branch": "main", "description": "Main branch" }'
+
+	# Get open PRs that could be parent branches
+	if command -v gh &>/dev/null; then
+		gh pr list --state open --json number,headRefName,title --limit 10 2>/dev/null | jq -r '.[] | ",  { \"branch\": \"\(.headRefName)\", \"description\": \"PR #\(.number): \(.title | .[0:50])\" }"' 2>/dev/null || true
+	fi
+
+	echo "]"
+	echo '```'
 fi
 
 echo
