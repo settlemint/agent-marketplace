@@ -18,22 +18,24 @@ MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 ```typescript
 // i18next configuration
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/i18next/i18next",
-  topic: "init configuration namespace"
-})
+  libraryId: "/i18next/i18next",
+  query: "How do I configure init with configuration and namespaces?",
+});
 
 // React integration
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/i18next/react-i18next",
-  topic: "useTranslation Trans component"
-})
+  libraryId: "/i18next/react-i18next",
+  query: "How do I use useTranslation and the Trans component?",
+});
 
 // Pluralization and interpolation
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/i18next/i18next",
-  topic: "plural interpolation context"
-})
+  libraryId: "/i18next/i18next",
+  query: "How do I handle plural, interpolation, and context?",
+});
 ```
+
+**Note:** Context7 v2 uses server-side filtering. Use descriptive natural language queries.
 </mcp_first>
 
 <quick_start>
@@ -86,6 +88,7 @@ function MyComponent() {
   "greeting": "Hello, {{name}}!"
 }
 ```
+
 </quick_start>
 
 <patterns>
@@ -140,11 +143,13 @@ import { Trans } from "react-i18next";
 
 <Trans i18nKey="description">
   Welcome to <strong>our app</strong>. Click <a href="/start">here</a> to begin.
-</Trans>
+</Trans>;
 ```
+
 </patterns>
 
 <file_structure>
+
 ```
 src/
 ├── i18n/
@@ -157,6 +162,7 @@ src/
 │   │       ├── common.json
 │   │       └── dashboard.json
 ```
+
 </file_structure>
 
 <constraints>
@@ -167,15 +173,17 @@ src/
 - Extract strings from code (no inline text)
 
 **Naming:**
+
 - Keys: `snake_case` or `dot.notation`
 - Files: `<namespace>.json`
 - Namespaces: `common`, `dashboard`, `settings`, etc.
-</constraints>
+  </constraints>
 
 <success_criteria>
+
 - [ ] Context7 docs fetched for current API
 - [ ] i18n configured with fallback
 - [ ] Translations organized by namespace
 - [ ] Pluralization works correctly
 - [ ] No hardcoded strings in components
-</success_criteria>
+      </success_criteria>

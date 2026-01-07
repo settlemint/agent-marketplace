@@ -30,7 +30,7 @@ Efficiently collect, analyze, and synthesize documentation from multiple sources
 
 ```typescript
 // Find library repository
-mcp__octocode__packageSearch({ name: "library-name", ecosystem: "npm" })
+mcp__octocode__packageSearch({ name: "library-name", ecosystem: "npm" });
 
 // Search for usage examples
 mcp__octocode__githubSearchCode({
@@ -39,11 +39,15 @@ mcp__octocode__githubSearchCode({
   repo: "repo",
   mainResearchGoal: "Find implementation patterns",
   researchGoal: "Get real-world examples",
-  reasoning: "Need current best practices"
-})
+  reasoning: "Need current best practices",
+});
 
 // Explore structure
-mcp__octocode__githubViewRepoStructure({ owner: "org", repo: "repo", depth: 2 })
+mcp__octocode__githubViewRepoStructure({
+  owner: "org",
+  repo: "repo",
+  depth: 2,
+});
 
 // Read specific files
 mcp__octocode__githubGetFileContent({
@@ -52,22 +56,24 @@ mcp__octocode__githubGetFileContent({
   path: "src/feature.ts",
   mainResearchGoal: "Understand implementation",
   researchGoal: "Get source details",
-  reasoning: "Need to see how it works"
-})
+  reasoning: "Need to see how it works",
+});
 ```
 
 ## 4. Context7 Documentation Lookup
 
 ```typescript
-// Resolve library ID first
-mcp__context7__resolve_library_id({ libraryName: "library-name" })
+// Resolve library ID (if unknown)
+mcp__context7__resolve_library_id({ libraryName: "library-name" });
 
-// Then fetch documentation
+// Query documentation with natural language
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/org/library",
-  topic: "specific feature or API"
-})
+  libraryId: "/org/library",
+  query: "How do I implement specific feature or API?",
+});
 ```
+
+**Note:** Context7 v2 uses server-side filtering for 65% fewer tokens and 38% faster responses. Use descriptive natural language queries for best results.
 
 </responsibilities>
 
@@ -104,8 +110,9 @@ mcp__context7__query_docs({
 </output_format>
 
 <success_criteria>
+
 - Context7 or OctoCode used to fetch current documentation
 - Version compatibility verified with project dependencies
 - Practical, actionable insights provided
 - Code examples follow project conventions
-</success_criteria>
+  </success_criteria>

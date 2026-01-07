@@ -23,36 +23,36 @@ Build database schemas and queries using Drizzle ORM with PostgreSQL. Drizzle ge
 **CRITICAL: Always fetch Drizzle documentation before implementing.**
 
 ```
-MCPSearch({ query: "select:mcp__plugin_devtools_context7__resolve-library-id" })
 MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 ```
 
 ```typescript
 // Drizzle schema patterns
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/drizzle-team/drizzle-orm",
-  topic: "pgTable text boolean timestamp",
+  libraryId: "/drizzle-team/drizzle-orm",
+  query: "How do I define tables with pgTable, text, boolean, and timestamp?",
 });
 
 // Query patterns
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/drizzle-team/drizzle-orm",
-  topic: "db.select db.insert db.update db.delete",
+  libraryId: "/drizzle-team/drizzle-orm",
+  query: "How do I use db.select, db.insert, db.update, and db.delete?",
 });
 
 // Relations
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/drizzle-team/drizzle-orm",
-  topic: "relations one many db.query",
+  libraryId: "/drizzle-team/drizzle-orm",
+  query: "How do I define relations with one and many, and use db.query?",
 });
 
 // Migrations
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/drizzle-team/drizzle-orm",
-  topic: "drizzle-kit generate migrate push",
+  libraryId: "/drizzle-team/drizzle-orm",
+  query: "How do I use drizzle-kit for generate, migrate, and push?",
 });
 ```
 
+**Note:** Context7 v2 uses server-side filtering. Use descriptive natural language queries.
 </mcp_first>
 
 <quick_start>

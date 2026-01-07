@@ -185,9 +185,9 @@ Tools:
 - Grep for pattern search
 
 MCP: Context7 for correct library patterns
-mcp__plugin_crew_context7__query-docs({
-  context7CompatibleLibraryID: "/library/id",
-  topic: "correct-api"
+mcp__plugin_crew_context7__query_docs({
+  libraryId: "/library/id",
+  query: "What is the correct API pattern?"
 })`,
   description: "Skill healing",
   run_in_background: false,

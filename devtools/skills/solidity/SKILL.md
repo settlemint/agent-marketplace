@@ -1,7 +1,16 @@
 ---
 name: solidity
 description: Solidity smart contract development with Foundry. Covers writing, testing, security, deployment, and upgrades. Triggers on .sol files, contract, pragma solidity, forge.
-triggers: ["\\.sol", "\\bcontract\\b", "solidity", "pragma solidity", "forge", "foundry", "hardhat"]
+triggers:
+  [
+    "\\.sol",
+    "\\bcontract\\b",
+    "solidity",
+    "pragma solidity",
+    "forge",
+    "foundry",
+    "hardhat",
+  ]
 ---
 
 <objective>
@@ -25,15 +34,17 @@ mcp__octocode__githubSearchCode({
   path: "contracts/access",
   mainResearchGoal: "Find OpenZeppelin access control patterns",
   researchGoal: "Get current Ownable and AccessControl implementations",
-  reasoning: "Need verified security patterns"
-})
+  reasoning: "Need verified security patterns",
+});
 
 // Foundry testing
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/foundry-rs/book",
-  topic: "forge test fuzz invariant"
-})
+  libraryId: "/foundry-rs/book",
+  query: "How do I use forge test with fuzz and invariant testing?",
+});
 ```
+
+**Note:** Context7 v2 uses server-side filtering. Use descriptive natural language queries.
 </mcp_first>
 
 <quick_start>
@@ -76,12 +87,14 @@ contract MyContract is Ownable {
     }
 }
 ```
+
 </quick_start>
 
 <cei_pattern>
 **CEI Pattern (Required):**
 
 Always order operations as:
+
 1. **Checks** - Validate inputs and state
 2. **Effects** - Update contract state
 3. **Interactions** - External calls and events
@@ -99,12 +112,14 @@ function transfer(address to, uint256 amount) external {
     emit Transfer(msg.sender, to, amount);
 }
 ```
+
 </cei_pattern>
 
 <constraints>
 **Banned:** `assembly {}`, `tx.origin`, `block.timestamp` for randomness, `selfdestruct`, magic numbers, functions >50 lines, >7 parameters
 
 **Required:**
+
 - NatSpec on all `external` functions
 - Events for all state changes
 - CEI pattern for external calls
@@ -126,18 +141,20 @@ forge fmt            # Format code
 </commands>
 
 <security_checklist>
+
 - [ ] No reentrancy vulnerabilities (CEI pattern)
 - [ ] Access control on sensitive functions
 - [ ] Integer overflow/underflow handled (Solidity 0.8+)
 - [ ] No unchecked external calls
 - [ ] Events emitted for state changes
 - [ ] Storage gaps for upgradeable contracts
-</security_checklist>
+      </security_checklist>
 
 <success_criteria>
+
 - [ ] OctoCode searched for OpenZeppelin patterns
 - [ ] NatSpec on external functions
 - [ ] CEI pattern followed
 - [ ] Events for state changes
 - [ ] Tests pass with good coverage
-</success_criteria>
+      </success_criteria>

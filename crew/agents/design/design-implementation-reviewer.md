@@ -23,13 +23,12 @@ Your primary responsibility is to conduct thorough visual comparisons between im
    - Identify component specifications and design system rules
    - Note any design annotations or developer handoff notes
    - **Framework Documentation**: Use Context7 MCP when verifying component implementations:
+
      ```javascript
-     mcp__plugin_context7_context7__get -
-       library -
-       docs({
-         context7CompatibleLibraryID: "/tailwindlabs/tailwindcss",
-         topic: "spacing utilities",
-       });
+     mcp__plugin_crew_context7__getContext({
+       query: "What are the correct spacing utilities and how do I use them?",
+       libraryId: "/tailwindlabs/tailwindcss",
+     });
      ```
 
      - Verify Tailwind utility classes are used correctly

@@ -78,18 +78,11 @@ Read({file_path: ".claude/skills/frontend/SKILL.md"})
 
 2. Verify correct API with Context7 MCP:
    ```javascript
-   // Resolve library ID
-   mcp__plugin_context7_context7__resolve -
-     library -
-     id({ libraryName: "affected-library" });
-   // Fetch current docs
-   mcp__plugin_context7_context7__get -
-     library -
-     docs({
-       context7CompatibleLibraryID: "/library/id",
-       topic: "specific-api",
-       mode: "code",
-     });
+   // Get current documentation with natural language query
+   mcp__plugin_crew_context7__getContext({
+     query: "How do I correctly use {specific-api}? Show current patterns.",
+     libraryId: "/library/id", // e.g., "/tanstack/query"
+   });
    ```
 
 ## Step 3: Scan Affected Files

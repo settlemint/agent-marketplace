@@ -15,14 +15,19 @@ read -r TOOL_NAME COMMAND < <(echo "$INPUT" | jq -r '[.tool_name // "", .tool_in
 # Skip if command is empty
 [[ -z $COMMAND ]] && exit 0
 
-# Skip if command already has output redirection (user knows what they're doing)
-# Patterns: |, >, >>, 2>, 2>&1, &>, tee
-if [[ $COMMAND =~ \|[[:space:]] ]] ||
-	[[ $COMMAND =~ \>[[:space:]] ]] ||
-	[[ $COMMAND =~ \>\> ]] ||
-	[[ $COMMAND =~ 2\> ]] ||
-	[[ $COMMAND =~ \&\> ]] ||
-	[[ $COMMAND =~ tee[[:space:]] ]]; then
+# Skip if command already has output redirection to file/pipe (user knows what they're doing)
+# Note: 2>&1 alone just merges stderr to stdout - it's NOT file redirection, so we still wrap
+# Strip stderr-to-stdout merges before checking for real redirections
+CMD_CHECK="${COMMAND//2>&1/}"
+CMD_CHECK="${CMD_CHECK//>&1/}"
+
+# Now check for actual file/pipe redirections: |, > file, >> file, &> file, 2> file, tee
+if [[ $CMD_CHECK =~ \|[[:space:]] ]] ||
+	[[ $CMD_CHECK =~ \>[[:space:]] ]] ||
+	[[ $CMD_CHECK =~ \>\> ]] ||
+	[[ $CMD_CHECK =~ 2\> ]] ||
+	[[ $CMD_CHECK =~ \&\> ]] ||
+	[[ $CMD_CHECK =~ tee[[:space:]] ]]; then
 	exit 0
 fi
 

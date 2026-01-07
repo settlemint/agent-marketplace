@@ -18,22 +18,24 @@ MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 ```typescript
 // Task configuration
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/vercel/turborepo",
-  topic: "tasks dependsOn outputs inputs"
-})
+  libraryId: "/vercel/turborepo",
+  query: "How do I configure tasks with dependsOn, outputs, and inputs?",
+});
 
 // Caching
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/vercel/turborepo",
-  topic: "cache outputs remote caching"
-})
+  libraryId: "/vercel/turborepo",
+  query: "How do I configure cache outputs and remote caching?",
+});
 
 // Filtering
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/vercel/turborepo",
-  topic: "filter workspace package"
-})
+  libraryId: "/vercel/turborepo",
+  query: "How do I filter workspaces and packages?",
+});
 ```
+
+**Note:** Context7 v2 uses server-side filtering. Use descriptive natural language queries.
 </mcp_first>
 
 <quick_start>
@@ -69,7 +71,7 @@ mcp__context7__query_docs({
 - `inputs` - Files that affect cache key
 - `cache: false` - Disable caching for dev tasks
 - `persistent: true` - Long-running tasks
-</quick_start>
+  </quick_start>
 
 <task_patterns>
 **Build pipeline:**
@@ -113,6 +115,7 @@ mcp__context7__query_docs({
   }
 }
 ```
+
 </task_patterns>
 
 <commands>
@@ -134,15 +137,17 @@ turbo build --dry-run          # Preview what will run
 - Use `persistent: true` for long-running tasks
 
 **Best practices:**
+
 - Keep `inputs` specific to avoid cache misses
 - Use workspace filters for targeted builds
 - Enable remote caching for CI
-</constraints>
+  </constraints>
 
 <success_criteria>
+
 - [ ] Context7 docs fetched for current config
 - [ ] Tasks have proper `dependsOn`
 - [ ] `outputs` defined for cacheable tasks
 - [ ] Dev tasks have `cache: false`
 - [ ] Pipeline is efficient (parallel where possible)
-</success_criteria>
+      </success_criteria>

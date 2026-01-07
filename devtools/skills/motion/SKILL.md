@@ -1,7 +1,8 @@
 ---
 name: motion
 description: Motion (formerly Framer Motion) for React animations. Covers transitions, gestures, layout animations, and exit animations. Triggers on motion, animate, framer.
-triggers: ["motion", "animate", "framer", "transition", "variants", "AnimatePresence"]
+triggers:
+  ["motion", "animate", "framer", "transition", "variants", "AnimatePresence"]
 ---
 
 <objective>
@@ -18,28 +19,30 @@ MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 ```typescript
 // Motion component patterns
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/motiondivision/motion",
-  topic: "motion.div animate initial exit"
-})
+  libraryId: "/motiondivision/motion",
+  query: "How do I use motion.div with animate, initial, and exit props?",
+});
 
 // Variants and orchestration
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/motiondivision/motion",
-  topic: "variants staggerChildren"
-})
+  libraryId: "/motiondivision/motion",
+  query: "How do I use variants and staggerChildren for orchestration?",
+});
 
 // Layout animations
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/motiondivision/motion",
-  topic: "layout layoutId shared"
-})
+  libraryId: "/motiondivision/motion",
+  query: "How do I use layout and layoutId for shared layout animations?",
+});
 
 // Gestures
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/motiondivision/motion",
-  topic: "whileHover whileTap drag"
-})
+  libraryId: "/motiondivision/motion",
+  query: "How do I use whileHover, whileTap, and drag gestures?",
+});
 ```
+
+**Note:** Context7 v2 uses server-side filtering. Use descriptive natural language queries.
 </mcp_first>
 
 <quick_start>
@@ -86,13 +89,11 @@ function Modal({ isOpen, onClose }) {
 **Gestures:**
 
 ```tsx
-<motion.button
-  whileHover={{ scale: 1.05 }}
-  whileTap={{ scale: 0.95 }}
->
+<motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
   Click me
 </motion.button>
 ```
+
 </quick_start>
 
 <patterns>
@@ -167,6 +168,7 @@ function List({ items }) {
   transition={{ duration: 2 }}
 />
 ```
+
 </patterns>
 
 <hooks>
@@ -183,6 +185,7 @@ const opacity = useTransform(x, [0, 100], [1, 0]);
 
 // Spring-based values
 const smoothX = useSpring(x, { stiffness: 300 });
+
 ```
 </hooks>
 
@@ -207,3 +210,4 @@ const smoothX = useSpring(x, { stiffness: 300 });
 - [ ] Performance-friendly properties animated
 - [ ] Spring transitions for natural feel
 </success_criteria>
+```

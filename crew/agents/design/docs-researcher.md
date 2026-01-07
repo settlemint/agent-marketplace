@@ -17,18 +17,20 @@ model: inherit
 <process>
 <phase name="context7_docs">
 ```javascript
-// Resolve library ID first
+// Resolve library ID (if unknown)
 MCPSearch({query: "select:mcp__plugin_crew_context7__resolve-library-id"})
-mcp__plugin_crew_context7__resolve-library-id({libraryName: "<library>"})
+mcp__plugin_crew_context7__resolve_library_id({ libraryName: "<library>" })
 
-// Then query docs
+// Query documentation with natural language
 MCPSearch({query: "select:mcp**plugin_crew_context7**query-docs"})
-mcp**plugin_crew_context7**query-docs({
-libraryId: "<resolved-id>",
-query: "<specific topic>"
+mcp**plugin_crew_context7**query_docs({
+libraryId: "<library-id>", // e.g., "/tanstack/query"
+query: "How do I implement <specific feature>?"
 })
 
 ````
+
+**Note:** Context7 v2 uses server-side filtering for 65% fewer tokens. Use descriptive natural language queries for best results.
 </phase>
 
 <phase name="github_research">

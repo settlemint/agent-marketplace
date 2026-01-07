@@ -219,8 +219,8 @@ mcp__octocode__githubSearchCode({
 
 // Get current documentation
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/library/id",
-  topic: "error handling troubleshooting",
+  libraryId: "/library/id",
+  query: "How do I handle errors and troubleshoot common issues?",
 });
 ```
 

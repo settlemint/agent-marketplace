@@ -882,13 +882,20 @@ MCP (Model Context Protocol) servers extend the AI's capabilities beyond its tra
 
 **Purpose**: Library documentation lookup
 
-**Usage**: Research agents use Context7 to fetch up-to-date documentation for any framework or library.
+**Usage**: Research agents use Context7 v2 to fetch up-to-date documentation for any framework or library. The v2 API uses server-side filtering for 65% fewer tokens and 38% faster responses.
 
 ```javascript
 MCPSearch({ query: "select:mcp__plugin_crew_context7__query-docs" });
-mcp__plugin_crew_context7__query -
-  docs({ library: "react", query: "hooks best practices" });
+mcp__plugin_crew_context7__query_docs({
+  libraryId: "/reactjs/react.dev",
+  query: "How do I use hooks and what are the best practices?",
+});
 ```
+
+**Key improvements in v2:**
+
+- Use natural language `query` parameter (not just topic keywords)
+- Server-side reranking returns only the most relevant docs
 
 ### Codex
 
