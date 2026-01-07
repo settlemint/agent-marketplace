@@ -40,7 +40,7 @@ This provides: `<pattern name="research-agents"/>`, `<pattern name="task-file"/>
 
 - **NEVER CODE** - This command researches and writes plans only
 - **Branch early** - Set up before research so state writes to correct directory
-- **9 agents + Codex** - Launch ALL research in single message
+- **4 agents + Codex** - Launch ALL research in single message
 - **spec-flow-analyzer last** - Runs after all research collected
 
 </constraints>
@@ -78,22 +78,12 @@ if (branch === "main" || branch === "master") {
 </phase>
 
 <phase name="parallel-research">
-Launch ALL 9 agents in SINGLE message using `<pattern name="research-agents"/>`:
+Launch ALL 4 agents in SINGLE message using `<pattern name="research-agents"/>`:
 
-**Foundational (3):**
-
-- `repo-research-analyst` - Codebase patterns, conventions
-- `best-practices-researcher` - 2026 best practices (use Context7, OctoCode MCP)
-- `git-history-analyzer` - Historical context, past decisions
-
-**Dimension analysis (6):**
-
-- `api-interface-analyst` - Endpoints, schemas, versioning
-- `data-model-architect` - Entities, migrations, constraints
-- `ux-workflow-analyst` - User journeys, accessibility
-- `scale-performance-analyst` - Capacity, bottlenecks, caching
-- `security-threat-analyst` - STRIDE model, OWASP compliance
-- `integration-dependency-analyst` - External services, failure modes
+- `codebase-analyst` - Repository structure, patterns, conventions, git history
+- `docs-researcher` - External best practices via Context7/OctoCode MCP
+- `architecture-analyst` - API design, data models, external integrations
+- `quality-analyst` - Performance, security (STRIDE), UX, accessibility
 
 **Plus Codex MCP** (direct call, not Task):
 
@@ -108,7 +98,7 @@ mcp__plugin_crew_codex__codex({
 
 <phase name="collect-research">
 ```javascript
-// Collect ALL 9 agent results
+// Collect ALL 4 agent results
 const results = {};
 for (const agent of agents) {
   results[agent.type] = TaskOutput({ task_id: agent.id, block: true });
@@ -141,7 +131,10 @@ Read({
 // - User Stories: From spec-flow-analyzer (P1/P2/P3 priorities)
 // - Functional Requirements: FR-XXX requirements
 // - Technical Approach: From Codex synthesis
-// - Dimension Analyses: From respective analysts (API, Data, UX, Scale, Security, Integrations)
+// - Codebase Context: From codebase-analyst
+// - External Research: From docs-researcher
+// - Architecture: From architecture-analyst (API, Data, Integrations)
+// - Quality: From quality-analyst (Performance, Security, UX)
 // - Success Criteria: SC-XXX criteria
 // - Open Questions: Max 3 NEEDS CLARIFICATION items
 ```
@@ -263,12 +256,12 @@ Next step:
 <success_criteria>
 
 - [ ] Branch created before research
-- [ ] All 9 research agents launched in single message
+- [ ] All 4 research agents launched in single message
 - [ ] Codex MCP called directly for synthesis
 - [ ] spec-flow-analyzer runs after all research collected
 - [ ] Plan contains user stories with P1/P2/P3 priorities
 - [ ] Plan contains FR-XXX requirements and SC-XXX criteria
-- [ ] Plan contains all 6 dimension analyses
+- [ ] Plan contains architecture and quality analyses
 - [ ] Task files follow naming convention
 - [ ] Each task has acceptance criteria
 - [ ] Full plan content printed to user (not just summary)
