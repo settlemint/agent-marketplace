@@ -1,12 +1,12 @@
 # Agent Native Development Workflow Manifesto
 
-> *Written by Claude Code Opus 4.5, prompted by Roderik*
+> _Written by Claude Code Opus 4.5, prompted by Roderik_
 
 ## The Vision
 
 This document describes the **Agent Native Development Workflow** (ANDW) - a paradigm shift in how software is built. Instead of writing code line-by-line, developers orchestrate autonomous agents that research, design, implement, and review code with unprecedented quality and speed.
 
-**The fundamental insight**: Software development has always been about managing complexity. We've progressed from assembly to high-level languages, from monoliths to microservices, from manual testing to CI/CD. Each evolution abstracted away lower-level concerns so developers could focus on higher-level problems. Agent-native development is the next abstraction layer - you describe *what* you want, and autonomous agents figure out *how* to build it.
+**The fundamental insight**: Software development has always been about managing complexity. We've progressed from assembly to high-level languages, from monoliths to microservices, from manual testing to CI/CD. Each evolution abstracted away lower-level concerns so developers could focus on higher-level problems. Agent-native development is the next abstraction layer - you describe _what_ you want, and autonomous agents figure out _how_ to build it.
 
 The workflow is implemented through two Claude Code plugins:
 
@@ -40,12 +40,14 @@ Every developer knows the frustration of context switching, of losing flow state
 **This workflow doesn't replace developers - it elevates them.**
 
 The human remains essential at every critical juncture:
+
 - **Defining the vision**: You describe what feature you want, why it matters, and what success looks like
 - **Reviewing plans**: Before any code is written, you approve the design, user stories, and approach
 - **Validating implementation**: You review generated code, run the product, verify it meets requirements
 - **Making judgment calls**: When trade-offs arise, when requirements are ambiguous, when priorities conflict - that's you
 
 What changes is WHERE you spend your cognitive energy. Instead of:
+
 - Writing boilerplate → Reviewing generated code
 - Looking up API documentation → Verifying the right APIs were used
 - Debugging type errors → Verifying business logic correctness
@@ -54,6 +56,7 @@ What changes is WHERE you spend your cognitive energy. Instead of:
 **You move from executing to directing. From typing to thinking. From implementation details to strategic decisions.**
 
 The most productive engineers using this workflow spend 80% of their time on:
+
 - Feature definition and requirements
 - Design review and approval
 - Implementation validation
@@ -61,6 +64,7 @@ The most productive engineers using this workflow spend 80% of their time on:
 - Strategic technical decisions
 
 And 20% on:
+
 - Refining AI-generated code
 - Edge case handling
 - Integration with existing systems
@@ -103,6 +107,7 @@ The Agent Native Development Workflow isn't just a set of tools - it's a philoso
 **Why this matters**: A human senior developer can only think about one thing at a time. Nine agents can analyze nine dimensions of your problem simultaneously. The result isn't just faster - it's more thorough than any single human could achieve.
 
 **Implementation**:
+
 - Spawn specialized agents for research, implementation, and review
 - Keep the main Claude thread for decision-making and coordination
 - Never exceed 6 concurrent agents per batch (resource management)
@@ -116,18 +121,21 @@ The Agent Native Development Workflow isn't just a set of tools - it's a philoso
 **Why this matters**: Traditional AI assistants forget. You can't leave a complex task halfway done and return to it a week later. With persistent state, you can. Work is genuinely cumulative rather than session-bound.
 
 **Real-world proof**: We regularly run build flows that exceed ONE HOUR of continuous autonomous execution. The context compacts multiple times during this period. Yet the quality remains consistent because:
+
 - Task files track exactly what's done and what remains
 - Plan files preserve design decisions
 - State JSON captures loop iteration and progress
 - Each agent batch starts with fresh context but complete knowledge
 
 A 60-minute build flow might involve:
+
 - 15+ context compactions
 - 50+ agent spawns
 - 100+ file edits
 - 0 loss of quality or direction
 
 **Implementation**:
+
 - All context persisted to `.claude/branches/{branch}/state.json`
 - Plans, tasks, and progress survive context window compaction
 - Sessions can be resumed without loss of knowledge - hours, days, or weeks later
@@ -141,6 +149,7 @@ A 60-minute build flow might involve:
 **Why this matters**: The difference between a sluggish assistant and a responsive one often comes down to roundtrip optimization. Users shouldn't wait 30 seconds for context that could be gathered in 3.
 
 **Implementation**:
+
 - Shell scripts gather context in a single invocation
 - Bang-prefixed snippets (`!`) execute inline without tool calls
 - Hooks run in parallel, never blocking the main thread
@@ -154,6 +163,7 @@ A 60-minute build flow might involve:
 **Why this matters**: Software development is a team sport. When one developer uses AI, others need to understand what happened. Native UI elements create a shared understanding that text alone cannot.
 
 **Implementation**:
+
 - `TodoWrite` provides visible progress tracking
 - `AskUserQuestion` creates proper UI components for decisions
 - All choices use structured options, never plain text questions
@@ -164,9 +174,10 @@ A 60-minute build flow might involve:
 
 **The agent-native approach**: Loop mode enables autonomous completion with verifiable criteria. The build phase doesn't stop until tests pass. Seven-leg review catches issues before they reach production. Every change creates an audit trail.
 
-**Why this matters**: The goal isn't to generate code fast - it's to generate *correct* code. Iteration loops with objective completion criteria (tests pass, linting clean) ensure the output actually works.
+**Why this matters**: The goal isn't to generate code fast - it's to generate _correct_ code. Iteration loops with objective completion criteria (tests pass, linting clean) ensure the output actually works.
 
 **Implementation**:
+
 - Loop mode enables autonomous completion with verifiable criteria
 - Seven-leg review catches issues before they reach production
 - Tasks create audit trails for every change
@@ -251,6 +262,7 @@ Traditional AI coding assistants jump straight to implementation. Ask for a feat
 4. **Problems recur** - Without tracking and iteration, you fix the same bug repeatedly
 
 The four-phase cycle addresses each of these:
+
 - **Design**: Gather context, research best practices, plan before coding
 - **Build**: Execute with tracking, commit granularly, test continuously
 - **Check**: Multi-dimensional review catches what humans miss
@@ -309,6 +321,7 @@ The four-phase cycle addresses each of these:
 ```
 
 **Process**:
+
 1. Launch 9 research agents in parallel (single message)
 2. Query Codex MCP for architectural synthesis
 3. Run `spec-flow-analyzer` to generate user stories
@@ -317,17 +330,17 @@ The four-phase cycle addresses each of these:
 
 **Research Agents** (launched in parallel):
 
-| Agent | Why It Matters |
-|-------|----------------|
-| `repo-research-analyst` | Understands YOUR codebase patterns, not generic patterns |
-| `best-practices-researcher` | Current best practices, not outdated tutorials |
-| `git-history-analyzer` | Why was it built this way? What was tried before? |
-| `api-interface-analyst` | How will this integrate with existing APIs? |
-| `data-model-architect` | What entities exist? What migrations needed? |
-| `ux-workflow-analyst` | How will users actually use this? |
-| `scale-performance-analyst` | Will this handle production load? |
-| `security-threat-analyst` | What could go wrong from a security perspective? |
-| `integration-dependency-analyst` | What external services are involved? |
+| Agent                            | Why It Matters                                           |
+| -------------------------------- | -------------------------------------------------------- |
+| `repo-research-analyst`          | Understands YOUR codebase patterns, not generic patterns |
+| `best-practices-researcher`      | Current best practices, not outdated tutorials           |
+| `git-history-analyzer`           | Why was it built this way? What was tried before?        |
+| `api-interface-analyst`          | How will this integrate with existing APIs?              |
+| `data-model-architect`           | What entities exist? What migrations needed?             |
+| `ux-workflow-analyst`            | How will users actually use this?                        |
+| `scale-performance-analyst`      | Will this handle production load?                        |
+| `security-threat-analyst`        | What could go wrong from a security perspective?         |
+| `integration-dependency-analyst` | What external services are involved?                     |
 
 **The output**: A comprehensive plan document with user stories (prioritized P1/P2/P3), functional requirements, success criteria, and a breakdown of tasks. Each task becomes a separate file that agents will execute in the build phase.
 
@@ -342,6 +355,7 @@ The four-phase cycle addresses each of these:
 **Why granular commits?** Each task gets its own commit. This creates a clean git history where you can see exactly what changed for each piece of functionality. Reverting a broken feature doesn't require reverting unrelated changes.
 
 **Process**:
+
 1. Load plan and task files
 2. Execute tasks in batches (max 6 parallel agents)
 3. Run test-runner agent (haiku model - fast and cheap) after each batch
@@ -350,6 +364,7 @@ The four-phase cycle addresses each of these:
 6. Loop until all tasks complete and CI passes
 
 **Critical Rules** (learned from hard experience):
+
 - **Never run CI commands directly** - use haiku test-runner agent (keeps the main thread responsive)
 - **Never exceed 6 concurrent agents** - resource management prevents degradation
 - **Launch all agents in single message** - parallel execution only works if all spawned at once
@@ -442,6 +457,7 @@ Quality isn't optional - it's enforced through automated gates at every level:
 
 **Level 1: Immediate Linting (PostToolUse)**
 Every file edit triggers automatic formatting:
+
 - TypeScript: Prettier + Biome
 - Solidity: Forge fmt
 - Shell scripts: shfmt + shellcheck
@@ -451,18 +467,21 @@ This happens BEFORE you even see the result. Code is always formatted correctly.
 
 **Level 2: Batch Testing (Test Runner Agent)**
 After each batch of tasks completes, a haiku-model test runner executes:
+
 - Full test suite runs
 - Failures generate new fix tasks
 - Build doesn't progress until tests pass
 
 **Level 3: Integration Testing (Loop Completion)**
 Before the completion promise can be accepted:
+
 - `bun run ci` must pass (lint + typecheck + unit tests)
 - `bun run test:integration` must pass
 - All task files must be marked complete
 
 **Level 4: Seven-Leg Review (Before Merge)**
 Before any PR merges:
+
 - Seven specialized reviewers analyze the code
 - P0 findings block the PR
 - P1 findings require resolution
@@ -512,17 +531,18 @@ Before any PR merges:
 
 **Seven-Leg Review System**:
 
-| Leg | Focus | Why It Matters |
-|-----|-------|----------------|
-| **Correctness** | Logic accuracy | Does the code actually do what it's supposed to? Edge cases, null handling, type safety |
-| **Performance** | Speed/efficiency | Will this perform at scale? Complexity analysis, caching, N+1 query detection |
-| **Security** | Vulnerabilities | OWASP top 10, injection vectors, auth issues, secret exposure |
-| **Elegance** | Design quality | Is this maintainable? SOLID principles, clean architecture, cohesion |
-| **Resilience** | Failure handling | What happens when things go wrong? Error recovery, cleanup, graceful degradation |
-| **Style** | Conventions | Is this consistent with the codebase? Naming, formatting, idioms |
-| **Smells** | Debt indicators | Will we regret this later? Anti-patterns, duplication, complexity |
+| Leg             | Focus            | Why It Matters                                                                          |
+| --------------- | ---------------- | --------------------------------------------------------------------------------------- |
+| **Correctness** | Logic accuracy   | Does the code actually do what it's supposed to? Edge cases, null handling, type safety |
+| **Performance** | Speed/efficiency | Will this perform at scale? Complexity analysis, caching, N+1 query detection           |
+| **Security**    | Vulnerabilities  | OWASP top 10, injection vectors, auth issues, secret exposure                           |
+| **Elegance**    | Design quality   | Is this maintainable? SOLID principles, clean architecture, cohesion                    |
+| **Resilience**  | Failure handling | What happens when things go wrong? Error recovery, cleanup, graceful degradation        |
+| **Style**       | Conventions      | Is this consistent with the codebase? Naming, formatting, idioms                        |
+| **Smells**      | Debt indicators  | Will we regret this later? Anti-patterns, duplication, complexity                       |
 
 **Severity Levels** (actionable triage):
+
 - **P0**: Critical - Must fix before merge, blocks deployment
 - **P1**: High - Should fix in this PR, significant impact
 - **P2**: Medium - Address soon, can be follow-up PR
@@ -537,6 +557,7 @@ Before any PR merges:
 **Why a dedicated fix phase?** Ad-hoc fixing leads to whack-a-mole development. You fix one thing, break another. The fix phase treats issues systematically: convert findings to task files, prioritize by severity, fix in order, verify each fix, re-run tests. It's a methodical approach that actually clears the backlog.
 
 **What it does**:
+
 - Converts P0/P1 findings into task files (same format as build tasks)
 - Prioritizes fixes by severity (P0 first, then P1)
 - Runs targeted fixes based on triage
@@ -551,31 +572,31 @@ Before any PR merges:
 
 ### Workflow Commands
 
-| Command | Description | Key Features |
-|---------|-------------|--------------|
-| `/crew:design` | Create implementation plans | 9 parallel research agents + Codex |
-| `/crew:build` | Execute work with tracking | Loop mode, batch execution, auto-commit |
-| `/crew:check` | Multi-agent code review | 7-leg system, severity triage |
-| `/crew:restart` | Resume pending work | State recovery after compaction |
-| `/crew:ci` | Background CI runner | Haiku agent, non-blocking |
+| Command         | Description                 | Key Features                            |
+| --------------- | --------------------------- | --------------------------------------- |
+| `/crew:design`  | Create implementation plans | 9 parallel research agents + Codex      |
+| `/crew:build`   | Execute work with tracking  | Loop mode, batch execution, auto-commit |
+| `/crew:check`   | Multi-agent code review     | 7-leg system, severity triage           |
+| `/crew:restart` | Resume pending work         | State recovery after compaction         |
+| `/crew:ci`      | Background CI runner        | Haiku agent, non-blocking               |
 
 ### Git Commands
 
-| Command | Description |
-|---------|-------------|
-| `/crew:git:commit` | Create conventional commit |
-| `/crew:git:pr` | Commit, push, and open PR |
-| `/crew:git:push` | Push current branch |
-| `/crew:git:branch` | Create feature branch |
-| `/crew:git:sync` | Sync with main |
-| `/crew:git:stack-add` | Add branch to machete stack |
-| `/crew:git:stack-status` | Show stack status |
-| `/crew:git:traverse` | Sync all stacked branches |
-| `/crew:git:slide-out` | Remove merged branches from stack |
-| `/crew:git:fix-reviews` | Resolve PR review comments |
-| `/crew:git:update-pr` | Update PR annotations |
-| `/crew:git:clean` | Clean stale branches |
-| `/crew:git:undo` | Undo last commit (keeps changes) |
+| Command                  | Description                       |
+| ------------------------ | --------------------------------- |
+| `/crew:git:commit`       | Create conventional commit        |
+| `/crew:git:pr`           | Commit, push, and open PR         |
+| `/crew:git:push`         | Push current branch               |
+| `/crew:git:branch`       | Create feature branch             |
+| `/crew:git:sync`         | Sync with main                    |
+| `/crew:git:stack-add`    | Add branch to machete stack       |
+| `/crew:git:stack-status` | Show stack status                 |
+| `/crew:git:traverse`     | Sync all stacked branches         |
+| `/crew:git:slide-out`    | Remove merged branches from stack |
+| `/crew:git:fix-reviews`  | Resolve PR review comments        |
+| `/crew:git:update-pr`    | Update PR annotations             |
+| `/crew:git:clean`        | Clean stale branches              |
+| `/crew:git:undo`         | Undo last commit (keeps changes)  |
 
 ---
 
@@ -650,14 +671,14 @@ for (const leg of legs) {
 
 Specialized task execution:
 
-| Agent | Purpose |
-|-------|---------|
-| `spec-flow-analyzer` | Generate user stories from research |
-| `work-orchestrator` | Execute plans with progress tracking |
-| `pr-comment-resolver` | Address PR review comments |
-| `bug-reproduction-validator` | Validate bug reports |
-| `design-iterator` | Iterative UI refinement |
-| `content-style-editor` | Style guide enforcement |
+| Agent                        | Purpose                              |
+| ---------------------------- | ------------------------------------ |
+| `spec-flow-analyzer`         | Generate user stories from research  |
+| `work-orchestrator`          | Execute plans with progress tracking |
+| `pr-comment-resolver`        | Address PR review comments           |
+| `bug-reproduction-validator` | Validate bug reports                 |
+| `design-iterator`            | Iterative UI refinement              |
+| `content-style-editor`       | Style guide enforcement              |
 
 ---
 
@@ -723,6 +744,7 @@ Hooks are the nervous system of the Agent Native Development Workflow. They fire
 **[restore-session-state.sh](https://github.com/settlemint/agent-marketplace/blob/main/crew/scripts/hooks/session-start/restore-session-state.sh)**
 
 Restores context after compaction:
+
 - Reads unified state from `.claude/branches/{branch}/state.json`
 - Outputs plan preview directly (no file read needed)
 - Provides TodoWrite-compatible JSON for restoration
@@ -743,6 +765,7 @@ Detects available linters for PostToolUse auto-formatting.
 **[save-session-state.sh](https://github.com/settlemint/agent-marketplace/blob/main/crew/scripts/hooks/pre-compact/save-session-state.sh)**
 
 Saves all context before compaction:
+
 - Captures plan file content (first 100 lines)
 - Saves TodoWrite state in compatible format
 - Records active workflow and args
@@ -756,6 +779,7 @@ Saves all context before compaction:
 **[check-loop.sh](https://github.com/settlemint/agent-marketplace/blob/main/crew/scripts/hooks/stop/check-loop.sh)**
 
 Controls iteration loop continuation:
+
 - Checks for completion promise in transcript
 - Increments iteration counter
 - Re-feeds prompt if loop should continue
@@ -766,6 +790,7 @@ Controls iteration loop continuation:
 **[lint-modified-file.sh](https://github.com/settlemint/agent-marketplace/blob/main/crew/scripts/hooks/post-tool/lint-modified-file.sh)**
 
 Auto-formats after Edit/Write:
+
 - Uses local `node_modules/.bin` binaries (saves ~200ms per call)
 - Runs prettier + biome for TypeScript
 - Runs forge fmt for Solidity
@@ -778,6 +803,7 @@ Keeps git-machete stack in sync after branch operations.
 **[track-agent-spawn.sh](https://github.com/settlemint/agent-marketplace/blob/main/crew/scripts/hooks/post-tool/track-agent-spawn.sh)** / **[track-agent-complete.sh](https://github.com/settlemint/agent-marketplace/blob/main/crew/scripts/hooks/post-tool/track-agent-complete.sh)**
 
 Maintains agent registry in `.claude/branches/{branch}/agents.json`:
+
 - Tracks spawned agents with timestamps
 - Updates status on completion
 - Enables stuck agent detection
@@ -787,6 +813,7 @@ Maintains agent registry in `.claude/branches/{branch}/agents.json`:
 **[suggest-skill.sh](https://github.com/settlemint/agent-marketplace/blob/main/crew/scripts/hooks/pre-tool/suggest-skill.sh)**
 
 Suggests relevant skills based on command:
+
 - `git commit` → suggests `/crew:git:commit`
 - `bun run test` → suggests `/crew:ci`
 
@@ -830,7 +857,13 @@ MCP (Model Context Protocol) servers extend the AI's capabilities beyond its tra
     "codex": {
       "type": "stdio",
       "command": "codex",
-      "args": ["-m", "gpt-5.2-codex", "-c", "model_reasoning_effort=xhigh", "mcp-server"]
+      "args": [
+        "-m",
+        "gpt-5.2-codex",
+        "-c",
+        "model_reasoning_effort=xhigh",
+        "mcp-server"
+      ]
     },
     "octocode": {
       "type": "stdio",
@@ -853,7 +886,8 @@ MCP (Model Context Protocol) servers extend the AI's capabilities beyond its tra
 
 ```javascript
 MCPSearch({ query: "select:mcp__plugin_crew_context7__query-docs" });
-mcp__plugin_crew_context7__query-docs({ library: "react", query: "hooks best practices" });
+mcp__plugin_crew_context7__query -
+  docs({ library: "react", query: "hooks best practices" });
 ```
 
 ### Codex
@@ -865,8 +899,9 @@ mcp__plugin_crew_context7__query-docs({ library: "react", query: "hooks best pra
 ```javascript
 MCPSearch({ query: "select:mcp__plugin_crew_codex__codex" });
 mcp__plugin_crew_codex__codex({
-  prompt: "Architecture design for: [feature]. Key decisions, trade-offs, risks?",
-  model: "o3"
+  prompt:
+    "Architecture design for: [feature]. Key decisions, trade-offs, risks?",
+  model: "o3",
 });
 ```
 
@@ -875,6 +910,7 @@ mcp__plugin_crew_codex__codex({
 **Purpose**: GitHub repository search and code analysis
 
 **Available Tools**:
+
 - `githubSearchCode` - Find code patterns across GitHub
 - `githubGetFileContent` - Read specific files
 - `githubViewRepoStructure` - Explore repository structure
@@ -923,7 +959,7 @@ All branch state lives in `.claude/branches/{slugified-branch}/state.json`:
     STATE SURVIVES:
     • Context compaction (automatic)
     • Session end/restart (explicit save)
-    • Machine changes (committed to git)
+    • Branch state in .claude/branches/ (gitignored, local)
 ```
 
 ```json
@@ -1006,18 +1042,23 @@ depends_on: []
 # T010: Create user API endpoint
 
 ## Description
+
 Implement the user CRUD API endpoint.
 
 ## Acceptance Criteria
+
 - [ ] GET /api/users returns paginated list
 - [ ] POST /api/users creates new user
 - [ ] Input validation with Zod
 
 ## File Path
+
 `src/api/users.ts`
 
 ## Work Log
+
 ### 2026-01-07 - Created
+
 **By:** /crew:design
 ```
 
@@ -1032,14 +1073,23 @@ TodoWrite provides real-time progress visibility:
 ```javascript
 TodoWrite({
   todos: [
-    { content: "Implement user API", status: "completed", activeForm: "Implementing user API" },
-    { content: "Add validation", status: "in_progress", activeForm: "Adding validation" },
-    { content: "Write tests", status: "pending", activeForm: "Writing tests" }
-  ]
+    {
+      content: "Implement user API",
+      status: "completed",
+      activeForm: "Implementing user API",
+    },
+    {
+      content: "Add validation",
+      status: "in_progress",
+      activeForm: "Adding validation",
+    },
+    { content: "Write tests", status: "pending", activeForm: "Writing tests" },
+  ],
 });
 ```
 
 **Rules**:
+
 - Only ONE task `in_progress` at a time
 - Update IMMEDIATELY after each task
 - Mark complete as soon as agent finishes
@@ -1089,6 +1139,7 @@ git worktree add ../feature-branch feat/new-feature
 ```
 
 **Worktree Safety Rules**:
+
 - Safe: `git machete update`, `git machete status`
 - Dangerous: `git machete traverse`, `git checkout <branch>`
 
@@ -1105,6 +1156,7 @@ Types: feat, fix, refactor, docs, test, chore
 ### PR Templates
 
 Templates selected based on commit type:
+
 - `feat` → Full template with design decisions
 - `fix` → Bug fix template with reproduction steps
 - `refactor` → Light template
@@ -1128,15 +1180,15 @@ The crew plugin includes skills for workflow orchestration:
 
 ### Core Workflow Skills
 
-| Skill | Triggers | Purpose |
-|-------|----------|---------|
-| `crew:agent-architecture` | `agent workflow`, `orchestrat` | Agent patterns, loops, state management |
-| `crew:skill-builder` | `create skill`, `SKILL.md` | Create, audit, and maintain skills |
-| `crew:git` | Commit workflows | Git conventions, commits, PRs |
-| `crew:todo-tracking` | `persistent task`, `branch.*task` | File-based task management |
-| `crew:crew-patterns` | Internal | Reusable patterns for commands |
-| `crew:native-tools` | Internal | Claude Code native tool guidance |
-| `crew:ast-grep` | Mass rename, refactor | Code transformation with ast-grep |
+| Skill                     | Triggers                          | Purpose                                 |
+| ------------------------- | --------------------------------- | --------------------------------------- |
+| `crew:agent-architecture` | `agent workflow`, `orchestrate`   | Agent patterns, loops, state management |
+| `crew:skill-builder`      | `create skill`, `SKILL.md`        | Create, audit, and maintain skills      |
+| `crew:git`                | Commit workflows                  | Git conventions, commits, PRs           |
+| `crew:todo-tracking`      | `persistent task`, `branch.*task` | File-based task management              |
+| `crew:crew-patterns`      | Internal                          | Reusable patterns for commands          |
+| `crew:native-tools`       | Internal                          | Claude Code native tool guidance        |
+| `crew:ast-grep`           | Mass rename, refactor             | Code transformation with ast-grep       |
 
 ### Skill Builder Workflows
 
@@ -1160,12 +1212,12 @@ Skill({ skill: "crew:skill-builder", args: "upgrade-to-router" });
 
 The `agent-architecture` skill provides architectural guidance:
 
-| Resource | Purpose |
-|----------|---------|
-| `orchestration.md` | Agent spawning patterns |
-| `iteration-loop.md` | Loop mechanics, completion promises |
-| `state-management.md` | Unified state format |
-| `architecture-patterns.md` | Prompt-native design patterns |
+| Resource                   | Purpose                             |
+| -------------------------- | ----------------------------------- |
+| `orchestration.md`         | Agent spawning patterns             |
+| `iteration-loop.md`        | Loop mechanics, completion promises |
+| `state-management.md`      | Unified state format                |
+| `architecture-patterns.md` | Prompt-native design patterns       |
 
 ---
 
@@ -1185,62 +1237,62 @@ The devtools plugin provides framework expertise (24 skills total):
 
 ### Framework Skills
 
-| Skill | Triggers | Purpose |
-|-------|----------|---------|
-| `devtools:react` | `.tsx`, `component`, `tailwind` | React 19 with Tailwind, shadcn, TanStack |
-| `devtools:tanstack-start` | `createFileRoute`, `loader` | TanStack Start full-stack framework |
-| `devtools:drizzle` | `pgTable`, `db.select` | Drizzle ORM patterns |
-| `devtools:shadcn` | `@/components/ui`, `cn()` | shadcn/ui components |
-| `devtools:radix` | `Dialog`, `Popover` | Radix UI primitives |
+| Skill                     | Triggers                        | Purpose                                  |
+| ------------------------- | ------------------------------- | ---------------------------------------- |
+| `devtools:react`          | `.tsx`, `component`, `tailwind` | React 19 with Tailwind, shadcn, TanStack |
+| `devtools:tanstack-start` | `createFileRoute`, `loader`     | TanStack Start full-stack framework      |
+| `devtools:drizzle`        | `pgTable`, `db.select`          | Drizzle ORM patterns                     |
+| `devtools:shadcn`         | `@/components/ui`, `cn()`       | shadcn/ui components                     |
+| `devtools:radix`          | `Dialog`, `Popover`             | Radix UI primitives                      |
 
 ### API & Auth Skills
 
-| Skill | Triggers | Purpose |
-|-------|----------|---------|
-| `devtools:api` | `orpc`, `.contract.ts` | oRPC API routes with 5-file pattern |
-| `devtools:better-auth` | `better-auth`, `authClient` | Better Auth library patterns |
+| Skill                  | Triggers                    | Purpose                             |
+| ---------------------- | --------------------------- | ----------------------------------- |
+| `devtools:api`         | `orpc`, `.contract.ts`      | oRPC API routes with 5-file pattern |
+| `devtools:better-auth` | `better-auth`, `authClient` | Better Auth library patterns        |
 
 ### Testing Skills
 
-| Skill | Triggers | Purpose |
-|-------|----------|---------|
-| `devtools:vitest` | `describe`, `it`, `expect` | Unit testing patterns |
-| `devtools:playwright` | `page`, `getByRole` | E2E testing with Page Objects |
-| `devtools:tdd-typescript` | Default | RED-GREEN-REFACTOR cycle |
+| Skill                     | Triggers                   | Purpose                       |
+| ------------------------- | -------------------------- | ----------------------------- |
+| `devtools:vitest`         | `describe`, `it`, `expect` | Unit testing patterns         |
+| `devtools:playwright`     | `page`, `getByRole`        | E2E testing with Page Objects |
+| `devtools:tdd-typescript` | Default                    | RED-GREEN-REFACTOR cycle      |
 
 ### Blockchain Skills
 
-| Skill | Triggers | Purpose |
-|-------|----------|---------|
-| `devtools:solidity` | `.sol`, `contract` | Smart contract development with Foundry |
-| `devtools:viem` | `publicClient`, `walletClient` | Ethereum interactions |
-| `devtools:thegraph` | `subgraph`, `mapping.ts` | Subgraph development with AssemblyScript |
+| Skill               | Triggers                       | Purpose                                  |
+| ------------------- | ------------------------------ | ---------------------------------------- |
+| `devtools:solidity` | `.sol`, `contract`             | Smart contract development with Foundry  |
+| `devtools:viem`     | `publicClient`, `walletClient` | Ethereum interactions                    |
+| `devtools:thegraph` | `subgraph`, `mapping.ts`       | Subgraph development with AssemblyScript |
 
 ### Infrastructure Skills
 
-| Skill | Triggers | Purpose |
-|-------|----------|---------|
-| `devtools:turbo` | `turbo.json`, `monorepo` | Turborepo monorepo build system |
-| `devtools:helm` | `chart`, `values.yaml` | Kubernetes Helm charts |
-| `devtools:restate` | `ctx.run`, `ctx.sleep` | Durable execution for fault-tolerant services |
-| `devtools:git-machete` | `stacked`, `machete` | Git branch management with stacked PRs |
+| Skill                  | Triggers                 | Purpose                                       |
+| ---------------------- | ------------------------ | --------------------------------------------- |
+| `devtools:turbo`       | `turbo.json`, `monorepo` | Turborepo monorepo build system               |
+| `devtools:helm`        | `chart`, `values.yaml`   | Kubernetes Helm charts                        |
+| `devtools:restate`     | `ctx.run`, `ctx.sleep`   | Durable execution for fault-tolerant services |
+| `devtools:git-machete` | `stacked`, `machete`     | Git branch management with stacked PRs        |
 
 ### Utility Skills
 
-| Skill | Triggers | Purpose |
-|-------|----------|---------|
-| `devtools:zod` | Zod validation | Zod v4 schema patterns |
-| `devtools:pino` | `log.info`, `log.error` | Pino JSON logging |
-| `devtools:i18n` | `i18n`, `t()` | Internationalization with i18next |
-| `devtools:motion` | `animate`, `motion` | Motion (Framer Motion) animations |
-| `devtools:recharts` | `LineChart`, `BarChart` | Data visualization |
+| Skill               | Triggers                | Purpose                           |
+| ------------------- | ----------------------- | --------------------------------- |
+| `devtools:zod`      | Zod validation          | Zod v4 schema patterns            |
+| `devtools:pino`     | `log.info`, `log.error` | Pino JSON logging                 |
+| `devtools:i18n`     | `i18n`, `t()`           | Internationalization with i18next |
+| `devtools:motion`   | `animate`, `motion`     | Motion (Framer Motion) animations |
+| `devtools:recharts` | `LineChart`, `BarChart` | Data visualization                |
 
 ### Design & Debugging Skills
 
-| Skill | Purpose |
-|-------|---------|
+| Skill                        | Purpose                                                    |
+| ---------------------------- | ---------------------------------------------------------- |
 | `devtools:design-principles` | Linear/Notion-inspired minimal design - Jony Ive precision |
-| `devtools:troubleshooting` | Structured debugging workflow |
+| `devtools:troubleshooting`   | Structured debugging workflow                              |
 
 ---
 
@@ -1267,6 +1319,7 @@ Skill({ skill: "frontend-design:frontend-design" });
 **Purpose**: Browser automation with persistent page state. Navigate websites, fill forms, take screenshots, extract web data, test web apps, and automate browser workflows.
 
 **Available Tools**:
+
 - `navigate` - Go to URLs
 - `read_page` - Extract page content
 - `form_input` - Fill form fields
@@ -1275,6 +1328,8 @@ Skill({ skill: "frontend-design:frontend-design" });
 - `tabs_context_mcp` - Manage browser tabs
 
 **When to use**: Testing web applications, automating browser tasks, visual validation.
+
+> **Note**: The MCP tool prefix `mcp__claude-in-chrome__` is the internal identifier used by Claude Code. This differs from the plugin name `dev-browser` because the underlying browser automation is powered by the Claude-in-Chrome extension.
 
 ```javascript
 // Navigate to a URL
@@ -1297,6 +1352,7 @@ Users perceive 100ms as instant, 1 second as slow, 10 seconds as broken. Every o
 ### 1. Single jq Calls
 
 Bad:
+
 ```bash
 FIELD1=$(jq -r '.field1' "$FILE")
 FIELD2=$(jq -r '.field2' "$FILE")
@@ -1304,6 +1360,7 @@ FIELD3=$(jq -r '.field3' "$FILE")
 ```
 
 Good:
+
 ```bash
 read -r FIELD1 FIELD2 FIELD3 < <(jq -r '[.field1, .field2, .field3] | @tsv' "$FILE")
 ```
@@ -1311,11 +1368,13 @@ read -r FIELD1 FIELD2 FIELD3 < <(jq -r '[.field1, .field2, .field3] | @tsv' "$FI
 ### 2. Local Binary Paths
 
 Bad:
+
 ```bash
 bunx prettier --write "$FILE"  # ~200ms overhead
 ```
 
 Good:
+
 ```bash
 ./node_modules/.bin/prettier --write "$FILE"  # Direct execution
 ```
@@ -1323,6 +1382,7 @@ Good:
 ### 3. Bang-Prefix Context Gathering
 
 Bad:
+
 ```javascript
 // Multiple tool calls
 const status = Bash({ command: "git status" });
@@ -1331,6 +1391,7 @@ const diff = Bash({ command: "git diff --stat" });
 ```
 
 Good:
+
 ```markdown
 <git_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/commit-context.sh`
@@ -1340,6 +1401,7 @@ Good:
 ### 4. Parallel Agent Execution
 
 Bad:
+
 ```javascript
 // Sequential - slow
 const result1 = Task({ subagent_type: "agent1", ... });
@@ -1348,6 +1410,7 @@ const result2 = Task({ subagent_type: "agent2", ... });
 ```
 
 Good:
+
 ```javascript
 // Parallel - all in single message
 Task({ subagent_type: "agent1", run_in_background: true, ... });
@@ -1373,15 +1436,23 @@ set +e  # Continue on errors
 
 ## Installation
 
-### One-Line Install
+### Quick Install
 
-The fastest way to get started - run this in your terminal:
+The fastest way to get started:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/settlemint/agent-marketplace/main/crew/scripts/hooks/session-start/setup-plugins.sh | bash
+# Download the script
+curl -fsSL -o setup-plugins.sh https://raw.githubusercontent.com/settlemint/agent-marketplace/main/crew/scripts/hooks/session-start/setup-plugins.sh
+
+# Inspect the script (recommended)
+cat setup-plugins.sh
+
+# Run the script
+bash setup-plugins.sh
 ```
 
 This script automatically:
+
 - Adds the SettleMint, Anthropic Official, and Dev Browser marketplaces
 - Installs and updates all plugins (crew, devtools, typescript-lsp, frontend-design, dev-browser)
 - Clears plugin caches to ensure the latest versions
@@ -1440,6 +1511,7 @@ These aren't hypothetical - they're patterns we use daily to build production so
 **The ask**: "Add multi-tenant organization API with invitation flows"
 
 **Traditional approach** (weeks of work):
+
 1. Research multi-tenancy patterns
 2. Design the invitation workflow
 3. Update Drizzle schema with migrations
@@ -1548,6 +1620,7 @@ PR #47 created with full context, design decisions documented
 **The ask**: "Create production-ready Helm chart for our microservices"
 
 **Day 1 (2 hours)**:
+
 ```
 /crew:design Create Helm chart with ingress, HPA, PDB, and secrets management
 
@@ -1564,6 +1637,7 @@ PR #47 created with full context, design decisions documented
 ```
 
 **Day 2 (3 hours)**:
+
 ```
 /crew:build helm-chart --loop
 
@@ -1585,6 +1659,7 @@ PR #47 created with full context, design decisions documented
 ```
 
 **Day 3 (1 hour)**:
+
 ```
 /crew:check
 [7 review agents analyze all templates]
@@ -1627,7 +1702,7 @@ PR includes values diff for each environment
 #    - Executes tasks in batches
 #    - Runs tests after each batch
 #    - Creates fix tasks for failures
-#    - Loops until BUILD COMPLETE
+#    - Loops until <promise>BUILD COMPLETE</promise>
 
 # 5. Review code quality
 /crew:check
@@ -1686,6 +1761,7 @@ The workflow includes automated self-improvement:
 ### Skill Triggers
 
 Skills automatically activate based on context:
+
 - Editing a `.sol` file → `devtools:solidity` skill loads
 - Running `git commit` → suggests `/crew:git:commit`
 - Test failures → relevant testing skill activates
@@ -1693,6 +1769,7 @@ Skills automatically activate based on context:
 ### Hook Feedback
 
 PostToolUse hooks provide immediate feedback:
+
 - Lint errors surfaced instantly
 - Style violations flagged
 - Best practices suggested
@@ -1722,4 +1799,4 @@ MIT License - See [LICENSE](https://github.com/settlemint/agent-marketplace/blob
 
 ---
 
-*Built with the Agent Native Development Workflow by [SettleMint](https://settlemint.com)*
+_Built with the Agent Native Development Workflow by [SettleMint](https://settlemint.com)_
