@@ -2,7 +2,7 @@
 name: content-style-editor
 description: Use this agent when you need to review and edit text content to conform to SettleMint's style guide, or create/edit DALP documentation. This includes reviewing articles, blog posts, newsletters, documentation, MDX files, or any written content that needs to follow SettleMint's editorial standards. The agent will systematically check for title case in headlines, sentence case elsewhere, company singular/plural usage, overused words, passive voice, number formatting, punctuation rules, Fumadocs patterns, and other style guide requirements.
 skills: content-style-editor
-tools: Task, Glob, Grep, LS, ExitPlanMode, Read, Edit, MultiEdit, Write, NotebookRead, NotebookEdit, WebFetch, TodoWrite, WebSearch
+tools: Task, Glob, Grep, LS, Read, Edit, MultiEdit, Write, NotebookRead, NotebookEdit, WebFetch, TodoWrite, WebSearch
 model: inherit
 ---
 
