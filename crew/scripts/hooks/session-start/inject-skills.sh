@@ -29,8 +29,8 @@ cat <<'EOF'
 
 ### Best Practices
 - **Git commits**: Use conventional format `type(scope): description`
-- **CI checks**: Use `/crew:ci` to run in background (keeps main thread free)
-- **Planning**: Use `/crew:design` before implementing complex features
+- **CI checks**: Use Skill(skill: "crew:ci") to run in background (keeps main thread free)
+- **Planning**: Use Skill(skill: "crew:design") before implementing complex features
 - **Progress**: Use TodoWrite to track multi-step tasks
 EOF
 
