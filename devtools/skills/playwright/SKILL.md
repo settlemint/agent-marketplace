@@ -1,7 +1,8 @@
 ---
 name: playwright
 description: Playwright E2E testing with Page Object pattern, web-first assertions, and proper locators. Triggers on playwright, e2e, page object, getByRole.
-triggers: ["playwright", "e2e", "page object", "getByRole", "getByLabel", "getByTestId"]
+triggers:
+  ["playwright", "e2e", "page object", "getByRole", "getByLabel", "getByTestId"]
 ---
 
 <objective>
@@ -18,22 +19,24 @@ MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 ```typescript
 // Locator patterns
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/microsoft/playwright",
-  topic: "getByRole getByLabel getByTestId locator"
-})
+  libraryId: "/microsoft/playwright",
+  query: "How do I use getByRole, getByLabel, getByTestId, and locator?",
+});
 
 // Assertions
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/microsoft/playwright",
-  topic: "expect toBeVisible toHaveText toContainText"
-})
+  libraryId: "/microsoft/playwright",
+  query: "How do I use expect with toBeVisible, toHaveText, and toContainText?",
+});
 
 // Page interactions
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/microsoft/playwright",
-  topic: "click fill check waitFor"
-})
+  libraryId: "/microsoft/playwright",
+  query: "How do I use click, fill, check, and waitFor?",
+});
 ```
+
+**Note:** Context7 v2 uses server-side filtering. Use descriptive natural language queries.
 </mcp_first>
 
 <quick_start>
@@ -49,7 +52,9 @@ class LoginPage extends BasePage {
   }
 
   async verifyLoggedIn() {
-    await expect(this.page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+    await expect(
+      this.page.getByRole("heading", { name: "Dashboard" }),
+    ).toBeVisible();
   }
 }
 ```
@@ -74,6 +79,7 @@ test.describe.serial("Login flow", () => {
   });
 });
 ```
+
 </quick_start>
 
 <locator_priority>
@@ -87,17 +93,18 @@ Use locators in this order (most to least preferred):
 
 ```typescript
 // ✅ Preferred
-page.getByRole("button", { name: "Submit" })
-page.getByLabel("Email")
-page.getByText("Welcome")
+page.getByRole("button", { name: "Submit" });
+page.getByLabel("Email");
+page.getByText("Welcome");
 
 // ⚠️ Use when needed
-page.getByTestId("submit-button")
+page.getByTestId("submit-button");
 
 // ❌ Avoid
-page.locator(".btn-primary")
-page.locator("#submit")
+page.locator(".btn-primary");
+page.locator("#submit");
 ```
+
 </locator_priority>
 
 <assertions>
@@ -113,12 +120,14 @@ await expect(locator).toBeChecked();
 await expect(page).toHaveURL(/pattern/);
 await expect(page).toHaveTitle("Title");
 ```
+
 </assertions>
 
 <constraints>
 **Banned:** Selectors in test files (use page objects), `isVisible()`, CSS class selectors, `page.waitForTimeout()`, `.only`/`.skip` in commits
 
 **Required:**
+
 - Page Objects extend `BasePage`
 - `test.describe.serial()` for related tests
 - Web-first assertions (auto-wait/retry)
@@ -138,9 +147,10 @@ npx playwright show-report             # View HTML report
 </commands>
 
 <success_criteria>
+
 - [ ] Context7 docs fetched for current API
 - [ ] Page objects encapsulate selectors
 - [ ] Web-first assertions used
 - [ ] Tests are isolated
 - [ ] Proper locator strategy
-</success_criteria>
+      </success_criteria>

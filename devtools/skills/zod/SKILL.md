@@ -24,23 +24,24 @@ MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 ```typescript
 // Zod v4 schema patterns
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/colinhacks/zod",
-  topic: "z.object z.string z.number",
+  libraryId: "/colinhacks/zod",
+  query: "How do I use z.object, z.string, and z.number in Zod v4?",
 });
 
 // .meta() usage (v4 specific)
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/colinhacks/zod",
-  topic: "meta description examples",
+  libraryId: "/colinhacks/zod",
+  query: "How do I use .meta() for description and examples in Zod v4?",
 });
 
 // Transforms and refinements
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/colinhacks/zod",
-  topic: "transform refine superRefine",
+  libraryId: "/colinhacks/zod",
+  query: "How do I use transform, refine, and superRefine?",
 });
 ```
 
+**Note:** Context7 v2 uses server-side filtering. Use descriptive natural language queries.
 </mcp_first>
 
 <quick_start>

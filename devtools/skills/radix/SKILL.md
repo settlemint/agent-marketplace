@@ -1,7 +1,17 @@
 ---
 name: radix
 description: Radix UI primitives for accessible React components. Covers dialogs, dropdowns, popovers, and form controls. Triggers on radix, Dialog, Popover, DropdownMenu.
-triggers: ["radix", "@radix-ui", "Dialog", "Popover", "DropdownMenu", "Select", "Tooltip", "Tabs"]
+triggers:
+  [
+    "radix",
+    "@radix-ui",
+    "Dialog",
+    "Popover",
+    "DropdownMenu",
+    "Select",
+    "Tooltip",
+    "Tabs",
+  ]
 ---
 
 <objective>
@@ -18,22 +28,24 @@ MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 ```typescript
 // Radix primitives
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/radix-ui/primitives",
-  topic: "Dialog Trigger Content"
-})
+  libraryId: "/radix-ui/primitives",
+  query: "How do I use Dialog with Trigger and Content?",
+});
 
 // Form controls
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/radix-ui/primitives",
-  topic: "Select Checkbox RadioGroup"
-})
+  libraryId: "/radix-ui/primitives",
+  query: "How do I use Select, Checkbox, and RadioGroup?",
+});
 
 // Accessibility
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/radix-ui/primitives",
-  topic: "accessibility aria keyboard"
-})
+  libraryId: "/radix-ui/primitives",
+  query: "How do I handle accessibility, aria, and keyboard navigation?",
+});
 ```
+
+**Note:** Context7 v2 uses server-side filtering. Use descriptive natural language queries.
 </mcp_first>
 
 <quick_start>
@@ -121,6 +133,7 @@ function MySelect() {
   );
 }
 ```
+
 </quick_start>
 
 <common_components>
@@ -148,7 +161,7 @@ const [open, setOpen] = useState(false);
 
 <Dialog.Root open={open} onOpenChange={setOpen}>
   {/* ... */}
-</Dialog.Root>
+</Dialog.Root>;
 ```
 
 **asChild pattern:**
@@ -165,9 +178,7 @@ const [open, setOpen] = useState(false);
 ```tsx
 <Dialog.Portal>
   <Dialog.Overlay />
-  <Dialog.Content>
-    {/* Content renders outside parent DOM */}
-  </Dialog.Content>
+  <Dialog.Content>{/* Content renders outside parent DOM */}</Dialog.Content>
 </Dialog.Portal>
 ```
 
@@ -182,8 +193,9 @@ const MyTrigger = forwardRef((props, ref) => (
 
 <Dialog.Trigger asChild>
   <MyTrigger />
-</Dialog.Trigger>
+</Dialog.Trigger>;
 ```
+
 </patterns>
 
 <constraints>
@@ -194,16 +206,18 @@ const MyTrigger = forwardRef((props, ref) => (
 - Handle keyboard navigation (built-in)
 
 **Accessibility:**
+
 - Always include `Title` for dialogs
 - Use `Description` for additional context
 - Test with keyboard navigation
 - Test with screen readers
-</constraints>
+  </constraints>
 
 <success_criteria>
+
 - [ ] Context7 docs fetched for current API
 - [ ] Uses `asChild` for custom triggers
 - [ ] Portal used for floating content
 - [ ] Accessible labels provided
 - [ ] Styled with Tailwind (not inline)
-</success_criteria>
+      </success_criteria>

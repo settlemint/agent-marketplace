@@ -27,23 +27,24 @@ MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 ```typescript
 // Test patterns
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/vitest-dev/vitest",
-  topic: "describe it expect beforeEach",
+  libraryId: "/vitest-dev/vitest",
+  query: "How do I use describe, it, expect, and beforeEach?",
 });
 
 // Mocking
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/vitest-dev/vitest",
-  topic: "vi.mock vi.fn vi.spyOn",
+  libraryId: "/vitest-dev/vitest",
+  query: "How do I use vi.mock, vi.fn, and vi.spyOn for mocking?",
 });
 
 // Async testing
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/vitest-dev/vitest",
-  topic: "async await rejects resolves",
+  libraryId: "/vitest-dev/vitest",
+  query: "How do I test async code with rejects and resolves?",
 });
 ```
 
+**Note:** Context7 v2 uses server-side filtering. Use descriptive natural language queries.
 </mcp_first>
 
 <quick_start>

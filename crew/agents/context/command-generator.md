@@ -80,13 +80,10 @@ Read({file_path: ".claude/commands/workflows/plan.md"})
    - UI interaction points
 4. Use Context7 for framework patterns if command involves specific libraries:
    ```javascript
-   mcp__plugin_context7_context7__get -
-     library -
-     docs({
-       context7CompatibleLibraryID: "/library/id",
-       topic: "relevant-pattern",
-       mode: "code",
-     });
+   mcp__plugin_crew_context7__getContext({
+     query: "How do I implement {relevant-pattern}?",
+     libraryId: "/library/id", // e.g., "/tanstack/query"
+   });
    ```
 
 ## Step 3: Propose Command Structure

@@ -1,7 +1,15 @@
 ---
 name: tanstack-start
 description: TanStack Start full-stack React framework. Covers file-based routing, SSR, data loading, and server functions. Triggers on tanstack start, createFileRoute, loader.
-triggers: ["tanstack start", "createFileRoute", "createRootRoute", "loader", "serverFn", "ssr"]
+triggers:
+  [
+    "tanstack start",
+    "createFileRoute",
+    "createRootRoute",
+    "loader",
+    "serverFn",
+    "ssr",
+  ]
 ---
 
 <objective>
@@ -18,22 +26,24 @@ MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 ```typescript
 // TanStack Start patterns
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/tanstack/start",
-  topic: "createFileRoute loader serverFn"
-})
+  libraryId: "/tanstack/start",
+  query: "How do I use createFileRoute with loader and serverFn?",
+});
 
 // SSR and streaming
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/tanstack/start",
-  topic: "ssr streaming deferred"
-})
+  libraryId: "/tanstack/start",
+  query: "How do I implement SSR, streaming, and deferred loading?",
+});
 
 // Server functions
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/tanstack/start",
-  topic: "createServerFn server actions"
-})
+  libraryId: "/tanstack/start",
+  query: "How do I use createServerFn and server actions?",
+});
 ```
+
+**Note:** Context7 v2 uses server-side filtering. Use descriptive natural language queries.
 </mcp_first>
 
 <quick_start>
@@ -92,6 +102,7 @@ const getUser = createServerFn({ method: "GET" })
 // Usage in component
 const user = await getUser({ data: userId });
 ```
+
 </quick_start>
 
 <routing_patterns>
@@ -144,6 +155,7 @@ function ProductsPage() {
   const { page, search } = Route.useSearch();
 }
 ```
+
 </routing_patterns>
 
 <data_loading>
@@ -190,9 +202,11 @@ function AnalyticsPage() {
   );
 }
 ```
+
 </data_loading>
 
 <file_structure>
+
 ```
 src/
 ├── routes/
@@ -210,6 +224,7 @@ src/
 ├── router.tsx               # Router configuration
 └── entry-server.tsx         # Server entry
 ```
+
 </file_structure>
 
 <constraints>
@@ -220,15 +235,17 @@ src/
 - Handle errors with `errorComponent`
 
 **Naming:**
+
 - Layout routes: prefix with `_` (e.g., `_authenticated.tsx`)
 - Dynamic params: prefix with `$` (e.g., `$userId.tsx`)
 - Catch-all: `[...].tsx`
-</constraints>
+  </constraints>
 
 <success_criteria>
+
 - [ ] Context7 docs fetched for current API
 - [ ] Routes use `createFileRoute`
 - [ ] Loaders fetch data server-side
 - [ ] Search params validated with Zod
 - [ ] Layouts use `Outlet` for children
-</success_criteria>
+      </success_criteria>

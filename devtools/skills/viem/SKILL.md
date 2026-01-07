@@ -1,7 +1,20 @@
 ---
 name: viem
 description: Viem blockchain client patterns for Ethereum interactions, transactions, signing, encoding, and smart contract calls. Triggers on viem, publicClient, walletClient, chain, abi.
-triggers: ["viem", "ox", "publicClient", "walletClient", "transport", "chain", "abi", "transaction", "signature", "encode", "decode"]
+triggers:
+  [
+    "viem",
+    "ox",
+    "publicClient",
+    "walletClient",
+    "transport",
+    "chain",
+    "abi",
+    "transaction",
+    "signature",
+    "encode",
+    "decode",
+  ]
 ---
 
 <objective>
@@ -18,28 +31,31 @@ MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 ```typescript
 // Client patterns
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/wevm/viem",
-  topic: "createPublicClient createWalletClient"
-})
+  libraryId: "/wevm/viem",
+  query: "How do I use createPublicClient and createWalletClient?",
+});
 
 // Contract interactions
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/wevm/viem",
-  topic: "readContract writeContract simulateContract"
-})
+  libraryId: "/wevm/viem",
+  query: "How do I use readContract, writeContract, and simulateContract?",
+});
 
 // Signing
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/wevm/viem",
-  topic: "signMessage signTypedData EIP-712"
-})
+  libraryId: "/wevm/viem",
+  query: "How do I use signMessage and signTypedData with EIP-712?",
+});
 
 // Encoding
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/wevm/viem",
-  topic: "encodeFunctionData decodeFunctionResult encodeAbiParameters"
-})
+  libraryId: "/wevm/viem",
+  query:
+    "How do I use encodeFunctionData, decodeFunctionResult, and encodeAbiParameters?",
+});
 ```
+
+**Note:** Context7 v2 uses server-side filtering. Use descriptive natural language queries.
 </mcp_first>
 
 <quick_start>
@@ -85,6 +101,7 @@ const hash = await walletClient.writeContract({
 
 const receipt = await publicClient.waitForTransactionReceipt({ hash });
 ```
+
 </quick_start>
 
 <client_types>
@@ -102,10 +119,10 @@ const receipt = await publicClient.waitForTransactionReceipt({ hash });
 ```typescript
 import { parseEther, formatEther, parseUnits, formatUnits } from "viem";
 
-parseEther("1.5");           // 1500000000000000000n
-formatEther(1500000000000000000n);  // "1.5"
-parseUnits("100", 6);        // 100000000n (USDC)
-formatUnits(100000000n, 6);  // "100"
+parseEther("1.5"); // 1500000000000000000n
+formatEther(1500000000000000000n); // "1.5"
+parseUnits("100", 6); // 100000000n (USDC)
+formatUnits(100000000n, 6); // "100"
 ```
 
 **Address utilities:**
@@ -113,25 +130,28 @@ formatUnits(100000000n, 6);  // "100"
 ```typescript
 import { getAddress, isAddress } from "viem";
 
-getAddress("0xabc...");  // Checksummed address
-isAddress("0x...");      // Validates format
+getAddress("0xabc..."); // Checksummed address
+isAddress("0x..."); // Validates format
 ```
+
 </utilities>
 
 <constraints>
 **Banned:** SSRF protection for config-sourced URLs (they're developer-controlled)
 
 **Required:**
+
 - Lazy initialization for chain resolution
 - Client caching by network name
 - WebSocket cleanup on destroy/refresh
 - Type-safe ABI interactions
-</constraints>
+  </constraints>
 
 <success_criteria>
+
 - [ ] Context7 docs fetched for current API
 - [ ] Uses lazy chain resolution
 - [ ] Caches clients by network name
 - [ ] Type-safe ABI interactions
 - [ ] Proper error handling for blockchain ops
-</success_criteria>
+      </success_criteria>

@@ -26,52 +26,54 @@ This skill depends heavily on Context7 MCP for up-to-date API documentation. Rea
 </mcp_first>
 
 <quick_start>
-**Step 1: Load Context7 MCP tools**
+**Step 1: Load Context7 MCP tool**
 
 ```
-MCPSearch({ query: "select:mcp__plugin_devtools_context7__resolve-library-id" })
 MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 ```
 
-**Step 2: Fetch docs for your task**
+**Step 2: Fetch docs for your task (use natural language queries)**
 
 ```typescript
 // React 19 patterns
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/reactjs/react.dev",
-  topic: "use hook server components actions",
+  libraryId: "/reactjs/react.dev",
+  query:
+    "How do I use the new use hook, server components, and actions in React 19?",
 });
 
 // Tailwind v4
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/tailwindlabs/tailwindcss",
-  topic: "v4 theme colors",
+  libraryId: "/tailwindlabs/tailwindcss",
+  query: "How do I configure theme colors in Tailwind v4?",
 });
 
 // TanStack Router
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/tanstack/router",
-  topic: "createFileRoute useNavigate",
+  libraryId: "/tanstack/router",
+  query: "How do I use createFileRoute and useNavigate?",
 });
 
 // TanStack Query
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/tanstack/query",
-  topic: "useQuery useMutation queryClient",
+  libraryId: "/tanstack/query",
+  query: "How do I use useQuery, useMutation, and queryClient?",
 });
 
 // TanStack Form
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/tanstack/form",
-  topic: "useForm field validation",
+  libraryId: "/tanstack/form",
+  query: "How do I use useForm with field validation?",
 });
 
 // TanStack Table
 mcp__context7__query_docs({
-  context7CompatibleLibraryID: "/tanstack/table",
-  topic: "useReactTable columnDef",
+  libraryId: "/tanstack/table",
+  query: "How do I use useReactTable with columnDef?",
 });
 ```
+
+**Note:** Context7 v2 uses server-side filtering for 65% fewer tokens. Pass descriptive natural language queries for best results.
 
 **Step 3: Implement with verified patterns**
 
