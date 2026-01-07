@@ -2,7 +2,7 @@
 name: crew:design
 description: Create validated implementation plans with research
 argument-hint: "[feature description, bug report, or improvement idea]"
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill, EnterPlanMode, ExitPlanMode
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
 <prerequisite>
@@ -31,7 +31,6 @@ This provides: `<pattern name="research-agents"/>`, `<pattern name="task-file"/>
 <constraints>
 
 - **NEVER CODE** - This command researches and writes plans only
-- **EnterPlanMode first** - Call before any research
 - **Branch early** - Set up before research so state writes to correct directory
 - **9 agents + Codex** - Launch ALL research in single message
 - **spec-flow-analyzer last** - Runs after all research collected
@@ -56,12 +55,6 @@ AskUserQuestion({
     multiSelect: false
   }]
 });
-```
-</phase>
-
-<phase name="enter-plan-mode">
-```javascript
-EnterPlanMode();
 ```
 </phase>
 
@@ -164,11 +157,7 @@ Bash({ command: `mkdir -p .claude/branches/${slugBranch}/tasks` });
 Story labels: `setup`, `found`, `us1`, `us2`, `us3`, `polish`
 </phase>
 
-<phase name="exit-plan-mode">
-```javascript
-ExitPlanMode();
-```
-
+<phase name="present-plan">
 Output:
 
 ```
@@ -191,7 +180,6 @@ Skill({ skill: "crew:build", args: "<slug>" });
 
 <success_criteria>
 
-- [ ] EnterPlanMode called at start
 - [ ] Branch created before research
 - [ ] All 9 research agents launched in single message
 - [ ] Codex MCP called directly for synthesis
@@ -201,6 +189,6 @@ Skill({ skill: "crew:build", args: "<slug>" });
 - [ ] Plan contains all 6 dimension analyses
 - [ ] Task files follow naming convention
 - [ ] Each task has acceptance criteria
-- [ ] ExitPlanMode called at end
+- [ ] Plan presented to user before offering to build
 
 </success_criteria>
