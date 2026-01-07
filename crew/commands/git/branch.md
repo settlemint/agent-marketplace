@@ -1,8 +1,13 @@
 ---
 name: crew:git:branch
 description: Create a feature branch from main
-allowed-tools: Bash(git checkout:*), Bash(git fetch:*), Bash(git branch:*), Bash(git machete:*)
 ---
+
+<constraints>
+
+**CRITICAL: NEVER output plain text questions. Use AskUserQuestion tool for all user choices.**
+
+</constraints>
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/branch-context.sh`
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`

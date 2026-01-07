@@ -1,7 +1,6 @@
 ---
 name: crew:git:commit-and-push
 description: Create a conventional commit and push to origin
-allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*), Bash(git diff:*), Bash(git reset:*), Bash(git push:*)
 ---
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/commit-context.sh`

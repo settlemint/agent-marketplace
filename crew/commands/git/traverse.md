@@ -1,8 +1,13 @@
 ---
 name: crew:git:traverse
 description: Sync all stacked branches with parents and remotes
-allowed-tools: Bash(git machete:*), Bash(git fetch:*), Bash(git rebase:*), Bash(git push:*)
 ---
+
+<constraints>
+
+**CRITICAL: NEVER output plain text questions. Use AskUserQuestion tool for all user choices.**
+
+</constraints>
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 

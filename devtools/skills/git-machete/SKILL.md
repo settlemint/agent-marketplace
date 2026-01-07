@@ -19,7 +19,7 @@ Manage complex branch hierarchies with git-machete for stacked PR workflows. Pro
 <essential_principles>
 **Branch Layout is the Source of Truth**
 
-The `.git/machete` file defines parent-child relationships between branches. Indentation represents hierarchy:
+The machete file defines parent-child relationships between branches. Indentation represents hierarchy:
 
 ```text
 main
@@ -27,6 +27,15 @@ main
         feature-part-1
         feature-part-2
     another-feature
+```
+
+**Worktree Support**
+
+In worktrees, the machete file is in the main repo's `.git` directory, not the worktree:
+
+```bash
+# Get the correct machete file path (works in worktrees too)
+machete_file="$(git rev-parse --git-common-dir)/machete"
 ```
 
 **Status Colors Indicate Sync State**
@@ -43,6 +52,32 @@ Always use rebase (not merge) when syncing stacked branches. Merging creates tan
 
 Merge PRs from top-most (closest to main) first. This prevents big-ball-of-code PRs at the end of the stack.
 </essential_principles>
+
+<constraints>
+
+**NEVER use shell redirects to edit the machete file.** The following patterns WILL FAIL:
+
+```bash
+# WRONG - these will fail in various shells
+cat > .git/machete << 'EOF'
+echo "..." > .git/machete
+printf '...' >| /path/machete
+```
+
+**ALWAYS use the Write tool or git machete edit:**
+
+```bash
+# Correct: Use git machete commands
+git machete discover           # Auto-detect layout
+git machete edit               # Opens in editor
+git machete add --onto main    # Add branch to layout
+
+# Or use the Write tool with the correct path
+machete_file="$(git rev-parse --git-common-dir)/machete"
+# Then use Write tool, not shell redirects
+```
+
+</constraints>
 
 <quick_start>
 **Setup a new stack:**

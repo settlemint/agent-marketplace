@@ -1,7 +1,6 @@
 ---
 name: crew:git:undo
 description: Undo last commit (keeps changes staged)
-allowed-tools: Bash(git reset:*), Bash(git status:*)
 ---
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/undo-context.sh`

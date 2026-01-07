@@ -1,5 +1,42 @@
 <patterns>
 
+<pattern name="user-questions-constraint">
+**MANDATORY: ALWAYS use AskUserQuestion tool for user choices.**
+
+NEVER output plain text questions with options like:
+
+```
+What would you like to do?
+- Option 1
+- Option 2
+```
+
+ALWAYS use the AskUserQuestion tool instead:
+
+```javascript
+AskUserQuestion({
+  questions: [
+    {
+      question: "What would you like to do?",
+      header: "Action",
+      options: [
+        { label: "Option 1", description: "What this does" },
+        { label: "Option 2", description: "Alternative" },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
+```
+
+This applies to:
+
+- End-of-workflow "what next?" prompts
+- Decision points during execution
+- Clarification requests
+- All user-facing choices
+  </pattern>
+
 <pattern name="spawn-batch">
 Launch max 6 parallel agents in SINGLE message:
 
