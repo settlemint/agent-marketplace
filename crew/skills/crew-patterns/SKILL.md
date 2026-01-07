@@ -38,6 +38,7 @@ Use <pattern name="test-runner"/> after each batch.
 | `ask-user`                  | AskUserQuestion templates                  |
 | `task-file`                 | Task file frontmatter format               |
 | `collect-results`           | TaskOutput collection pattern              |
+| `always-works`              | Verification sanity checks for builds      |
 
 </routing>
 
@@ -52,6 +53,7 @@ Never output plain text questions with bullet options. Always use AskUserQuestio
 <references>
 
 - `references/patterns.md` - All pattern definitions
+- `references/always-works-verification.md` - Build verification sanity checks
 
 </references>
 
