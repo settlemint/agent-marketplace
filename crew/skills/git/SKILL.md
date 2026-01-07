@@ -22,6 +22,10 @@ Git workflow guidance: conventional commits, branch naming, PR workflows.
 | Commit format | `references/conventions.md` |
 | Branch naming | `references/conventions.md` |
 | PR workflow   | `references/conventions.md` |
+| Feature PR    | `templates/pr-feature.md`   |
+| Bug fix PR    | `templates/pr-fix.md`       |
+| Refactor PR   | `templates/pr-refactor.md`  |
+| Quick PR      | `templates/pr-default.md`   |
 
 </routing>
 
