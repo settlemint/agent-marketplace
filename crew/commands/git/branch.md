@@ -1,7 +1,7 @@
 ---
 name: crew:git:branch
 description: Create a feature branch from main
-allowed-tools: Bash(git checkout:*), Bash(git fetch:*), Bash(git branch:*), Bash(git machete:*)
+allowed-tools: Bash(git checkout:*), Bash(git fetch:*), Bash(git branch:*), Bash(git machete:*), AskUserQuestion
 ---
 
 <constraints>

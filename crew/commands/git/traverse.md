@@ -1,7 +1,7 @@
 ---
 name: crew:git:traverse
 description: Sync all stacked branches with parents and remotes
-allowed-tools: Bash(git machete:*), Bash(git fetch:*), Bash(git rebase:*), Bash(git push:*)
+allowed-tools: Bash(git machete:*), Bash(git fetch:*), Bash(git rebase:*), Bash(git push:*), AskUserQuestion
 ---
 
 <constraints>

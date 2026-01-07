@@ -16,6 +16,7 @@ This provides: `<pattern name="user-questions-constraint"/>`.
 </prerequisite>
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/workflow/restart-context.sh`
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 
 <constraints>
 
@@ -75,7 +76,7 @@ AskUserQuestion({
         },
         {
           label: "Clean branches",
-          description: "Remove stale/merged branches",
+          description: "Remove merged branches from the git-machete stack",
         },
         { label: "Sync stack", description: "Traverse and sync branch stack" },
       ],
