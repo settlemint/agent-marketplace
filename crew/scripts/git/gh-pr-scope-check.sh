@@ -95,6 +95,8 @@ if [[ $NEEDS_UPDATE == "true" ]]; then
 	echo "gh pr edit $PR_NUMBER --title \"new title\" --body \"new body\""
 	echo '```'
 	echo ""
+	echo "⚠️  **Preserve any git-machete generated sections** (<!-- start git-machete generated --> ... <!-- end git-machete generated -->)"
+	echo ""
 	echo "Or use AskUserQuestion to confirm if PR description needs updating."
 fi
 
