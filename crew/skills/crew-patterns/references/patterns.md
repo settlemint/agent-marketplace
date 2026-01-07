@@ -98,11 +98,14 @@ Capture output to a temp file to:
 LOG=$(mktemp /tmp/${cmd}-XXXXXX.log)
 echo "Output will be logged to: $LOG"
 
-# Run command, capture everything
+# Run command, capture everything (pipefail ensures we get command's exit code, not tee's)
+set -o pipefail
 ${command} 2>&1 | tee $LOG
+EXIT_CODE=$?
+set +o pipefail
 
 # Parse results from file
-if [ $? -eq 0 ]; then
+if [ $EXIT_CODE -eq 0 ]; then
   echo "SUCCESS - see $LOG for details"
 else
   echo "FAILED - analyzing $LOG..."
