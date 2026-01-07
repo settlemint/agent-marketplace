@@ -166,21 +166,95 @@ Story labels: `setup`, `found`, `us1`, `us2`, `us3`, `polish`
 </phase>
 
 <phase name="present-plan">
-Output:
+**Print the full plan content:**
+
+```javascript
+// Read and output the entire plan file
+const planContent = Read({ file_path: `.claude/plans/${slug}.md` });
+// Output the plan content directly to the user (not a summary)
+```
+
+Output the complete plan content followed by:
 
 ```
-Plan approved. To start building, run: /crew:build
-
 Files created:
 - Plan: .claude/plans/<slug>.md
 - Tasks: .claude/branches/<branch>/tasks/*.md (X tasks)
 ```
 
-**If user confirms to start building:**
+**Then ask user to continue:**
 
 ```javascript
-Skill({ skill: "crew:build", args: "<slug>" });
+AskUserQuestion({
+  questions: [
+    {
+      question: "Ready to start building this plan?",
+      header: "Next step",
+      options: [
+        {
+          label: "Start building",
+          description: "Run /crew:build to implement the plan",
+        },
+        {
+          label: "Edit plan first",
+          description: "Make changes before building",
+        },
+        { label: "Just save", description: "Save the plan for later" },
+      ],
+      multiSelect: false,
+    },
+    {
+      question: "Add this branch to the machete stack?",
+      header: "Stacking",
+      options: [
+        {
+          label: "Stack on main",
+          description: "Add branch to stack with main as parent (Recommended)",
+        },
+        {
+          label: "Stack on current",
+          description: "Add branch stacked on the current parent branch",
+        },
+        {
+          label: "No stacking",
+          description: "Keep branch independent, not in machete stack",
+        },
+      ],
+      multiSelect: false,
+    },
+    {
+      question: "Enable iteration loop during build?",
+      header: "Loop mode",
+      options: [
+        {
+          label: "With loop",
+          description: "Iterate until all tasks pass CI checks (Recommended)",
+        },
+        {
+          label: "Single pass",
+          description: "Run build once without automatic iteration",
+        },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
 ```
+
+**Based on responses:**
+
+Stacking (execute first if building):
+
+- "Stack on main" → `Bash({ command: "git machete add --onto main" });`
+- "Stack on current" → `Bash({ command: "git machete add" });` (uses current parent)
+- "No stacking" → No machete action
+
+Next step:
+
+- "Start building" + "With loop" → `Skill({ skill: "crew:build", args: "<slug> --loop" });`
+- "Start building" + "Single pass" → `Skill({ skill: "crew:build", args: "<slug>" });`
+- "Edit plan first" → Tell user to edit `.claude/plans/<slug>.md` and run `/crew:build` when ready
+- "Just save" → Confirm plan saved, no further action
 
 </phase>
 
@@ -197,6 +271,7 @@ Skill({ skill: "crew:build", args: "<slug>" });
 - [ ] Plan contains all 6 dimension analyses
 - [ ] Task files follow naming convention
 - [ ] Each task has acceptance criteria
-- [ ] Plan presented to user before offering to build
+- [ ] Full plan content printed to user (not just summary)
+- [ ] AskUserQuestion used to offer building option
 
 </success_criteria>
