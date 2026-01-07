@@ -147,8 +147,8 @@ Use `<pattern name="large-output"/>` to capture full results:
 
 ```bash
 cd $(git rev-parse --show-toplevel)
-LOG_CI=$(mktemp /tmp/ci-final-XXXXXX.log)
-LOG_INT=$(mktemp /tmp/integration-XXXXXX.log)
+LOG_CI=/tmp/ci-final-$$.log
+LOG_INT=/tmp/integration-$$.log
 
 bun run ci 2>&1 | tee $LOG_CI
 bun run test:integration 2>&1 | tee $LOG_INT

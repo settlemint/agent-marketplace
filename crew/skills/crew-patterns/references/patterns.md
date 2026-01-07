@@ -65,7 +65,7 @@ Task({
   prompt: `Run tests with output captured to temp file (see large-output pattern):
 
 1. Create log file:
-   LOG=$(mktemp /tmp/test-run-XXXXXX.log)
+   LOG=/tmp/test-run-$$.log
    echo "Log file: $LOG"
 
 2. Run tests with full output:
