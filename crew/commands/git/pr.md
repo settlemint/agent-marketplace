@@ -84,7 +84,45 @@ gh api repos/{owner}/{repo}/collaborators --jq '.[].login' | head -10
 git log --pretty=format:"%ae" --diff-filter=M -- $(git diff --name-only origin/main..HEAD) | sort | uniq -c | sort -rn | head -5
 ```
 
-6. Ask PR details:
+6. **Check stacking (if branch not in machete layout):**
+
+   If `<stack_context>` shows "is NOT in machete layout", ask about stacking FIRST:
+
+```javascript
+// Get available parent branches from machete status or git branches
+// Prioritize: open PRs, then branches with recent activity
+const parentOptions = [
+  { label: "main", description: "Stack directly on main branch" },
+  // Add other branches from machete layout or open PRs
+  // e.g., { label: "feat/auth-v2", description: "PR #5097: Auth improvements" }
+];
+
+AskUserQuestion({
+  questions: [
+    {
+      question: "Add this branch to a stack?",
+      header: "Stacking",
+      options: [
+        { label: "No", description: "Create standalone PR against main" },
+        ...parentOptions.slice(0, 3), // Show available parent branches
+      ],
+      multiSelect: false,
+    },
+  ],
+});
+```
+
+If user selects a parent branch (not "No"), run:
+
+```bash
+git machete add $(git branch --show-current) --onto <selected-parent>
+```
+
+**Note:** After PR is created, step 12 will call `crew:git:update-pr` which runs
+`git machete github update-pr-descriptions --related` to update all parent PRs
+with the new stack chain.
+
+7. Ask PR details:
 
 ```javascript
 // Build reviewer options from GitHub collaborators and recent editors
@@ -130,7 +168,7 @@ AskUserQuestion({
 });
 ```
 
-7. Generate PR body using selected template:
+8. Generate PR body using selected template:
    - **Summary**: Synthesize from commits and plan
    - **Why**: Pull from plan's motivation/rationale section
    - **Design decisions**: Pull from plan's approach/considerations
@@ -139,7 +177,7 @@ AskUserQuestion({
    - Remove template HTML comments (`<!-- ... -->`) but preserve machete markers
    - Keep checklist items
 
-8. **Create PR:**
+9. **Create PR:**
 
 **If machete-managed:**
 
@@ -158,7 +196,7 @@ EOF
 )" [--draft]
 ```
 
-9. **Apply reviewers (if selected):**
+10. **Apply reviewers (if selected):**
 
 ```bash
 # Get PR number
@@ -168,7 +206,7 @@ PR_NUM=$(gh pr view --json number -q '.number')
 gh pr edit $PR_NUM --add-reviewer "reviewer1,reviewer2"
 ```
 
-10. **Enable auto-merge (if selected):**
+11. **Enable auto-merge (if selected):**
 
 ```bash
 # Enable auto-merge with squash
@@ -177,13 +215,13 @@ gh pr merge $PR_NUM --auto --squash
 
 Note: Auto-merge requires repository to have this feature enabled in settings.
 
-11. **Update PR annotations:**
+12. **Update PR annotations:**
 
 ```javascript
 Skill({ skill: "crew:git:update-pr" });
 ```
 
-12. Return PR URL.
+13. Return PR URL.
 
 </process>
 
