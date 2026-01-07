@@ -153,6 +153,13 @@ git machete slide-out --no-rebase feature-x
 git machete traverse -W -y
 ```
 
+Or using crew commands:
+
+```javascript
+Skill({ skill: "crew:git:slide-out" });
+Skill({ skill: "crew:git:traverse" });
+```
+
 **Scenario: Multiple branches merged:**
 
 ```bash
@@ -166,7 +173,26 @@ git machete traverse -W -y
 git machete slide-out --delete feature-x
 ```
 
+**Scenario: Delete all unmanaged branches:**
+
+```javascript
+Skill({ skill: "crew:git:cleanup-unmanaged" });
+```
+
 </common_scenarios>
+
+<related_commands>
+
+| Task                      | Crew Command                                     |
+| ------------------------- | ------------------------------------------------ |
+| View stack status         | `Skill({ skill: "crew:git:stack-status" })`      |
+| Slide out merged branches | `Skill({ skill: "crew:git:slide-out" })`         |
+| Sync all branches         | `Skill({ skill: "crew:git:traverse" })`          |
+| Delete unmanaged branches | `Skill({ skill: "crew:git:cleanup-unmanaged" })` |
+| Clean stale remote refs   | `Skill({ skill: "crew:git:clean" })`             |
+| Fast-forward merge child  | `Skill({ skill: "crew:git:advance" })`           |
+
+</related_commands>
 
 <success_criteria>
 
