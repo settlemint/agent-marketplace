@@ -144,7 +144,7 @@ git machete github anno-prs
 
 # Update stack descriptions in all related PRs
 git machete github update-pr-descriptions --related
-````
+```
 
 </phase>
 
@@ -160,3 +160,4 @@ git machete github update-pr-descriptions --related
 - [ ] Stack annotations updated (if machete-managed)
 
 </success_criteria>
+````
