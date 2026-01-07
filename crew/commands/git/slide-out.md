@@ -1,7 +1,6 @@
 ---
 name: crew:git:slide-out
 description: Remove merged branches from stack and reconnect children
-allowed-tools: Bash(git machete:*), Bash(git branch:*), Bash(git fetch:*)
 ---
 
 <constraints>

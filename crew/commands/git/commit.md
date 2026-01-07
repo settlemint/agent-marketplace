@@ -1,7 +1,6 @@
 ---
 name: crew:git:commit
 description: Create a conventional commit
-allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*), Bash(git diff:*), Bash(git reset:*)
 ---
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/commit-context.sh`

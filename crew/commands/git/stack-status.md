@@ -1,7 +1,6 @@
 ---
 name: crew:git:stack-status
 description: Show git-machete branch stack status
-allowed-tools: Bash(git machete:*), Bash(git branch:*), AskUserQuestion
 ---
 
 <constraints>

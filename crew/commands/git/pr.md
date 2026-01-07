@@ -1,7 +1,6 @@
 ---
 name: crew:git:pr
 description: Commit, push, and open a PR
-allowed-tools: Bash(git checkout:*), Bash(git add:*), Bash(git status:*), Bash(git push:*), Bash(git commit:*), Bash(git fetch:*), Bash(gh pr create:*), Bash(git machete:*), AskUserQuestion
 ---
 
 <constraints>

@@ -1,7 +1,6 @@
 ---
 name: crew:git:stack-add
 description: Add current or specified branch to the machete stack
-allowed-tools: Bash(git machete:*), Bash(git branch:*)
 ---
 
 <constraints>

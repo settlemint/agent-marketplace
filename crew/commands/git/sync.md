@@ -1,7 +1,6 @@
 ---
 name: crew:git:sync
 description: Sync current branch with main
-allowed-tools: Bash(git fetch:*), Bash(git rebase:*), Bash(git stash:*), Bash(git status:*)
 ---
 
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/sync-context.sh`
