@@ -87,7 +87,7 @@ AskUserQuestion({
    - **Design decisions**: Pull from plan's approach/considerations
    - **What changed**: From commit messages and diff
    - **How to test**: From plan's test criteria or generate from changes
-   - Remove HTML comments (`<!-- ... -->`)
+   - Remove template HTML comments (`<!-- ... -->`) but preserve machete markers
    - Keep checklist items
 
 7. **If machete-managed:**
