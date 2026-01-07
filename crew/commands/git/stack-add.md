@@ -1,6 +1,7 @@
 ---
 name: crew:git:stack-add
 description: Add current or specified branch to the machete stack
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
 <constraints>
@@ -9,7 +10,9 @@ description: Add current or specified branch to the machete stack
 
 </constraints>
 
+<stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
+</stack_context>
 
 <process>
 

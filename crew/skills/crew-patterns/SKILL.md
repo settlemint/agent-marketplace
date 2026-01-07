@@ -33,6 +33,7 @@ Use <pattern name="test-runner"/> after each batch.
 | `user-questions-constraint` | **MANDATORY** - Use AskUserQuestion always |
 | `spawn-batch`               | Launch parallel agents (max 6)             |
 | `test-runner`               | Haiku agent for test execution             |
+| `large-output`              | Capture large output to temp file          |
 | `todo-progress`             | TodoWrite status tracking                  |
 | `ask-user`                  | AskUserQuestion templates                  |
 | `task-file`                 | Task file frontmatter format               |

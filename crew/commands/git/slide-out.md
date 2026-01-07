@@ -1,6 +1,7 @@
 ---
 name: crew:git:slide-out
 description: Remove merged branches from stack and reconnect children
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
 <constraints>
@@ -9,8 +10,13 @@ description: Remove merged branches from stack and reconnect children
 
 </constraints>
 
+<worktree_status>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
+</worktree_status>
+
+<stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
+</stack_context>
 
 <what_happens>
 

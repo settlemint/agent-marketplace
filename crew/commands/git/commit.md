@@ -1,9 +1,12 @@
 ---
 name: crew:git:commit
 description: Create a conventional commit
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
+<commit_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/commit-context.sh`
+</commit_context>
 
 <format>
 

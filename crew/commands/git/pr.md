@@ -1,6 +1,7 @@
 ---
 name: crew:git:pr
 description: Commit, push, and open a PR
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
 <constraints>
@@ -9,8 +10,17 @@ description: Commit, push, and open a PR
 
 </constraints>
 
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/pr-context.sh`
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
+<worktree_status>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh 2>&1`
+</worktree_status>
+
+<stack_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh 2>&1`
+</stack_context>
+
+<pr_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/pr-context.sh 2>&1`
+</pr_context>
 
 <context_sources>
 
@@ -107,7 +117,13 @@ EOF
 )" [--draft]
 ```
 
-8. Return PR URL.
+8. **After PR created, update annotations:**
+
+```javascript
+Skill({ skill: "crew:git:update-pr" });
+```
+
+9. Return PR URL.
 
 </process>
 
