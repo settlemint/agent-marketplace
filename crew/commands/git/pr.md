@@ -30,8 +30,74 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoW
 2. **Commit messages**: `git log origin/main..HEAD` - What was actually done
 3. **Diff analysis**: `git diff origin/main..HEAD --stat` - What files changed
 4. **Task/todo context**: Any active todos from the session
+5. **Repository PR template** (if exists): See `<pr_template_detection>`
 
 </context_sources>
+
+<pr_template_detection>
+
+**Check for existing PR templates in the repository:**
+
+```bash
+# GitHub PR template locations (check in order)
+templates=(
+    ".github/PULL_REQUEST_TEMPLATE.md"
+    ".github/pull_request_template.md"
+    "PULL_REQUEST_TEMPLATE.md"
+    "pull_request_template.md"
+    "docs/PULL_REQUEST_TEMPLATE.md"
+    ".github/PULL_REQUEST_TEMPLATE/default.md"
+)
+
+for template in "${templates[@]}"; do
+    if [[ -f "$template" ]]; then
+        echo "Found PR template: $template"
+        break
+    fi
+done
+```
+
+**If repository template exists:**
+
+1. Parse the template structure (headings, checkboxes, sections)
+2. Merge with crew templates, preserving repository-specific sections
+3. Fill in content from commits, plan file, and diff analysis
+
+**Template priority:**
+
+1. Repository template (if exists) — for repo-specific sections
+2. Crew templates — for content generation patterns
+3. Generated content — fills both
+
+**Example merge:**
+
+Repository template has:
+
+```markdown
+## Description
+
+<!-- Describe your changes -->
+
+## Checklist
+
+- [ ] Tests added
+- [ ] Documentation updated
+```
+
+Crew fills in:
+
+```markdown
+## Description
+
+This PR adds user authentication with JWT tokens...
+
+## Checklist
+
+- [x] Tests added
+- [x] Documentation updated
+```
+
+</pr_template_detection>
 
 <templates>
 
@@ -246,6 +312,9 @@ If PR is part of a stack (machete-managed):
 **After updating PR content:**
 
 ```bash
+# Ensure config is set for full PR description intro (required for --related)
+git config machete.github.prDescriptionIntroStyle full
+
 # Update machete sections in all related PRs (upstream and downstream)
 git machete github update-pr-descriptions --related
 ```

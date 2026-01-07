@@ -140,6 +140,9 @@ EOF
 **If machete-managed:**
 
 ```bash
+# Ensure config is set for full PR description intro (required for --related)
+git config machete.github.prDescriptionIntroStyle full
+
 git machete github anno-prs
 git machete github update-pr-descriptions --related
 ```
