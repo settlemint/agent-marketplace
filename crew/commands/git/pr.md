@@ -12,26 +12,59 @@ description: Commit, push, and open a PR
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/pr-context.sh`
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 
-<template>
+<context_sources>
 
-```markdown
-## Summary
+**Gather context from these sources to populate the PR:**
 
-<2-3 bullets>
+1. **Plan file** (if exists): `.claude/plans/*.md` - Contains the why, design decisions, considerations
+2. **Commit messages**: `git log origin/main..HEAD` - What was actually done
+3. **Diff analysis**: `git diff origin/main..HEAD --stat` - What files changed
+4. **Task/todo context**: Any active todos from the session
 
-## Test plan
+</context_sources>
 
-- [ ] <verification>
+<templates>
+
+Select template based on primary commit type:
+
+| Commit Type          | Template                                               |
+| -------------------- | ------------------------------------------------------ |
+| `feat`               | `skills/git/templates/pr-feature.md` - Full template   |
+| `fix`                | `skills/git/templates/pr-fix.md` - Bug fix template    |
+| `refactor/docs/test` | `skills/git/templates/pr-refactor.md` - Light template |
+| Mixed/other          | `skills/git/templates/pr-default.md` - Minimal         |
+
+**Analyze commits to determine template:**
+
+```bash
+git log origin/main..HEAD --pretty=format:"%s" | head -10
 ```
 
-</template>
+</templates>
+
+<writing_style>
+
+Follow SettleMint style guide (see `crew:workflow:content-style-editor`):
+
+- **Active voice** - "This PR adds..." not "A feature was added..."
+- **Sentence case headings** - "Design decisions" not "Design Decisions"
+- **No banned words** - Avoid: seamless, leverage, utilize, dive into, game-changing, cutting-edge, unlock
+- **Be specific** - "Fixes null pointer in user lookup" not "Fixes bug"
+- **Use Oxford commas** - "A, B, and C" not "A, B and C"
+- **No unnecessary adverbs** - Cut "actually", "very", "really", "just"
+
+</writing_style>
 
 <process>
 
 1. Check state: `git branch --show-current && git status --short`
 2. If on main → create feature branch
 3. Stage & commit: `git add . && git commit -m "type(scope): msg"`
-4. Ask PR type:
+4. **Gather PR context:**
+   - Check for plan file: `ls .claude/plans/*.md 2>/dev/null`
+   - If plan exists, extract: motivation, design decisions, considerations
+   - Analyze commits to select template and summarize changes
+5. Ask PR details:
 
 ```javascript
 AskUserQuestion({
@@ -48,7 +81,16 @@ AskUserQuestion({
 });
 ```
 
-5. **If machete-managed:**
+6. Generate PR body using selected template:
+   - **Summary**: Synthesize from commits and plan
+   - **Why**: Pull from plan's motivation/rationale section
+   - **Design decisions**: Pull from plan's approach/considerations
+   - **What changed**: From commit messages and diff
+   - **How to test**: From plan's test criteria or generate from changes
+   - Remove HTML comments (`<!-- ... -->`)
+   - Keep checklist items
+
+7. **If machete-managed:**
 
 ```bash
 git machete github create-pr [--draft]
@@ -59,13 +101,41 @@ git machete github anno-prs
 
 ```bash
 git push -u origin $(git branch --show-current)
-gh pr create --title "..." --body "$(cat <<'EOF'
-## Summary
-...
+gh pr create --title "type(scope): description" --body "$(cat <<'EOF'
+[Generated PR body from template]
 EOF
 )" [--draft]
 ```
 
-Return PR URL.
+8. Return PR URL.
 
 </process>
+
+<pr_title_format>
+
+Match the primary commit type:
+
+- Single commit: Use commit message as title
+- Multiple commits: `type(scope): summary of changes`
+- Mixed types: Use the most significant type (feat > fix > refactor > docs > chore)
+
+</pr_title_format>
+
+<machete_integration>
+
+If PR is part of a stack (machete-managed):
+
+- Title will include stack indicator from `git machete github anno-prs`
+- Body will include auto-generated chain of upstream PRs between `<!-- start git-machete generated -->` and `<!-- end git-machete generated -->`
+- **Preserve machete markers** - never remove or modify content between these markers
+
+**After updating PR content:**
+
+```bash
+# Update machete sections in all related PRs (upstream and downstream)
+git machete github update-pr-descriptions --related
+```
+
+This ensures the stack chain is current in all related PRs.
+
+</machete_integration>
