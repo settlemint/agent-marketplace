@@ -45,7 +45,7 @@ Task({
   prompt: `Run CI check with output logged to temp file:
 
 1. Create log file:
-   LOG=$(mktemp /tmp/ci-${checkType}-XXXXXX.log)
+   LOG=/tmp/ci-${checkType}-$$.log
    echo "Log file: $LOG"
 
 2. Run command with full output captured:
