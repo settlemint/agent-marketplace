@@ -12,14 +12,14 @@ cd "$CLAUDE_PROJECT_DIR" || exit 0
 # Get current branch for state file location
 BRANCH=$(git branch --show-current 2>/dev/null || echo '')
 if [[ -z $BRANCH ]]; then
-	BRANCH=$(git rev-parse --short HEAD 2>/dev/null || echo 'unknown')
+  BRANCH=$(git rev-parse --short HEAD 2>/dev/null || echo 'unknown')
 fi
 SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-')
 STATE_FILE=".claude/branches/$SAFE_BRANCH/state.json"
 
 # No state file or invalid JSON - allow normal exit
 if [ ! -f "$STATE_FILE" ] || ! jq empty "$STATE_FILE" 2>/dev/null; then
-	exit 0
+  exit 0
 fi
 
 # PERFORMANCE: Single jq call extracts all loop fields at once
@@ -35,56 +35,56 @@ IFS=$'\t' read -r ACTIVE ITERATION MAX_ITERATIONS COMPLETION_PROMISE PROMPT <<<"
 
 # Loop not active - allow exit
 if [ "$ACTIVE" != "true" ]; then
-	exit 0
+  exit 0
 fi
 
 # Check if we've hit max iterations
 if [ "$ITERATION" -ge "$MAX_ITERATIONS" ]; then
-	# Clear loop state (set inactive, preserve other state)
-	if jq '.loop.active = false' "$STATE_FILE" >"${STATE_FILE}.tmp" 2>/dev/null; then
-		mv "${STATE_FILE}.tmp" "$STATE_FILE"
-	else
-		rm -f "${STATE_FILE}.tmp"
-	fi
+  # Clear loop state (set inactive, preserve other state)
+  if jq '.loop.active = false' "$STATE_FILE" >"${STATE_FILE}.tmp" 2>/dev/null; then
+    mv "${STATE_FILE}.tmp" "$STATE_FILE"
+  else
+    rm -f "${STATE_FILE}.tmp"
+  fi
 
-	echo ""
-	echo "═══════════════════════════════════════════════════════════"
-	echo "LOOP ENDED - Maximum iterations reached ($MAX_ITERATIONS)"
-	echo "═══════════════════════════════════════════════════════════"
-	echo ""
-	echo "The loop has completed its maximum iterations."
-	echo "Review progress and decide next steps:"
-	echo "  - Continue manually with /crew:build"
-	echo "  - Commit progress: /crew:git:commit"
-	echo "  - Review code: /crew:check"
-	echo ""
-	exit 0
+  echo ""
+  echo "═══════════════════════════════════════════════════════════"
+  echo "LOOP ENDED - Maximum iterations reached ($MAX_ITERATIONS)"
+  echo "═══════════════════════════════════════════════════════════"
+  echo ""
+  echo "The loop has completed its maximum iterations."
+  echo "Review progress and decide next steps:"
+  echo "  - Continue manually: Skill(skill: \"crew:build\")"
+  echo "  - Commit progress: Skill(skill: \"crew:git:commit\")"
+  echo "  - Review code: Skill(skill: \"crew:check\")"
+  echo ""
+  exit 0
 fi
 
 # Check if completion promise was output (check recent conversation context)
 # Note: In Claude Code, the Stop hook receives CLAUDE_STOP_TRANSCRIPT with recent output
 if [ -n "${CLAUDE_STOP_TRANSCRIPT:-}" ]; then
-	if echo "$CLAUDE_STOP_TRANSCRIPT" | grep -qF "<promise>$COMPLETION_PROMISE</promise>"; then
-		# Completion detected - clear loop state (set inactive, preserve other state)
-		if jq '.loop.active = false' "$STATE_FILE" >"${STATE_FILE}.tmp" 2>/dev/null; then
-			mv "${STATE_FILE}.tmp" "$STATE_FILE"
-		else
-			rm -f "${STATE_FILE}.tmp"
-		fi
+  if echo "$CLAUDE_STOP_TRANSCRIPT" | grep -qF "<promise>$COMPLETION_PROMISE</promise>"; then
+    # Completion detected - clear loop state (set inactive, preserve other state)
+    if jq '.loop.active = false' "$STATE_FILE" >"${STATE_FILE}.tmp" 2>/dev/null; then
+      mv "${STATE_FILE}.tmp" "$STATE_FILE"
+    else
+      rm -f "${STATE_FILE}.tmp"
+    fi
 
-		echo ""
-		echo "═══════════════════════════════════════════════════════════"
-		echo "LOOP COMPLETE - Promise fulfilled!"
-		echo "═══════════════════════════════════════════════════════════"
-		echo ""
-		echo "Completion promise detected: <promise>$COMPLETION_PROMISE</promise>"
-		echo ""
-		echo "Next steps:"
-		echo "  - Commit progress: /crew:git:commit"
-		echo "  - Create PR: /crew:git:pr"
-		echo ""
-		exit 0
-	fi
+    echo ""
+    echo "═══════════════════════════════════════════════════════════"
+    echo "LOOP COMPLETE - Promise fulfilled!"
+    echo "═══════════════════════════════════════════════════════════"
+    echo ""
+    echo "Completion promise detected: <promise>$COMPLETION_PROMISE</promise>"
+    echo ""
+    echo "Next steps:"
+    echo "  - Commit progress: Skill(skill: \"crew:git:commit\")"
+    echo "  - Create PR: Skill(skill: \"crew:git:pr\")"
+    echo ""
+    exit 0
+  fi
 fi
 
 # Loop should continue - increment iteration
@@ -92,9 +92,9 @@ NEXT_ITERATION=$((ITERATION + 1))
 
 # Update loop iteration in unified state file
 if jq --argjson iter "$NEXT_ITERATION" '.loop.iteration = $iter' "$STATE_FILE" >"${STATE_FILE}.tmp" 2>/dev/null; then
-	mv "${STATE_FILE}.tmp" "$STATE_FILE"
+  mv "${STATE_FILE}.tmp" "$STATE_FILE"
 else
-	rm -f "${STATE_FILE}.tmp"
+  rm -f "${STATE_FILE}.tmp"
 fi
 
 # Re-feed the prompt (BLOCK exit by outputting continuation)
@@ -131,7 +131,7 @@ echo "STRICT REQUIREMENT:"
 echo "  Do NOT output the promise until ALL criteria are met."
 echo "  The promise MUST be TRUE - all tasks complete, CI passing."
 echo ""
-echo "To stop early: /crew:cancel-loop"
+echo "To stop early: Skill(skill: \"crew:cancel-loop\")"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
