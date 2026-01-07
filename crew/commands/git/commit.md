@@ -4,6 +4,14 @@ description: Create a conventional commit
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
+<worktree_status>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
+</worktree_status>
+
+<stack_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
+</stack_context>
+
 <commit_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/commit-context.sh`
 </commit_context>
