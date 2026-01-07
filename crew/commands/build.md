@@ -5,6 +5,14 @@ argument-hint: "[plan] [--loop] [--max-iterations N]"
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
 ---
 
+<worktree_status>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
+</worktree_status>
+
+<stack_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
+</stack_context>
+
 <prerequisite>
 
 **Load patterns skill first:**
