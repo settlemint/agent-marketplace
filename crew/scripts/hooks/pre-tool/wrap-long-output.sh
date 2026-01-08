@@ -154,21 +154,24 @@ LOGFILE="/tmp/claude-${SLUG}-${TIMESTAMP}.log"
 # Use script for better terminal handling, or simple tee if script unavailable
 WRAPPED_CMD="{ ${COMMAND}; } 2>&1 | tee \"${LOGFILE}\"; echo \"\n📄 Full output saved: ${LOGFILE}\""
 
-# Return modified tool input
+# Return modified tool input using Claude Code 2.1.0 format
+# - decision: "allow" - auto-approve (appropriate for observability-only changes)
+# - decision: "ask" - show user the modified command for approval
+# - decision: "block" - reject the tool call
+#
+# Using "allow" here because we're only adding logging (tee),
+# not changing the command's semantic behavior.
+# Use "ask" if the modification could change outcomes.
+
 jq -n \
 	--arg cmd "$WRAPPED_CMD" \
-	--arg msg "📝 Output will be saved to: ${LOGFILE}" \
+	--arg reason "Wrapping verbose command to save output to ${LOGFILE}" \
 	'{
-    "hookResponse": {
-      "decision": "ALLOW",
-      "modifiedToolInput": {
-        "command": $cmd
-      }
+    "decision": "allow",
+    "updatedInput": {
+      "command": $cmd
     },
-    "hookSpecificOutput": {
-      "hookEventName": "PreToolUse",
-      "message": $msg
-    }
+    "reason": $reason
   }'
 
 exit 0
