@@ -86,14 +86,33 @@ TaskOutput({task_id: "agent-id", block: false})
 - No `find`, `grep`, `cat`, `sed`, `echo >`
 - Use native tools instead
 
-## Shell Commands (Appropriate Uses)
+## Shell Commands
+
+### Bash Subagent (for large output commands)
+
+Use `subagent_type: "Bash"` for commands with large output - runs in separate context:
 
 ```javascript
-// Tests and CI
-Bash({command: "bun run test", description: "Run tests"})
-Bash({command: "bun run ci", description: "Run CI checks"})
+// Tests, CI, builds - use Bash subagent
+Task({
+  subagent_type: "Bash",
+  prompt: "Run bun run test and report pass/fail with error details",
+  description: "test-runner",
+  run_in_background: false,
+});
 
-// Git operations
+Task({
+  subagent_type: "Bash",
+  prompt: "Run bun run ci and report results",
+  description: "ci-check",
+  run_in_background: true,
+});
+```
+
+### Direct Bash (for quick commands)
+
+```javascript
+// Quick git operations - direct Bash is fine
 Bash({command: "git status", description: "Check status"})
 Bash({command: "git add . && git commit -m 'feat: ...'", description: "Commit"})
 Bash({command: "git push -u origin branch", description: "Push branch"})

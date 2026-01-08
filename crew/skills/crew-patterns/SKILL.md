@@ -28,17 +28,17 @@ Use <pattern name="test-runner"/> after each batch.
 
 <routing>
 
-| Pattern                     | Purpose                                    |
-| --------------------------- | ------------------------------------------ |
-| `user-questions-constraint` | **MANDATORY** - Use AskUserQuestion always |
-| `spawn-batch`               | Launch parallel agents (max 6)             |
-| `test-runner`               | Haiku agent for test execution             |
-| `large-output`              | Capture large output to temp file          |
-| `todo-progress`             | TodoWrite status tracking                  |
-| `ask-user`                  | AskUserQuestion templates                  |
-| `task-file`                 | Task file frontmatter format               |
-| `collect-results`           | TaskOutput collection pattern              |
-| `always-works`              | Verification sanity checks for builds      |
+| Pattern                     | Purpose                                       |
+| --------------------------- | --------------------------------------------- |
+| `user-questions-constraint` | **MANDATORY** - Use AskUserQuestion always    |
+| `spawn-batch`               | Launch parallel agents (max 6)                |
+| `test-runner`               | Bash subagent for test execution              |
+| `large-output`              | Bash subagent for commands with large output  |
+| `todo-progress`             | TodoWrite status tracking                     |
+| `ask-user`                  | AskUserQuestion templates                     |
+| `task-file`                 | Task file frontmatter format                  |
+| `collect-results`           | TaskOutput collection pattern                 |
+| `always-works`              | Verification sanity checks for builds         |
 
 </routing>
 

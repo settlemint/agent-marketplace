@@ -143,21 +143,26 @@ Launch quality agents using `<pattern name="quality-agents"/>`.
 <phase name="final-validation">
 **MANDATORY: Fix ALL issues, even unrelated ones.**
 
-Use `<pattern name="large-output"/>` to capture full results:
+Use the Bash subagent for final validation (runs in separate context, no output pollution):
 
-```bash
-cd $(git rev-parse --show-toplevel)
-LOG_CI=/tmp/ci-final-$$.log
-LOG_INT=/tmp/integration-$$.log
+```javascript
+Task({
+  subagent_type: "Bash",
+  prompt: `Run final validation and report results:
 
-bun run ci 2>&1 | tee $LOG_CI
-bun run test:integration 2>&1 | tee $LOG_INT
+1. Run CI: bun run ci
+2. Run integration tests: bun run test:integration
+3. Report:
+   - If both pass: "VALIDATION PASSED"
+   - If failures: List each error with file:line
 
-echo "CI log: $LOG_CI"
-echo "Integration log: $LOG_INT"
+The Bash subagent handles large output in its own context.`,
+  description: "final-validation",
+  run_in_background: false,
+});
 ```
 
-Loop until BOTH pass with zero errors. Log files allow re-reading errors without re-running.
+Loop until BOTH pass with zero errors.
 </phase>
 
 <phase name="completion">
