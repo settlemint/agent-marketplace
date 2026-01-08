@@ -2,7 +2,20 @@
 name: crew:git:checkout-prs
 description: Checkout PR branches from GitHub and add to machete layout
 argument-hint: "[--mine | --all | --by=<user> | PR numbers]"
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - Task
+  - AskUserQuestion
+  - TodoWrite
+  - WebFetch
+  - WebSearch
+  - MCPSearch
+  - Skill
 ---
 
 <constraints>

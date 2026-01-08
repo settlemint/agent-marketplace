@@ -1,7 +1,20 @@
 ---
 name: crew:git:discover
 description: Auto-detect branch layout from git reflog
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - Task
+  - AskUserQuestion
+  - TodoWrite
+  - WebFetch
+  - WebSearch
+  - MCPSearch
+  - Skill
 ---
 
 <constraints>

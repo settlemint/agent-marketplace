@@ -2,7 +2,20 @@
 name: crew:git:update-pr
 description: Update PR title, body, and machete annotations
 argument-hint: "[PR number, defaults to current branch PR]"
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - Task
+  - AskUserQuestion
+  - TodoWrite
+  - WebFetch
+  - WebSearch
+  - MCPSearch
+  - Skill
 ---
 
 <pr_info>

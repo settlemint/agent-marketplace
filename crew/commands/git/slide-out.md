@@ -1,7 +1,20 @@
 ---
 name: crew:git:slide-out
 description: Remove merged branches from stack and reconnect children
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - Task
+  - AskUserQuestion
+  - TodoWrite
+  - WebFetch
+  - WebSearch
+  - MCPSearch
+  - Skill
 ---
 
 <constraints>

@@ -1,7 +1,20 @@
 ---
 name: crew:git:restack-pr
 description: Retarget PR, force push, and manage draft state atomically
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - Task
+  - AskUserQuestion
+  - TodoWrite
+  - WebFetch
+  - WebSearch
+  - MCPSearch
+  - Skill
 ---
 
 <constraints>

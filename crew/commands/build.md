@@ -2,7 +2,20 @@
 name: crew:build
 description: Execute work plans with iteration loops and progress tracking
 argument-hint: "[plan] [--loop] [--max-iterations N]"
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - Task
+  - AskUserQuestion
+  - TodoWrite
+  - WebFetch
+  - WebSearch
+  - MCPSearch
+  - Skill
 skills:
   - crew:crew-patterns
   - crew:todo-tracking
