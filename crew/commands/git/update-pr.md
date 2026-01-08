@@ -145,15 +145,25 @@ EOF
 </phase>
 
 <phase name="update-machete">
-**If machete-managed:**
+**ALWAYS run if `<stack_context>` shows branch is in machete layout:**
+
+Check the `<stack_context>` output above. If it shows "is in machete layout", run these commands:
 
 ```bash
-# Ensure config is set for full PR description intro (required for --related)
-git config machete.github.prDescriptionIntroStyle full
+# Check if machete-managed (skip if not)
+if git machete is-managed "$(git branch --show-current)" 2>/dev/null; then
+  # Ensure config is set for full PR description intro (required for --related)
+  git config machete.github.prDescriptionIntroStyle full
 
-git machete github anno-prs
-git machete github update-pr-descriptions --related
+  # Update PR annotations with stack info
+  git machete github anno-prs
+
+  # Update all related PRs in the stack (parents and children)
+  git machete github update-pr-descriptions --related
+fi
 ```
+
+**This step is CRITICAL** - it ensures all stacked PRs show the correct dependency chain.
 
 </phase>
 

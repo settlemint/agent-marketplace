@@ -65,6 +65,15 @@
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/check-comments.sh"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/sync-machete-stack.sh"
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [

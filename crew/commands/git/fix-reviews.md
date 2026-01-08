@@ -62,22 +62,14 @@ These scripts are available in `${CLAUDE_PLUGIN_ROOT}/scripts/git/`:
 <process>
 
 <phase name="sync-stack">
-**If machete-managed, sync with parent FIRST:**
-
-Check worktree status from context above. Then:
-
-**If in a worktree:**
+**Check `<stack_context>` above. If it shows "is in machete layout", sync with parent FIRST:**
 
 ```bash
-git fetch origin
-git machete update                # Safe: rebases current branch only
-```
-
-**If in main checkout:**
-
-```bash
-git fetch origin
-git machete update                # Rebase onto parent
+# Only run if machete-managed (check stack_context output)
+if git machete is-managed "$(git branch --show-current)" 2>/dev/null; then
+  git fetch origin
+  git machete update    # Rebase onto parent (safe in worktrees)
+fi
 ```
 
 </phase>
@@ -103,9 +95,30 @@ AskUserQuestion({
 </phase>
 
 <phase name="analyze">
-Review the prefilled context above. Group issues by:
-- **Comments**: by file path
-- **CI failures**: by type (lint/type/test/build)
+Review the prefilled context above and **create a TodoWrite list** tracking each issue:
+
+**Use TodoWrite to track all items:**
+
+```javascript
+TodoWrite({
+  todos: [
+    // For each comment from <unresolved_threads>:
+    { content: "Fix: src/auth.ts:42 - add null check (THREAD_ID=PRRT_abc123)", status: "pending", activeForm: "Fixing null check in auth.ts" },
+    { content: "Fix: src/api.ts:15 - rename variable (THREAD_ID=PRRT_def456)", status: "pending", activeForm: "Fixing variable name in api.ts" },
+    // For each CI failure from <ci_status>:
+    { content: "Fix CI: lint errors", status: "pending", activeForm: "Fixing lint errors" },
+    { content: "Fix CI: type errors", status: "pending", activeForm: "Fixing type errors" },
+    // Resolution tasks (add after fixing):
+    { content: "Resolve thread PRRT_abc123", status: "pending", activeForm: "Resolving thread" },
+    { content: "Resolve thread PRRT_def456", status: "pending", activeForm: "Resolving thread" },
+    // Final tasks:
+    { content: "Commit and push fixes", status: "pending", activeForm: "Committing and pushing" },
+    { content: "Update PR", status: "pending", activeForm: "Updating PR" },
+  ]
+});
+```
+
+**Important:** Include the `THREAD_ID=...` in each comment todo - you'll need it to resolve threads later.
 
 If context is stale, refresh with:
 
@@ -137,28 +150,25 @@ AskUserQuestion({
 </phase>
 
 <phase name="fix">
-Launch parallel agents:
+**Fix each issue, marking todos as in_progress → completed:**
+
+For each fix todo in your list:
+1. Mark todo as `in_progress`
+2. Make the code fix
+3. Mark todo as `completed`
+
+You can fix issues directly or launch parallel agents for complex fixes:
 
 ```javascript
-// PR comments by file
+// For complex multi-file fixes, use agents
 Task({
   subagent_type: "crew:workflow:pr-comment-resolver",
-  prompt: "Fix: [comments]",
-  run_in_background: true,
-});
-
-// CI failures by type
-Task({
-  subagent_type: "general-purpose",
-  prompt: "Fix lint: [errors]",
-  run_in_background: true,
-});
-Task({
-  subagent_type: "general-purpose",
-  prompt: "Fix types: [errors]",
+  prompt: "Fix: [specific comment details]",
   run_in_background: true,
 });
 ```
+
+**Keep the todo list updated** - this gives the user visibility into progress.
 
 </phase>
 
@@ -171,14 +181,47 @@ bun run ci
 If fails after 3 iterations → escalate to user.
 </phase>
 
-<phase name="resolve">
-After push, resolve threads:
+<phase name="commit-and-push">
+**After fixes are complete, commit and push:**
 
 ```bash
-for THREAD_ID in $THREAD_IDS; do
-  ${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-resolve-thread.sh "$THREAD_ID" "Fixed."
-done
+git add -A
+git commit -m "fix: address PR review comments"
+git push
 ```
+
+If push is rejected (rebased branch), use:
+```bash
+git push --force-with-lease
+```
+
+</phase>
+
+<phase name="resolve">
+**After push, resolve each thread you fixed (mark each "Resolve thread" todo as you go):**
+
+For each "Resolve thread THREAD_ID" todo in your list:
+1. Mark todo as `in_progress`
+2. Run the resolve script:
+
+```bash
+${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-resolve-thread.sh "THREAD_ID" "Fixed: brief description"
+```
+
+3. Mark todo as `completed`
+
+**Example:**
+```bash
+# Resolving PRRT_abc123
+${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-resolve-thread.sh "PRRT_abc123" "Fixed: added null check"
+# → mark "Resolve thread PRRT_abc123" as completed
+
+# Resolving PRRT_def456
+${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-resolve-thread.sh "PRRT_def456" "Fixed: renamed variable"
+# → mark "Resolve thread PRRT_def456" as completed
+```
+
+**Important:** Only resolve threads you actually fixed. Leave unaddressed threads unresolved.
 
 </phase>
 
@@ -195,12 +238,13 @@ Skill({ skill: "crew:git:update-pr" });
 
 <success_criteria>
 
-- [ ] Stack synced at start (`git machete update`)
-- [ ] All PR comments addressed
+- [ ] Stack synced at start (if machete-managed)
+- [ ] All PR comments addressed with code fixes
 - [ ] All CI failures fixed
-- [ ] `bun run ci` passes
-- [ ] Threads resolved on GitHub
-- [ ] PR updated via `/crew:git:update-pr`
+- [ ] `bun run ci` passes locally
+- [ ] Changes committed and pushed
+- [ ] Each fixed thread resolved on GitHub with `gh-pr-resolve-thread.sh`
+- [ ] PR updated via `crew:git:update-pr`
 
 **Worktree-safe completion message:**
 
