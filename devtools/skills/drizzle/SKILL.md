@@ -149,6 +149,47 @@ bun run db:studio      # Open Drizzle Studio
 ```
 </commands>
 
+<gotchas>
+**Migration Conflict Resolution**
+
+When multiple branches add migrations with overlapping indices, resolve by renumbering:
+
+1. Keep HEAD's migrations in place (they may already be applied)
+2. Renumber incoming migrations to fill subsequent indices
+3. **Critical:** Update each snapshot's `prevId` to form a proper chain
+
+```json
+// Each snapshot's prevId must reference the PREVIOUS snapshot's id
+// 0020_snapshot.json: { "id": "abc123", "prevId": "xyz789" }
+// 0021_snapshot.json: { "id": "def456", "prevId": "abc123" }  ← Must chain!
+```
+
+Drizzle migrations form a linked list via `prevId`. If two snapshots share the same `prevId`, migrations will fail.
+
+**Custom Type Normalization**
+
+Use custom types for automatic data normalization at the database boundary:
+
+```typescript
+// Define custom type that normalizes on write
+export const evmAddress = customType<{ data: string }>({
+  dataType() {
+    return "text";
+  },
+  toDriver(value) {
+    return value.toLowerCase();
+  }, // Auto-normalize
+});
+
+// Use in schema - no manual toLowerCase() needed
+export const contracts = pgTable("contracts", {
+  address: evmAddress("address").notNull(),
+});
+```
+
+This eliminates manual normalization throughout the codebase and ensures consistency.
+</gotchas>
+
 <success_criteria>
 
 - [ ] Context7 docs fetched for current API
