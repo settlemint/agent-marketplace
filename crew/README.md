@@ -6,36 +6,44 @@ Unified orchestration for work execution, skill creation, git conventions, and s
 
 ### Core Workflow
 
-| Command | Purpose |
-|---------|---------|
+| Command        | Purpose                                                 |
+| -------------- | ------------------------------------------------------- |
 | `/crew:design` | Create validated implementation plan from feature/issue |
-| `/crew:build` | Execute plan with TodoWrite progress tracking |
-| `/crew:check` | Multi-agent 7-leg code review with triage |
-| `/crew:fix` | Repair skills, resolve blockers |
+| `/crew:build`  | Execute plan with TodoWrite progress tracking           |
+| `/crew:check`  | Multi-agent 7-leg code review with triage               |
+| `/crew:fix`    | Repair skills, resolve blockers                         |
 
 ### Git Operations
 
-| Command | Purpose |
-|---------|---------|
-| `/crew:git:sync` | Rebase on main/parent + push + update PR |
-| `/crew:git:commit` | Create conventional commit |
-| `/crew:git:commit-and-push` | Commit + push + update PR |
-| `/crew:git:push` | Push to origin + update PR |
-| `/crew:git:pr` | Create pull request |
-| `/crew:git:fix-reviews` | Resolve PR comments and CI failures |
+| Command                     | Purpose                                  |
+| --------------------------- | ---------------------------------------- |
+| `/crew:git:sync`            | Rebase on main/parent + push + update PR |
+| `/crew:git:commit`          | Create conventional commit               |
+| `/crew:git:commit-and-push` | Commit + push + update PR                |
+| `/crew:git:push`            | Push to origin + update PR               |
+| `/crew:git:pr`              | Create pull request                      |
+| `/crew:git:fix-reviews`     | Resolve PR comments and CI failures      |
 
 ### Stacked PRs (git-machete)
 
-| Command | Purpose |
-|---------|---------|
-| `/crew:git:branch` | Create feature branch from main |
-| `/crew:git:stack-add` | Add branch to machete stack |
+| Command                  | Purpose                                  |
+| ------------------------ | ---------------------------------------- |
+| `/crew:git:branch`       | Create feature branch from main          |
+| `/crew:git:stack-add`    | Add branch to machete stack              |
 | `/crew:git:stack-status` | Show branch stack with visual indicators |
-| `/crew:git:traverse` | Sync entire stack with parents/remotes |
-| `/crew:git:slide-out` | Remove merged branches, update child PRs |
-| `/crew:git:retarget-pr` | Change PR base to match machete parent |
-| `/crew:git:restack-pr` | Retarget + force push after rebase |
-| `/crew:git:advance` | Fast-forward merge child into current |
+| `/crew:git:go`           | Navigate between branches in stack       |
+| `/crew:git:traverse`     | Sync entire stack with parents/remotes   |
+| `/crew:git:slide-out`    | Remove merged branches, update child PRs |
+| `/crew:git:retarget-pr`  | Change PR base to match machete parent   |
+| `/crew:git:restack-pr`   | Retarget + force push after rebase       |
+| `/crew:git:advance`      | Fast-forward merge child into current    |
+
+### Code Review
+
+| Command           | Purpose                                        |
+| ----------------- | ---------------------------------------------- |
+| `/crew:check`     | Multi-agent 7-leg code review                  |
+| `/crew:review-pr` | Review external PR with GitHub comment posting |
 
 ## Installation
 
@@ -108,7 +116,43 @@ For stacked branches (git-machete):
 /crew:git:pr             # Create PR with stack annotations
 /crew:git:retarget-pr    # Change PR base to match machete parent
 /crew:git:restack-pr     # Retarget + force push after rebase
+/crew:git:go down        # Navigate to child branch in stack
 ```
+
+### Worktrees + Stacked PRs
+
+**Recommended pattern: One worktree per stack**
+
+```
+main-checkout/          # Stack A: feat/auth → feat/auth-ui → feat/auth-tests
+worktree-payments/      # Stack B: feat/payments (independent feature)
+worktree-hotfix/        # Stack C: fix/critical (independent bugfix)
+```
+
+**Why this works:**
+
+- Stacked PRs are sequential (depend on each other) → work naturally with machete
+- Worktrees isolate independent work → no context switching between unrelated features
+- Each worktree can use full machete commands (`traverse`, `go`) within its stack
+
+**Navigation within a stack:**
+
+```
+/crew:git:go up          # Go to parent branch
+/crew:git:go down        # Go to child branch
+/crew:git:go next        # Go to sibling branch
+```
+
+The machete context automatically suggests next steps:
+
+- ✅ **PR approved** → suggests moving to child branch
+- ⏳ **PR open** → can continue on child while awaiting review
+- 🔀 **PR merged** → suggests slide-out then move to child
+
+**Safety detection:**
+
+- Single stack in worktree → all machete commands work normally
+- Multi-stack layout shared → warns about cross-stack navigation
 
 ### Code Review
 
@@ -120,22 +164,26 @@ For stacked branches (git-machete):
 ## Features
 
 ### Work Orchestration
+
 - Plan-driven development with `/crew:design`
 - Progress tracking with TodoWrite integration
 - Handoffs for context preservation across sessions
 - Iteration loops for autonomous completion
 
 ### Skill Management
+
 - Create new skills with guided workflows
 - Audit and improve existing skills
 - Templates for common skill patterns
 
 ### Git Conventions
+
 - Conventional commit format enforcement
 - Branch naming standards
 - PR workflow automation
 
 ### Hooks
+
 - Session state recovery on startup/resume
 - Auto-lint on file modifications
 - Git commit validation (requires CI pass)

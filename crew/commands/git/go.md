@@ -87,21 +87,26 @@ echo "Will checkout: $target"
 
 ## Step 3: Handle Worktree
 
-**If in a worktree:**
+Check `<worktree_status>` for `WORKTREE_MACHETE_SAFE` status:
 
-⚠️ Cannot switch branches in a worktree. Each worktree is bound to its branch.
+**If safe pattern (single stack):** Proceed normally - navigation within the stack is fine.
+
+**If unsafe pattern (multi-stack layout):**
 
 ```javascript
 AskUserQuestion({
   questions: [
     {
-      question:
-        "You're in a worktree. Cannot switch branches here. What to do?",
+      question: `Target branch "${target}" may be outside this worktree's stack. Continue?`,
       header: "Worktree",
       options: [
         {
-          label: "Show worktree path",
-          description: "Show where the target branch's worktree is",
+          label: "Continue anyway",
+          description: "Switch branches (know what you're doing)",
+        },
+        {
+          label: "Show main checkout path",
+          description: "Navigate in main checkout instead",
         },
         {
           label: "Create worktree",
@@ -113,6 +118,15 @@ AskUserQuestion({
     },
   ],
 });
+```
+
+**If "Create worktree":**
+
+```bash
+# Create worktree for target branch
+git worktree add "../$(basename $(pwd))-${target}" "$target"
+echo "Created worktree at: ../$(basename $(pwd))-${target}"
+echo "cd there to continue work on $target"
 ```
 
 ## Step 4: Check for Uncommitted Changes
