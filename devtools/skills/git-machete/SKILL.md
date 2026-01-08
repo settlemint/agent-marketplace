@@ -200,6 +200,50 @@ git machete update --fork-point <commit>
 **Best Practice:** Don't immediately delete merged branches — their reflogs help determine fork points for other branches.
 </fork_point>
 
+<gotchas>
+**Rebase Can Silently Drop Commits**
+
+When rebasing onto a branch that doesn't contain your commits, git may silently drop them if it considers them "already applied" based on patch content. This happens especially when:
+
+- Cherry-picks were made between branches
+- Similar changes exist in different commits
+- The target branch has commits with overlapping changes
+
+**Recovery Pattern:**
+
+```bash
+# Check reflog for the lost commit
+git reflog | grep "your commit message"
+
+# Cherry-pick the lost commit back
+git cherry-pick <commit-sha>
+
+# Or reset to the pre-rebase state
+git reset --hard HEAD@{n}  # n from reflog
+```
+
+**Prevention:**
+
+```bash
+# Before rebase, note your current commit count
+git rev-list --count parent-branch..HEAD
+
+# After rebase, verify same count
+git rev-list --count parent-branch..HEAD
+
+# If counts differ, check what was lost
+git log --oneline HEAD@{1} --not HEAD
+```
+
+**Worktree Safety**
+
+In worktrees, avoid branch-switching commands (`traverse`, `go up/down`) as they defeat the worktree purpose. Safe commands:
+
+- `git machete update` — Rebase current branch only
+- `git machete status` — View without switching
+- `git machete show up/down` — View parent/child without switching
+  </gotchas>
+
 <workflows_index>
 | Workflow | Purpose |
 |----------|---------|
