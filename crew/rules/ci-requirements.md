@@ -8,6 +8,18 @@ alwaysApply: true
 
 These rules ensure code quality through mandatory CI checks.
 
+## Quality Gate
+
+**Work is NOT done until CI passes.** Run `bun run ci` before marking ANY task complete.
+
+## Root Scripts Only
+
+**ALL commands from repository root using `bun run <script>`.**
+
+- **NEVER** `bun test`, `bunx vitest`, or direct tool invocation
+- **NEVER** `cd` into packages in monorepos
+- **ALWAYS** `bun run test`, `bun run build`, `bun run ci` from root
+
 ## Pre-Commit Checks
 
 Before any commit, these checks should pass:
@@ -125,3 +137,19 @@ Before creating a PR:
 - `--no-verify`
 - Commenting out tests
 - Ignoring lint rules inline
+
+## Final Integration Test
+
+**After all CI checks pass**, run integration tests once in the root (if the script exists):
+
+```bash
+bun run test:integration
+```
+
+**Important:**
+
+- This task handles everything including environment reset
+- NO OTHER COMMANDS NEEDED - just run this one command
+- Failures mean fixes are still required
+- Only run ONCE after CI passes, not repeatedly
+- run in the root of the project

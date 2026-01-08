@@ -21,12 +21,6 @@ hooks:
   PreToolUse: false
 ---
 
-<constraints>
-
-**CRITICAL: NEVER output plain text questions. Use AskUserQuestion tool for all user choices.**
-
-</constraints>
-
 <worktree_status>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh 2>&1`
 </worktree_status>

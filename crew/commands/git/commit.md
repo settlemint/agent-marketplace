@@ -30,7 +30,7 @@ allowed-tools:
 </commit_context>
 
 <notes>
-Format and protected files per `rules/git-safety.md`
+Format and protected files per @rules/git-safety.md
 </notes>
 
 <process>

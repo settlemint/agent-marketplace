@@ -54,7 +54,7 @@ This provides: `<pattern name="research-agents"/>`, `<pattern name="task-file"/>
 
 <notes>
 - **NEVER CODE** - This command researches and writes plans only
-- Branch early for state directory, agents per `rules/agent-limits.md`
+- Branch early for state directory, agents per @rules/agent-limits.md
 - spec-flow-analyzer runs after all research collected
 </notes>
 

@@ -17,12 +17,6 @@ allowed-tools:
   - Skill
 ---
 
-<constraints>
-
-**CRITICAL: NEVER output plain text questions. Use AskUserQuestion tool for all user choices.**
-
-</constraints>
-
 <pr_info>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-info.sh 2>&1`
 </pr_info>

@@ -17,12 +17,6 @@ allowed-tools:
   - Skill
 ---
 
-<constraints>
-
-**CRITICAL: NEVER output plain text questions. Use AskUserQuestion tool for all user choices.**
-
-</constraints>
-
 <branch_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/branch-context.sh`
 </branch_context>
@@ -36,7 +30,7 @@ allowed-tools:
 </stack_context>
 
 <notes>
-Branch naming per `rules/git-safety.md`: `type/short-description`
+Branch naming per @rules/git-safety.md: `type/short-description`
 </notes>
 
 <process>

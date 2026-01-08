@@ -21,12 +21,6 @@ hooks:
   PreToolUse: false
 ---
 
-<constraints>
-
-**CRITICAL: NEVER output plain text questions. Use AskUserQuestion tool for all user choices.**
-
-</constraints>
-
 <stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 </stack_context>

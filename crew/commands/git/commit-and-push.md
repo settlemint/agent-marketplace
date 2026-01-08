@@ -30,7 +30,7 @@ allowed-tools:
 </commit_context>
 
 <notes>
-Commit format per `rules/git-safety.md`
+Commit format per @rules/git-safety.md
 </notes>
 
 <process>

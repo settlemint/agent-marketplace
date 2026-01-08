@@ -75,7 +75,7 @@ This provides: `<pattern name="quality-agents"/>`, `<pattern name="task-file"/>`
 </seven_leg_system>
 
 <notes>
-- All 7 legs always, agents per `rules/agent-limits.md`
+- All 7 legs always, agents per @rules/agent-limits.md
 - Output format: `[P0|P1|P2|Obs] file:line - description`
 </notes>
 

@@ -99,8 +99,8 @@ This provides: `<pattern name="test-runner"/>`, `<pattern name="spawn-batch"/>`,
 
 <notes>
 - CI commands are BLOCKED by PreToolUse hook - use `<pattern name="test-runner"/>`
-- Agent limits enforced per `rules/agent-limits.md`
-- CI requirements per `rules/ci-requirements.md`
+- Agent limits enforced per @rules/agent-limits.md
+- CI requirements per @rules/ci-requirements.md
 - Agents must output `SUCCESS: <summary>` or `FAILURE: <reason>`
 </notes>
 
@@ -170,7 +170,7 @@ For each batch of parallel tasks:
 1. **Launch batch** using `<pattern name="spawn-batch"/>` - ALL in single message
 2. **Collect results** using `<pattern name="collect-results"/>`
 3. **Update task files**: rename `*-pending-*` → `*-complete-*`
-4. **Commit** per `rules/git-safety.md` conventions
+4. **Commit** per @rules/git-safety.md conventions
 5. **Run test-runner** using `<pattern name="test-runner"/>`
 6. **Handle failures**: Create fix task files for next iteration
 
@@ -254,7 +254,7 @@ CONSTRAINTS:
 - [ ] TodoWrite updated after EVERY task
 - [ ] All agents in batch launched in SINGLE message
 - [ ] Task files renamed immediately on completion
-- [ ] CI passes per `rules/ci-requirements.md`
+- [ ] CI passes per @rules/ci-requirements.md
 - [ ] Loop mode: `<promise>BUILD COMPLETE</promise>` when ALL criteria met
 
 </success_criteria>

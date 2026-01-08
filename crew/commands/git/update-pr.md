@@ -26,14 +26,9 @@ allowed-tools:
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh 2>&1`
 </stack_context>
 
-<constraints>
-
-- **Preserve machete markers** - Never modify content between `<!-- start git-machete generated -->` and `<!-- end git-machete generated -->`
-- **Active voice** - "This PR adds..." not "A feature was added..."
-- **Sentence case headings** - "Design decisions" not "Design Decisions"
-- **No banned words** - Avoid: seamless, leverage, utilize, dive into, game-changing, cutting-edge, unlock
-
-</constraints>
+<notes>
+Writing style per @rules/writing-style.md. Machete markers per @rules/machete-workflow.md.
+</notes>
 
 <process>
 
