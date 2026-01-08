@@ -54,65 +54,66 @@ Task({
 </pattern>
 
 <pattern name="test-runner">
-Haiku agent for test execution (NEVER run tests directly via Bash).
+Use the Bash subagent for test execution (NEVER run tests directly via Bash in main thread).
 
-**Use `<pattern name="large-output"/>` to capture full results:**
+The Bash subagent runs in a separate context window, preventing output pollution in the main thread.
 
 ```javascript
 Task({
-  subagent_type: "general-purpose",
-  model: "haiku",
-  prompt: `Run tests with output captured to temp file (see large-output pattern):
+  subagent_type: "Bash",
+  prompt: `Run the test suite and report results:
 
-1. Create log file:
-   LOG=/tmp/test-run-$$.log
-   echo "Log file: $LOG"
-
-2. Run tests with full output:
-   bun run test 2>&1 | tee $LOG
-
-3. Report summary:
+1. Run: bun run test
+2. Report summary:
    - If pass: "ALL TESTS PASSING"
-   - If fail: Parse $LOG for failures, report: test name, file:line, error
-   - Always include: "Full output: $LOG"
+   - If fail: List failures with test name, file:line, error message
 
-The log file allows re-reading without re-running tests.`,
+The Bash subagent handles large output automatically in its own context.`,
   description: "test-runner",
   run_in_background: false,
 });
 ```
 
+**Why Bash subagent?**
+- Separate context window prevents main thread pollution
+- Only has Bash tool access (focused, efficient)
+- No need for temp file piping - output stays in subagent context
+- Results returned as summary to main thread
+
 </pattern>
 
 <pattern name="large-output">
-**AUTOMATED:** The `wrap-long-output.sh` PreToolUse hook automatically wraps long-running commands.
+**PREFERRED: Use Bash subagent** for commands with large output.
 
-**What it does:**
-
-- Detects patterns: `bun run test`, `turbo build`, `bun run dev`, etc.
-- Wraps with: `{ command; } 2>&1 | tee /tmp/claude-{slug}-{time}.log`
-- Outputs: "📄 Full output saved: /tmp/..."
-
-**Covered patterns:**
+The Bash subagent (`subagent_type: "Bash"`) runs in a separate context window, preventing output pollution in the main thread. This is the recommended approach for:
 
 - Test runs (`bun run test`, `vitest`, `jest`, `playwright`)
 - Linting (`eslint`, `biome lint`, `tsc`)
 - Build processes (`bun run build`, `turbo build`)
-- Dev servers (`bun run dev`, `npm run start`)
 - Package installs (`bun install`, `npm i`)
 - Docker builds (`docker build`, `docker compose up`)
 - Database ops (`prisma migrate`, `drizzle-kit push`)
 
-**Skipped (already has redirect):**
+```javascript
+Task({
+  subagent_type: "Bash",
+  prompt: `Run CI checks and report results:
+1. Run: bun run ci
+2. Report: PASS or list errors with file:line`,
+  description: "ci-check",
+  run_in_background: true,
+});
+```
 
-- Commands with `|`, `>`, `>>`, `2>`, `&>`, `tee`
+**Why Bash subagent?**
+- Output stays in subagent's context (no main thread pollution)
+- No temp files needed
+- Summary returned to main thread
+- Can run in background while you continue other work
 
-**Benefits:**
+**Fallback (direct Bash in main thread):**
 
-- Automatic - no manual wrapping needed
-- Full stack traces preserved in log file
-- `Read` the log file if terminal output truncated
-- Re-read without re-running
+The `wrap-long-output.sh` PreToolUse hook still wraps long-running commands with `tee` to temp files as a safety net, but prefer the Bash subagent pattern above.
 
 </pattern>
 

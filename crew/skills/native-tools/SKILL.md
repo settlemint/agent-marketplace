@@ -40,6 +40,40 @@ Related: `ast-grep` skill for structural code patterns.
 
 </routing>
 
+<bash_subagent>
+
+## Bash Subagent for Large Output Commands
+
+For commands with large output (tests, builds, CI), use the **Bash subagent** instead of direct Bash:
+
+```javascript
+// DON'T: Direct Bash pollutes main context
+Bash({ command: "bun run test" });
+
+// DO: Bash subagent runs in separate context
+Task({
+  subagent_type: "Bash",
+  prompt: "Run bun run test and report pass/fail with error details",
+  description: "test-runner",
+});
+```
+
+**When to use Bash subagent:**
+
+- Test suites (`bun run test`, `vitest`, `jest`)
+- CI checks (`bun run ci`, `eslint`, `tsc`)
+- Builds (`bun run build`, `turbo build`)
+- Package installs (`bun install`, `npm i`)
+- Any command with verbose output
+
+**When to use direct Bash:**
+
+- Quick commands: `git status`, `ls`, `pwd`
+- Single-line output commands
+- Commands where you need immediate inline result
+
+</bash_subagent>
+
 <quick_reference>
 
 | Tool            | Permission | Purpose                |

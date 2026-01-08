@@ -23,7 +23,7 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoW
 
 <process>
 
-Use `<pattern name="large-output"/>` to capture full output for later analysis.
+Use the Bash subagent for CI checks. It runs in a separate context window, preventing output pollution in the main thread.
 
 ```javascript
 const pm = Bash({
@@ -40,23 +40,15 @@ const commands = {
 };
 
 Task({
-  subagent_type: "general-purpose",
-  model: "haiku",
-  prompt: `Run CI check with output logged to temp file:
+  subagent_type: "Bash",
+  prompt: `Run CI check: ${checkType}
 
-1. Create log file:
-   LOG=/tmp/ci-${checkType}-$$.log
-   echo "Log file: $LOG"
-
-2. Run command with full output captured:
-   (${commands[checkType]}) 2>&1 | tee $LOG
-
-3. Report results:
+1. Run: ${commands[checkType]}
+2. Report results:
    - Pass: "ALL CHECKS PASSING"
    - Fail: "[ERROR|WARN] type: file:line - message" (1 line per issue)
-   - Always include: "Full output: $LOG"
 
-The log file preserves full stack traces and allows re-reading without re-running.`,
+The Bash subagent handles large output in its own context - no temp files needed.`,
   description: `ci-${checkType}`,
   run_in_background: true,
 });
