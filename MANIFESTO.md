@@ -1460,8 +1460,8 @@ bash setup-plugins.sh
 
 This script automatically:
 
-- Adds the SettleMint, Anthropic Official, and Dev Browser marketplaces
-- Installs and updates all plugins (crew, devtools, typescript-lsp, frontend-design, dev-browser)
+- Adds the SettleMint and Dev Browser marketplaces
+- Installs and updates all plugins (crew, devtools, dev-browser)
 - Clears plugin caches to ensure the latest versions
 
 ### Prerequisites
