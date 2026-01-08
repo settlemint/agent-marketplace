@@ -1,6 +1,6 @@
 ---
 description: TypeScript code standards and best practices
-globs: "**/*.ts,**/*.tsx"
+globs: "**/*.ts,**/*.tsx,tsconfig.json,tsconfig.*.json"
 alwaysApply: false
 ---
 
@@ -121,6 +121,109 @@ enum Status {
   Completed,
 }
 ```
+
+## Type Strictness
+
+### Avoid `any` Entirely
+
+```typescript
+// BAD: defeats the type system
+function process(data: any): any {
+  return data.foo.bar;  // No safety
+}
+
+// GOOD: use unknown and narrow
+function process(data: unknown): string {
+  if (isValidData(data)) {
+    return data.foo.bar;
+  }
+  throw new Error('Invalid data');
+}
+```
+
+### Use Discriminated Unions
+
+```typescript
+// BAD: optional fields create ambiguity
+interface ApiResponse {
+  success?: boolean;
+  data?: User;
+  error?: string;
+}
+
+// GOOD: discriminated union makes states explicit
+type ApiResponse =
+  | { status: 'success'; data: User }
+  | { status: 'error'; error: string }
+  | { status: 'loading' };
+
+function handle(response: ApiResponse) {
+  switch (response.status) {
+    case 'success': return response.data;  // data is available
+    case 'error': throw new Error(response.error);  // error is available
+  }
+}
+```
+
+### Use Branded Types for Domain Concepts
+
+```typescript
+// BAD: stringly typed - can swap IDs
+function getUser(id: string): User { }
+function getOrder(id: string): Order { }
+getUser(orderId);  // No error, but wrong!
+
+// GOOD: branded types prevent mixing
+type UserId = string & { readonly __brand: 'UserId' };
+type OrderId = string & { readonly __brand: 'OrderId' };
+
+function userId(id: string): UserId { return id as UserId; }
+function orderId(id: string): OrderId { return id as OrderId; }
+
+function getUser(id: UserId): User { }
+function getOrder(id: OrderId): Order { }
+getUser(orderId('123'));  // Type error!
+```
+
+### Explicit Nullability
+
+```typescript
+// BAD: implicit null handling
+function findUser(id: string): User {
+  // might return undefined, but type says User
+}
+
+// GOOD: explicit nullability
+function findUser(id: string): User | undefined {
+  // Return type is honest
+}
+```
+
+### Const Assertions for Literals
+
+```typescript
+// Without const: mutable, wide types
+const config = {
+  env: 'production',  // type: string
+  ports: [8080, 8081]  // type: number[]
+};
+
+// With const: immutable, narrow types
+const config = {
+  env: 'production',
+  ports: [8080, 8081]
+} as const;
+// env: 'production' (literal)
+// ports: readonly [8080, 8081] (tuple)
+```
+
+## Type Strictness Checklist
+
+1. **No `any`**: Use `unknown` and narrow, or proper types
+2. **Domain types**: Business concepts have their own types (branded)
+3. **Explicit nullability**: Nullable values are in the type signature
+4. **Discriminated unions**: Use sum types over optional fields
+5. **Const correctness**: Use `as const` and `readonly` where appropriate
 
 ## Strict Mode
 

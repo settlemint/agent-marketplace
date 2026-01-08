@@ -60,6 +60,48 @@ This provides: `<pattern name="research-agents"/>`, `<pattern name="task-file"/>
 
 <process>
 
+<phase name="memory-recall">
+**Query claude-mem for past learnings before expensive research:**
+
+```javascript
+// Search for relevant past decisions, discoveries, gotchas
+mcp__claude_mem__search({
+  query: "<feature keywords>",
+  type: "decision,discovery,bugfix",
+  limit: 10
+});
+
+// If relevant results found (~50 tokens per result), evaluate ROI
+// Fetch full details only for high-relevance matches
+mcp__claude_mem__get_observations({
+  ids: [relevant_ids]  // ~500 tokens per observation
+});
+```
+
+**Why:** Prevents re-discovering known gotchas and respects past architectural decisions. Costs ~1000 tokens vs re-researching from scratch.
+
+**CRITICAL - Memory vs Current Request:**
+- Memory INFORMS, never OVERRIDES the user's explicit request
+- User's current ask ALWAYS takes priority over past observations
+- If memory suggests approach X but user asks for approach Y → follow user's request
+- If memory conflicts with current request, use AskUserQuestion:
+
+```javascript
+AskUserQuestion({
+  questions: [{
+    question: "I found a past observation that suggests [X], but your current request implies [Y]. Which approach should I follow?",
+    options: [
+      "Follow my current request (Y)",
+      "Use the past approach (X)",
+      "Explain both so I can decide"
+    ]
+  }]
+});
+```
+
+**Skip if:** No claude-mem MCP available or empty results.
+</phase>
+
 <phase name="validate-input">
 If empty or unclear:
 ```javascript
@@ -202,8 +244,12 @@ AskUserQuestion({
           description: "Run /crew:build to implement the plan",
         },
         {
+          label: "Interview first",
+          description: "Flesh out details with /crew:interview before building",
+        },
+        {
           label: "Edit plan first",
-          description: "Make changes before building",
+          description: "Make manual changes before building",
         },
         { label: "Just save", description: "Save the plan for later" },
       ],
@@ -259,6 +305,7 @@ Next step:
 
 - "Start building" + "With loop" → `Skill({ skill: "crew:build", args: "<slug> --loop" });`
 - "Start building" + "Single pass" → `Skill({ skill: "crew:build", args: "<slug>" });`
+- "Interview first" → `SlashCommand({ command: "/crew:interview .claude/plans/<slug>.md" });`
 - "Edit plan first" → Tell user to edit `.claude/plans/<slug>.md` and run `/crew:build` when ready
 - "Just save" → Confirm plan saved, no further action
 
@@ -268,6 +315,7 @@ Next step:
 
 <success_criteria>
 
+- [ ] claude-mem queried for past learnings (if available)
 - [ ] Branch created before research
 - [ ] All 4 research agents launched in single message
 - [ ] Codex MCP called directly for synthesis

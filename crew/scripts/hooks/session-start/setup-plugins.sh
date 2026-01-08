@@ -162,12 +162,14 @@ echo "Step 1: Adding Marketplaces"
 echo "----------------------------"
 add_marketplace "settlemint/agent-marketplace" "SettleMint"
 add_marketplace "sawyerhood/dev-browser" "Dev Browser"
+add_marketplace "thedotmack/claude-mem" "Claude Mem"
 echo ""
 
 echo "Step 2: Updating Marketplaces"
 echo "-----------------------------"
 update_marketplace "settlemint"
 update_marketplace "dev-browser-marketplace"
+update_marketplace "claude-mem"
 echo ""
 
 echo "Step 3: Updating Plugins"
@@ -181,6 +183,7 @@ echo ""
 
 echo "Additional plugins:"
 force_update_plugin "dev-browser@dev-browser-marketplace" "dev-browser"
+force_update_plugin "claude-mem@claude-mem" "claude-mem (memory)"
 echo ""
 
 # Summary
@@ -192,6 +195,7 @@ if [[ ${#ERRORS[@]} -eq 0 ]]; then
 	echo "  • crew@settlemint - Work orchestration (/design, /build, /check)"
 	echo "  • devtools@settlemint - Development skills (React, API, etc.)"
 	echo "  • dev-browser - Browser automation"
+	echo "  • claude-mem - Memory persistence"
 	echo ""
 	echo "Get started:"
 	echo "  /crew:design <feature>  - Plan a feature"

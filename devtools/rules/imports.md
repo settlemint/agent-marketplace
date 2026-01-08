@@ -1,7 +1,7 @@
 ---
 description: CRITICAL import rules - NO RE-EXPORTS EVER
-globs: "**/*.ts,**/*.tsx"
-alwaysApply: true
+globs: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx,**/index.ts,**/index.js"
+alwaysApply: false
 ---
 
 # Import Rules

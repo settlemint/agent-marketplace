@@ -84,6 +84,22 @@ crew/
 └── README.md
 ```
 
+## Recommended companion plugins
+
+These plugins work well alongside crew:
+
+- [ralph-loop](https://github.com/anthropics/claude-code-plugins) - Persistent iteration loops with custom prompts
+- [frontend-design](https://github.com/anthropics/claude-code-plugins) - UI/UX design assistance
+- [code-review](https://github.com/anthropics/claude-code-plugins) - Automated code review
+
+## Acknowledgments
+
+Some patterns in this plugin are inspired by or adapted from:
+
+- [jarrodwatts/claude-code-config](https://github.com/jarrodwatts/claude-code-config) - Context engineering patterns (Manus-style planning), comment policy hooks, todo enforcement, and intent classification patterns
+- [Manus context engineering principles](https://manus.im/de/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus) - Filesystem as external memory, attention manipulation, failure traces
+- [shanev/skills](https://github.com/shanev/skills) - Decomplect (Rich Hickey simplicity, FCIS, coupling) and Unslopify (type strictness, SRP, fail-fast) code quality patterns
+
 ## License
 
 MIT

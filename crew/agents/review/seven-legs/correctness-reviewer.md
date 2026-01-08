@@ -46,6 +46,16 @@ hooks:
 - **Never `any` without justification**
 </area>
 
+<area name="type_strictness">
+Strong typing patterns to verify:
+- **No escape hatches**: `any`, `interface{}`, excessive `unwrap()`
+- **Discriminated unions**: Use sum types over loose optional fields
+- **Branded/opaque types**: Domain concepts (UserId, OrderId) prevent mixing
+- **Explicit nullability**: Nullable values declared in type signature
+- **Const correctness**: `as const`, `readonly` where appropriate
+- **Type narrowing**: Unknown/union types narrowed before use
+</area>
+
 <area name="state">
 - Race conditions
 - Stale closures
@@ -114,6 +124,10 @@ For each finding, output:
 ### Files Reviewed
 
 - [list of files with issue counts]
+
+### Type Strictness Grade
+
+- [A-F] based on: no `any`, discriminated unions, branded types, explicit null
 ```
 
 </output_format>
@@ -125,6 +139,11 @@ For each finding, output:
 3. Identify all input boundaries and edge cases
 4. Check null/undefined handling at each step
 5. Verify state transitions and side effects
-6. Document findings with exact file:line references
+6. **Type strictness check**:
+   - Flag all `any`, `interface{}`, excessive `unwrap()`
+   - Check for discriminated unions vs optional fields
+   - Look for primitive obsession (string IDs that could be branded)
+   - Verify explicit nullability in return types
+7. Document findings with exact file:line references
 
 </review_process>

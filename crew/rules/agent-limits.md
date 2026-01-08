@@ -1,7 +1,7 @@
 ---
 description: Agent execution limits and orchestration rules
-globs: "**/*"
-alwaysApply: true
+globs: "**/agents/**/*.md,**/commands/**/*.md"
+alwaysApply: false
 ---
 
 # Agent Execution Limits

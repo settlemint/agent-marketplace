@@ -33,14 +33,14 @@ Provide architectural guidance for prompt-native agent systems. This skill cover
 
 <routing>
 
-## Task Routing
+## Task Routing (Progressive Disclosure)
 
-| Task                  | Resource                         |
-| --------------------- | -------------------------------- |
-| Agent orchestration   | `references/orchestration.md`    |
-| Iteration loops       | `references/iteration-loop.md`   |
-| State persistence     | `references/state-management.md` |
-| Architecture patterns | `references/architecture/`       |
+| Task                  | Resource                         | ~Tokens | Load When                |
+| --------------------- | -------------------------------- | ------- | ------------------------ |
+| Agent orchestration   | `references/orchestration.md`    | ~500    | Spawning agents          |
+| Iteration loops       | `references/iteration-loop.md`   | ~400    | Setting up loops         |
+| State persistence     | `references/state-management.md` | ~600    | Managing branch state    |
+| Architecture patterns | `references/architecture/`       | ~2000   | Deep design work         |
 
 ## Agent Definitions (`agents/`)
 

@@ -16,6 +16,17 @@ hooks:
 - Empty catch blocks
 - Catching too broadly
 - Error info loss on re-throw
+</area>
+
+<area name="fail_fast">
+Detect anti-patterns that hide problems:
+- **Silent swallowing**: Empty catch, catch without rethrow
+- **Defensive fallbacks**: `return DefaultConfig{}` hiding load failures
+- **Workarounds**: `// HACK:` or `// WORKAROUND:` comments
+- **Null coalescing abuse**: `user?.name ?? "Unknown"` hiding missing data
+- **Infinite retry**: Retry without limits hiding persistent failures
+- **Default values**: `unwrap_or(0)` without logging hiding parse failures
+- **Pokemon catching**: `catch (e) { return null; }` hiding all errors
   </area>
 
 <area name="recovery">
@@ -114,6 +125,10 @@ For each finding, output:
 - Resource cleanup: [status]
 - Retry logic: [present/missing where needed]
 - Circuit breakers: [present/missing where needed]
+
+### Fail-Fast Grade
+
+- [A-F] based on: no silent swallowing, no defensive fallbacks, no workarounds
 ```
 
 </output_format>
@@ -125,7 +140,13 @@ For each finding, output:
 3. Verify cleanup happens on all paths
 4. Check for recovery and retry logic
 5. Assess graceful degradation capabilities
-6. Document findings with exact file:line references
+6. **Fail-fast check**:
+   - Scan for empty catch blocks
+   - Look for `// HACK:`, `// WORKAROUND:`, `// TODO: fix`
+   - Check retry loops have max attempts
+   - Flag `?? defaultValue` that hides missing data
+   - Verify fallbacks log before returning defaults
+7. Document findings with exact file:line references
 
 </review_process>
 
