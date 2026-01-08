@@ -1,6 +1,6 @@
 ---
 name: crew:git:sync
-description: Sync current branch with main
+description: Sync current branch with main and update PR
 allowed-tools:
   - Read
   - Write
@@ -72,3 +72,36 @@ git stash pop 2>/dev/null || true
 - Tell user: `git rebase --continue` after fixing
 
 </on_conflict>
+
+<pr_update>
+
+After successfully syncing (no conflicts), check if a PR exists and update it:
+
+```bash
+# Check if PR exists for current branch
+pr_number=$(gh pr view --json number -q '.number' 2>/dev/null || echo "")
+
+if [[ -n "$pr_number" ]]; then
+  echo "PR #$pr_number found - updating..."
+
+  # Force push the rebased branch
+  git push --force-with-lease origin "$(git branch --show-current)"
+
+  # If machete-managed, update PR descriptions for the stack
+  if git machete is-managed "$(git branch --show-current)" 2>/dev/null; then
+    git config machete.github.prDescriptionIntroStyle full
+    git machete github anno-prs
+    git machete github update-pr-descriptions --related
+  fi
+
+  echo "✓ PR #$pr_number updated"
+fi
+```
+
+**What gets updated:**
+
+- Branch is force-pushed to remote (required after rebase)
+- Machete annotations refreshed (if in stack)
+- Related PR descriptions updated with current stack state
+
+</pr_update>

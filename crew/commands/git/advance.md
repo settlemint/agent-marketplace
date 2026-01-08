@@ -1,6 +1,6 @@
 ---
 name: crew:git:advance
-description: Fast-forward merge child into current branch, then slide out child
+description: Fast-forward merge child into current branch, slide out child, and update PRs
 allowed-tools:
   - Read
   - Write
@@ -184,7 +184,20 @@ If yes:
 git branch -d "$child"
 ```
 
-## Step 7: Show Result
+## Step 7: Update PRs
+
+After advancing (which modifies the stack), update affected PRs:
+
+```bash
+# If machete-managed, update PR descriptions for the new stack state
+if git machete is-managed "$(git branch --show-current)" 2>/dev/null; then
+  git config machete.github.prDescriptionIntroStyle full
+  git machete github anno-prs
+  git machete github update-pr-descriptions --related
+fi
+```
+
+## Step 8: Show Result
 
 ```bash
 git machete status --list-commits
@@ -212,5 +225,6 @@ git machete status --list-commits
 - [ ] Child's children (if any) re-parented to current
 - [ ] Changes pushed to remote (optional)
 - [ ] Local child branch deleted (optional)
+- [ ] Related PRs updated with new stack state
 
 </success_criteria>
