@@ -22,8 +22,47 @@ skills:
   - crew:git
 hooks:
   Stop:
-    - type: command
-      command: "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/stop/check-loop.sh"
+    - type: prompt
+      model: haiku
+      prompt: |
+        You are a build loop evaluator. Analyze the session transcript and state to decide if the loop should continue.
+
+        <loop_state>
+        !`${CLAUDE_PLUGIN_ROOT}/scripts/hooks/stop/get-loop-state.sh`
+        </loop_state>
+
+        ## Decision Rules
+
+        Based on the loop_state above:
+
+        1. **ALLOW exit** if:
+           - loop.active is false or missing
+           - <promise>BUILD COMPLETE</promise> appears in the recent transcript
+           - iteration >= maxIterations
+
+        2. **CONTINUE loop** if:
+           - loop.active is true
+           - iteration < maxIterations
+           - No completion promise detected
+
+        ## Output Format
+
+        If ALLOW: Output nothing (empty response allows exit)
+
+        If CONTINUE: Output a continuation message with:
+        ```
+        ═══════════════════════════════════════════════════════════
+        LOOP ITERATION {next} of {max}
+        ═══════════════════════════════════════════════════════════
+
+        Run /compact to clear context, then continue with remaining tasks.
+
+        CRITICAL: Use test-runner agent for CI, max 6 agents per batch.
+        Output <promise>BUILD COMPLETE</promise> when ALL tasks pass.
+        ═══════════════════════════════════════════════════════════
+        ```
+
+        Evaluate now based on the loop_state provided.
   PreToolUse:
     - matcher: Bash
       type: command
