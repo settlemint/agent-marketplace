@@ -1,7 +1,7 @@
 ---
 description: Ultracite code quality and formatting standards
-globs: "**/*"
-alwaysApply: true
+globs: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx,**/*.json,**/*.md,**/*.css,**/*.scss,biome.json,ultracite.config.*"
+alwaysApply: false
 ---
 
 # Ultracite Code Quality

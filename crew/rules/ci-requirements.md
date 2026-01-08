@@ -1,7 +1,7 @@
 ---
 description: CI check requirements before commits and PRs
-globs: "**/*"
-alwaysApply: true
+globs: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx,**/*.json,package.json,turbo.json,.github/**/*"
+alwaysApply: false
 ---
 
 # CI Requirements

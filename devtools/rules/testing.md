@@ -1,6 +1,6 @@
 ---
 description: Testing patterns and best practices with Vitest
-globs: "**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx"
+globs: "**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/__tests__/**/*,vitest.config.*,jest.config.*"
 alwaysApply: false
 ---
 

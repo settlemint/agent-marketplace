@@ -1,6 +1,6 @@
 ---
 description: React component patterns and best practices
-globs: "**/*.tsx,**/*.jsx"
+globs: "**/*.tsx,**/*.jsx,**/components/**/*,**/hooks/**/*"
 alwaysApply: false
 ---
 

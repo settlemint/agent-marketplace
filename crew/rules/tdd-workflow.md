@@ -1,6 +1,6 @@
 ---
 description: CRITICAL TDD rules - tests required for ALL code changes
-globs: "**/*.ts,**/*.tsx"
+globs: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx,**/*.py,**/*.go,**/*.rs,**/*.sol"
 alwaysApply: true
 ---
 

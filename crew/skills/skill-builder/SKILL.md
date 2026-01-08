@@ -17,17 +17,17 @@ Create, audit, and maintain skills. Includes templates, workflows, and best prac
 
 <routing>
 
-| Task                | Workflow                                     |
-| ------------------- | -------------------------------------------- |
-| Create new skill    | `workflows/create-new-skill.md`              |
-| Create domain skill | `workflows/create-domain-expertise-skill.md` |
-| Audit skill         | `workflows/audit-skill.md`                   |
-| Add workflow        | `workflows/add-workflow.md`                  |
-| Add reference       | `workflows/add-reference.md`                 |
-| Add template        | `workflows/add-template.md`                  |
-| Add script          | `workflows/add-script.md`                    |
-| Upgrade to router   | `workflows/upgrade-to-router.md`             |
-| Verify skill        | `workflows/verify-skill.md`                  |
+| Task                | Workflow                                     | ~Tokens | Load When            |
+| ------------------- | -------------------------------------------- | ------- | -------------------- |
+| Create new skill    | `workflows/create-new-skill.md`              | ~400    | Building skill       |
+| Create domain skill | `workflows/create-domain-expertise-skill.md` | ~350    | Library/framework    |
+| Audit skill         | `workflows/audit-skill.md`                   | ~300    | Quality check        |
+| Add workflow        | `workflows/add-workflow.md`                  | ~200    | Adding step-by-step  |
+| Add reference       | `workflows/add-reference.md`                 | ~150    | Adding knowledge     |
+| Add template        | `workflows/add-template.md`                  | ~150    | Adding doc template  |
+| Add script          | `workflows/add-script.md`                    | ~200    | Adding automation    |
+| Upgrade to router   | `workflows/upgrade-to-router.md`             | ~250    | Simple → complex     |
+| Verify skill        | `workflows/verify-skill.md`                  | ~200    | Final validation     |
 
 </routing>
 
@@ -43,15 +43,17 @@ Create, audit, and maintain skills. Includes templates, workflows, and best prac
 
 <references>
 
-- `skill-structure.md` - SKILL.md format
-- `core-principles.md` - Design principles
-- `use-xml-tags.md` - XML conventions
-- `be-clear-and-direct.md` - Writing style
-- `common-patterns.md` - Reusable patterns
-- `native-ui-components.md` - UI integration
-- `using-templates.md` - Template usage
-- `using-scripts.md` - Script integration
-- `workflows-and-validation.md` - Workflow patterns
+| Reference                      | Purpose                | ~Tokens | Load When               |
+| ------------------------------ | ---------------------- | ------- | ----------------------- |
+| `skill-structure.md`           | SKILL.md format        | ~400    | First time              |
+| `core-principles.md`           | Design principles      | ~300    | Design decisions        |
+| `use-xml-tags.md`              | XML conventions        | ~200    | Structuring content     |
+| `be-clear-and-direct.md`       | Writing style          | ~150    | Writing instructions    |
+| `common-patterns.md`           | Reusable patterns      | ~350    | Pattern discovery       |
+| `native-ui-components.md`      | UI integration         | ~250    | Adding UI elements      |
+| `using-templates.md`           | Template usage         | ~200    | Template questions      |
+| `using-scripts.md`             | Script integration     | ~200    | Automation questions    |
+| `workflows-and-validation.md`  | Workflow patterns      | ~300    | Adding workflows        |
 
 </references>
 

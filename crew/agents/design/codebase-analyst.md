@@ -17,6 +17,32 @@ hooks:
 </mission>
 
 <process>
+<phase name="memory_recall">
+**Check claude-mem for past codebase learnings:**
+
+```javascript
+// Query for past decisions/discoveries about this codebase
+mcp__claude_mem__search({
+  query: "<relevant keywords> architecture patterns conventions",
+  type: "decision,discovery",
+  limit: 5
+});
+
+// Fetch details for relevant matches (~500 tokens each)
+mcp__claude_mem__get_observations({ ids: [relevant_ids] });
+```
+
+Past observations may already document architecture decisions, pattern evolution, or contributor expertise.
+
+**CRITICAL - Memory Priority:**
+- Memory INFORMS analysis, never OVERRIDES the user's current request
+- If past observations conflict with current task, prioritize current task
+- If memory suggests the codebase works one way but current code shows otherwise, trust current code
+- When conflicts arise, note both perspectives in output and flag for user decision
+
+**Skip if:** No claude-mem MCP available or empty results.
+</phase>
+
 <phase name="structure_analysis">
 ```javascript
 // Key documentation

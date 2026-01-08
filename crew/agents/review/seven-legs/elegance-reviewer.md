@@ -31,6 +31,25 @@ hooks:
 - Loose coupling between
 - No circular dependencies
 - Layer separation (UI/business/data)
+- Dependency direction: unstable → stable, concrete → abstract
+</area>
+
+<area name="simplicity">
+Rich Hickey's decomplection principles:
+- **Values over state**: Prefer immutable data, transformations over mutation
+- **Functions over methods**: Stateless transformations, not behavior tied to objects
+- **Data over objects**: Plain structs/records, not actor objects mixing data + behavior
+- **Explicit over implicit**: No hidden dependencies (globals, singletons)
+- **Composition over inheritance**: Small functions composed together
+</area>
+
+<area name="fcis">
+Functional Core, Imperative Shell:
+- Pure business logic in core (no I/O, no side effects)
+- I/O pushed to edges (shell orchestrates core)
+- Core testable without mocks
+- No logger/time/random in core functions
+- Exceptions returned as data, not thrown
 </area>
 
 <area name="patterns">
@@ -116,6 +135,15 @@ For each finding, output:
 ### Cohesion Score
 
 - [High/Medium/Low] with notes
+
+### Simplicity Grade (Rich Hickey)
+
+- [A-F] with notes on decomplection
+
+### FCIS Compliance
+
+- Core purity: [Pure/Mixed/Violated]
+- I/O at edges: [Yes/No]
 ```
 
 </output_format>
@@ -126,8 +154,14 @@ For each finding, output:
 2. Map class/module responsibilities
 3. Analyze coupling and dependency directions
 4. Check for SOLID violations
-5. Identify opportunities for cleaner design
-6. Document findings with exact file:line references
+5. **Simplicity check**: Ask for each module:
+   - Can I understand this in isolation?
+   - Can I change this without fear?
+   - Can I test this without mocks?
+   - Is state mutation necessary?
+6. **FCIS check**: Is pure logic separated from I/O?
+7. Identify opportunities for cleaner design
+8. Document findings with exact file:line references
 
 </review_process>
 

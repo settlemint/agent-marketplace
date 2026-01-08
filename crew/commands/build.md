@@ -212,6 +212,36 @@ The Bash subagent handles large output in its own context.`,
 Loop until BOTH pass with zero errors.
 </phase>
 
+<phase name="persist-learnings">
+**Save significant learnings to claude-mem (if available):**
+
+For discoveries made during the build, persist to cross-session memory:
+
+```javascript
+// Types to persist:
+// 🔴 Gotcha: Edge case that broke assumptions
+// 🟤 Decision: Architectural choice with rationale
+// 🟣 Discovery: Non-obvious insight learned
+// 🟡 Problem-solution: Fix that should be remembered
+
+// Example: If a test failure revealed an undocumented API behavior
+// Save it so future builds don't re-discover the same gotcha
+```
+
+**CRITICAL - What to Persist:**
+- Only persist FACTUAL observations (API behaviors, edge cases, gotchas)
+- Do NOT persist user preferences or one-time decisions
+- Do NOT persist exploration paths that were rejected
+- Each observation should be self-contained and verifiable
+
+**What NOT to Persist:**
+- "User prefers X over Y" - preferences change
+- "We tried X but switched to Y" - exploration noise
+- Speculative approaches that weren't validated
+
+**Skip if:** No claude-mem MCP available or no significant learnings.
+</phase>
+
 <phase name="completion">
 ```javascript
 const pending = Glob({ pattern: `.claude/branches/${slugBranch}/tasks/*-pending-*.md` });

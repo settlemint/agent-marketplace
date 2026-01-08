@@ -19,6 +19,32 @@ hooks:
 </mission>
 
 <process>
+<phase name="memory_recall">
+**Check claude-mem for past research findings:**
+
+```javascript
+// Query for past documentation research on this topic
+mcp__claude_mem__search({
+  query: "<technology/library> best practices gotchas",
+  type: "discovery,bugfix,decision",
+  limit: 5
+});
+
+// Fetch details for relevant matches
+mcp__claude_mem__get_observations({ ids: [relevant_ids] });
+```
+
+Past observations may already contain best practices, anti-patterns, or API gotchas discovered in previous sessions.
+
+**CRITICAL - Memory Priority:**
+- Memory INFORMS research, never OVERRIDES the user's current request
+- If past observations conflict with current task, prioritize current task
+- If memory says "use library X" but user asks for "library Y", research library Y
+- When conflicts arise, note both perspectives in output and flag for user decision
+
+**Skip if:** No claude-mem MCP available or empty results.
+</phase>
+
 <phase name="context7_docs">
 ```javascript
 // Resolve library ID (if unknown)

@@ -1,7 +1,7 @@
 ---
 description: CRITICAL monorepo rules - ALL commands from root
-globs: "**/*"
-alwaysApply: true
+globs: "turbo.json,pnpm-workspace.yaml,package.json,**/package.json"
+alwaysApply: false
 ---
 
 # Monorepo Rules
