@@ -32,11 +32,14 @@ allowed-tools:
 <process>
 
 <phase name="sync-stack">
-**If machete-managed, sync with parent FIRST:**
+**Check `<stack_context>` above. If it shows "is in machete layout", sync with parent FIRST:**
 
 ```bash
-git fetch origin
-git machete update    # Rebase onto parent (safe in worktrees)
+# Only run if machete-managed (check stack_context output)
+if git machete is-managed "$(git branch --show-current)" 2>/dev/null; then
+  git fetch origin
+  git machete update    # Rebase onto parent (safe in worktrees)
+fi
 ```
 
 </phase>

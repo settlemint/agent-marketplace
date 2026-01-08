@@ -268,13 +268,12 @@ Match the primary commit type:
 
 <machete_integration>
 
-If machete-managed, machete markers are auto-added per @rules/machete-workflow.md.
+**Machete markers are auto-added when using machete commands.**
 
-After updating PR:
+The `update-pr` skill called in step 10 handles all machete annotation updates, including:
+- `git machete github anno-prs` - Annotate PRs with stack info
+- `git machete github update-pr-descriptions --related` - Update all related PRs
 
-```bash
-git config machete.github.prDescriptionIntroStyle full
-git machete github update-pr-descriptions --related
-```
+See @rules/machete-workflow.md for marker format.
 
 </machete_integration>

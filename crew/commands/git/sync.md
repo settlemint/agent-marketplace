@@ -31,36 +31,37 @@ allowed-tools:
 
 <process>
 
-**If machete-managed branch:**
+**Check `<stack_context>` above to determine which sync method to use.**
+
+## If "is in machete layout" (machete-managed branch)
 
 ⚠️ This branch is part of a stack. Sync with PARENT, not main:
 
 ```bash
-git fetch origin
-git machete update           # Rebase onto parent branch
-git push --force-with-lease  # Push rebased branch
+# Verify machete-managed first
+if git machete is-managed "$(git branch --show-current)" 2>/dev/null; then
+  git fetch origin
+  git machete update           # Rebase onto parent branch
+  git push --force-with-lease  # Push rebased branch
+fi
 ```
 
 Do NOT use `git rebase origin/main` - that would flatten the stack!
 
-**If in a WORKTREE with stacked branches:**
+**If also in a WORKTREE:** This is the correct workflow - each worktree syncs its own branch. After syncing, move to child worktrees and repeat.
 
-This is the correct workflow - each worktree syncs its own branch:
+## If "is NOT in machete layout" (regular branch)
 
 ```bash
-git fetch origin
-git machete update           # Rebase onto parent
-git push --force-with-lease
+# Stash uncommitted changes if any
+git stash push -m "sync-stash" 2>/dev/null || true
+
+git fetch origin main
+git rebase origin/main
+
+# Pop stash if we stashed
+git stash pop 2>/dev/null || true
 ```
-
-Then move to child worktrees and repeat.
-
-**If regular branch (not machete-managed):**
-
-1. If uncommitted → `git stash push -m "sync-stash"`
-2. `git fetch origin main`
-3. `git rebase origin/main`
-4. If stashed → `git stash pop`
 
 </process>
 
