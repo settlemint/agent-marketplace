@@ -1,68 +1,129 @@
 ---
-description: Import patterns and module organization
+description: CRITICAL import rules - NO RE-EXPORTS EVER
 globs: "**/*.ts,**/*.tsx"
-alwaysApply: false
+alwaysApply: true
 ---
 
 # Import Rules
 
-## No Re-exports
+## ⛔ ABSOLUTE RULE - NO EXCEPTIONS ⛔
 
-**NEVER RE-EXPORT. EVER. NO EXCEPTIONS.**
+# NEVER RE-EXPORT. EVER. NO EXCEPTIONS.
 
-- **NEVER** create barrel files that re-export from other packages
-- **NEVER** create `index.ts` files that just re-export other modules
-- **NEVER** create wrapper modules that re-export with aliases
-- **ALWAYS** import directly from the canonical source
+**This is NON-NEGOTIABLE. Zero tolerance.**
 
-## Why
-
-- Re-exports create circular dependency risks
-- Re-exports hide the true source of code
-- Re-exports make tree-shaking less effective
-- Re-exports complicate refactoring
-
-## Correct Pattern
+## BANNED PATTERNS - INSTANT REJECTION
 
 ```typescript
-// GOOD - Direct imports from source
-import { User } from "@app/core/models/user";
-import { validateEmail } from "@app/utils/validation";
-```
-
-## Wrong Patterns
-
-```typescript
-// BAD - Barrel file re-export
+// ❌ BANNED - Barrel file re-exports
 // utils/index.ts
 export * from "./validation";
 export * from "./formatting";
-export * from "./helpers";
+export { helper } from "./helpers";
 
-// BAD - Alias re-export
-// models/index.ts
+// ❌ BANNED - Alias re-exports
 export { User as UserModel } from "./user";
+export { default as Config } from "./config";
 
-// BAD - Convenience re-export
+// ❌ BANNED - Convenience re-exports
 // Don't create @app/shared that re-exports from @app/core
+export { schema } from "@indexer/core/db/base-schema";
+
+// ❌ BANNED - Index files that just re-export
+// index.ts
+export * from "./types";
+export * from "./utils";
+export * from "./components";
+
+// ❌ BANNED - "Compatibility" re-exports after moving code
+// OLD: Was in utils.ts, moved to helpers.ts
+// DON'T DO: export { helper } from "./helpers"; // "for compatibility"
 ```
 
-## Monorepo Imports
-
-In monorepos, always use the package path:
+## THE ONLY CORRECT PATTERN
 
 ```typescript
-// GOOD
+// ✅ CORRECT - Direct import from canonical source
+import { User } from "@app/core/models/user";
+import { validateEmail } from "@app/utils/validation";
 import { schema } from "@indexer/core/db/base-schema";
 
-// BAD - local re-export of external package
-import { schema } from "./re-exports/core";
+// ✅ CORRECT - Import from the actual file, not an index
+import { Button } from "@app/components/Button";
+// NOT: import { Button } from "@app/components";
 ```
 
-## Moving Code
+## WHY THIS IS ABSOLUTE
 
-When moving code between modules:
+1. **Circular dependencies** - Re-exports create hidden cycles
+2. **Bundle size** - Tree-shaking fails with barrel files
+3. **Build performance** - Each re-export doubles resolution work
+4. **Debugging hell** - Stack traces point to wrong files
+5. **Refactoring nightmare** - Can't safely move code
+6. **Type inference** - TypeScript struggles with re-export chains
 
-1. Update ALL consumers to new location
-2. Delete old file completely
-3. **NEVER** leave re-export for "compatibility"
+## WHEN MOVING CODE
+
+When relocating code between modules:
+
+1. **Update ALL consumers** to the new location
+2. **Delete the old file completely**
+3. **NEVER leave a re-export "for compatibility"**
+4. **NEVER create a forwarding module**
+
+```typescript
+// ❌ NEVER DO THIS when moving code
+// old-location.ts
+export { thing } from "./new-location"; // "temporary compatibility"
+
+// ✅ ALWAYS DO THIS
+// 1. Move the code
+// 2. Find all imports: grep -r "from.*old-location"
+// 3. Update every single one
+// 4. Delete old-location.ts entirely
+```
+
+## INDEX FILES
+
+Index files (`index.ts`) should ONLY contain:
+
+- **Original code** that belongs in that module
+- **Type definitions** specific to that module
+- **NOTHING ELSE**
+
+```typescript
+// ✅ ACCEPTABLE index.ts
+export interface ModuleConfig {
+  // actual type definition
+}
+
+export function moduleFunction() {
+  // actual implementation
+}
+
+// ❌ UNACCEPTABLE index.ts
+export * from "./types";
+export * from "./utils";
+export { Component } from "./Component";
+```
+
+## ONE SOURCE OF TRUTH
+
+Every piece of code has ONE canonical location. Import from that location.
+
+- If it's in `@indexer/core`, import from `@indexer/core`
+- If it's in `@app/utils/validation`, import from `@app/utils/validation`
+- **No intermediate layers**
+- **No convenience wrappers**
+- **No "local copies"**
+
+## ENFORCEMENT
+
+This rule is enforced by:
+
+- ESLint `no-restricted-exports` rule
+- Import cycle detection in CI
+- Code review requirements
+- Bundle analysis checks
+
+**Violations will cause CI failures and blocked PRs.**
