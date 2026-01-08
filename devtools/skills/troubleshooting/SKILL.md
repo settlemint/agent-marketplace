@@ -7,6 +7,7 @@ triggers:
   - "why.*not working"
   - "troubleshoot"
   - "debug.*this"
+agent: Explore
 ---
 
 <objective>

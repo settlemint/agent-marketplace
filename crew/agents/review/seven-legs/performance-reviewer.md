@@ -3,6 +3,10 @@ name: performance-reviewer
 description: Reviews code for algorithmic complexity, caching opportunities, query optimization, and scalability.
 model: inherit
 leg: performance
+context: fork
+hooks:
+  PreToolUse: false
+  PostToolUse: false
 ---
 
 <focus_areas>

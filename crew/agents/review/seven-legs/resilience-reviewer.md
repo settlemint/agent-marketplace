@@ -3,6 +3,10 @@ name: resilience-reviewer
 description: Reviews code for error handling, recovery strategies, fault tolerance, and graceful degradation.
 model: inherit
 leg: resilience
+context: fork
+hooks:
+  PreToolUse: false
+  PostToolUse: false
 ---
 
 <focus_areas>

@@ -1,14 +1,21 @@
 ---
 name: crew:git:discover
 description: Auto-detect branch layout from git reflog
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - Task
+  - AskUserQuestion
+  - TodoWrite
+  - WebFetch
+  - WebSearch
+  - MCPSearch
+  - Skill
 ---
-
-<constraints>
-
-**CRITICAL: NEVER output plain text questions. Use AskUserQuestion tool for all user choices.**
-
-</constraints>
 
 <worktree_status>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh 2>&1`

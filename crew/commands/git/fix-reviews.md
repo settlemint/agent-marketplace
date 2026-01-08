@@ -2,7 +2,20 @@
 name: crew:git:fix-reviews
 description: Resolve all unresolved PR review comments and CI failures
 argument-hint: "[PR number, defaults to current branch PR]"
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - Task
+  - AskUserQuestion
+  - TodoWrite
+  - WebFetch
+  - WebSearch
+  - MCPSearch
+  - Skill
 ---
 
 <worktree_status>

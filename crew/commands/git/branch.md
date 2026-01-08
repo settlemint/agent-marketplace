@@ -1,14 +1,21 @@
 ---
 name: crew:git:branch
 description: Create a feature branch from main
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - Task
+  - AskUserQuestion
+  - TodoWrite
+  - WebFetch
+  - WebSearch
+  - MCPSearch
+  - Skill
 ---
-
-<constraints>
-
-**CRITICAL: NEVER output plain text questions. Use AskUserQuestion tool for all user choices.**
-
-</constraints>
 
 <branch_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/branch-context.sh`
@@ -22,19 +29,9 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoW
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 </stack_context>
 
-<naming>
-
-`type/short-description`
-
-| Type        | Use           |
-| ----------- | ------------- |
-| `feat/`     | New feature   |
-| `fix/`      | Bug fix       |
-| `refactor/` | Restructuring |
-| `docs/`     | Documentation |
-| `chore/`    | Maintenance   |
-
-</naming>
+<notes>
+Branch naming per @rules/git-safety.md: `type/short-description`
+</notes>
 
 <process>
 

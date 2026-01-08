@@ -2,7 +2,23 @@
 name: crew:design
 description: Create validated implementation plans with research
 argument-hint: "[feature description, bug report, or improvement idea]"
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - Task
+  - AskUserQuestion
+  - TodoWrite
+  - WebFetch
+  - WebSearch
+  - MCPSearch
+  - Skill
+skills:
+  - crew:crew-patterns
+  - crew:todo-tracking
 ---
 
 <worktree_status>
@@ -36,14 +52,11 @@ This provides: `<pattern name="research-agents"/>`, `<pattern name="task-file"/>
 
 </output_files>
 
-<constraints>
-
+<notes>
 - **NEVER CODE** - This command researches and writes plans only
-- **Branch early** - Set up before research so state writes to correct directory
-- **4 agents + Codex** - Launch ALL research in single message
-- **spec-flow-analyzer last** - Runs after all research collected
-
-</constraints>
+- Branch early for state directory, agents per @rules/agent-limits.md
+- spec-flow-analyzer runs after all research collected
+</notes>
 
 <process>
 

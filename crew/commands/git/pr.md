@@ -1,14 +1,21 @@
 ---
 name: crew:git:pr
 description: Commit, push, and open a PR
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - Task
+  - AskUserQuestion
+  - TodoWrite
+  - WebFetch
+  - WebSearch
+  - MCPSearch
+  - Skill
 ---
-
-<constraints>
-
-**CRITICAL: NEVER output plain text questions. Use AskUserQuestion tool for all user choices.**
-
-</constraints>
 
 <worktree_status>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh 2>&1`
@@ -118,18 +125,9 @@ git log origin/main..HEAD --pretty=format:"%s" | head -10
 
 </templates>
 
-<writing_style>
-
-Follow SettleMint style guide (see `crew:workflow:content-style-editor`):
-
-- **Active voice** - "This PR adds..." not "A feature was added..."
-- **Sentence case headings** - "Design decisions" not "Design Decisions"
-- **No banned words** - Avoid: seamless, leverage, utilize, dive into, game-changing, cutting-edge, unlock
-- **Be specific** - "Fixes null pointer in user lookup" not "Fixes bug"
-- **Use Oxford commas** - "A, B, and C" not "A, B and C"
-- **No unnecessary adverbs** - Cut "actually", "very", "really", "just"
-
-</writing_style>
+<notes>
+Writing style per @rules/writing-style.md. Machete patterns per @rules/machete-workflow.md.
+</notes>
 
 <process>
 
@@ -270,22 +268,13 @@ Match the primary commit type:
 
 <machete_integration>
 
-If PR is part of a stack (machete-managed):
+If machete-managed, machete markers are auto-added per @rules/machete-workflow.md.
 
-- Title will include stack indicator from `git machete github anno-prs`
-- Body will include auto-generated chain of upstream PRs between `<!-- start git-machete generated -->` and `<!-- end git-machete generated -->`
-- **Preserve machete markers** - never remove or modify content between these markers
-
-**After updating PR content:**
+After updating PR:
 
 ```bash
-# Ensure config is set for full PR description intro (required for --related)
 git config machete.github.prDescriptionIntroStyle full
-
-# Update machete sections in all related PRs (upstream and downstream)
 git machete github update-pr-descriptions --related
 ```
-
-This ensures the stack chain is current in all related PRs.
 
 </machete_integration>

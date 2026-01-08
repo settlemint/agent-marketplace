@@ -7,6 +7,7 @@ triggers:
   - "branch.*task"
   - "\\.claude/branches"
   - "task file"
+context: fork
 ---
 
 <objective>

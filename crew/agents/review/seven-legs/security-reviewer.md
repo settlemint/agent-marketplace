@@ -3,6 +3,10 @@ name: security-reviewer
 description: Reviews code for OWASP Top 10, injection vulnerabilities, authentication, authorization, and secrets exposure.
 model: inherit
 leg: security
+context: fork
+hooks:
+  PreToolUse: false
+  PostToolUse: false
 ---
 
 <focus_areas>

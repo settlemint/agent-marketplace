@@ -2,6 +2,10 @@
 name: codebase-analyst
 description: Analyzes local repository structure, patterns, conventions, and git history to understand codebase evolution and current state.
 model: inherit
+context: fork
+hooks:
+  PreToolUse: false
+  PostToolUse: false
 ---
 
 <mission>

@@ -2,7 +2,71 @@
 name: crew:build
 description: Execute work plans with iteration loops and progress tracking
 argument-hint: "[plan] [--loop] [--max-iterations N]"
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - Task
+  - AskUserQuestion
+  - TodoWrite
+  - WebFetch
+  - WebSearch
+  - MCPSearch
+  - Skill
+skills:
+  - crew:crew-patterns
+  - crew:todo-tracking
+  - crew:git
+hooks:
+  Stop:
+    - type: prompt
+      model: haiku
+      prompt: |
+        You are a build loop evaluator. Analyze the session transcript and state to decide if the loop should continue.
+
+        <loop_state>
+        !`${CLAUDE_PLUGIN_ROOT}/scripts/hooks/stop/get-loop-state.sh`
+        </loop_state>
+
+        ## Decision Rules
+
+        Based on the loop_state above:
+
+        1. **ALLOW exit** if:
+           - loop.active is false or missing
+           - <promise>BUILD COMPLETE</promise> appears in the recent transcript
+           - iteration >= maxIterations
+
+        2. **CONTINUE loop** if:
+           - loop.active is true
+           - iteration < maxIterations
+           - No completion promise detected
+
+        ## Output Format
+
+        If ALLOW: Output nothing (empty response allows exit)
+
+        If CONTINUE: Output a continuation message with:
+        ```
+        ═══════════════════════════════════════════════════════════
+        LOOP ITERATION {next} of {max}
+        ═══════════════════════════════════════════════════════════
+
+        Run /compact to clear context, then continue with remaining tasks.
+
+        CRITICAL: Use test-runner agent for CI, max 6 agents per batch.
+        Output <promise>BUILD COMPLETE</promise> when ALL tasks pass.
+        ═══════════════════════════════════════════════════════════
+        ```
+
+        Evaluate now based on the loop_state provided.
+  PreToolUse:
+    - matcher: Bash
+      type: command
+      command: "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/wrap-long-output.sh"
 ---
 
 <worktree_status>
@@ -25,16 +89,6 @@ This provides: `<pattern name="test-runner"/>`, `<pattern name="spawn-batch"/>`,
 
 </prerequisite>
 
-<critical_rules>
-
-**NEVER use Bash for CI commands.** These are BLOCKED by PreToolUse hook:
-
-- `bun run test`, `vitest`, `jest`, `eslint`, `prettier`, `biome`, `ultracite`
-
-**ALWAYS use** `<pattern name="test-runner"/>` from crew-patterns skill.
-
-</critical_rules>
-
 <build_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/workflow/build-context.sh`
 </build_context>
@@ -43,16 +97,12 @@ This provides: `<pattern name="test-runner"/>`, `<pattern name="spawn-batch"/>`,
 <work_document>$ARGUMENTS</work_document>
 </input>
 
-<constraints>
-
-- **Max 6 agents** concurrent (NEVER exceed, NEVER launch while waiting)
-- **Agents inherit parent model** (opus/sonnet) - only test-runner uses haiku
-- **Agents do NOT run tests** - test-runner agent handles this
-- **Output format mandatory**: Agents must output `SUCCESS: <summary>` or `FAILURE: <reason>`
-- **Update immediately**: Mark tasks complete as agents finish, commit each task
-- **Collect ALL before next batch**: Wait for entire batch before launching more
-
-</constraints>
+<notes>
+- CI commands are BLOCKED by PreToolUse hook - use `<pattern name="test-runner"/>`
+- Agent limits enforced per @rules/agent-limits.md
+- CI requirements per @rules/ci-requirements.md
+- Agents must output `SUCCESS: <summary>` or `FAILURE: <reason>`
+</notes>
 
 <loop_mode>
 
@@ -115,15 +165,12 @@ const taskFiles = Glob({ pattern: `.claude/branches/${slugBranch}/tasks/*.md` })
 </phase>
 
 <phase name="batch-execution">
-For each batch of parallel tasks (max 6):
+For each batch of parallel tasks:
 
 1. **Launch batch** using `<pattern name="spawn-batch"/>` - ALL in single message
 2. **Collect results** using `<pattern name="collect-results"/>`
-3. **Update task files**: rename `*-pending-*` → `*-complete-*`, update frontmatter
-4. **Commit each task**:
-   ```bash
-   git add . && git commit -m "feat(${scope}): ${title}"
-   ```
+3. **Update task files**: rename `*-pending-*` → `*-complete-*`
+4. **Commit** per @rules/git-safety.md conventions
 5. **Run test-runner** using `<pattern name="test-runner"/>`
 6. **Handle failures**: Create fix task files for next iteration
 
@@ -204,19 +251,11 @@ CONSTRAINTS:
 
 <success_criteria>
 
-**Core execution:**
 - [ ] TodoWrite updated after EVERY task
-- [ ] Max 6 agents concurrent (NEVER exceeded)
 - [ ] All agents in batch launched in SINGLE message
 - [ ] Task files renamed immediately on completion
-- [ ] Granular commit per task
-- [ ] `bun run ci` passes
-- [ ] `bun run test:integration` passes
-
-**Loop mode (if enabled):**
-- [ ] State file updated each iteration
-- [ ] `/compact` before next iteration
-- [ ] `<promise>BUILD COMPLETE</promise>` only when ALL criteria met
+- [ ] CI passes per @rules/ci-requirements.md
+- [ ] Loop mode: `<promise>BUILD COMPLETE</promise>` when ALL criteria met
 
 </success_criteria>
 ```

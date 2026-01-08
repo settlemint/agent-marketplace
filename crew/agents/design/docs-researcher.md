@@ -2,6 +2,10 @@
 name: docs-researcher
 description: Researches external best practices, documentation, and examples using Context7 and OctoCode MCP servers.
 model: inherit
+context: fork
+hooks:
+  PreToolUse: false
+  PostToolUse: false
 ---
 
 **Note: The current year is 2026.** Use this when searching for recent documentation.

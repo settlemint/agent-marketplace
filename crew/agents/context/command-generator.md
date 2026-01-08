@@ -3,6 +3,10 @@ name: command-generator
 description: Research agent for command creation. Returns findings to parent thread for UI interactions.
 skills: create-agent-skills
 model: inherit
+context: fork
+hooks:
+  PreToolUse: false
+  PostToolUse: false
 ---
 
 You are a Command Creation Specialist researching patterns and proposing new commands.

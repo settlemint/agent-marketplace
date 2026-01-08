@@ -6,6 +6,7 @@ triggers:
   - "bash.*grep.*-r"
   - "bash.*cat "
   - "bash.*sed.*-i"
+context: fork
 ---
 
 <objective>

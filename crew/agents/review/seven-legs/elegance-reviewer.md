@@ -3,6 +3,10 @@ name: elegance-reviewer
 description: Reviews code for design clarity, SOLID principles, clean architecture, and maintainability.
 model: inherit
 leg: elegance
+context: fork
+hooks:
+  PreToolUse: false
+  PostToolUse: false
 ---
 
 <focus_areas>

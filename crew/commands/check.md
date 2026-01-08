@@ -2,7 +2,25 @@
 name: crew:check
 description: Multi-agent code review with automatic triage
 argument-hint: "[PR number, GitHub URL, branch name, or latest]"
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - Task
+  - AskUserQuestion
+  - TodoWrite
+  - WebFetch
+  - WebSearch
+  - MCPSearch
+  - Skill
+context: fork
+skills:
+  - crew:crew-patterns
+hooks:
+  PostToolUse: false
 ---
 
 <worktree_status>
@@ -56,14 +74,10 @@ This provides: `<pattern name="quality-agents"/>`, `<pattern name="task-file"/>`
 
 </seven_leg_system>
 
-<constraints>
-
-- **All 7 legs always** - Never skip any reviewer
-- **Single message** - Launch all agents in one message block
-- **Consistent output** - All findings use `[P0|P1|P2|Obs] file:line` format
-- **Deduplicate** - Merge similar findings across legs
-
-</constraints>
+<notes>
+- All 7 legs always, agents per @rules/agent-limits.md
+- Output format: `[P0|P1|P2|Obs] file:line - description`
+</notes>
 
 <process>
 

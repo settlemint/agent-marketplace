@@ -7,6 +7,8 @@ triggers:
   - "orchestrat.*agent"
   - "sub.*agent"
   - "agent.*loop"
+agent: Plan
+context: fork
 ---
 
 <objective>

@@ -2,7 +2,20 @@
 name: crew:git:update-pr
 description: Update PR title, body, and machete annotations
 argument-hint: "[PR number, defaults to current branch PR]"
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - Task
+  - AskUserQuestion
+  - TodoWrite
+  - WebFetch
+  - WebSearch
+  - MCPSearch
+  - Skill
 ---
 
 <pr_info>
@@ -13,14 +26,9 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoW
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh 2>&1`
 </stack_context>
 
-<constraints>
-
-- **Preserve machete markers** - Never modify content between `<!-- start git-machete generated -->` and `<!-- end git-machete generated -->`
-- **Active voice** - "This PR adds..." not "A feature was added..."
-- **Sentence case headings** - "Design decisions" not "Design Decisions"
-- **No banned words** - Avoid: seamless, leverage, utilize, dive into, game-changing, cutting-edge, unlock
-
-</constraints>
+<notes>
+Writing style per @rules/writing-style.md. Machete markers per @rules/machete-workflow.md.
+</notes>
 
 <process>
 
