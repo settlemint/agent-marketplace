@@ -1,6 +1,6 @@
 ---
 name: crew:git:slide-out
-description: Remove merged branches from stack and reconnect children
+description: Remove merged branches from stack, reconnect children, and update PRs
 allowed-tools:
   - Read
   - Write
@@ -107,3 +107,28 @@ When using worktrees for stacked branches:
 - After slide-out, each child worktree runs: `git machete update && git push --force-with-lease`
 
 </worktree_considerations>
+
+<pr_update>
+
+After sliding out, update any affected PRs:
+
+```bash
+# Check if any PRs exist for children that were re-parented
+if git machete is-managed "$(git branch --show-current)" 2>/dev/null; then
+  # Ensure config is set
+  git config machete.github.prDescriptionIntroStyle full
+
+  # Retarget child PRs to new parent
+  git machete github retarget-pr --branch "$(git machete show down 2>/dev/null | head -1)" 2>/dev/null || true
+
+  # Update all related PR descriptions
+  git machete github update-pr-descriptions --related
+fi
+```
+
+**What gets updated:**
+
+- Child PRs retargeted to new parent (after parent slid out)
+- Stack chain descriptions refreshed across all related PRs
+
+</pr_update>

@@ -77,6 +77,14 @@ Strong typing patterns to verify:
 - Tests will fail?
 - Moved or removed?
 </area>
+
+<area name="migrations">
+**HARD RULE: At most 1 new migration file per PR**
+- Count new migration files (*.sql in drizzle/migrations folders)
+- If > 1 new migration: P0 violation
+- Fix: `bunx drizzle-kit generate --squash`
+- See @rules/migration-squash.md for full policy
+</area>
 </focus_areas>
 
 <severity_guide>
@@ -144,6 +152,14 @@ For each finding, output:
    - Check for discriminated unions vs optional fields
    - Look for primitive obsession (string IDs that could be branded)
    - Verify explicit nullability in return types
-7. Document findings with exact file:line references
+7. **Migration squash check** (if migrations in scope):
+   ```bash
+   # Count new migration files
+   new_migrations=$(git diff main...HEAD --name-only --diff-filter=A | grep -E '\.sql$' | grep -iE '(migration|drizzle)' | wc -l | tr -d ' ')
+   if [[ "$new_migrations" -gt 1 ]]; then
+     echo "[P0] Multiple migrations: $new_migrations files. Max allowed: 1. Run: bunx drizzle-kit generate --squash"
+   fi
+   ```
+8. Document findings with exact file:line references
 
 </review_process>

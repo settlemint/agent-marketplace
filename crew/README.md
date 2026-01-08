@@ -4,12 +4,38 @@ Unified orchestration for work execution, skill creation, git conventions, and s
 
 ## Commands
 
-| Command | Purpose | Usage |
-|---------|---------|-------|
-| `/crew:design` | Create validated implementation plan | Starting new features |
-| `/crew:build` | Execute work with progress tracking | Implementing plans |
-| `/crew:check` | Multi-agent code review + triage | Before shipping |
-| `/crew:fix` | Repair skills, resolve blockers | System tuning |
+### Core Workflow
+
+| Command | Purpose |
+|---------|---------|
+| `/crew:design` | Create validated implementation plan from feature/issue |
+| `/crew:build` | Execute plan with TodoWrite progress tracking |
+| `/crew:check` | Multi-agent 7-leg code review with triage |
+| `/crew:fix` | Repair skills, resolve blockers |
+
+### Git Operations
+
+| Command | Purpose |
+|---------|---------|
+| `/crew:git:sync` | Rebase on main/parent + push + update PR |
+| `/crew:git:commit` | Create conventional commit |
+| `/crew:git:commit-and-push` | Commit + push + update PR |
+| `/crew:git:push` | Push to origin + update PR |
+| `/crew:git:pr` | Create pull request |
+| `/crew:git:fix-reviews` | Resolve PR comments and CI failures |
+
+### Stacked PRs (git-machete)
+
+| Command | Purpose |
+|---------|---------|
+| `/crew:git:branch` | Create feature branch from main |
+| `/crew:git:stack-add` | Add branch to machete stack |
+| `/crew:git:stack-status` | Show branch stack with visual indicators |
+| `/crew:git:traverse` | Sync entire stack with parents/remotes |
+| `/crew:git:slide-out` | Remove merged branches, update child PRs |
+| `/crew:git:retarget-pr` | Change PR base to match machete parent |
+| `/crew:git:restack-pr` | Retarget + force push after rebase |
+| `/crew:git:advance` | Fast-forward merge child into current |
 
 ## Installation
 
@@ -35,6 +61,60 @@ Or use a local plugin directory:
 
 ```bash
 claude --plugin-dir ~/Development/agent-marketplace/crew
+```
+
+## Standard Workflows
+
+### Feature Development
+
+The standard flow for implementing new features or addressing issues:
+
+```
+/crew:design      # Research and create implementation plan
+/crew:build       # Execute the plan with progress tracking
+/crew:check       # Multi-agent code review (7-leg)
+/crew:git:pr      # Create pull request
+/crew:git:fix-reviews  # Address reviewer feedback
+```
+
+### Daily Git Sync
+
+Keep your branch up-to-date with main and sync PR state:
+
+```
+/crew:git:sync    # Rebase on main/parent + push + update PR
+```
+
+For stacked branches (git-machete):
+
+```
+/crew:git:traverse   # Sync entire stack with parents and remotes
+/crew:git:slide-out  # Remove merged branches and update child PRs
+```
+
+### Quick Commits
+
+```
+/crew:git:commit         # Create conventional commit
+/crew:git:commit-and-push  # Commit + push + update PR
+/crew:git:push           # Push + update PR
+```
+
+### Stacked PRs
+
+```
+/crew:git:branch         # Create feature branch from main
+/crew:git:stack-add      # Add branch to machete stack
+/crew:git:pr             # Create PR with stack annotations
+/crew:git:retarget-pr    # Change PR base to match machete parent
+/crew:git:restack-pr     # Retarget + force push after rebase
+```
+
+### Code Review
+
+```
+/crew:check              # Full 7-leg review (correctness, security, etc.)
+/crew:git:fix-reviews    # Resolve PR comments and CI failures
 ```
 
 ## Features
