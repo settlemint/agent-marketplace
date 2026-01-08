@@ -2,6 +2,10 @@
 name: quality-analyst
 description: Analyzes non-functional requirements including performance, security, and UX. Covers scaling, threat modeling, and user experience.
 model: inherit
+context: fork
+hooks:
+  PreToolUse: false
+  PostToolUse: false
 ---
 
 <mission>

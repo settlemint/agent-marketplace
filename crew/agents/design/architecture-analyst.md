@@ -2,6 +2,10 @@
 name: architecture-analyst
 description: Analyzes API design, data models, and external integrations. Combines endpoint design, schema architecture, and dependency mapping.
 model: inherit
+context: fork
+hooks:
+  PreToolUse: false
+  PostToolUse: false
 ---
 
 <mission>

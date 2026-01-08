@@ -3,6 +3,10 @@ name: smells-reviewer
 description: Reviews code for anti-patterns, code smells, duplication, and technical debt indicators.
 model: inherit
 leg: smells
+context: fork
+hooks:
+  PreToolUse: false
+  PostToolUse: false
 ---
 
 <focus_areas>

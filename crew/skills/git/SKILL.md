@@ -7,6 +7,14 @@ triggers:
   - "\\bpr\\b"
   - "pull request"
   - "conventional commit"
+hooks:
+  PostToolUse:
+    - matcher: Bash
+      type: command
+      command: "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/sync-machete-stack.sh"
+    - matcher: Bash
+      type: command
+      command: "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/check-pr-scope.sh"
 ---
 
 <objective>

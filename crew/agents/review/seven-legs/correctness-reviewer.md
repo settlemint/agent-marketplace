@@ -3,6 +3,10 @@ name: correctness-reviewer
 description: Reviews code for logical correctness, edge cases, null handling, and functional accuracy.
 model: inherit
 leg: correctness
+context: fork
+hooks:
+  PreToolUse: false
+  PostToolUse: false
 ---
 
 <focus_areas>

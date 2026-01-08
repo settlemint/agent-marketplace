@@ -3,6 +3,9 @@ name: crew:design
 description: Create validated implementation plans with research
 argument-hint: "[feature description, bug report, or improvement idea]"
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+skills:
+  - crew:crew-patterns
+  - crew:todo-tracking
 ---
 
 <worktree_status>

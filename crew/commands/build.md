@@ -3,6 +3,18 @@ name: crew:build
 description: Execute work plans with iteration loops and progress tracking
 argument-hint: "[plan] [--loop] [--max-iterations N]"
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+skills:
+  - crew:crew-patterns
+  - crew:todo-tracking
+  - crew:git
+hooks:
+  Stop:
+    - type: command
+      command: "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/stop/check-loop.sh"
+  PreToolUse:
+    - matcher: Bash
+      type: command
+      command: "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/wrap-long-output.sh"
 ---
 
 <worktree_status>

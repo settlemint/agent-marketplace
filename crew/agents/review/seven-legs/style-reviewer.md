@@ -3,6 +3,10 @@ name: style-reviewer
 description: Reviews code for conventions, naming quality, formatting consistency, and documentation standards.
 model: inherit
 leg: style
+context: fork
+hooks:
+  PreToolUse: false
+  PostToolUse: false
 ---
 
 <focus_areas>

@@ -3,6 +3,10 @@ name: crew:ci
 description: Run CI checks (test, lint, format, typecheck) via background haiku agent
 argument-hint: "[test|lint|format|typecheck|all]"
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+context: fork
+hooks:
+  PostToolUse: false
+  PreToolUse: false
 ---
 
 <input>

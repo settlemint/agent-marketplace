@@ -3,6 +3,11 @@ name: crew:check
 description: Multi-agent code review with automatic triage
 argument-hint: "[PR number, GitHub URL, branch name, or latest]"
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task, AskUserQuestion, TodoWrite, WebFetch, WebSearch, MCPSearch, Skill
+context: fork
+skills:
+  - crew:crew-patterns
+hooks:
+  PostToolUse: false
 ---
 
 <worktree_status>

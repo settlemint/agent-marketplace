@@ -3,6 +3,10 @@ name: skill-healer
 description: Research agent for skill healing. Returns findings to parent thread for UI interactions.
 skills: create-agent-skills
 model: inherit
+context: fork
+hooks:
+  PreToolUse: false
+  PostToolUse: false
 ---
 
 You are a Skill Maintenance Specialist analyzing SKILL.md files and proposing corrections.
