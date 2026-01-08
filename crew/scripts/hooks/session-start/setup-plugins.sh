@@ -161,14 +161,12 @@ force_update_plugin() {
 echo "Step 1: Adding Marketplaces"
 echo "----------------------------"
 add_marketplace "settlemint/agent-marketplace" "SettleMint"
-add_marketplace "anthropics/claude-plugins-official" "Anthropic Official"
 add_marketplace "sawyerhood/dev-browser" "Dev Browser"
 echo ""
 
 echo "Step 2: Updating Marketplaces"
 echo "-----------------------------"
 update_marketplace "settlemint"
-update_marketplace "claude-plugins-official"
 update_marketplace "dev-browser-marketplace"
 echo ""
 
@@ -182,8 +180,6 @@ force_update_plugin "devtools@settlemint" "devtools (development skills)"
 echo ""
 
 echo "Additional plugins:"
-force_update_plugin "typescript-lsp@claude-plugins-official" "typescript-lsp"
-force_update_plugin "frontend-design@claude-plugins-official" "frontend-design"
 force_update_plugin "dev-browser@dev-browser-marketplace" "dev-browser"
 echo ""
 
@@ -195,8 +191,6 @@ if [[ ${#ERRORS[@]} -eq 0 ]]; then
 	echo "Installed plugins:"
 	echo "  • crew@settlemint - Work orchestration (/design, /build, /check)"
 	echo "  • devtools@settlemint - Development skills (React, API, etc.)"
-	echo "  • typescript-lsp - TypeScript language server"
-	echo "  • frontend-design - UI/UX assistance"
 	echo "  • dev-browser - Browser automation"
 	echo ""
 	echo "Get started:"

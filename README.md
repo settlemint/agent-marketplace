@@ -13,7 +13,6 @@ curl -fsSL https://raw.githubusercontent.com/settlemint/agent-marketplace/main/c
 This installs all recommended plugins with status notifications:
 
 - SettleMint crew & devtools
-- Anthropic typescript-lsp & frontend-design
 - Dev Browser automation
 
 **Core plugin only:**
@@ -51,12 +50,11 @@ claude plugin install crew@settlemint
 
 ## Recommended Additional Plugins
 
-For the best experience, add these complementary plugins:
+For the best experience, add the dev-browser plugin for browser automation:
 
 ```bash
-claude plugin marketplace add anthropics/claude-plugins-official
 claude plugin marketplace add sawyerhood/dev-browser
-claude plugin install typescript-lsp@claude-plugins-official frontend-design@claude-plugins-official dev-browser@dev-browser-marketplace
+claude plugin install dev-browser@dev-browser-marketplace
 ```
 
 Or add to your `.claude/settings.json`:
@@ -64,12 +62,6 @@ Or add to your `.claude/settings.json`:
 ```json
 {
   "extraKnownMarketplaces": {
-    "claude-plugins-official": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/claude-plugins-official"
-      }
-    },
     "dev-browser-marketplace": {
       "source": {
         "source": "github",
@@ -78,18 +70,14 @@ Or add to your `.claude/settings.json`:
     }
   },
   "enabledPlugins": {
-    "typescript-lsp@claude-plugins-official": true,
-    "dev-browser@dev-browser-marketplace": true,
-    "frontend-design@claude-plugins-official": true
+    "dev-browser@dev-browser-marketplace": true
   }
 }
 ```
 
-| Plugin            | Source                  | Purpose                                |
-| ----------------- | ----------------------- | -------------------------------------- |
-| `typescript-lsp`  | claude-plugins-official | TypeScript language server integration |
-| `frontend-design` | claude-plugins-official | Frontend design assistance             |
-| `dev-browser`     | dev-browser-marketplace | Browser automation for development     |
+| Plugin        | Source                  | Purpose                            |
+| ------------- | ----------------------- | ---------------------------------- |
+| `dev-browser` | dev-browser-marketplace | Browser automation for development |
 
 ## Plugins
 
