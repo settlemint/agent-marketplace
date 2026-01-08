@@ -29,20 +29,9 @@ allowed-tools:
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/commit-context.sh 2>&1`
 </commit_context>
 
-<format>
-
-`type(scope): description`
-
-| Type       | Use           |
-| ---------- | ------------- |
-| `feat`     | New feature   |
-| `fix`      | Bug fix       |
-| `refactor` | Restructuring |
-| `docs`     | Documentation |
-| `test`     | Tests         |
-| `chore`    | Maintenance   |
-
-</format>
+<notes>
+Commit format per `rules/git-safety.md`
+</notes>
 
 <process>
 

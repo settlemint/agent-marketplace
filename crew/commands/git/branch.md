@@ -35,19 +35,9 @@ allowed-tools:
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 </stack_context>
 
-<naming>
-
-`type/short-description`
-
-| Type        | Use           |
-| ----------- | ------------- |
-| `feat/`     | New feature   |
-| `fix/`      | Bug fix       |
-| `refactor/` | Restructuring |
-| `docs/`     | Documentation |
-| `chore/`    | Maintenance   |
-
-</naming>
+<notes>
+Branch naming per `rules/git-safety.md`: `type/short-description`
+</notes>
 
 <process>
 

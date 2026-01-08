@@ -74,14 +74,10 @@ This provides: `<pattern name="quality-agents"/>`, `<pattern name="task-file"/>`
 
 </seven_leg_system>
 
-<constraints>
-
-- **All 7 legs always** - Never skip any reviewer
-- **Single message** - Launch all agents in one message block
-- **Consistent output** - All findings use `[P0|P1|P2|Obs] file:line` format
-- **Deduplicate** - Merge similar findings across legs
-
-</constraints>
+<notes>
+- All 7 legs always, agents per `rules/agent-limits.md`
+- Output format: `[P0|P1|P2|Obs] file:line - description`
+</notes>
 
 <process>
 
