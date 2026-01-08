@@ -140,17 +140,7 @@ Follow SettleMint style guide (see `crew:workflow:content-style-editor`):
    - Check for plan file: `ls .claude/plans/*.md 2>/dev/null`
    - If plan exists, extract: motivation, design decisions, considerations
    - Analyze commits to select template and summarize changes
-5. **Gather reviewer suggestions:**
-
-```bash
-# Get repo collaborators with push access
-gh api repos/{owner}/{repo}/collaborators --jq '.[].login' | head -10
-
-# Get last editors of changed files (for relevant expertise)
-git log --pretty=format:"%ae" --diff-filter=M -- $(git diff --name-only origin/main..HEAD) | sort | uniq -c | sort -rn | head -5
-```
-
-6. **Check stacking (if branch not in machete layout):**
+5. **Check stacking (if branch not in machete layout):**
 
    If `<stack_context>` shows "is NOT in machete layout", ask about stacking FIRST:
 
@@ -184,23 +174,13 @@ If user selects a parent branch (not "No"), run:
 git machete add $(git branch --show-current) --onto <selected-parent>
 ```
 
-**Note:** After PR is created, step 12 will call `crew:git:update-pr` which runs
+**Note:** After PR is created, step 11 will call `crew:git:update-pr` which runs
 `git machete github update-pr-descriptions --related` to update all parent PRs
 with the new stack chain.
 
-7. Ask PR details:
+6. Ask PR details:
 
 ```javascript
-// Build reviewer options from GitHub collaborators and recent editors
-const reviewerOptions = [
-  { label: "None", description: "Skip reviewer assignment" },
-  // Add suggested reviewers from collaborators/editors
-  ...suggestedReviewers.map((r) => ({
-    label: r.login,
-    description: r.reason, // "Collaborator" or "Recent editor of changed files"
-  })),
-];
-
 AskUserQuestion({
   questions: [
     {
@@ -211,12 +191,6 @@ AskUserQuestion({
         { label: "Draft", description: "Work in progress" },
       ],
       multiSelect: false,
-    },
-    {
-      question: "Who should review this PR?",
-      header: "Reviewers",
-      options: reviewerOptions.slice(0, 4), // Max 4 options
-      multiSelect: true,
     },
     {
       question: "Enable auto-merge when checks pass?",
@@ -234,7 +208,7 @@ AskUserQuestion({
 });
 ```
 
-8. Generate PR body using selected template:
+7. Generate PR body using selected template:
    - **Summary**: Synthesize from commits and plan
    - **Why**: Pull from plan's motivation/rationale section
    - **Design decisions**: Pull from plan's approach/considerations
@@ -243,7 +217,7 @@ AskUserQuestion({
    - Remove template HTML comments (`<!-- ... -->`) but preserve machete markers
    - Keep checklist items
 
-9. **Create PR:**
+8. **Create PR:**
 
 **If machete-managed:**
 
@@ -262,32 +236,25 @@ EOF
 )" [--draft]
 ```
 
-10. **Apply reviewers (if selected):**
+9. **Enable auto-merge (if selected):**
 
 ```bash
 # Get PR number
 PR_NUM=$(gh pr view --json number -q '.number')
 
-# Add reviewers (skip if "None" selected)
-gh pr edit $PR_NUM --add-reviewer "reviewer1,reviewer2"
-```
-
-11. **Enable auto-merge (if selected):**
-
-```bash
 # Enable auto-merge with squash
 gh pr merge $PR_NUM --auto --squash
 ```
 
 Note: Auto-merge requires repository to have this feature enabled in settings.
 
-12. **Update PR annotations:**
+10. **Update PR annotations:**
 
 ```javascript
 Skill({ skill: "crew:git:update-pr" });
 ```
 
-13. Return PR URL.
+11. Return PR URL.
 
 </process>
 
