@@ -274,6 +274,6 @@ Read({ file_path: "/tmp/feature-after-submit.png" });
 
 Follow these rules:
 
-- @rules/git-safety.md - Protected files and operations
+- @patterns/git-safety.md - Protected files and operations
 
 </notes>

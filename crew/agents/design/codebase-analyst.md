@@ -133,6 +133,6 @@ mcp__plugin_crew_octocode__githubSearchPullRequests({
 
 <notes>
 
-Follow @rules/codebase-assessment.md for analysis criteria.
+Follow @patterns/codebase-assessment.md for analysis criteria.
 
 </notes>

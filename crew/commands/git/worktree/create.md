@@ -95,6 +95,6 @@ Do NOT use 'git checkout' - worktrees have dedicated branches.
 
 <notes>
 
-Follow @rules/phantom-workflow.md and @rules/worktree-safety.md for worktree operations.
+Follow @patterns/phantom-workflow.md and @patterns/worktree-safety.md for worktree operations.
 
 </notes>

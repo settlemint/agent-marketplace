@@ -186,6 +186,6 @@ If yes: `Skill({ skill: "crew:git:stacked:slide-out" })`
 
 <notes>
 
-Follow @rules/machete-workflow.md for stacked branch operations.
+Follow @patterns/machete-workflow.md for stacked branch operations.
 
 </notes>

@@ -121,6 +121,6 @@ if (failures.length === 0) {
 
 <notes>
 
-Follow @rules/ci-requirements.md for CI check requirements.
+Follow @patterns/ci-requirements.md for CI check requirements.
 
 </notes>

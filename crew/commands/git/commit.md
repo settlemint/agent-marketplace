@@ -44,6 +44,6 @@ git commit -m "type(scope): description"
 
 <notes>
 
-Follow @rules/git-safety.md for protected files and operations.
+Follow @patterns/git-safety.md for protected files and operations.
 
 </notes>
