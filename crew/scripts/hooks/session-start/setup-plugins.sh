@@ -160,6 +160,12 @@ force_update_plugin() {
 
 echo "Step 1: Adding Marketplaces"
 echo "----------------------------"
+# Claude Official marketplace is often preinstalled - silently skip errors
+if ! claude plugin marketplace add "anthropics/claude-plugins-official" &>/dev/null; then
+  success "Claude Official marketplace already configured"
+else
+  success "Claude Official marketplace added"
+fi
 add_marketplace "settlemint/agent-marketplace" "SettleMint"
 add_marketplace "sawyerhood/dev-browser" "Dev Browser"
 add_marketplace "thedotmack/claude-mem" "Claude Mem"
@@ -167,6 +173,7 @@ echo ""
 
 echo "Step 2: Updating Marketplaces"
 echo "-----------------------------"
+update_marketplace "claude-plugins-official"
 update_marketplace "settlemint"
 update_marketplace "dev-browser-marketplace"
 update_marketplace "thedotmack"
@@ -174,6 +181,13 @@ echo ""
 
 echo "Step 3: Updating Plugins"
 echo "------------------------"
+echo ""
+
+echo "Official plugins (Anthropic):"
+force_update_plugin "ralph-loop@claude-plugins-official" "ralph-loop (autonomous loops)"
+force_update_plugin "frontend-design@claude-plugins-official" "frontend-design (UI generation)"
+force_update_plugin "typescript-lsp@claude-plugins-official" "typescript-lsp (TS/JS language server)"
+force_update_plugin "code-simplifier@claude-plugins-official" "code-simplifier (code refinement)"
 echo ""
 
 echo "Core plugins (SettleMint):"
@@ -192,6 +206,10 @@ if [[ ${#ERRORS[@]} -eq 0 ]]; then
   echo -e "${GREEN}Setup complete!${NC}"
   echo ""
   echo "Installed plugins:"
+  echo "  • ralph-loop@claude-plugins-official - Autonomous agent loops"
+  echo "  • frontend-design@claude-plugins-official - High-quality UI generation"
+  echo "  • typescript-lsp@claude-plugins-official - TypeScript/JavaScript LSP"
+  echo "  • code-simplifier@claude-plugins-official - Code refinement agent"
   echo "  • crew@settlemint - Work orchestration (/design, /build, /check)"
   echo "  • devtools@settlemint - Development skills (React, API, etc.)"
   echo "  • dev-browser - Browser automation"
