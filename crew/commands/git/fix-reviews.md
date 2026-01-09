@@ -103,18 +103,46 @@ Review the prefilled context above and **create a TodoWrite list** tracking each
 TodoWrite({
   todos: [
     // For each comment from <unresolved_threads>:
-    { content: "Fix: src/auth.ts:42 - add null check (THREAD_ID=PRRT_abc123)", status: "pending", activeForm: "Fixing null check in auth.ts" },
-    { content: "Fix: src/api.ts:15 - rename variable (THREAD_ID=PRRT_def456)", status: "pending", activeForm: "Fixing variable name in api.ts" },
+    {
+      content: "Fix: src/auth.ts:42 - add null check (THREAD_ID=PRRT_abc123)",
+      status: "pending",
+      activeForm: "Fixing null check in auth.ts",
+    },
+    {
+      content: "Fix: src/api.ts:15 - rename variable (THREAD_ID=PRRT_def456)",
+      status: "pending",
+      activeForm: "Fixing variable name in api.ts",
+    },
     // For each CI failure from <ci_status>:
-    { content: "Fix CI: lint errors", status: "pending", activeForm: "Fixing lint errors" },
-    { content: "Fix CI: type errors", status: "pending", activeForm: "Fixing type errors" },
+    {
+      content: "Fix CI: lint errors",
+      status: "pending",
+      activeForm: "Fixing lint errors",
+    },
+    {
+      content: "Fix CI: type errors",
+      status: "pending",
+      activeForm: "Fixing type errors",
+    },
     // Resolution tasks (add after fixing):
-    { content: "Resolve thread PRRT_abc123", status: "pending", activeForm: "Resolving thread" },
-    { content: "Resolve thread PRRT_def456", status: "pending", activeForm: "Resolving thread" },
+    {
+      content: "Resolve thread PRRT_abc123",
+      status: "pending",
+      activeForm: "Resolving thread",
+    },
+    {
+      content: "Resolve thread PRRT_def456",
+      status: "pending",
+      activeForm: "Resolving thread",
+    },
     // Final tasks:
-    { content: "Commit and push fixes", status: "pending", activeForm: "Committing and pushing" },
+    {
+      content: "Commit and push fixes",
+      status: "pending",
+      activeForm: "Committing and pushing",
+    },
     { content: "Update PR", status: "pending", activeForm: "Updating PR" },
-  ]
+  ],
 });
 ```
 
@@ -153,6 +181,7 @@ AskUserQuestion({
 **Fix each issue, marking todos as in_progress → completed:**
 
 For each fix todo in your list:
+
 1. Mark todo as `in_progress`
 2. Make the code fix
 3. Mark todo as `completed`
@@ -181,6 +210,27 @@ bun run ci
 If fails after 3 iterations → escalate to user.
 </phase>
 
+<phase name="code-simplification">
+**Run code-simplifier agent on modified files:**
+
+```javascript
+Task({
+  subagent_type: "code-simplifier",
+  prompt: `Simplify code modified while fixing PR comments.
+
+Focus on:
+- Files changed in this session
+- Clarity and consistency
+- Preserve ALL functionality
+
+Output: List of simplifications made.`,
+  description: "code-simplification",
+  run_in_background: false,
+});
+```
+
+</phase>
+
 <phase name="commit-and-push">
 **After fixes are complete, commit and push:**
 
@@ -191,6 +241,7 @@ git push
 ```
 
 If push is rejected (rebased branch), use:
+
 ```bash
 git push --force-with-lease
 ```
@@ -201,6 +252,7 @@ git push --force-with-lease
 **After push, resolve each thread you fixed (mark each "Resolve thread" todo as you go):**
 
 For each "Resolve thread THREAD_ID" todo in your list:
+
 1. Mark todo as `in_progress`
 2. Run the resolve script:
 
@@ -211,6 +263,7 @@ ${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-resolve-thread.sh "THREAD_ID" "Fixed: br
 3. Mark todo as `completed`
 
 **Example:**
+
 ```bash
 # Resolving PRRT_abc123
 ${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-resolve-thread.sh "PRRT_abc123" "Fixed: added null check"

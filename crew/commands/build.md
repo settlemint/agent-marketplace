@@ -187,6 +187,32 @@ Launch quality agents using `<pattern name="quality-agents"/>`.
 
 </phase>
 
+<phase name="code-simplification">
+**Run code-simplifier agent on recently modified code:**
+
+```javascript
+Task({
+  subagent_type: "code-simplifier",
+  prompt: `Simplify and refine code modified in this branch.
+
+Focus on:
+- Recently edited files in this branch (git diff --name-only main...HEAD)
+- Clarity, consistency, and maintainability
+- Preserve ALL functionality
+
+Do NOT:
+- Change behavior or add features
+- Modify files not touched in this branch
+
+Output: List of simplifications made with file:line references.`,
+  description: "code-simplification",
+  run_in_background: false,
+});
+```
+
+This step ensures code quality before final validation.
+</phase>
+
 <phase name="final-validation">
 **MANDATORY: Fix ALL issues, even unrelated ones.**
 
@@ -229,12 +255,14 @@ For discoveries made during the build, persist to cross-session memory:
 ```
 
 **CRITICAL - What to Persist:**
+
 - Only persist FACTUAL observations (API behaviors, edge cases, gotchas)
 - Do NOT persist user preferences or one-time decisions
 - Do NOT persist exploration paths that were rejected
 - Each observation should be self-contained and verifiable
 
 **What NOT to Persist:**
+
 - "User prefers X over Y" - preferences change
 - "We tried X but switched to Y" - exploration noise
 - Speculative approaches that weren't validated
