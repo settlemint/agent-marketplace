@@ -4,7 +4,6 @@ description: Fast-forward merge child into current branch, slide out child, and 
 allowed-tools:
   - Bash
   - AskUserQuestion
-  - Skill
 ---
 
 <worktree_status>
