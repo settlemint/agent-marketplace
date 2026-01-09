@@ -67,7 +67,18 @@ This is NON-NEGOTIABLE. Every story MUST:
 Skill({ skill: "devtools:tdd-typescript" });
 ```
 
-## Step 1: Load Plan
+## Step 1: Verify Not on Main
+
+```bash
+branch=$(git branch --show-current)
+if [[ "$branch" == "main" || "$branch" == "master" ]]; then
+  echo "ERROR: Cannot run crew:work on main/master branch"
+  echo "Create a feature branch first: /crew:git:branch:new <name>"
+  exit 1
+fi
+```
+
+## Step 2: Load Plan
 
 ```javascript
 const slug = "$ARGUMENTS".trim() || inferFromBranch();
@@ -75,7 +86,7 @@ const planPath = `.claude/plans/${slug}.yaml`;
 const plan = Read({ file_path: planPath });
 ```
 
-## Step 2: Validate Readiness
+## Step 3: Validate Readiness
 
 ```javascript
 if (plan.open_questions?.length > 0) {
@@ -95,7 +106,7 @@ if (plan.open_questions?.length > 0) {
 }
 ```
 
-## Step 3: Start Ralph Loop
+## Step 4: Start Ralph Loop
 
 ```javascript
 Skill({
