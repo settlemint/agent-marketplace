@@ -1187,15 +1187,15 @@ The crew plugin includes skills for workflow orchestration:
 
 ### Core Workflow Skills
 
-| Skill                     | Triggers                          | Purpose                                 |
-| ------------------------- | --------------------------------- | --------------------------------------- |
-| `crew:agent-architecture` | `agent workflow`, `orchestrate`   | Agent patterns, loops, state management |
-| `crew:skill-builder`      | `create skill`, `SKILL.md`        | Create, audit, and maintain skills      |
-| `crew:git`                | Commit workflows                  | Git conventions, commits, PRs           |
-| `crew:todo-tracking`      | `persistent task`, `branch.*task` | File-based task management              |
-| `crew:crew-patterns`      | Internal                          | Reusable patterns for commands          |
-| `crew:native-tools`       | Internal                          | Claude Code native tool guidance        |
-| `crew:ast-grep`           | Mass rename, refactor             | Code transformation with ast-grep       |
+| Skill                                            | Triggers                          | Purpose                            |
+| ------------------------------------------------ | --------------------------------- | ---------------------------------- |
+| `compound-engineering:agent-native-architecture` | `agent workflow`, `orchestrate`   | Agent patterns via Every plugin    |
+| `crew:skill-builder`                             | `create skill`, `SKILL.md`        | Create, audit, and maintain skills |
+| `crew:git`                                       | Commit workflows                  | Git conventions, commits, PRs      |
+| `crew:todo-tracking`                             | `persistent task`, `branch.*task` | File-based task management         |
+| `crew:crew-patterns`                             | Internal                          | Reusable patterns for commands     |
+| `crew:native-tools`                              | Internal                          | Claude Code native tool guidance   |
+| `crew:ast-grep`                                  | Mass rename, refactor             | Code transformation with ast-grep  |
 
 ### Skill Builder Workflows
 
@@ -1217,14 +1217,18 @@ Skill({ skill: "crew:skill-builder", args: "upgrade-to-router" });
 
 ### Agent Architecture Resources
 
-The `agent-architecture` skill provides architectural guidance:
+The `agent-native-architecture` skill (from compound-engineering plugin) provides architectural guidance:
 
-| Resource                   | Purpose                             |
-| -------------------------- | ----------------------------------- |
-| `orchestration.md`         | Agent spawning patterns             |
-| `iteration-loop.md`        | Loop mechanics, completion promises |
-| `state-management.md`      | Unified state format                |
-| `architecture-patterns.md` | Prompt-native design patterns       |
+| Resource                           | Purpose                               |
+| ---------------------------------- | ------------------------------------- |
+| `architecture-patterns.md`         | Prompt-native design patterns         |
+| `agent-execution-patterns.md`      | Agent spawning and execution patterns |
+| `dynamic-context-injection.md`     | Context injection strategies          |
+| `files-universal-interface.md`     | File-based agent interfaces           |
+| `shared-workspace-architecture.md` | Workspace and state management        |
+| `system-prompt-design.md`          | System prompt engineering             |
+
+Invoke via: `Skill({ skill: "compound-engineering:agent-native-architecture" })`
 
 ---
 
@@ -1319,30 +1323,43 @@ Beyond crew and devtools, the workflow integrates with other Claude Code plugins
 Skill({ skill: "frontend-design:frontend-design" });
 ```
 
-### Dev Browser Plugin
+### Native Browser Automation (Claude-in-Chrome)
 
-**Plugin**: `dev-browser@dev-browser-marketplace`
+**Purpose**: Browser automation for validation, testing, debugging, and exploration. Available natively when the Claude-in-Chrome extension is installed.
 
-**Purpose**: Browser automation with persistent page state. Navigate websites, fill forms, take screenshots, extract web data, test web apps, and automate browser workflows.
+**Key Tools** (prefix: `mcp__claude-in-chrome__`):
 
-**Available Tools**:
+| Tool                    | Purpose                              |
+| ----------------------- | ------------------------------------ |
+| `navigate`              | Go to URLs                           |
+| `read_page`             | Extract page content as markdown     |
+| `form_input`            | Fill form fields                     |
+| `computer`              | Click, type, scroll, take screenshot |
+| `gif_creator`           | Record multi-step interactions       |
+| `tabs_context_mcp`      | Get current tab context              |
+| `read_console_messages` | Debug console output                 |
+| `read_network_requests` | Inspect API calls                    |
 
-- `navigate` - Go to URLs
-- `read_page` - Extract page content
-- `form_input` - Fill form fields
-- `computer` - Click, type, scroll
-- `gif_creator` - Record interactions
-- `tabs_context_mcp` - Manage browser tabs
+**When to Use Browser Validation**:
 
-**When to use**: Testing web applications, automating browser tasks, visual validation.
+1. **After UI changes**: Take screenshots to verify visual implementation
+2. **After API integration**: Test endpoints via actual browser requests
+3. **During debugging**: Read console logs, inspect network, check page state
+4. **For documentation**: Capture workflows as GIFs for PRs
 
-> **Note**: The MCP tool prefix `mcp__claude-in-chrome__` is the internal identifier used by Claude Code. This differs from the plugin name `dev-browser` because the underlying browser automation is powered by the Claude-in-Chrome extension.
+**Proactive Usage**: Claude should proactively use browser tools to validate work when beneficial, especially:
+
+- After implementing frontend components
+- When debugging user-reported issues
+- To verify test coverage matches actual behavior
+- To explore how external APIs respond
 
 ```javascript
-// Navigate to a URL
-mcp__claude-in-chrome__navigate({ url: "https://example.com" });
+// First load the tool via MCPSearch
+MCPSearch({ query: "select:mcp__claude-in-chrome__navigate" });
 
-// Take a screenshot
+// Then use it
+mcp__claude-in-chrome__navigate({ url: "http://localhost:3000" });
 mcp__claude-in-chrome__computer({ action: "screenshot" });
 ```
 
@@ -1460,8 +1477,8 @@ bash setup-plugins.sh
 
 This script automatically:
 
-- Adds the SettleMint and Dev Browser marketplaces
-- Installs and updates all plugins (crew, devtools, dev-browser)
+- Adds the SettleMint and Every marketplaces
+- Installs and updates all plugins (crew, devtools, compound-engineering)
 - Clears plugin caches to ensure the latest versions
 
 ### Prerequisites
