@@ -38,11 +38,20 @@ In worktrees, the machete file is in the main repo's `.git` directory, not the w
 machete_file="$(git rev-parse --git-common-dir)/machete"
 ```
 
-**Status Colors Indicate Sync State**
+**Status Indicates Sync State**
+
+Visual colors (for humans):
 
 - **Green edge**: Branch is in sync with parent
 - **Red edge**: Branch is out of sync (needs rebase)
 - **Gray edge**: Branch is merged into parent
+
+Agent-parseable indicators (from `git machete status` output):
+
+- `o-` prefix: in sync with parent (green)
+- `x-` prefix: out of sync, needs rebase (red)
+- `?-` prefix: untracked/unknown status
+- `m-` prefix: branch is merged into parent (gray)
 
 **Rebase Over Merge for Stacks**
 
@@ -117,7 +126,26 @@ git machete go         # Interactive selection
 </quick_start>
 
 <intake>
-Use the **AskUserQuestion tool** to determine the task:
+**Auto-detection heuristics (try before asking):**
+
+```bash
+# Check if machete is installed
+which git-machete || echo "TASK: install"
+
+# Check if machete file exists
+[ -f "$(git rev-parse --git-common-dir)/machete" ] || echo "TASK: setup"
+
+# Check sync status (parse for out-of-sync branches)
+git machete status 2>/dev/null | grep -E "^\s+x-" && echo "TASK: sync"
+
+# Check for merged branches
+git machete status 2>/dev/null | grep -E "^\s+m-" && echo "TASK: cleanup"
+
+# Check if PRs exist
+git machete github anno-prs 2>/dev/null | grep -q "PR #" || echo "TASK: create-prs"
+```
+
+**If auto-detection is ambiguous**, use the **AskUserQuestion tool**:
 
 ```
 AskUserQuestion:
@@ -138,6 +166,59 @@ AskUserQuestion:
 ```
 
 </intake>
+
+<parsing_status_output>
+**Parsing `git machete status` output programmatically:**
+
+The status output uses a tree structure with prefixes indicating sync state:
+
+```
+  main
+  |
+  o-feature-base *   # 'o-' = in sync, '*' = current branch
+  | |
+  | x-feature-part-1 # 'x-' = out of sync (needs rebase)
+  | |
+  | o-feature-part-2 # 'o-' = in sync
+  |
+  m-old-feature      # 'm-' = merged into parent
+```
+
+**Extract branches needing rebase:**
+
+```bash
+git machete status | grep -E "^\s+x-" | sed 's/.*x-//' | cut -d' ' -f1
+```
+
+**Extract merged branches (candidates for cleanup):**
+
+```bash
+git machete status | grep -E "^\s+m-" | sed 's/.*m-//' | cut -d' ' -f1
+```
+
+**Get current branch in stack:**
+
+```bash
+git machete status | grep '\*' | sed 's/.*[oxm]-//' | cut -d' ' -f1
+```
+
+**Check if any branch needs action:**
+
+```bash
+# Returns exit code 0 if all synced, 1 if any need rebase
+git machete status | grep -qE "^\s+x-" && echo "Branches need sync" || echo "All synced"
+```
+
+**JSON-like structured output:**
+
+```bash
+# Get branch relationships as parseable format
+git machete show up    # Parent of current branch
+git machete show down  # First child of current branch
+git machete list-branches # All branches in layout
+```
+
+</parsing_status_output>
 
 <routing>
 | Response | Workflow |
