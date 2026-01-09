@@ -176,6 +176,10 @@ Follow it EXACTLY. No implementation without failing test first. No exceptions.
    - Coverage meets requirements
    - Output: <promise>WORK COMPLETE</promise>
 
+11. **Git Action** (after completion):
+   - Ask user what to do next with AskUserQuestion
+   - Options: Create PR (recommended), Commit only, Push only, Stop
+
 ## Key Rules
 - TDD per devtools:tdd-typescript - NO EXCEPTIONS
 - Fix ALL findings before new features
@@ -183,6 +187,42 @@ Follow it EXACTLY. No implementation without failing test first. No exceptions.
 - Only output completion promise when genuinely done
 " --completion-promise "WORK COMPLETE" --max-iterations 50`,
 });
+```
+
+## Step 5: Git Action (After Loop Completes)
+
+```javascript
+AskUserQuestion({
+  questions: [
+    {
+      question: "Work complete. What would you like to do?",
+      header: "Git action",
+      options: [
+        {
+          label: "Create PR (Recommended)",
+          description: "Commit, push, and create pull request",
+        },
+        {
+          label: "Commit & Push",
+          description: "Commit changes and push to origin",
+        },
+        { label: "Commit only", description: "Commit changes without pushing" },
+        { label: "Stop", description: "Done for now, no git actions" },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
+
+// Execute based on answer
+if (answer === "Create PR (Recommended)") {
+  Skill({ skill: "crew:git:pr" });
+} else if (answer === "Commit & Push") {
+  Skill({ skill: "crew:git:commit-and-push" });
+} else if (answer === "Commit only") {
+  Skill({ skill: "crew:git:commit" });
+}
+// "Stop" = do nothing
 ```
 
 </workflow>
@@ -267,6 +307,7 @@ Read({ file_path: "/tmp/feature-after-submit.png" });
 - [ ] Browser testing for UI stories
 - [ ] Feature video recorded for UI/frontend work
 - [ ] `<promise>WORK COMPLETE</promise>` output when genuinely done
+- [ ] Git action question asked (PR/commit/push/stop)
 
 </success_criteria>
 
