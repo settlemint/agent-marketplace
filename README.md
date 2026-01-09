@@ -149,6 +149,26 @@ Modern development tools with MCP-first skills. Uses Context7 for up-to-date lib
 
 **Key feature:** Every skill fetches documentation from MCP before implementing, ensuring up-to-date API usage.
 
+## Configuration
+
+### Environment Variables
+
+Configure in `.claude/settings.json` under the `env` key:
+
+| Variable                    | Values        | Default  | Purpose                                                                                               |
+| --------------------------- | ------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| `FORCE_AUTOUPDATE_PLUGINS`  | `"1"` / `"0"` | Disabled | Force reinstall all plugins on every startup. Useful for development. Adds ~2-5s to startup time.    |
+
+Example:
+
+```json
+{
+  "env": {
+    "FORCE_AUTOUPDATE_PLUGINS": "1"
+  }
+}
+```
+
 ## Acknowledgments
 
 This plugin builds on ideas and patterns from:

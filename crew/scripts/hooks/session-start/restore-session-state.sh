@@ -15,9 +15,15 @@ set +e
 
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 
-# Read stdin to get event info
+# Read stdin to get event info (includes agent_type since v2.1.2)
 INPUT=$(cat)
 EVENT_TYPE=$(echo "$INPUT" | jq -r '.type // "unknown"' 2>/dev/null)
+AGENT_TYPE=$(echo "$INPUT" | jq -r '.agent_type // ""' 2>/dev/null)
+
+# Skip for subagents - they don't need session state restoration
+if [[ -n "$AGENT_TYPE" && "$AGENT_TYPE" != "null" ]]; then
+  exit 0
+fi
 
 # Get branch info (handle detached HEAD)
 BRANCH=$(git -C "$PROJECT_DIR" branch --show-current 2>/dev/null || echo '')

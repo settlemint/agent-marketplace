@@ -7,6 +7,15 @@
 # Hooks must never fail
 set +e
 
+# Read stdin to check agent_type (since v2.1.2)
+INPUT=$(cat)
+AGENT_TYPE=$(echo "$INPUT" | jq -r '.agent_type // ""' 2>/dev/null)
+
+# Skip for subagents - they don't need stack status info
+if [[ -n "$AGENT_TYPE" && "$AGENT_TYPE" != "null" ]]; then
+  exit 0
+fi
+
 # Check if in a git repo
 if ! git rev-parse --git-dir &>/dev/null 2>&1; then
   exit 0
