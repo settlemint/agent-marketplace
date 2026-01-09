@@ -39,7 +39,6 @@ cat <<'EOF'
 |-------|----------|---------|
 | ast-grep | rename, replace, refactor, imports | AST-aware code search & refactor |
 | git | commit, branch, pr | Git conventions and workflows |
-| compound-engineering | agent, orchestration | Agent-native architecture (via Every plugin) |
 | skill-builder | skill, create skill | Skill creation framework |
 | todo-tracking | todo, task | File-based task management |
 
