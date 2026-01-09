@@ -158,10 +158,16 @@ Follow it EXACTLY. No implementation without failing test first. No exceptions.
    - Conventional commits per story/fix
    - Push regularly
 
-8. **Check Completion**:
+8. **Integration Tests** (final validation):
+   - Run: bun run test:integration (if script exists)
+   - If failures: add to findings and fix
+   - This validates the full application works end-to-end
+
+9. **Check Completion**:
    - All stories status: complete
    - ZERO findings in plan (all fixed)
    - CI passing (no failures)
+   - Integration tests passing (if they exist)
    - Coverage meets requirements
    - Output: <promise>WORK COMPLETE</promise>
 
@@ -241,6 +247,7 @@ Read({ file_path: "/tmp/feature-after-submit.png" });
 - [ ] devtools:tdd-typescript skill followed for ALL stories
 - [ ] ALL findings fixed (P0, P1, P2, observations) - ZERO open
 - [ ] CI passing with no failures
+- [ ] Integration tests passing (if test:integration exists)
 - [ ] Coverage requirements met per TDD skill
 - [ ] Browser testing for UI stories
 - [ ] `<promise>WORK COMPLETE</promise>` output when genuinely done
