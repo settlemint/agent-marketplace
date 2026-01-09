@@ -13,6 +13,7 @@ allowed-tools:
   - MCPSearch
 skills:
   - crew:crew-patterns
+  - n-skills:orchestration
 context: fork
 hooks:
   PostToolUse: false
@@ -47,6 +48,7 @@ const legs = [
 ];
 
 // All 7 in single message for parallelism
+// Per n-skills:orchestration - haiku for fast parallel checks
 for (const leg of legs) {
   Task({
     subagent_type: `crew:review:${leg}-reviewer`,
@@ -60,6 +62,7 @@ Fix: recommended solution
 
 Focus on ${legFocus[leg]}. Be thorough.`,
     description: `${leg}-review`,
+    model: "haiku",
     run_in_background: true,
   });
 }

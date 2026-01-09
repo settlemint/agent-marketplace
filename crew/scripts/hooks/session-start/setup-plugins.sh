@@ -197,7 +197,7 @@ echo ""
 
 echo "Additional plugins:"
 force_update_plugin "claude-mem@thedotmack" "claude-mem (memory)"
-force_update_plugin "orchestration@n-skills" "orchestration (n-skills)"
+force_update_plugin "n-skills@n-skills" "n-skills (orchestration)"
 echo ""
 
 # Summary
@@ -213,7 +213,7 @@ if [[ ${#ERRORS[@]} -eq 0 ]]; then
   echo "  • crew@settlemint - Work orchestration (/design, /build, /check)"
   echo "  • devtools@settlemint - Development skills (React, API, etc.)"
   echo "  • claude-mem - Memory persistence"
-  echo "  • orchestration@n-skills - N-Skills orchestration"
+  echo "  • n-skills - Multi-agent orchestration patterns"
   echo ""
   echo "Get started:"
   echo "  /crew:plan <feature>  - Plan a feature"

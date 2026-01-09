@@ -19,7 +19,7 @@ allowed-tools:
   - Skill
 skills:
   - crew:crew-patterns
-  - orchestration
+  - n-skills:orchestration
 ---
 
 <objective>
@@ -84,11 +84,13 @@ TodoWrite([
 ## Step 3: Spawn Research Agents (parallel)
 
 ```javascript
-// All 4 research agents in parallel - each must return open_questions
+// All 4 research agents in parallel using haiku (fast information gathering)
+// Per n-skills:orchestration - haiku for parallel research, sonnet for implementation
 Task({
   subagent_type: "crew:design:codebase-analyst",
   prompt: `Feature: ${feature}. Find: key files, patterns, anti-patterns. List open_questions: ambiguities, unclear integration points.`,
   description: "codebase",
+  model: "haiku",
   run_in_background: true,
 });
 
@@ -96,6 +98,7 @@ Task({
   subagent_type: "crew:design:docs-researcher",
   prompt: `Feature: ${feature}. Find: best practices, examples, gotchas. List open_questions: multiple valid approaches needing decision.`,
   description: "docs",
+  model: "haiku",
   run_in_background: true,
 });
 
@@ -103,6 +106,7 @@ Task({
   subagent_type: "crew:design:architecture-analyst",
   prompt: `Feature: ${feature}. Design: components, interfaces, data flow. List open_questions: trade-offs needing user input.`,
   description: "architecture",
+  model: "haiku",
   run_in_background: true,
 });
 
@@ -110,6 +114,7 @@ Task({
   subagent_type: "crew:design:quality-analyst",
   prompt: `Feature: ${feature}. Analyze: performance, security (STRIDE), UX. List open_questions: unspecified requirements, scale unknowns.`,
   description: "quality",
+  model: "haiku",
   run_in_background: true,
 });
 ```

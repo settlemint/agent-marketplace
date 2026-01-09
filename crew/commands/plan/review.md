@@ -11,7 +11,7 @@ allowed-tools:
   - TodoWrite
 skills:
   - crew:crew-patterns
-  - orchestration
+  - n-skills:orchestration
 ---
 
 <objective>
@@ -61,6 +61,7 @@ TodoWrite([
 
 ```javascript
 // 3 reviewer agents + Codex MCP - each returns findings + new open_questions
+// Per n-skills:orchestration - sonnet (default) for analysis tasks
 Task({
   subagent_type: "crew:design:architecture-analyst",
   prompt: `Review plan for: boundaries, data flow, dependencies, trade-offs. Return: { findings: [...], open_questions: [...] }\n\n${plan}`,
