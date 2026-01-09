@@ -6,7 +6,8 @@
       "DISABLE_COST_WARNINGS": "1",
       "ENABLE_LSP_TOOLS": "1",
       "ENABLE_TOOL_SEARCH": "1",
-      "ENABLE_EXPERIMENTAL_MCP_CLI": "0"
+      "ENABLE_EXPERIMENTAL_MCP_CLI": "0",
+      "FORCE_AUTOUPDATE_PLUGINS": "1"
     },
     "enableAllProjectMcpServers": true,
     "includeCoAuthoredBy": false,
@@ -18,18 +19,5 @@
       "type": "command",
       "command": "npx -y @owloops/claude-powerline@latest --style=powerline --theme=tokyo-night",
       "padding": 0
-    },
-    "hooks": {
-      "SessionStart": [
-        {
-          "matcher": "startup",
-          "hooks": [
-            {
-              "type": "command",
-              "command": "if grep -q '\"crew@settlemint\".*\"scope\":.*\"user\"' ~/.claude/plugins/installed_plugins.json 2>/dev/null; then echo 'Crew plugin loaded.'; else claude plugin marketplace add settlemint/agent-marketplace >/dev/null 2>&1; claude plugin install crew@settlemint -s user >/dev/null 2>&1; printf '{\"hookResponse\":{\"decision\":\"STOP\",\"message\":\"Crew plugin installed globally. Please restart Claude to load it.\"}}'; fi"
-            }
-          ]
-        }
-      ]
     }
   }
