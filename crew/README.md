@@ -227,6 +227,27 @@ The machete context automatically suggests next steps:
 - Auto-lint on file modifications
 - Git commit validation (requires CI pass)
 - PR creation validation
+- Agent type detection (skip hooks for subagents since Claude Code 2.1.2)
+
+### Auto-Update Behavior
+
+Set `FORCE_AUTOUPDATE_PLUGINS=1` in `.claude/settings.json` to force plugin reinstall on every startup:
+
+```json
+{
+  "env": {
+    "FORCE_AUTOUPDATE_PLUGINS": "1"
+  }
+}
+```
+
+**When to use:**
+
+- Developing plugin locally
+- Testing latest marketplace versions
+- Troubleshooting plugin issues
+
+**Trade-off:** Adds ~2-5 seconds to startup time.
 
 ## Structure
 

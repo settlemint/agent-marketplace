@@ -95,7 +95,7 @@ const branchName = customName || suggestedName;
 </phase>
 
 <phase name="create-worktree">
-**Create the worktree and switch to it:**
+**Create the worktree:**
 
 ```bash
 # Determine base branch
@@ -104,26 +104,49 @@ base="${base_choice === 'main' ? 'main' : '$(git branch --show-current)'}"
 # Create worktree with phantom
 phantom create <branchName> --base $base
 
-# Get the worktree path and switch to it
+# Get the worktree path for display
 wtPath=$(phantom where <branchName>)
-cd "$wtPath"
-
-# Verify we're in the worktree
-pwd
-git branch --show-current
+echo "Worktree created at: $wtPath"
 ```
 
 </phase>
 
-<phase name="confirm-switch">
-**Confirm the switch:**
+<phase name="open-editor">
+**Open editor in the new worktree (non-blocking):**
+
+```bash
+# Open editor in the new worktree
+# Uses configured editor (phantom preferences get editor)
+# Defaults to VS Code if not set
+phantom edit <branchName> 2>/dev/null || true
+```
+
+**Note:** Editor opens asynchronously. If it fails, continue without error.
+</phase>
+
+<phase name="confirm-and-instruct">
+**Tell user exactly what to do next:**
 
 ```
-Switched to worktree: <branchName>
-Location: <path>
-Branch: <branchName>
+✅ Worktree created successfully!
 
-Ready to continue working in this worktree.
+**Branch:** <branchName>
+**Location:** <path>
+
+**IMPORTANT: To continue working in the new worktree:**
+
+Option 1 - New terminal:
+  cd <path>
+  claude
+
+Option 2 - Phantom shell (if using iTerm/Terminal):
+  phantom shell <branchName>
+
+Option 3 - Editor opened automatically
+  The editor should have opened at the worktree location.
+  Start a new Claude Code session there.
+
+⚠️ Do NOT use 'git checkout' or 'git switch' - worktrees have dedicated branches.
 ```
 
 </phase>
@@ -134,7 +157,9 @@ Ready to continue working in this worktree.
 
 - [ ] Username prefix in branch name
 - [ ] Worktree created with phantom
-- [ ] User informed of location and how to switch
+- [ ] Editor opened automatically (phantom edit)
+- [ ] Clear instructions shown for how to switch to worktree
+- [ ] User informed that auto-switch doesn't work in Claude Code
 - [ ] Branch name follows conventions (username/type/description)
 
 </success_criteria>

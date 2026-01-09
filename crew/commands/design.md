@@ -163,13 +163,17 @@ if (branch === "main" || branch === "master") {
 }
 ```
 
-**Handle isolation choice by delegating to canonical skills:**
+**Handle isolation choice:**
 
 ```javascript
 if (isolationChoice === "New worktree") {
-  // Delegate to worktree skill (handles username prefix, name confirmation, phantom create, cd)
+  // Delegate to worktree skill (handles username prefix, name confirmation, phantom create)
   Skill({ skill: "crew:git:worktree" });
-  // Worktree skill switches to the new directory automatically
+
+  // CRITICAL: Worktree requires manual switch - EXIT with clear instructions
+  // The worktree skill will show instructions and open editor
+  // DO NOT continue to research phase - user must switch sessions
+  return; // Exit design command
 }
 
 if (isolationChoice === "Stacked branch") {
@@ -178,17 +182,134 @@ if (isolationChoice === "Stacked branch") {
 
   // Add to machete stack
   Skill({ skill: "crew:git:stack-add" });
+  // Continue to research phase in same session
 }
 
 if (isolationChoice === "Simple branch") {
   // Create branch with username prefix (from main)
   Skill({ skill: "crew:git:branch-new", args: "--base main" });
+  // Continue to research phase in same session
 }
-
-// All paths continue to research phase - no exit needed
 ```
 
+**IMPORTANT: Worktree isolation requires session switch.**
+
+When "New worktree" is chosen:
+1. Worktree is created via `phantom create`
+2. Editor opens via `phantom edit`
+3. Clear instructions shown for how to switch
+4. **Command EXITS** - user must start new Claude session in worktree
+5. User runs `/crew:design <feature>` again in the new worktree session
+
 **If already in a worktree or feature branch:** Skip isolation question, proceed with current branch.
+</phase>
+
+<phase name="interview">
+**Clarify ambiguous requirements BEFORE research:**
+
+Analyze the feature description and ask 2-4 contextual questions if needed:
+
+```javascript
+// Determine if interview is needed based on description clarity
+const needsInterview =
+  featureDescription.length < 100 || // Too short
+  !featureDescription.includes("should") || // No clear requirements
+  featureDescription.includes("?") || // Contains questions
+  featureDescription.split(" ").length < 20; // Very brief
+
+if (needsInterview) {
+  // Build questions dynamically based on what's missing
+  const questions = [];
+
+  // Question 1: Scope boundaries (always useful)
+  questions.push({
+    question: "What should be explicitly OUT of scope for this feature?",
+    header: "Scope",
+    options: [
+      {
+        label: "Keep it minimal",
+        description: "Only the core functionality described",
+      },
+      {
+        label: "Include related improvements",
+        description: "Fix adjacent issues while we're there",
+      },
+      {
+        label: "Full solution",
+        description: "End-to-end implementation with edge cases",
+      },
+    ],
+    multiSelect: false,
+  });
+
+  // Question 2: Technical constraints (if technical details unclear)
+  if (!featureDescription.match(/use|with|via|using/i)) {
+    questions.push({
+      question: "Are there technical constraints I should know about?",
+      header: "Constraints",
+      options: [
+        { label: "No constraints", description: "Free to choose best approach" },
+        {
+          label: "Must integrate with existing",
+          description: "Follow current patterns and APIs",
+        },
+        {
+          label: "Backward compatible",
+          description: "Can't break existing functionality",
+        },
+      ],
+      multiSelect: false,
+    });
+  }
+
+  // Question 3: Success metrics (if outcome unclear)
+  if (!featureDescription.match(/goal|metric|measure|success/i)) {
+    questions.push({
+      question: "How will we know this is successful?",
+      header: "Success",
+      options: [
+        { label: "It works", description: "Feature functions as described" },
+        { label: "Tests pass", description: "Automated tests verify behavior" },
+        { label: "User validates", description: "You'll manually verify the outcome" },
+        { label: "Performance target", description: "Must meet specific benchmarks" },
+      ],
+      multiSelect: false,
+    });
+  }
+
+  // Question 4: Priority/urgency (helps with planning)
+  questions.push({
+    question: "What's the priority for this work?",
+    header: "Priority",
+    options: [
+      { label: "Critical", description: "Blocking other work, needs immediate attention" },
+      { label: "High", description: "Important feature, should be done soon" },
+      { label: "Normal", description: "Standard priority, fit into regular workflow" },
+      { label: "Low", description: "Nice to have, can wait" },
+    ],
+    multiSelect: false,
+  });
+
+  // Ask max 4 questions (AskUserQuestion limit)
+  AskUserQuestion({ questions: questions.slice(0, 4) });
+
+  // Store answers to inform research phase
+  // interviewAnswers = { scope, constraints, success, priority }
+}
+```
+
+**Skip interview if:**
+
+- Feature description is >200 words with clear requirements
+- User explicitly says "skip interview" or "just build it"
+- Description contains acceptance criteria or user stories
+
+**Interview answers inform research:**
+
+- Scope → Focus codebase-analyst on specific areas
+- Constraints → Tell docs-researcher what patterns to look for
+- Success → Guide quality-analyst on what to verify
+- Priority → Determines P1/P2/P3 task distribution
 </phase>
 
 <phase name="parallel-research">
@@ -253,6 +374,90 @@ Read({
 // - Open Questions: Max 3 NEEDS CLARIFICATION items
 ```
 
+</phase>
+
+<phase name="triage">
+**Let user select which stories to implement:**
+
+After the plan is written, extract user stories and let the user choose:
+
+```javascript
+// Extract user stories from the plan
+const planContent = Read({ file_path: `.claude/plans/${slug}.md` });
+
+// Parse user stories (format: ### US-X: Title [P1/P2/P3])
+const storyPattern = /### (US-\d+): (.+) \[(P[123])\]/g;
+const stories = [...planContent.matchAll(storyPattern)].map((m) => ({
+  id: m[1],
+  title: m[2],
+  priority: m[3],
+}));
+
+// Group by priority for display
+const p1Stories = stories.filter((s) => s.priority === "P1");
+const p2Stories = stories.filter((s) => s.priority === "P2");
+const p3Stories = stories.filter((s) => s.priority === "P3");
+
+// Build options (max 4 due to AskUserQuestion limit)
+// Option 1: P1 only (critical path)
+// Option 2: P1 + P2 (recommended)
+// Option 3: All stories
+// Option 4: Custom selection (opens follow-up question)
+
+AskUserQuestion({
+  questions: [
+    {
+      question: `Which user stories should be implemented?\n\nP1 (${p1Stories.length}): ${p1Stories.map((s) => s.title).join(", ")}\nP2 (${p2Stories.length}): ${p2Stories.map((s) => s.title).join(", ")}\nP3 (${p3Stories.length}): ${p3Stories.map((s) => s.title).join(", ")}`,
+      header: "Stories",
+      options: [
+        {
+          label: "P1 only (critical)",
+          description: `${p1Stories.length} stories - core functionality`,
+        },
+        {
+          label: "P1 + P2 (Recommended)",
+          description: `${p1Stories.length + p2Stories.length} stories - full feature`,
+        },
+        {
+          label: "All stories",
+          description: `${stories.length} stories - complete implementation`,
+        },
+        {
+          label: "Let me pick",
+          description: "Select individual stories",
+        },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
+
+// If "Let me pick" selected, show individual story selection
+if (triageChoice === "Let me pick" && stories.length <= 4) {
+  AskUserQuestion({
+    questions: [
+      {
+        question: "Select the stories you want to implement:",
+        header: "Selection",
+        options: stories.map((s) => ({
+          label: `${s.id} [${s.priority}]`,
+          description: s.title,
+        })),
+        multiSelect: true,
+      },
+    ],
+  });
+}
+
+// Store selected stories for task generation
+// selectedStories = stories based on triage choice
+```
+
+**Triage results inform task generation:**
+
+- Only generate task files for selected stories
+- Update plan file to mark deselected stories as "DEFERRED"
+- Set story labels in task filenames based on selection
 </phase>
 
 <phase name="generate-tasks">
@@ -350,13 +555,17 @@ Next step:
 <success_criteria>
 
 - [ ] Isolation question asked FIRST if on main/master
-- [ ] Worktree created with phantom if chosen (auto-switched via cd)
-- [ ] Branch created/switched before any research
+- [ ] Worktree: created with phantom, editor opened, clear instructions shown, command EXITS
+- [ ] Stacked/Simple branch: created and switched, continues to research
+- [ ] Interview questions asked for ambiguous descriptions
+- [ ] Interview skipped for detailed specs (>200 words with criteria)
 - [ ] claude-mem queried for past learnings (if available)
 - [ ] All 4 research agents launched in single message
 - [ ] Codex MCP called directly for synthesis
 - [ ] spec-flow-analyzer runs after all research collected
 - [ ] Plan contains user stories with P1/P2/P3 priorities
+- [ ] Triage question asked to select stories
+- [ ] Only selected stories generate task files
 - [ ] Plan contains FR-XXX requirements and SC-XXX criteria
 - [ ] Plan contains architecture and quality analyses
 - [ ] Task files follow naming convention
