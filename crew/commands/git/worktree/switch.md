@@ -13,32 +13,28 @@ skills:
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/phantom-context.sh`
 </phantom_context>
 
-<notes>
-Switches the current shell session to a different worktree using cd.
-</notes>
+<objective>
 
-<process>
+Switch to a different worktree. Ask user to select if no argument provided.
 
-<phase name="list-worktrees">
-**Get available worktrees:**
+</objective>
+
+<workflow>
+
+## Step 1: List Available Worktrees
 
 ```bash
 phantom list
 ```
 
-</phase>
-
-<phase name="select-worktree">
-**If no argument provided, ask user to select:**
+## Step 2: Select Worktree (if no argument)
 
 ```javascript
-// Get worktree names
 const worktrees = Bash({ command: "phantom list --names" }).trim().split("\n");
-
 AskUserQuestion({
   questions: [
     {
-      question: "Which worktree do you want to switch to?",
+      question: "Which worktree?",
       header: "Worktree",
       options: worktrees.slice(0, 4).map((wt) => ({
         label: wt,
@@ -50,42 +46,19 @@ AskUserQuestion({
 });
 ```
 
-</phase>
-
-<phase name="switch">
-**Switch to the selected worktree:**
+## Step 3: Switch
 
 ```bash
-# Get the worktree path
-wtPath=$(phantom where <worktreeName>)
-
-# Switch to it
+wtPath=$(phantom where ${worktreeName})
 cd "$wtPath"
-
-# Verify the switch
-pwd
-git branch --show-current
+pwd && git branch --show-current
 ```
 
-</phase>
-
-<phase name="confirm">
-**Confirm the switch:**
-
-```
-Switched to worktree: <worktreeName>
-Location: <path>
-Branch: <branch>
-```
-
-</phase>
-
-</process>
+</workflow>
 
 <success_criteria>
 
-- [ ] Worktree selected (from arg or prompt)
+- [ ] Worktree selected
 - [ ] Directory changed to worktree path
-- [ ] Current branch confirmed
 
 </success_criteria>

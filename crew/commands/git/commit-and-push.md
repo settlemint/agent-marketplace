@@ -2,18 +2,6 @@
 name: crew:git:commit-and-push
 description: Create a conventional commit and push to origin
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - Grep
-  - Glob
-  - Task
-  - AskUserQuestion
-  - TodoWrite
-  - WebFetch
-  - WebSearch
-  - MCPSearch
   - Skill
 ---
 
@@ -21,28 +9,31 @@ allowed-tools:
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/commit-context.sh 2>&1`
 </commit_context>
 
-<notes>
-This command delegates to canonical skill locations for each phase.
-</notes>
+<objective>
 
-<process>
+Commit changes and push. Delegates to crew:git:commit and crew:git:push.
 
-<phase name="commit">
-**Create conventional commit:**
+</objective>
+
+<workflow>
+
+## Step 1: Commit
 
 ```javascript
 Skill({ skill: "crew:git:commit" });
 ```
 
-</phase>
-
-<phase name="push">
-**Sync stack (if machete), push, and update PR:**
+## Step 2: Push
 
 ```javascript
 Skill({ skill: "crew:git:push" });
 ```
 
-</phase>
+</workflow>
 
-</process>
+<success_criteria>
+
+- [ ] Changes committed
+- [ ] Branch pushed
+
+</success_criteria>

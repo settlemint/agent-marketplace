@@ -1,46 +1,32 @@
 ---
 name: crew:git:branch:create
-description: Create a feature branch from main
+description: Create a feature branch (worktree, stacked, or simple)
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - Grep
-  - Glob
-  - Task
   - AskUserQuestion
-  - TodoWrite
-  - WebFetch
-  - WebSearch
-  - MCPSearch
   - Skill
 ---
-
-<branch_context>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/branch-context.sh`
-</branch_context>
-
-<worktree_status>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
-</worktree_status>
-
-<phantom_context>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/phantom-context.sh`
-</phantom_context>
 
 <stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 </stack_context>
 
-<notes>
-Branch naming per @rules/git-safety.md: `type/short-description`
-</notes>
+<worktree_status>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
+</worktree_status>
 
-<process>
+<objective>
 
-<phase name="ask-isolation">
-**Ask for branch isolation strategy:**
+Ask isolation strategy. Delegate to worktree:create, branch:new + stacked:add, or branch:new.
+
+</objective>
+
+<workflow>
+
+## Step 1: Check Worktree Context
+
+If already in a worktree → offer worktree or stacked options only.
+
+## Step 2: Ask Isolation Strategy
 
 ```javascript
 AskUserQuestion({
@@ -51,12 +37,9 @@ AskUserQuestion({
       options: [
         {
           label: "New worktree (Recommended)",
-          description: "Isolated phantom worktree for independent work",
+          description: "Isolated phantom worktree",
         },
-        {
-          label: "Stacked branch",
-          description: "Add to machete stack for dependent changes",
-        },
+        { label: "Stacked branch", description: "Add to machete stack" },
         {
           label: "Simple branch",
           description: "Regular branch in current checkout",
@@ -68,80 +51,32 @@ AskUserQuestion({
 });
 ```
 
-</phase>
+## Step 3: Execute Choice
 
-<phase name="execute-choice">
-**Delegate to canonical skill based on choice:**
-
-If "New worktree" selected:
+**If "New worktree":**
 
 ```javascript
-Skill({ skill: "crew:git:worktree" });
-// Worktree skill handles: username prefix, type selection, name confirmation, phantom create
+Skill({ skill: "crew:git:worktree:create" });
 ```
 
-If "Stacked branch" selected:
+**If "Stacked branch":**
 
 ```javascript
-// Create branch with username prefix (from current)
 Skill({ skill: "crew:git:branch:new", args: "--base current" });
-
-// Add to machete stack
 Skill({ skill: "crew:git:stacked:add" });
 ```
 
-If "Simple branch" selected:
+**If "Simple branch":**
 
 ```javascript
-// Create branch with username prefix (from main)
 Skill({ skill: "crew:git:branch:new", args: "--base main" });
 ```
 
-</phase>
+</workflow>
 
-<phase name="worktree-context">
-**If already in a WORKTREE:**
+<success_criteria>
 
-When working in a worktree, cannot switch branches. Options:
+- [ ] User chose isolation strategy
+- [ ] Branch created via delegated skill
 
-```javascript
-AskUserQuestion({
-  questions: [
-    {
-      question: "You're in a worktree. How do you want to proceed?",
-      header: "Method",
-      options: [
-        {
-          label: "Create new worktree",
-          description: "New branch in a separate worktree directory",
-        },
-        {
-          label: "Stack on current",
-          description: "Child of current branch in this worktree (advanced)",
-        },
-      ],
-      multiSelect: false,
-    },
-  ],
-});
-```
-
-If "Create new worktree":
-
-```javascript
-Skill({ skill: "crew:git:worktree" });
-```
-
-If "Stack on current":
-
-```javascript
-// Create branch with username prefix (from current)
-Skill({ skill: "crew:git:branch:new", args: "--base current" });
-
-// Add to machete stack
-Skill({ skill: "crew:git:stacked:add" });
-```
-
-</phase>
-
-</process>
+</success_criteria>

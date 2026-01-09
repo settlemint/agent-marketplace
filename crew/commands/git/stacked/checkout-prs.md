@@ -3,18 +3,8 @@ name: crew:git:stacked:checkout-prs
 description: Checkout PR branches from GitHub and add to machete layout
 argument-hint: "[--mine | --all | --by=<user> | PR numbers]"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
   - Bash
-  - Grep
-  - Glob
-  - Task
   - AskUserQuestion
-  - TodoWrite
-  - WebFetch
-  - WebSearch
-  - MCPSearch
   - Skill
 ---
 
@@ -27,15 +17,16 @@ allowed-tools:
 </stack_context>
 
 <objective>
-Checkout PR branches from GitHub locally and optionally add them to the machete layout.
-Useful for reviewing someone's stacked PRs or resuming work on your own PRs.
+
+Checkout PR branches from GitHub and add them to the machete layout.
+
 </objective>
 
-<process>
+<workflow>
 
-## Step 1: Determine Which PRs to Checkout
+## Step 1: Determine Which PRs
 
-If no argument provided:
+If no argument:
 
 ```javascript
 AskUserQuestion({
@@ -64,65 +55,49 @@ AskUserQuestion({
 ## Step 2: List Available PRs
 
 ```bash
-# Show available PRs based on selection
-case "$selection" in
-    "My PRs")
-        gh pr list --author @me --state open --json number,title,headRefName
-        ;;
-    "All open PRs")
-        gh pr list --state open --limit 20 --json number,title,headRefName,author
-        ;;
-    "By author")
-        # Prompt for username
-        gh pr list --author "$username" --state open --json number,title,headRefName
-        ;;
-esac
+# My PRs
+gh pr list --author @me --state open --json number,title,headRefName
+
+# All open PRs
+gh pr list --state open --limit 20 --json number,title,headRefName,author
+
+# By author
+gh pr list --author "$username" --state open --json number,title,headRefName
 ```
 
 ## Step 3: Checkout PRs
 
-**For your own PRs:**
+**My PRs:**
 
 ```bash
 git machete github checkout-prs --mine
 ```
 
-**For all open PRs:**
+**All open PRs:**
 
 ```bash
 git machete github checkout-prs --all
 ```
 
-**For specific PRs:**
+**Specific PRs:**
 
 ```bash
 git machete github checkout-prs 123 456 789
 ```
 
-**For PRs by a specific author:**
+**By author:**
 
 ```bash
 git machete github checkout-prs --by=username
 ```
 
-## Step 4: What Happens
-
-When checking out PRs, git-machete:
-
-1. Fetches PR branches from GitHub
-2. Creates local tracking branches
-3. Adds branches to the machete layout (preserving stack structure)
-4. Adds `rebase=no push=no` qualifiers for branches not authored by you
-
-## Step 5: Review the Layout
+## Step 4: Review Layout
 
 ```bash
 git machete status --list-commits
 ```
 
-## Step 6: Optionally Sync the Stack
-
-After checkout, you may want to sync:
+## Step 5: Optionally Sync
 
 ```javascript
 AskUserQuestion({
@@ -140,68 +115,30 @@ AskUserQuestion({
 });
 ```
 
-If yes:
+If yes: `Skill({ skill: "crew:git:stacked:traverse" })`
 
-```javascript
-Skill({ skill: "crew:git:stacked:traverse" });
-```
-
-</process>
+</workflow>
 
 <qualifiers>
 
-When checking out someone else's PRs, branches are automatically annotated:
+When checking out someone else's PRs, branches are annotated:
 
 ```
 feature-branch  PR #123 rebase=no push=no
 ```
 
-**Qualifiers meaning:**
+- `rebase=no` — Don't rebase (you don't own it)
+- `push=no` — Don't push (you don't own it)
 
-- `rebase=no` — Don't rebase this branch during traverse (you don't own it)
-- `push=no` — Don't push this branch during traverse (you don't own it)
-
-**To remove qualifiers** (if you take ownership):
-
-```bash
-git machete anno <branch> ""
-# Or keep just the PR annotation:
-git machete anno <branch> "PR #123"
-```
+To remove qualifiers: `git machete anno <branch> ""`
 
 </qualifiers>
 
-<use_cases>
-
-**Review someone's stacked PRs:**
-
-```bash
-git machete github checkout-prs --by=colleague
-git machete status --list-commits
-```
-
-**Resume work on your own PRs from another machine:**
-
-```bash
-git machete github checkout-prs --mine
-git machete traverse -W -y
-```
-
-**Checkout a specific PR chain:**
-
-```bash
-# Checkout PR and its dependencies
-git machete github checkout-prs 456
-```
-
-</use_cases>
-
 <success_criteria>
 
-- [ ] PR branches checked out locally
-- [ ] Branches added to machete layout
-- [ ] Qualifiers set appropriately (rebase=no push=no for others' PRs)
-- [ ] Stack structure preserved from GitHub PR base relationships
-- [ ] `git machete status` shows correct tree
+- [ ] PR branches checked out
+- [ ] Branches added to layout
+- [ ] Qualifiers set appropriately
+- [ ] Stack structure preserved
 
 </success_criteria>

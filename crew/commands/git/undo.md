@@ -2,35 +2,33 @@
 name: crew:git:undo
 description: Undo last commit (keeps changes staged)
 allowed-tools:
-  - Read
-  - Write
-  - Edit
   - Bash
-  - Grep
-  - Glob
-  - Task
-  - AskUserQuestion
-  - TodoWrite
-  - WebFetch
-  - WebSearch
-  - MCPSearch
-  - Skill
 ---
 
 <undo_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/undo-context.sh`
 </undo_context>
 
-<process>
+<objective>
 
-**If "COMMIT ALREADY PUSHED"** → STOP. Requires force-push.
+Undo last commit, keeping changes staged. STOP if already pushed.
 
-**If "Safe to Undo":**
+</objective>
 
-1. `git reset --soft HEAD~1`
-2. `git status`
+<workflow>
 
-</process>
+## Step 1: Check Safety
+
+If `<undo_context>` shows "COMMIT ALREADY PUSHED" → STOP. Requires force-push.
+
+## Step 2: Undo Commit
+
+```bash
+git reset --soft HEAD~1
+git status
+```
+
+</workflow>
 
 <recovery>
 
@@ -40,3 +38,9 @@ git cherry-pick <sha>
 ```
 
 </recovery>
+
+<success_criteria>
+
+- [ ] Commit undone (changes remain staged)
+
+</success_criteria>

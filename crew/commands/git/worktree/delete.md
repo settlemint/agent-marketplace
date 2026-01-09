@@ -7,12 +7,17 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-<process>
+<objective>
 
-**Confirm deletion if worktree has uncommitted changes:**
+Delete worktree. Confirm if uncommitted changes exist.
+
+</objective>
+
+<workflow>
+
+## Step 1: Check for Uncommitted Changes
 
 ```javascript
-// Check for uncommitted changes
 const status = Bash({ command: `phantom exec ${name} git status --porcelain` });
 if (status.trim()) {
   AskUserQuestion({
@@ -34,14 +39,18 @@ if (status.trim()) {
 }
 ```
 
-**Delete the worktree:**
+## Step 2: Delete Worktree
 
 ```bash
-# Regular delete
-phantom delete <name>
-
-# Force delete if confirmed
-phantom delete <name> --force
+phantom delete ${name}        # Regular delete
+phantom delete ${name} --force  # If confirmed with uncommitted changes
 ```
 
-</process>
+</workflow>
+
+<success_criteria>
+
+- [ ] Uncommitted changes confirmed (if any)
+- [ ] Worktree deleted
+
+</success_criteria>

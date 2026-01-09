@@ -2,40 +2,34 @@
 name: crew:git:clean
 description: Clean up stale branches (deleted on remote)
 allowed-tools:
-  - Read
-  - Write
-  - Edit
   - Bash
-  - Grep
-  - Glob
-  - Task
-  - AskUserQuestion
-  - TodoWrite
-  - WebFetch
-  - WebSearch
-  - MCPSearch
-  - Skill
 context: fork
 hooks:
   PostToolUse: false
   PreToolUse: false
 ---
 
-<worktree_status>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
-</worktree_status>
-
-<stack_context>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
-</stack_context>
-
 <clean_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/clean-context.sh`
 </clean_context>
 
-<process>
+<objective>
 
-If cleanup commands shown → execute them.
+Delete local branches that no longer exist on remote. Execute cleanup commands if shown above.
+
+</objective>
+
+<workflow>
+
+## Step 1: Execute Cleanup
+
+If `<clean_context>` shows cleanup commands → execute them.
 If "No Stale Branches" → report no cleanup needed.
 
-</process>
+</workflow>
+
+<success_criteria>
+
+- [ ] Stale branches deleted (if any)
+
+</success_criteria>

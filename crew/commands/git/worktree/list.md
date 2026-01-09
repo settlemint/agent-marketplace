@@ -5,10 +5,18 @@ allowed-tools:
   - Bash
 ---
 
-<process>
+<objective>
+
+List all phantom worktrees.
+
+</objective>
+
+<workflow>
+
+## Step 1: List Worktrees
 
 ```bash
 phantom list
 ```
 
-</process>
+</workflow>

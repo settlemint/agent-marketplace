@@ -6,21 +6,35 @@ allowed-tools:
   - Bash
 ---
 
-<process>
+<objective>
+
+Checkout PR or issue into a new phantom worktree.
+
+</objective>
+
+<workflow>
+
+## Step 1: Checkout PR/Issue
 
 ```bash
-# Checkout PR or issue into a new worktree
-phantom gh checkout <number>
+phantom gh checkout ${number}
 ```
 
-**Output:**
+## Step 2: Instruct User
 
 ```
-Checked out PR/issue #<number>
-Worktree created at: <path>
+Checked out PR/issue #${number}
+Worktree created at: $(phantom where ${branchName})
 
 To work on this:
-  phantom shell <branch-name>
+  phantom shell ${branchName}
 ```
 
-</process>
+</workflow>
+
+<success_criteria>
+
+- [ ] PR/issue checked out
+- [ ] Worktree created
+
+</success_criteria>

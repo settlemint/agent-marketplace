@@ -2,47 +2,41 @@
 name: crew:git:stacked:slide-out
 description: Remove merged branches from stack, reconnect children, and update PRs
 allowed-tools:
-  - Read
-  - Write
-  - Edit
   - Bash
-  - Grep
-  - Glob
-  - Task
   - AskUserQuestion
-  - TodoWrite
-  - WebFetch
-  - WebSearch
-  - MCPSearch
   - Skill
 ---
 
 <worktree_status>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh 2>&1`
 </worktree_status>
 
 <stack_context>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh 2>&1`
 </stack_context>
 
-<what_happens>
+<objective>
 
-1. Branch removed from `.git/machete`
-2. Children attached to parent
-3. Children rebased onto new parent (default)
-4. Optionally delete local branch
+Remove merged branches from machete layout, reconnect children to parent.
 
-</what_happens>
+</objective>
 
-<process>
+<workflow>
 
-**If in a WORKTREE:**
+## Step 1: Identify Merged Branches
 
-⚠️ Slide-out can be problematic in worktrees:
+```bash
+git machete status
+```
 
-- Cannot slide out the branch checked out in THIS worktree
-- Cannot slide out a branch checked out in ANOTHER worktree
-- `--delete` won't work for branches with active worktrees
+Look for gray edges (o) indicating merged branches.
+
+## Step 2: Handle Worktree
+
+If in a worktree, cannot slide out:
+
+- The branch checked out in THIS worktree
+- A branch checked out in ANOTHER worktree
 
 ```javascript
 AskUserQuestion({
@@ -60,75 +54,42 @@ AskUserQuestion({
           description: "See which branches have worktrees",
         },
       ],
+      multiSelect: false,
     },
   ],
 });
 ```
 
-**To slide out a branch with an active worktree:**
-
-1. First remove the worktree: `git worktree remove <path>`
-2. Then slide out: `git machete slide-out <branch>`
-3. Optionally delete: `git branch -d <branch>`
-
-**Safe slide-out in worktree (for non-worktree branches):**
-
-```bash
-# Use --no-rebase if children are in separate worktrees (they'll update themselves)
-git machete slide-out <branch> --no-rebase
-
-# Or with local branch deletion (only if no worktree)
-git machete slide-out <branch> --delete --no-rebase
-```
-
-**If in MAIN checkout (not a worktree):**
-
-Standard flow:
-
-1. Check for merged (gray edges): `git machete status`
-2. Slide out:
+## Step 3: Execute Slide-Out
 
 ```bash
 git machete slide-out <branch> --no-rebase  # For remote merges
 git machete slide-out <branch> --delete     # Also delete local
 ```
 
-3. Sync remaining: `git machete traverse -W -y -H`
-
-</process>
-
-<worktree_considerations>
-
-When using worktrees for stacked branches:
-
-- Each worktree keeps its branch checked out
-- Use `--no-rebase` since child worktrees will run `git machete update` themselves
-- Remove worktree before deleting its branch
-- After slide-out, each child worktree runs: `git machete update && git push --force-with-lease`
-
-</worktree_considerations>
-
-<pr_update>
-
-After sliding out, update any affected PRs:
+## Step 4: Update PRs
 
 ```bash
-# Check if any PRs exist for children that were re-parented
 if git machete is-managed "$(git branch --show-current)" 2>/dev/null; then
-  # Ensure config is set
   git config machete.github.prDescriptionIntroStyle full
-
-  # Retarget child PRs to new parent
   git machete github retarget-pr --branch "$(git machete show down 2>/dev/null | head -1)" 2>/dev/null || true
-
-  # Update all related PR descriptions
   git machete github update-pr-descriptions --related
 fi
 ```
 
-**What gets updated:**
+## Step 5: Sync Remaining
 
-- Child PRs retargeted to new parent (after parent slid out)
-- Stack chain descriptions refreshed across all related PRs
+```bash
+git machete traverse -W -y -H
+```
 
-</pr_update>
+</workflow>
+
+<success_criteria>
+
+- [ ] Merged branch removed from layout
+- [ ] Children reconnected to parent
+- [ ] Child PRs retargeted
+- [ ] PR descriptions updated
+
+</success_criteria>

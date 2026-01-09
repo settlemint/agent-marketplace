@@ -2,32 +2,30 @@
 name: crew:git:stacked:traverse
 description: Sync all stacked branches with parents and remotes
 allowed-tools:
-  - Read
-  - Write
-  - Edit
   - Bash
-  - Grep
-  - Glob
-  - Task
   - AskUserQuestion
-  - TodoWrite
-  - WebFetch
-  - WebSearch
-  - MCPSearch
   - Skill
 ---
 
 <worktree_status>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh 2>&1`
 </worktree_status>
 
 <stack_context>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh 2>&1`
 </stack_context>
 
-<process>
+<objective>
 
-**If no machete layout:**
+Sync all branches in the machete stack with their parents and remotes.
+
+</objective>
+
+<workflow>
+
+## Step 1: Check Layout
+
+If no machete layout:
 
 ```javascript
 AskUserQuestion({
@@ -40,7 +38,6 @@ AskUserQuestion({
           label: "Discover layout (Recommended)",
           description: "Auto-detect from history",
         },
-        { label: "Create manually", description: "Open editor" },
         { label: "Skip", description: "Continue without machete" },
       ],
       multiSelect: false,
@@ -49,15 +46,11 @@ AskUserQuestion({
 });
 ```
 
-If "Discover layout":
+If "Discover layout": `Skill({ skill: "crew:git:stacked:discover" })`
 
-```javascript
-Skill({ skill: "crew:git:stacked:discover" });
-```
+## Step 2: Handle Worktree
 
-**If in a WORKTREE:**
-
-⚠️ Full traverse would switch branches, breaking this worktree's checkout.
+If `<worktree_status>` shows worktree:
 
 ```javascript
 AskUserQuestion({
@@ -69,45 +62,28 @@ AskUserQuestion({
       options: [
         {
           label: "Update current only (Recommended)",
-          description: "Run 'git machete update' for this branch",
+          description: "Run 'git machete update'",
         },
         {
           label: "Show instructions",
           description: "Manual steps for each worktree",
         },
       ],
+      multiSelect: false,
     },
   ],
 });
 ```
 
-**Update current only:**
+Update current only:
 
 ```bash
 git fetch origin
-git machete update                # Rebase onto parent
-git push --force-with-lease       # Push updated branch
+git machete update
+git push --force-with-lease
 ```
 
-**Show instructions:**
-
-Print for each branch in stack:
-
-```
-To sync your stack across worktrees:
-
-1. In worktree for <parent-branch>:
-   git pull --rebase origin main
-   git push
-
-2. In worktree for <child-branch>:
-   git machete update
-   git push --force-with-lease
-
-3. Repeat for each child...
-```
-
-**If in MAIN checkout (not a worktree):**
+## Step 3: Ask Sync Mode (main checkout only)
 
 ```javascript
 AskUserQuestion({
@@ -132,6 +108,8 @@ AskUserQuestion({
 });
 ```
 
+## Step 4: Execute Traverse
+
 **Local only:**
 
 ```bash
@@ -148,27 +126,20 @@ git machete traverse -W -y -H
 
 ```bash
 git machete traverse -W -y -H
-
-# Ensure config is set for update-pr-descriptions
 git config machete.github.prDescriptionIntroStyle full
-
-# Update all related PR descriptions with stack chain
 git machete github update-pr-descriptions --related
 ```
 
-## Post-Traverse Actions
-
-After traverse completes, check for merged branches:
+## Step 5: Check for Merged Branches
 
 ```bash
-# Check for merged branches (gray edges)
 merged=$(git machete status 2>/dev/null | grep -cE "^\s*o\s" || echo "0")
 if [[ "$merged" -gt 0 ]]; then
-    echo "🔀 $merged merged branch(es) detected"
+    echo "$merged merged branch(es) detected"
 fi
 ```
 
-If merged branches found:
+If merged branches:
 
 ```javascript
 AskUserQuestion({
@@ -189,58 +160,26 @@ AskUserQuestion({
 });
 ```
 
-If yes:
+If yes: `Skill({ skill: "crew:git:stacked:slide-out" })`
 
-```javascript
-Skill({ skill: "crew:git:stacked:slide-out" });
-```
-
-Report: branches rebased, pushed, needing manual intervention.
-
-</process>
+</workflow>
 
 <flags>
 
-| Flag                    | Effect                                       |
-| ----------------------- | -------------------------------------------- |
-| `-W`                    | Fetch + traverse entire tree (whole)         |
-| `-y`                    | Auto-confirm all prompts (yes)               |
-| `-H`                    | Include GitHub PR retargeting (github-sync)  |
-| `-n`                    | No push (rebase only, don't push)            |
-| `-M`                    | Detect merged branches and suggest slide-out |
-| `--start-from=<branch>` | Start traverse from specific branch          |
-| `--return-to=<branch>`  | Return to branch after traverse              |
+| Flag | Effect                        |
+| ---- | ----------------------------- |
+| `-W` | Fetch + traverse entire tree  |
+| `-y` | Auto-confirm all prompts      |
+| `-H` | Include GitHub PR retargeting |
+| `-n` | No push (rebase only)         |
 
 </flags>
 
-<common_patterns>
+<success_criteria>
 
-**Daily sync workflow:**
+- [ ] All branches rebased onto parents
+- [ ] Changes pushed to remotes
+- [ ] PRs retargeted (if selected)
+- [ ] Merged branches cleaned up (if any)
 
-```bash
-# Full sync with PR updates
-git machete traverse -W -y -H
-```
-
-**Quick local rebase:**
-
-```bash
-# No push, no GitHub sync
-git machete traverse -W -y -n
-```
-
-**After parent PR merged:**
-
-```bash
-# Slide out merged, then traverse
-Skill({ skill: "crew:git:stacked:slide-out" })
-git machete traverse -W -y -H
-```
-
-**Sync and cleanup:**
-
-```bash
-git machete traverse -W -y -H -M
-```
-
-</common_patterns>
+</success_criteria>
