@@ -4,7 +4,6 @@ description: Delete local branches not in machete layout
 allowed-tools:
   - Bash
   - AskUserQuestion
-  - Skill
 context: fork
 hooks:
   PostToolUse: false

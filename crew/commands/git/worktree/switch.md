@@ -5,8 +5,6 @@ argument-hint: "[worktree name]"
 allowed-tools:
   - Bash
   - AskUserQuestion
-skills:
-  - crew:phantom
 ---
 
 <phantom_context>

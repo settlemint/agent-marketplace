@@ -20,3 +20,9 @@ phantom list
 ```
 
 </workflow>
+
+<success_criteria>
+
+- [ ] Worktrees listed
+
+</success_criteria>

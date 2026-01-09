@@ -4,7 +4,6 @@ description: Remove merged branches from stack, reconnect children, and update P
 allowed-tools:
   - Bash
   - AskUserQuestion
-  - Skill
 ---
 
 <worktree_status>

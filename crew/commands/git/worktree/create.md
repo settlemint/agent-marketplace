@@ -5,8 +5,6 @@ argument-hint: "[branch name or feature description]"
 allowed-tools:
   - Bash
   - AskUserQuestion
-skills:
-  - crew:phantom
 ---
 
 <phantom_context>
