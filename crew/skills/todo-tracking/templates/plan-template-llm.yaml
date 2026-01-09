@@ -1,0 +1,121 @@
+plan_id: "[slug]"
+feature: "[FEATURE NAME]"
+branch: "[branch-name]"
+created: "[YYYY-MM-DD]"
+status: draft
+
+problem_statement: |
+  [What and why - 2-3 sentences]
+
+stories:
+  - id: US-001
+    title: "[Story Title]"
+    priority: p1
+    status: pending
+    mvp: true
+    description: |
+      [User journey]
+    justification: "[Why this priority]"
+    test_approach: "[How to verify]"
+    acceptance:
+      - id: AC-001-1
+        given: "[context]"
+        when: "[action]"
+        then: "[outcome]"
+    files:
+      - src/path/to/file.ts
+
+  - id: US-002
+    title: "[Story Title]"
+    priority: p2
+    status: pending
+    mvp: false
+    description: |
+      [User journey]
+    justification: "[Why this priority]"
+    test_approach: "[How to verify]"
+    acceptance:
+      - id: AC-002-1
+        given: "[context]"
+        when: "[action]"
+        then: "[outcome]"
+    files:
+      - src/path/to/file.ts
+
+requirements:
+  - id: FR-001
+    story: US-001
+    text: "System MUST [capability]"
+  - id: FR-002
+    story: US-001
+    text: "System MUST [capability]"
+
+entities:
+  - name: "[EntityName]"
+    type: model
+    description: "[What it represents]"
+    attributes: ["key: type"]
+
+technical_approach:
+  technology_choices:
+    language: TypeScript
+    framework: "[Framework]"
+    storage: "[Database]"
+    testing: "[Test framework]"
+  architecture: |
+    [High-level description]
+  project_structure: |
+    src/
+    ├── models/
+    ├── services/
+    └── api/
+
+success_criteria:
+  - id: SC-001
+    story: US-001
+    metric: time
+    text: "[Measurable outcome]"
+  - id: SC-002
+    story: US-001
+    metric: quality
+    text: "[Measurable outcome]"
+
+risks:
+  - id: R-001
+    impact: high
+    likelihood: medium
+    description: "[Risk]"
+    mitigation: "[Strategy]"
+
+open_questions:
+  - id: Q-001
+    blocking: true
+    text: "[Question needing resolution]"
+
+phases:
+  - id: PH-001
+    name: setup
+    stories: []
+    tasks:
+      - "Project initialization"
+      - "Dependencies"
+      - "Configuration"
+
+  - id: PH-002
+    name: us-001
+    stories: [US-001]
+    tasks:
+      - "[Task summary for Story 1]"
+
+  - id: PH-003
+    name: us-002
+    stories: [US-002]
+    tasks:
+      - "[Task summary for Story 2]"
+
+  - id: PH-004
+    name: polish
+    stories: [US-001, US-002]
+    tasks:
+      - "Documentation"
+      - "Optimization"
