@@ -247,15 +247,103 @@ Dark interfaces have different needs:
   </always_question>
   </anti_patterns>
 
-<success_criteria>
-Every interface should look designed by a team that obsesses over 1-pixel differences. Not stripped — _crafted_. And designed for its specific context.
+<agent_verification>
+**Programmatic validation for agents:**
+
+Design principles can be verified through code inspection without visual tools:
+
+**Spacing validation (4px grid):**
+
+```bash
+# Find non-grid spacing values in CSS/Tailwind
+grep -rE "(padding|margin|gap):\s*[0-9]+(px|rem)" --include="*.css" --include="*.tsx" | \
+  grep -vE "(4|8|12|16|20|24|28|32|36|40|48|64)px"
+
+# Tailwind: Check for arbitrary values not on grid
+grep -rE "\[(padding|margin|gap|space)-\[" --include="*.tsx" | grep -vE "\[[0-9]+(px)?\]"
+```
+
+**Symmetrical padding check:**
+
+```bash
+# Find asymmetric padding patterns
+grep -rE "padding:\s*[0-9]+px\s+[0-9]+px\s+[0-9]+px\s+[0-9]+px" --include="*.css" --include="*.tsx"
+```
+
+**Border radius consistency:**
+
+```bash
+# List all border-radius values to check for consistency
+grep -rhoE "border-radius:\s*[0-9]+px" --include="*.css" | sort | uniq -c | sort -rn
+
+# Tailwind: Check rounded-* usage
+grep -rhoE "rounded-[a-z0-9]+" --include="*.tsx" | sort | uniq -c | sort -rn
+```
+
+**Shadow/depth strategy validation:**
+
+```bash
+# List all shadow values to verify single strategy
+grep -rhoE "box-shadow:[^;]+" --include="*.css" | sort | uniq -c
+
+# Tailwind: Check shadow-* usage
+grep -rhoE "shadow-[a-z0-9]+" --include="*.tsx" | sort | uniq -c | sort -rn
+```
+
+**Typography hierarchy check:**
+
+```bash
+# List font sizes to verify scale adherence
+grep -rhoE "font-size:\s*[0-9]+px" --include="*.css" | sort | uniq -c | sort -rn
+
+# Tailwind: Check text-* usage
+grep -rhoE "text-(xs|sm|base|lg|xl|[0-9]xl)" --include="*.tsx" | sort | uniq -c | sort -rn
+```
+
+**Anti-pattern detection:**
+
+```bash
+# Large shadows (anti-pattern)
+grep -rE "box-shadow:.*25px" --include="*.css" --include="*.tsx"
+
+# Large border-radius on small elements
+grep -rE "border-radius:\s*(16|20|24|32)px" --include="*.css"
+
+# Multiple accent colors
+grep -rhoE "(bg|text|border)-(blue|green|red|orange|purple|pink)-[0-9]+" --include="*.tsx" | \
+  sed 's/-[0-9]*//' | sort -u | wc -l  # Should be 1-2
+```
+
+**Design tokens validation:**
+
+```bash
+# Verify CSS variables are defined and used consistently
+grep -rhE "--[a-z-]+:" --include="*.css" | sort | uniq  # List all tokens
+grep -rhE "var\(--" --include="*.tsx" --include="*.css" | sort | uniq -c  # Usage counts
+```
+
+**Automated checklist:**
+
+```bash
+# Run all checks and report violations
+echo "=== Design Validation ==="
+echo "Non-grid spacing:" && grep -rE "(padding|margin|gap):\s*[0-9]+(px)" --include="*.css" -c 2>/dev/null || echo "0"
+echo "Shadow variations:" && grep -rhoE "box-shadow:[^;]+" --include="*.css" | sort -u | wc -l
+echo "Border-radius variations:" && grep -rhoE "border-radius:\s*[0-9]+px" --include="*.css" | sort -u | wc -l
+```
+
+**Note:** These checks validate implementation consistency. The initial design direction choice (warm vs cool, dense vs generous) requires understanding product context - agents should use AskUserQuestion to clarify with the user before implementing.
+</agent_verification>
+
+<success*criteria>
+Every interface should look designed by a team that obsesses over 1-pixel differences. Not stripped — \_crafted*. And designed for its specific context.
 
 - [ ] Design direction explicitly chosen (not defaulted)
 - [ ] Color foundation matches product context
-- [ ] All spacing on 4px grid
-- [ ] Symmetrical padding applied
-- [ ] Single depth strategy used consistently
-- [ ] Typography hierarchy established
-- [ ] No anti-patterns present
+- [ ] All spacing on 4px grid (verify with grep)
+- [ ] Symmetrical padding applied (verify with grep)
+- [ ] Single depth strategy used consistently (verify shadow count)
+- [ ] Typography hierarchy established (verify scale adherence)
+- [ ] No anti-patterns present (run detection scripts)
 - [ ] Color used for meaning only
       </success_criteria>

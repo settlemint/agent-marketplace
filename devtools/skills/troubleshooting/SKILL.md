@@ -149,6 +149,120 @@ curl -X POST http://localhost:3000/api/route -H "Content-Type: application/json"
 - Check gas estimation
   </debugging_tools>
 
+<agent_debugging>
+**Agent-compatible alternatives for GUI debugging tools:**
+
+Many debugging tools above require human interaction (DevTools, Drizzle Studio). Here are programmatic alternatives agents can use:
+
+**React inspection (instead of React DevTools):**
+
+```tsx
+// Add temporary logging to components
+console.log("Component render:", { props, state: useState()[0] });
+
+// Or wrap with a debug HOC
+function withDebug<P>(Component: React.FC<P>, name: string) {
+  return (props: P) => {
+    console.log(`[${name}] render:`, props);
+    return <Component {...props} />;
+  };
+}
+
+// Check rendered output via tests
+import { render, screen } from "@testing-library/react";
+const { container } = render(<MyComponent />);
+console.log(container.innerHTML);
+```
+
+**Database inspection (instead of Drizzle Studio):**
+
+```bash
+# Direct SQL queries
+bun run db:query "SELECT * FROM users LIMIT 10"
+
+# Or use drizzle's toSQL for query inspection
+# In code: console.log(query.toSQL())
+
+# PostgreSQL direct access
+psql $DATABASE_URL -c "SELECT * FROM users LIMIT 10"
+
+# Check table structure
+psql $DATABASE_URL -c "\d users"
+```
+
+**Network inspection (instead of Browser DevTools):**
+
+```bash
+# Test API endpoints directly
+curl -v http://localhost:3000/api/endpoint \
+  -H "Content-Type: application/json" \
+  -d '{"key": "value"}'
+
+# Check response headers
+curl -I http://localhost:3000/api/endpoint
+
+# Trace full request/response
+curl -w "@curl-format.txt" -o /dev/null -s http://localhost:3000/api/endpoint
+
+# Monitor requests in real-time (requires server-side logging)
+tail -f logs/requests.log
+```
+
+**React hydration debugging (instead of console inspection):**
+
+```tsx
+// Add hydration boundary logging
+if (typeof window !== "undefined") {
+  console.log("Client render:", new Date().toISOString());
+} else {
+  console.log("Server render:", new Date().toISOString());
+}
+
+// Check for hydration-unsafe patterns
+grep -rE "(Date\.now|Math\.random|new Date\(\))" --include="*.tsx" src/
+```
+
+**Memory/performance debugging (instead of DevTools Performance):**
+
+```bash
+# Node.js memory profiling
+node --inspect --expose-gc dist/server.js
+
+# Check bundle size
+bun run build && du -sh dist/
+
+# Analyze bundle
+npx source-map-explorer dist/*.js
+```
+
+**Browser automation for visual debugging:**
+
+```typescript
+// Use Playwright for programmatic browser inspection
+import { chromium } from "playwright";
+
+const browser = await chromium.launch();
+const page = await browser.newPage();
+await page.goto("http://localhost:3000");
+
+// Read console messages
+page.on("console", (msg) => console.log("Browser:", msg.text()));
+
+// Network requests
+page.on("request", (req) => console.log(">>", req.method(), req.url()));
+page.on("response", (res) => console.log("<<", res.status(), res.url()));
+
+// Screenshot for visual verification
+await page.screenshot({ path: "debug.png" });
+
+// Get page content
+const html = await page.content();
+console.log(html);
+```
+
+**Key principle:** When a debugging approach requires GUI interaction, find the underlying data source and access it programmatically (logs, SQL, HTTP, test renders).
+</agent_debugging>
+
 <error_patterns>
 **"Module not found":**
 

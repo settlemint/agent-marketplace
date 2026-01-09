@@ -62,14 +62,14 @@ All worktrees share the same `.git` directory (via symlinks). Commits, stashes, 
 **Create a worktree for a new feature:**
 
 ```bash
-phantom create feat/my-feature --shell
-# Now in isolated directory with new branch
+phantom create feat/my-feature
+# Worktree created at .git/phantom/worktrees/...
 ```
 
 **Work on an existing branch:**
 
 ```bash
-phantom attach existing-branch --shell
+phantom attach existing-branch
 ```
 
 **Run command in another worktree (without switching):**
@@ -78,10 +78,11 @@ phantom attach existing-branch --shell
 phantom exec feat/other npm run build
 ```
 
-**Open editor in worktree:**
+**Get worktree path for file operations:**
 
 ```bash
-phantom edit feat/my-feature
+phantom where feat/my-feature
+# Returns: /path/to/worktree
 ```
 
 **Clean up when done:**
@@ -91,6 +92,75 @@ phantom delete feat/my-feature
 ```
 
 </quick_start>
+
+<agent_patterns>
+**Agent-native alternatives for interactive commands:**
+
+Some phantom commands are interactive (open editor, drop to shell). Agents should use these alternatives:
+
+| Human Command                     | Agent Alternative                   | Notes                                              |
+| --------------------------------- | ----------------------------------- | -------------------------------------------------- |
+| `phantom create <name> --shell`   | `phantom create <name>`             | Skip `--shell`, use `exec` for commands            |
+| `phantom shell <name>`            | `phantom exec <name> "<cmd>"`       | Run specific commands instead of interactive shell |
+| `phantom edit <name>`             | `phantom where <name>` + file tools | Get path, then use Read/Edit/Write tools           |
+| `phantom attach <branch> --shell` | `phantom attach <branch>`           | Skip `--shell`, use `exec` for commands            |
+
+**Working with files in a worktree:**
+
+```bash
+# Get the worktree path
+WORKTREE_PATH=$(phantom where feat/my-feature)
+
+# Then use file tools on that path
+# Read tool: ${WORKTREE_PATH}/src/file.ts
+# Edit tool: ${WORKTREE_PATH}/src/file.ts
+# Bash: ls ${WORKTREE_PATH}/src/
+```
+
+**Running multiple commands in a worktree:**
+
+```bash
+# Chain commands with &&
+phantom exec feat/my-feature "npm install && npm run build && npm test"
+
+# Or run separately for better error handling
+phantom exec feat/my-feature "npm install"
+phantom exec feat/my-feature "npm run build"
+phantom exec feat/my-feature "npm test"
+```
+
+**Checking worktree status:**
+
+```bash
+# Git status in worktree
+phantom exec feat/my-feature "git status"
+
+# Check current branch
+phantom exec feat/my-feature "git branch --show-current"
+
+# View recent commits
+phantom exec feat/my-feature "git log --oneline -5"
+```
+
+**MCP tools for worktree management:**
+
+Prefer MCP tools when available for better integration:
+
+```typescript
+// Create worktree via MCP
+mcp__phantom__phantom_create_worktree({ name: "feat/my-feature" });
+
+// List worktrees via MCP
+mcp__phantom__phantom_list_worktrees({});
+
+// Delete worktree via MCP
+mcp__phantom__phantom_delete_worktree({ name: "feat/my-feature" });
+
+// Checkout PR/issue via MCP
+mcp__phantom__phantom_github_checkout({ number: 123 });
+```
+
+</agent_patterns>
 
 <routing>
 
