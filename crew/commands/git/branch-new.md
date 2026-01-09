@@ -1,95 +1,70 @@
 ---
 name: crew:git:branch-new
 description: Create a new branch with username prefix naming convention
-argument-hint: "[description] [--base main|current]"
+argument-hint: "[description] [--type feat|fix|hotfix|chore] [--base main|current]"
 allowed-tools:
   - Bash
   - AskUserQuestion
 ---
 
-<notes>
-CANONICAL location for branch creation with username prefix.
-Pattern: username/type/description (e.g., roderik/feat/user-auth)
-</notes>
+<objective>
 
-<process>
+Create branch: `username/type/slug` from specified base. Ask type if not provided. Confirm name.
 
-<phase name="ask-type">
-**Ask for branch type:**
+</objective>
+
+<workflow>
+
+## Step 1: Determine Type
 
 ```javascript
-AskUserQuestion({
-  questions: [
-    {
-      question: "What type of branch is this?",
-      header: "Type",
-      options: [
-        { label: "Feature", description: "New feature (feat/)" },
-        { label: "Bug fix", description: "Fix a bug (fix/)" },
-        { label: "Hotfix", description: "Critical fix (hotfix/)" },
-        { label: "Chore", description: "Maintenance (chore/)" },
-      ],
-      multiSelect: false,
-    },
-  ],
-});
+// If --type not provided, ask
+if (!type) {
+  AskUserQuestion({
+    questions: [
+      {
+        question: "What type of branch?",
+        header: "Type",
+        options: [
+          { label: "Feature (Recommended)", description: "feat/" },
+          { label: "Bug fix", description: "fix/" },
+          { label: "Hotfix", description: "hotfix/" },
+          { label: "Chore", description: "chore/" },
+        ],
+        multiSelect: false,
+      },
+    ],
+  });
+}
 ```
 
-</phase>
-
-<phase name="generate-name">
-**Generate branch name with username prefix:**
+## Step 2: Generate Name
 
 ```javascript
 const username = Bash({ command: "whoami" }).trim();
-const typeMap = {
-  Feature: "feat",
-  "Bug fix": "fix",
-  Hotfix: "hotfix",
-  Chore: "chore",
-};
-const type = typeMap[selectedType];
+const typePrefix =
+  { Feature: "feat", "Bug fix": "fix", Hotfix: "hotfix", Chore: "chore" }[
+    type
+  ] || type;
 const slug = slugify(description); // kebab-case, max 30 chars
-const suggestedName = `${username}/${type}/${slug}`;
-
-AskUserQuestion({
-  questions: [
-    {
-      question: `Use this branch name: ${suggestedName}?`,
-      header: "Name",
-      options: [
-        { label: "Use suggested", description: suggestedName },
-        { label: "Customize", description: "Enter a different name" },
-      ],
-      multiSelect: false,
-    },
-  ],
-});
-
-const branchName = customName || suggestedName;
+const branchName = `${username}/${typePrefix}/${slug}`;
 ```
 
-</phase>
-
-<phase name="create-branch">
-**Create the branch:**
+## Step 3: Create Branch
 
 ```bash
-# If --base main specified (or default for simple branches)
-git fetch origin main && git checkout -b <branchName> origin/main
+# --base main (default): from origin/main
+git fetch origin main && git checkout -b ${branchName} origin/main
 
-# If --base current (for stacked branches)
-git checkout -b <branchName>
+# --base current: from current HEAD (for stacked branches)
+git checkout -b ${branchName}
 ```
 
-</phase>
-
-</process>
+</workflow>
 
 <success_criteria>
 
-- [ ] Username prefix in branch name
-- [ ] User confirmed or customized name
-- [ ] Branch created from correct base
+- [ ] Branch name follows `username/type/slug` pattern
+- [ ] Created from correct base (main or current)
 
 </success_criteria>

@@ -16,6 +16,7 @@ allowed-tools:
   - ExitPlanMode
   - AskUserQuestion
   - TodoWrite
+  - Skill
 skills:
   - crew:crew-patterns
   - orchestration
@@ -23,11 +24,18 @@ skills:
 
 <objective>
 
-Enter Plan mode. Research with parallel agents. Write draft plan with `open_questions`. Review → Refine loop until no questions remain. Output: `.claude/plans/<slug>.yaml`
+Create feature branch. Enter Plan mode. Research with parallel agents. Write draft plan with `open_questions`. Review → Refine loop until no questions remain. Output: `.claude/plans/<slug>.yaml`
 
 </objective>
 
 <workflow>
+
+## Step 0: Create Feature Branch
+
+```javascript
+const slug = slugify(feature); // kebab-case, max 30 chars
+Skill({ skill: "crew:git:branch-new", args: `${slug} --type feat` });
+```
 
 ## Step 1: Enter Plan Mode
 
@@ -212,7 +220,8 @@ if (choice === "Build") {
 
 **Workflow:**
 
-- [ ] EnterPlanMode at start
+- [ ] Feature branch created (Step 0)
+- [ ] EnterPlanMode at start (Step 1)
 - [ ] 4 research agents launched parallel (Step 3)
 - [ ] Draft plan written with open_questions (Step 5)
 - [ ] ExitPlanMode before review (Step 6)
