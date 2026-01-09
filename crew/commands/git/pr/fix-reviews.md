@@ -120,13 +120,14 @@ bun run ci
 
 If fails after 3 iterations → escalate to user.
 
-## Step 7: Code Simplification
+## Step 7: Code Quality Review
 
 ```javascript
 Task({
-  subagent_type: "code-simplifier",
-  prompt: "Simplify code modified while fixing PR comments.",
-  description: "code-simplification",
+  subagent_type: "crew:review:smells-reviewer",
+  prompt:
+    "Review code modified while fixing PR comments for: duplication, complexity, dead code, YAGNI violations. Report issues to fix.",
+  description: "code-quality-review",
 });
 ```
 

@@ -49,7 +49,7 @@ const legs = [
 // All 7 in single message for parallelism
 for (const leg of legs) {
   Task({
-    subagent_type: `crew:review:seven-legs:${leg}-reviewer`,
+    subagent_type: `crew:review:${leg}-reviewer`,
     prompt: `Review changed files for ${leg} issues.
 
 FILES: ${changedFiles.join(", ")}
@@ -75,7 +75,33 @@ for (const leg of legs) {
 }
 ```
 
-## Step 4: Codex Deep Analysis
+## Step 4: Meta-Review Cross-Cutting Analysis
+
+```javascript
+// Use meta-reviewer for cross-leg pattern detection
+Task({
+  subagent_type: "crew:review:meta-reviewer",
+  prompt: `Synthesize findings from all 7 review legs.
+
+FINDINGS BY LEG:
+${JSON.stringify(groupByLeg(findings), null, 2)}
+
+Identify:
+1. Cross-leg patterns (same issue across multiple legs)
+2. Priority escalations (P2→P1 when risks compound)
+3. Priority demotions (dedupe findings across legs)
+4. Systemic root causes explaining multiple findings
+5. Contradictions between legs to resolve
+
+OUTPUT: Additional findings with adjusted priorities.`,
+  description: "meta-review",
+});
+
+const metaResult = TaskOutput({ task_id: "meta-review", block: true });
+findings.push(...parseMetaFindings(metaResult));
+```
+
+## Step 5: Codex Deep Analysis
 
 ```javascript
 // Load Codex MCP for deep reasoning
@@ -102,7 +128,7 @@ Output additional findings in format:
 findings.push(...parseCodexFindings(codexResult));
 ```
 
-## Step 5: Update Plan Findings
+## Step 6: Update Plan Findings
 
 ```javascript
 const slug = "$ARGUMENTS".trim();
@@ -138,7 +164,7 @@ plan.findings.review = [
 Write({ file_path: planPath, content: yaml.stringify(plan) });
 ```
 
-## Step 6: Report Summary
+## Step 7: Report Summary
 
 ```javascript
 const p0 = findings.filter((f) => f.severity === "p0").length;
@@ -176,6 +202,7 @@ if (total > 0) {
 
 - [ ] Changed files identified
 - [ ] All 7 review agents launched in parallel
+- [ ] Meta-reviewer for cross-cutting analysis
 - [ ] Codex deep analysis for systemic issues
 - [ ] ALL findings (P0/P1/P2/Obs) written to plan
 - [ ] Existing open findings preserved

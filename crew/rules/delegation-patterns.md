@@ -8,13 +8,22 @@ alwaysApply: false
 
 ## Delegation Table
 
-| Domain | Delegate To | Trigger |
-| --- | --- | --- |
-| Explore | `explore` agent | Find existing codebase structure, patterns, styles |
-| Research | `framework-docs-researcher` | Unfamiliar packages/libraries, external docs |
-| Documentation | `tech-docs-writer` | README, API docs, guides |
-| Review | `seven-legs` reviewers | Code review, finding issues |
-| Implementation | `work-orchestrator` | Execute tasks from plan |
+| Domain         | Delegate To                                  | Trigger                                                                                       |
+| -------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Explore        | `explore` agent                              | Find existing codebase structure, patterns, styles                                            |
+| Research       | `crew:research:framework-docs-researcher`    | Unfamiliar packages/libraries, external docs                                                  |
+| Codebase       | `crew:design:codebase-analyst`               | Analyze existing code patterns, anti-patterns                                                 |
+| Architecture   | `crew:design:architecture-analyst`           | API design, data models, integrations                                                         |
+| Quality        | `crew:design:quality-analyst`                | Performance, security (STRIDE), UX analysis                                                   |
+| Docs Research  | `crew:design:docs-researcher`                | External best practices, library documentation                                                |
+| Review         | `crew:review:*-reviewer`                     | Code review (7 legs: correctness, performance, security, elegance, resilience, style, smells) |
+| Meta Review    | `crew:review:meta-reviewer`                  | Cross-cutting analysis of review findings                                                     |
+| UI Design      | `crew:workflow:design-iterator`              | Iterative UI/UX refinement with screenshots                                                   |
+| UI Verify      | `crew:design:design-implementation-reviewer` | Verify UI matches Figma design                                                                |
+| Spec Analysis  | `crew:workflow:spec-flow-analyzer`           | User flow analysis, acceptance criteria gaps                                                  |
+| Bug Validation | `crew:workflow:bug-reproduction-validator`   | Validate bug reports, attempt reproduction                                                    |
+| PR Comments    | `crew:workflow:pr-comment-resolver`          | Resolve PR review comments                                                                    |
+| Content        | `crew:workflow:content-style-editor`         | SettleMint style guide, DALP documentation                                                    |
 
 ## Delegation Prompt Structure (MANDATORY)
 

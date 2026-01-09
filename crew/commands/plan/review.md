@@ -62,7 +62,7 @@ TodoWrite([
 ```javascript
 // 3 reviewer agents + Codex MCP - each returns findings + new open_questions
 Task({
-  subagent_type: "crew:review:architecture-strategist",
+  subagent_type: "crew:design:architecture-analyst",
   prompt: `Review plan for: boundaries, data flow, dependencies, trade-offs. Return: { findings: [...], open_questions: [...] }\n\n${plan}`,
   description: "arch-review",
   run_in_background: true,
@@ -76,8 +76,8 @@ Task({
 });
 
 Task({
-  subagent_type: "crew:review:code-simplicity-reviewer",
-  prompt: `Review plan for: over-engineering, complexity, YAGNI violations. Return: { findings: [...], open_questions: [...] }\n\n${plan}`,
+  subagent_type: "crew:review:smells-reviewer",
+  prompt: `Review plan for: over-engineering, complexity, YAGNI violations, unnecessary abstractions. Return: { findings: [...], open_questions: [...] }\n\n${plan}`,
   description: "simplicity-review",
   run_in_background: true,
 });
