@@ -115,15 +115,9 @@ No implementation without failing test first. No exceptions.
    - No new features until findings empty
    - Mark fixed issues as status: fixed
 
-3. **Execute Stories via TDD** (one at a time for TDD discipline):
+3. **Execute Stories via TDD**:
    - P1 stories first, then P2, then P3
-   - For EACH story:
-     a. RED: Spawn test-writer agent (write failing test)
-     b. Verify test FAILS
-     c. GREEN: Spawn implementer agent (minimal code to pass)
-     d. Verify test PASSES
-     e. REFACTOR: Spawn refactorer agent (improve, keep green)
-     f. Verify tests STILL PASS
+   - For EACH story: Follow devtools:tdd-typescript workflow EXACTLY
    - Update story status in plan on completion
 
 4. **Run CI** (after each story):
@@ -153,10 +147,9 @@ No implementation without failing test first. No exceptions.
    - Output: <promise>WORK COMPLETE</promise>
 
 ## Key Rules
-- TDD is NON-NEGOTIABLE: test fails first, then implement
-- Fix ALL findings (not just P0/P1) before new features
+- TDD per devtools:tdd-typescript - NO EXCEPTIONS
+- Fix ALL findings before new features
 - Read plan at START of each iteration
-- Write ALL findings to plan
 - Only output completion promise when genuinely done
 " --completion-promise "WORK COMPLETE" --max-iterations 50`,
 });
