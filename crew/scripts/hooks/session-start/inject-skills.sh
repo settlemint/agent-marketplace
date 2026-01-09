@@ -39,7 +39,7 @@ cat <<'EOF'
 |-------|----------|---------|
 | ast-grep | rename, replace, refactor, imports | AST-aware code search & refactor |
 | git | commit, branch, pr | Git conventions and workflows |
-| agent-architecture | agent, orchestration | Agent patterns and loops |
+| compound-engineering | agent, orchestration | Agent-native architecture (via Every plugin) |
 | skill-builder | skill, create skill | Skill creation framework |
 | todo-tracking | todo, task | File-based task management |
 
@@ -70,12 +70,20 @@ Use Task tool with subagent_type="code-simplifier" to refine recently modified c
 - Preserves all functionality while improving structure
 - Applies project-specific standards from CLAUDE.md
 
+### Browser Validation (Claude-in-Chrome)
+Use native browser tools (mcp__claude-in-chrome__*) to validate your work:
+- **After UI changes**: Take screenshots to verify implementation
+- **During debugging**: Read console logs, inspect network requests
+- **For testing**: Navigate user flows to verify functionality
+Load tools via MCPSearch before use: `MCPSearch({ query: "select:mcp__claude-in-chrome__navigate" })`
+
 ### Best Practices
 - **Git commits**: Use conventional format `type(scope): description`
 - **CI checks**: Use Skill(skill: "crew:ci") to run in background (keeps main thread free)
 - **Code refactoring**: Use Skill(skill: "crew:ast-grep") for mass rename/replace (NOT grep+sed)
 - **Planning**: Use Skill(skill: "crew:design") before implementing complex features
 - **Progress**: Use TodoWrite to track multi-step tasks
+- **Validate work**: Use browser tools to verify UI changes and debug issues
 EOF
 
 exit 0

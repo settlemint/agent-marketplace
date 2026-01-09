@@ -48,36 +48,16 @@ claude plugin install crew@settlemint
 }
 ```
 
-## Recommended Additional Plugins
+## Browser Automation
 
-For the best experience, add the dev-browser plugin for browser automation:
+Claude Code has native browser automation via the `mcp__claude-in-chrome__*` tools when the Claude-in-Chrome extension is installed. Use these tools to:
 
-```bash
-claude plugin marketplace add sawyerhood/dev-browser
-claude plugin install dev-browser@dev-browser-marketplace
-```
+- **Validate UI changes**: Take screenshots and compare implementations
+- **Debug issues**: Inspect page content, console logs, network requests
+- **Test workflows**: Navigate through user flows to verify functionality
+- **Explore documentation**: Fetch and analyze web content
 
-Or add to your `.claude/settings.json`:
-
-```json
-{
-  "extraKnownMarketplaces": {
-    "dev-browser-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "sawyerhood/dev-browser"
-      }
-    }
-  },
-  "enabledPlugins": {
-    "dev-browser@dev-browser-marketplace": true
-  }
-}
-```
-
-| Plugin        | Source                  | Purpose                            |
-| ------------- | ----------------------- | ---------------------------------- |
-| `dev-browser` | dev-browser-marketplace | Browser automation for development |
+The browser tools are automatically available when the extension is active. Use `MCPSearch` to load specific tools before calling them.
 
 ## Plugins
 
@@ -155,9 +135,9 @@ Modern development tools with MCP-first skills. Uses Context7 for up-to-date lib
 
 Configure in `.claude/settings.json` under the `env` key:
 
-| Variable                    | Values        | Default  | Purpose                                                                                               |
-| --------------------------- | ------------- | -------- | ----------------------------------------------------------------------------------------------------- |
-| `FORCE_AUTOUPDATE_PLUGINS`  | `"1"` / `"0"` | Disabled | Force reinstall all plugins on every startup. Useful for development. Adds ~2-5s to startup time.    |
+| Variable                   | Values        | Default  | Purpose                                                                                           |
+| -------------------------- | ------------- | -------- | ------------------------------------------------------------------------------------------------- |
+| `FORCE_AUTOUPDATE_PLUGINS` | `"1"` / `"0"` | Disabled | Force reinstall all plugins on every startup. Useful for development. Adds ~2-5s to startup time. |
 
 Example:
 

@@ -167,16 +167,16 @@ else
   success "Claude Official marketplace added"
 fi
 add_marketplace "settlemint/agent-marketplace" "SettleMint"
-add_marketplace "sawyerhood/dev-browser" "Dev Browser"
 add_marketplace "thedotmack/claude-mem" "Claude Mem"
+add_marketplace "EveryInc/compound-engineering-plugin" "Every (Compound Engineering)"
 echo ""
 
 echo "Step 2: Updating Marketplaces"
 echo "-----------------------------"
 update_marketplace "claude-plugins-official"
 update_marketplace "settlemint"
-update_marketplace "dev-browser-marketplace"
 update_marketplace "thedotmack"
+update_marketplace "every-marketplace"
 echo ""
 
 echo "Step 3: Updating Plugins"
@@ -196,8 +196,8 @@ force_update_plugin "devtools@settlemint" "devtools (development skills)"
 echo ""
 
 echo "Additional plugins:"
-force_update_plugin "dev-browser@dev-browser-marketplace" "dev-browser"
 force_update_plugin "claude-mem@thedotmack" "claude-mem (memory)"
+force_update_plugin "compound-engineering@every-marketplace" "compound-engineering (agent patterns)"
 echo ""
 
 # Summary
@@ -212,8 +212,8 @@ if [[ ${#ERRORS[@]} -eq 0 ]]; then
   echo "  • code-simplifier@claude-plugins-official - Code refinement agent"
   echo "  • crew@settlemint - Work orchestration (/design, /build, /check)"
   echo "  • devtools@settlemint - Development skills (React, API, etc.)"
-  echo "  • dev-browser - Browser automation"
   echo "  • claude-mem - Memory persistence"
+  echo "  • compound-engineering - Agent-native architecture patterns"
   echo ""
   echo "Get started:"
   echo "  /crew:design <feature>  - Plan a feature"
