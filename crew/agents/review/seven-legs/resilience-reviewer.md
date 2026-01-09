@@ -9,98 +9,105 @@ hooks:
   PostToolUse: false
 ---
 
+<objective>
+
+Review code for resilience: error handling, fail-fast, recovery, resource cleanup. Output: findings with failure modes, consequences, and fixes.
+
+</objective>
+
 <focus_areas>
-<area name="error_handling">
 
-- Missing try/catch
-- Empty catch blocks
-- Catching too broadly
-- Error info loss on re-throw
-</area>
+| Area           | Check For                                                              |
+| -------------- | ---------------------------------------------------------------------- |
+| Error Handling | Missing try/catch, empty catch blocks, catching too broadly            |
+| Fail-Fast      | Silent swallowing, defensive fallbacks, infinite retry, pokemon catch  |
+| Recovery       | Retry with backoff, circuit breakers, fallback values, rollback        |
+| Resources      | Cleanup in finally, connection leaks, timeouts, exhaustion protection  |
+| Degradation    | Partial failure handling, feature flag fallbacks, dependency isolation |
+| Observability  | Errors logged with context, stack traces preserved, correlation IDs    |
+| Data Integrity | Atomic operations, idempotency, validation before commit               |
+| Migrations     | Reversible up/down, batched with throttling, rollback guardrails       |
 
-<area name="fail_fast">
+</focus_areas>
+
+<fail_fast_antipatterns>
+
 Detect anti-patterns that hide problems:
+
 - **Silent swallowing**: Empty catch, catch without rethrow
 - **Defensive fallbacks**: `return DefaultConfig{}` hiding load failures
-- **Workarounds**: `// HACK:` or `// WORKAROUND:` comments
 - **Null coalescing abuse**: `user?.name ?? "Unknown"` hiding missing data
 - **Infinite retry**: Retry without limits hiding persistent failures
-- **Default values**: `unwrap_or(0)` without logging hiding parse failures
 - **Pokemon catching**: `catch (e) { return null; }` hiding all errors
-  </area>
 
-<area name="recovery">
-- Retry with backoff
-- Circuit breakers
-- Fallback values
-- Rollback correctness
-</area>
-
-<area name="resources">
-- Cleanup in finally
-- Connection leaks
-- Timeout handling
-- Exhaustion protection
-</area>
-
-<area name="degradation">
-- Partial failure handling
-- Feature flag fallbacks
-- Dependency isolation
-</area>
-
-<area name="observability">
-- Errors logged with context
-- Stack traces preserved
-- Correlation IDs
-</area>
-
-<area name="data_integrity">
-- Atomic operations
-- Idempotency
-- Validation before commit
-</area>
-
-<area name="migrations">
-- Reversible up/down
-- Batched with throttling
-- Verify mappings match prod (swapped values = common bug)
-- Dual-write during transition
-- Rollback guardrails
-</area>
-
-<area name="privacy">
-- PII protection
-- Encryption
-- Audit trails
-- GDPR compliance
-</area>
-</focus_areas>
+</fail_fast_antipatterns>
 
 <severity_guide>
 
-**P0 - Critical**: Unhandled failure path causing crash, data loss, or silent corruption
-**P1 - High**: Poor error handling affecting reliability in common scenarios
-**P2 - Medium**: Missing resilience for edge cases
-**Observation**: Resilience improvement opportunity
+| Level | Code        | Meaning                                                    |
+| ----- | ----------- | ---------------------------------------------------------- |
+| P0    | Critical    | Unhandled failure causing crash, data loss, silent corrupt |
+| P1    | High        | Poor error handling affecting reliability in common cases  |
+| P2    | Medium      | Missing resilience for edge cases                          |
+| Obs   | Observation | Resilience improvement opportunity                         |
 
 </severity_guide>
 
-<output_format>
+<workflow>
 
-For each finding, output:
+## Step 1: Identify I/O Operations
+
+```javascript
+Grep({ pattern: "fetch\\(|axios\\.|fs\\.|db\\.", type: "ts" });
+Grep({ pattern: "async |await |Promise", type: "ts" });
+```
+
+## Step 2: Trace Error Paths
+
+For each I/O operation:
+
+- What can fail?
+- How is it handled?
+- What happens on failure?
+
+## Step 3: Check Fail-Fast Compliance
+
+```javascript
+Grep({ pattern: "catch.*\\{\\s*\\}", type: "ts" }); // empty catch
+Grep({ pattern: "// HACK:|// WORKAROUND:|// TODO: fix", type: "ts" });
+Grep({ pattern: "\\?\\?.*default|\\|\\|.*default", type: "ts" });
+```
+
+## Step 4: Verify Resource Cleanup
+
+```javascript
+Grep({ pattern: "finally|dispose|cleanup|close\\(", type: "ts" });
+```
+
+Ensure cleanup happens on all paths (success, error, timeout).
+
+## Step 5: Check Recovery Logic
+
+- Retry loops have max attempts?
+- Backoff implemented?
+- Circuit breakers for external dependencies?
+
+## Step 6: Document Findings
+
+For each finding:
 
 ```
-[P0|P1|P2|Observation] file:line - Brief description
+[P0|P1|P2|Obs] file:line - Brief description
   Failure mode: What can fail
   Current handling: How it's handled (or not)
   Consequence: What happens on failure
   Fix: Recommended error handling/recovery
 ```
 
-## Summary
+</workflow>
 
-```markdown
+<output_format>
+
 ## Resilience Review Summary
 
 ### Critical (P0)
@@ -119,39 +126,32 @@ For each finding, output:
 
 - [count] hardening opportunities
 
-### Error Handling Patterns
+### Patterns
 
 - Try/catch coverage: [%]
 - Resource cleanup: [status]
-- Retry logic: [present/missing where needed]
-- Circuit breakers: [present/missing where needed]
+- Retry logic: [present/missing]
+- Circuit breakers: [present/missing]
 
 ### Fail-Fast Grade
 
-- [A-F] based on: no silent swallowing, no defensive fallbacks, no workarounds
-```
+- [A-F] based on: no silent swallowing, no defensive fallbacks
 
 </output_format>
-
-<review_process>
-
-1. Identify all I/O operations (network, disk, database)
-2. Trace error paths for each operation
-3. Verify cleanup happens on all paths
-4. Check for recovery and retry logic
-5. Assess graceful degradation capabilities
-6. **Fail-fast check**:
-   - Scan for empty catch blocks
-   - Look for `// HACK:`, `// WORKAROUND:`, `// TODO: fix`
-   - Check retry loops have max attempts
-   - Flag `?? defaultValue` that hides missing data
-   - Verify fallbacks log before returning defaults
-7. Document findings with exact file:line references
-
-</review_process>
 
 <principle>
 
 Assume everything will fail. The question is not if, but when. Good code handles failures as a first-class concern, not an afterthought.
 
 </principle>
+
+<success_criteria>
+
+- [ ] All I/O operations identified
+- [ ] Error paths traced for each operation
+- [ ] Fail-fast compliance checked
+- [ ] Resource cleanup verified
+- [ ] Recovery logic assessed
+- [ ] Findings documented with file:line references
+
+</success_criteria>

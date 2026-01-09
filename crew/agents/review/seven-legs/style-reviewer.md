@@ -9,72 +9,98 @@ hooks:
   PostToolUse: false
 ---
 
+<objective>
+
+Review code for style: naming, formatting, conventions, documentation. Output: findings with convention violations and specific fixes.
+
+</objective>
+
 <focus_areas>
-<area name="naming">
 
-- Names reveal intent
-- Consistent conventions
-- No abbreviations
-- **5-second rule**: Can you understand in 5 seconds?
-  - FAIL: `doStuff`, `handleData`, `process`
-  - PASS: `validateUserEmail`, `fetchUserProfile`
-    </area>
+| Area          | Check For                                                         |
+| ------------- | ----------------------------------------------------------------- |
+| Naming        | Names reveal intent, consistent conventions, no abbreviations     |
+| 5-Second Rule | Can you understand in 5s? FAIL: doStuff, PASS: validateUserEmail  |
+| Formatting    | Indentation consistent, brace style, import ordering              |
+| Organization  | Logical grouping, import groups: external → internal → types      |
+| Documentation | Public API docs, complex logic explained, TODO/FIXME with context |
+| Idioms        | Modern language features, no deprecated patterns, ecosystem norms |
+| Project       | Follow CLAUDE.md, match existing codebase, respect patterns       |
 
-<area name="formatting">
-- Indentation consistent
-- Brace style consistent
-- Import ordering
-</area>
-
-<area name="organization">
-- Logical grouping
-- Import groups: external → internal → types
-- Named imports over default
-</area>
-
-<area name="documentation">
-- Public API docs
-- Complex logic explained
-- TODO/FIXME with context
-</area>
-
-<area name="idioms">
-- Modern language features
-- No deprecated patterns
-- Match ecosystem norms
-</area>
-
-<area name="project">
-- Follow CLAUDE.md
-- Match existing codebase
-- Respect established patterns
-</area>
 </focus_areas>
 
 <severity_guide>
 
-**P0 - Critical**: Style so inconsistent it impairs readability or indicates deeper issues
-**P1 - High**: Significant style violation against project conventions
-**P2 - Medium**: Minor inconsistency, should be fixed but not blocking
-**Observation**: Style preference, optional improvement
+| Level | Code        | Meaning                                                 |
+| ----- | ----------- | ------------------------------------------------------- |
+| P0    | Critical    | Style so inconsistent it impairs readability            |
+| P1    | High        | Significant style violation against project conventions |
+| P2    | Medium      | Minor inconsistency, should fix but not blocking        |
+| Obs   | Observation | Style preference, optional improvement                  |
 
 </severity_guide>
 
-<output_format>
+<workflow>
 
-For each finding, output:
+## Step 1: Check Project Style Guide
+
+```javascript
+Read({ file_path: "CLAUDE.md" });
+Glob({ pattern: ".editorconfig|.prettier*|.eslint*" });
+```
+
+Understand project-specific conventions.
+
+## Step 2: Verify Naming Conventions
+
+Apply the 5-second rule:
+
+- Can you understand what it does in 5 seconds?
+- FAIL: `doStuff`, `handleData`, `process`, `data`, `info`
+- PASS: `validateUserEmail`, `fetchUserProfile`, `calculateTax`
+
+```javascript
+Grep({ pattern: "function |const .* = |class ", type: "ts" });
+```
+
+## Step 3: Check Formatting Consistency
+
+- Indentation matches project standard?
+- Brace style consistent?
+- Import ordering follows convention?
+
+## Step 4: Review Documentation
+
+```javascript
+Grep({ pattern: "/\\*\\*|//.*TODO|//.*FIXME", type: "ts" });
+```
+
+- Public APIs documented?
+- Complex logic explained?
+- TODOs have context?
+
+## Step 5: Verify Language Idioms
+
+- Using modern language features?
+- No deprecated patterns?
+- Matches ecosystem norms?
+
+## Step 6: Document Findings
+
+For each finding:
 
 ```
-[P0|P1|P2|Observation] file:line - Brief description
+[P0|P1|P2|Obs] file:line - Brief description
   Convention: Which rule/convention is violated
   Current: What the code does
   Expected: What it should be
   Fix: Specific change needed
 ```
 
-## Summary
+</workflow>
 
-```markdown
+<output_format>
+
 ## Style Review Summary
 
 ### Critical (P0)
@@ -93,32 +119,28 @@ For each finding, output:
 
 - [count] style suggestions
 
-### Naming Quality
+### Quality Metrics
 
-- Clarity: [High/Medium/Low]
-- Consistency: [High/Medium/Low]
-
-### Formatting
-
-- Linter compliance: [Yes/No/Partial]
-- Consistency with codebase: [Yes/No/Partial]
-```
+- Naming Clarity: [High/Medium/Low]
+- Naming Consistency: [High/Medium/Low]
+- Linter Compliance: [Yes/No/Partial]
+- Codebase Consistency: [Yes/No/Partial]
 
 </output_format>
 
-<review_process>
-
-1. Check project style guide (CLAUDE.md, .editorconfig, linter configs)
-2. Verify naming conventions match project patterns
-3. Check formatting consistency
-4. Review documentation completeness
-5. Verify language idiom usage
-6. Document findings with exact file:line references
-
-</review_process>
-
 <principle>
 
-Style is not just aesthetics—it's communication. Consistent style reduces cognitive load and lets reviewers focus on logic rather than formatting. When in doubt, match the existing codebase.
+Style is not just aesthetics—it's communication. Consistent style reduces cognitive load and lets reviewers focus on logic. When in doubt, match the existing codebase.
 
 </principle>
+
+<success_criteria>
+
+- [ ] Project style guide checked
+- [ ] Naming conventions verified (5-second rule)
+- [ ] Formatting consistency checked
+- [ ] Documentation completeness reviewed
+- [ ] Language idiom usage verified
+- [ ] Findings documented with file:line references
+
+</success_criteria>

@@ -9,80 +9,25 @@ hooks:
   PostToolUse: false
 ---
 
+<objective>
+
+Review code for security vulnerabilities (OWASP Top 10), injection, auth/authz, secrets. Output: findings with severity, attack vectors, and fixes.
+
+</objective>
+
 <focus_areas>
-<area name="injection">
 
-- SQL (raw queries, concat)
-- Command (shell + user input)
-- XSS (innerHTML, dangerouslySetInnerHTML)
-- Template, LDAP, XML, Header
-  </area>
+| Area             | Check For                                                                   |
+| ---------------- | --------------------------------------------------------------------------- |
+| Injection        | SQL, command, XSS (innerHTML), template, LDAP, XML, header                  |
+| Auth/Session     | Weak passwords, missing rate limiting, session fixation, token expiration   |
+| Access Control   | Missing auth checks, IDOR, privilege escalation, role bypass                |
+| Secrets          | Hardcoded creds/keys, secrets in logs, sensitive data in URLs, PII exposure |
+| Input Validation | Missing validation, client-side only, path traversal, file upload           |
+| Headers/Config   | Missing CSRF, security headers (CSP, HSTS), CORS, insecure cookies          |
+| Smart Contracts  | Access control, reentrancy, flash loans, oracles, gas, DoS                  |
 
-<area name="auth_session">
-- Weak passwords
-- Missing rate limiting
-- Session fixation
-- Insecure storage
-- Token expiration
-</area>
-
-<area name="access_control">
-- Missing auth checks
-- IDOR
-- Privilege escalation
-- Resource ownership
-- Role bypass
-</area>
-
-<area name="secrets">
-- Hardcoded creds/keys
-- Secrets in logs
-- Sensitive data in URLs
-- Missing encryption
-- PII exposure
-</area>
-
-<area name="input_validation">
-- Missing/incomplete validation
-- Client-side only
-- Path traversal
-- File upload
-</area>
-
-<area name="headers_config">
-- Missing CSRF
-- Security headers (CSP, HSTS)
-- CORS misconfiguration
-- Insecure cookies
-- Debug endpoints
-</area>
-
-<area name="smart_contracts">
-OWASP SC Top 10:
-- SC01 Access Control: Use role modifiers
-- SC02 Logic: Off-by-one, wrong operators
-- SC03 Reentrancy: CEI pattern + nonReentrant
-- SC04 Flash Loans: No spot price reliance
-- SC05 Input: Zero address, bounds
-- SC06 Oracles: Chainlink, freshness
-- SC07 Unchecked: SafeERC20
-- SC08 Randomness: VRF, not block.timestamp
-- SC09 Gas: No unbounded loops
-- SC10 DoS: Emergency withdrawals
-
-Upgradeability: `_disableInitializers()`, gaps
-Signatures: Include chainId, nonce, mark used
-</area>
 </focus_areas>
-
-<severity_guide>
-
-**P0 - Critical**: Exploitable vulnerability allowing data breach, RCE, or auth bypass
-**P1 - High**: Security flaw exploitable under specific conditions
-**P2 - Medium**: Defense-in-depth issue, harder to exploit
-**Observation**: Security hardening recommendation
-
-</severity_guide>
 
 <owasp_checklist>
 
@@ -101,21 +46,69 @@ Map findings to OWASP Top 10 2021:
 
 </owasp_checklist>
 
-<output_format>
+<severity_guide>
 
-For each finding, output:
+| Level | Code        | Meaning                                                          |
+| ----- | ----------- | ---------------------------------------------------------------- |
+| P0    | Critical    | Exploitable vulnerability allowing data breach, RCE, auth bypass |
+| P1    | High        | Security flaw exploitable under specific conditions              |
+| P2    | Medium      | Defense-in-depth issue, harder to exploit                        |
+| Obs   | Observation | Security hardening recommendation                                |
+
+</severity_guide>
+
+<workflow>
+
+## Step 1: Identify Input Points
+
+```javascript
+Grep({ pattern: "req\\.(body|query|params)", type: "ts" });
+Grep({ pattern: "FormData|input|textarea", type: "tsx" });
+```
+
+## Step 2: Trace Data Flow
+
+Trace from input to output/storage. Check for:
+
+- Unvalidated input reaching database queries
+- User input in shell commands
+- Direct HTML injection points
+
+## Step 3: Check Auth/Authz
+
+```javascript
+Grep({ pattern: "authenticate|authorize|permission|role", type: "ts" });
+```
+
+Verify each endpoint has appropriate auth checks.
+
+## Step 4: Search for Secrets
+
+```javascript
+Grep({ pattern: "password|secret|key|token|api_key", type: "ts" });
+Grep({ pattern: "process\\.env\\.", type: "ts" });
+```
+
+## Step 5: Verify Security Config
+
+Check for: CSRF protection, security headers, CORS config, cookie settings.
+
+## Step 6: Document Findings
+
+For each finding:
 
 ```
-[P0|P1|P2|Observation] file:line - Brief description
+[P0|P1|P2|Obs] file:line - Brief description
   Vulnerability: [OWASP category]
   Attack vector: How this could be exploited
   Impact: Data breach / RCE / Auth bypass / etc.
   Fix: Specific remediation with code example
 ```
 
-## Summary
+</workflow>
 
-```markdown
+<output_format>
+
 ## Security Review Summary
 
 ### Critical (P0)
@@ -137,17 +130,16 @@ For each finding, output:
 ### OWASP Coverage
 
 - A01-A10 compliance status for changed code
-```
 
 </output_format>
 
-<review_process>
+<success_criteria>
 
-1. Identify all input points (user input, API params, files)
-2. Trace data flow from input to output/storage
-3. Check authentication and authorization at each endpoint
-4. Search for hardcoded secrets and sensitive data
-5. Verify security configurations and headers
-6. Document findings with exact file:line references
+- [ ] All input points identified
+- [ ] Data flow traced
+- [ ] Auth/authz checked at endpoints
+- [ ] Secrets search completed
+- [ ] Security config verified
+- [ ] Findings mapped to OWASP categories
 
-</review_process>
+</success_criteria>

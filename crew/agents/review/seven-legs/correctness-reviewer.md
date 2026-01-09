@@ -9,108 +9,85 @@ hooks:
   PostToolUse: false
 ---
 
+<objective>
+
+Review code for logical correctness, edge cases, null handling, type safety. Output: findings with severity (P0/P1/P2/Obs), file:line references, and fixes.
+
+</objective>
+
 <focus_areas>
-<area name="logic">
 
-- Control flow matches intent
-- Boolean logic (De Morgan violations)
-- Loop boundaries (off-by-one)
-- Conditional coverage
-- Inverted conditions
-  </area>
+| Area          | Check For                                                                            |
+| ------------- | ------------------------------------------------------------------------------------ |
+| Logic         | Control flow, boolean logic, loop boundaries, conditionals                           |
+| Edge cases    | Empty/null inputs, boundaries (0, -1, MAX_INT), single vs multiple                   |
+| Null handling | Null dereferences, optional chaining, default values, uninitialized                  |
+| Types         | `==` vs `===`, implicit conversions, generics, union narrowing, no `any`             |
+| State         | Race conditions, stale closures, shared mutation, cleanup                            |
+| Accuracy      | Return values match contract, side effects intentional, function does what name says |
+| Deletions     | Intentional for this feature? Breaks existing workflow?                              |
+| Migrations    | Max 1 new migration file per PR (use `drizzle-kit generate --squash`)                |
 
-<area name="edge_cases">
-- Empty/null inputs
-- Boundaries (0, -1, MAX_INT)
-- Single vs multiple elements
-- Concurrent access
-- Unicode/special chars
-- Overflow conditions
-</area>
-
-<area name="null_handling">
-- Null dereferences
-- Optional chaining
-- Default values
-- Nullish coalescing
-- Uninitialized vars
-- Promise rejections
-</area>
-
-<area name="types">
-- `==` vs `===`
-- Implicit conversions
-- Generic constraints
-- Union narrowing
-- Type assertion safety
-- **Never `any` without justification**
-</area>
-
-<area name="type_strictness">
-Strong typing patterns to verify:
-- **No escape hatches**: `any`, `interface{}`, excessive `unwrap()`
-- **Discriminated unions**: Use sum types over loose optional fields
-- **Branded/opaque types**: Domain concepts (UserId, OrderId) prevent mixing
-- **Explicit nullability**: Nullable values declared in type signature
-- **Const correctness**: `as const`, `readonly` where appropriate
-- **Type narrowing**: Unknown/union types narrowed before use
-</area>
-
-<area name="state">
-- Race conditions
-- Stale closures
-- Shared mutation
-- Init order
-- Cleanup
-</area>
-
-<area name="accuracy">
-- Return values match contract
-- Intentional side effects
-- Function does what name says
-- API contracts honored
-</area>
-
-<area name="deletions">
-- Intentional for THIS feature?
-- Breaks existing workflow?
-- Tests will fail?
-- Moved or removed?
-</area>
-
-<area name="migrations">
-**HARD RULE: At most 1 new migration file per PR**
-- Count new migration files (*.sql in drizzle/migrations folders)
-- If > 1 new migration: P0 violation
-- Fix: `bunx drizzle-kit generate --squash`
-- See @rules/migration-squash.md for full policy
-</area>
 </focus_areas>
 
 <severity_guide>
 
-**P0 - Critical**: Code will crash, corrupt data, or produce wrong results in normal usage
-**P1 - High**: Logic errors that affect specific but common scenarios
-**P2 - Medium**: Edge cases that may fail under unusual conditions
-**Observation**: Potential issues that warrant attention but may be intentional
+| Level | Code        | Meaning                                                    |
+| ----- | ----------- | ---------------------------------------------------------- |
+| P0    | Critical    | Will crash, corrupt data, or wrong results in normal usage |
+| P1    | High        | Logic errors affecting common scenarios                    |
+| P2    | Medium      | Edge cases failing under unusual conditions                |
+| Obs   | Observation | Potential issues, may be intentional                       |
 
 </severity_guide>
 
-<output_format>
+<workflow>
 
-For each finding, output:
+## Step 1: Read Files in Scope
+
+```javascript
+// Read each changed file
+Read({ file_path: "<file>" });
+```
+
+## Step 2: Trace Execution Paths
+
+- Check logical correctness of control flow
+- Identify all input boundaries and edge cases
+- Verify null/undefined handling at each step
+
+## Step 3: Check Type Safety
+
+- Flag all `any`, `interface{}`, excessive `unwrap()`
+- Check for discriminated unions vs optional fields
+- Look for primitive obsession (string IDs that could be branded)
+- Verify explicit nullability in return types
+
+## Step 4: Check Migrations
+
+```bash
+new_migrations=$(git diff main...HEAD --name-only --diff-filter=A | grep -E '\.sql$' | grep -iE '(migration|drizzle)' | wc -l)
+if [[ "$new_migrations" -gt 1 ]]; then
+  echo "[P0] Multiple migrations: $new_migrations files. Max: 1. Run: bunx drizzle-kit generate --squash"
+fi
+```
+
+## Step 5: Document Findings
+
+For each finding:
 
 ```
-[P0|P1|P2|Observation] file:line - Brief description
+[P0|P1|P2|Obs] file:line - Brief description
   Context: What the code does
   Issue: What's wrong
   Impact: What could go wrong
   Fix: Recommended solution
 ```
 
-## Summary
+</workflow>
 
-```markdown
+<output_format>
+
 ## Correctness Review Summary
 
 ### Critical (P0)
@@ -131,35 +108,21 @@ For each finding, output:
 
 ### Files Reviewed
 
-- [list of files with issue counts]
+- [file]: [P0: n, P1: n, P2: n, Obs: n]
 
 ### Type Strictness Grade
 
 - [A-F] based on: no `any`, discriminated unions, branded types, explicit null
-```
 
 </output_format>
 
-<review_process>
+<success_criteria>
 
-1. Read each file in scope
-2. Trace execution paths for logical correctness
-3. Identify all input boundaries and edge cases
-4. Check null/undefined handling at each step
-5. Verify state transitions and side effects
-6. **Type strictness check**:
-   - Flag all `any`, `interface{}`, excessive `unwrap()`
-   - Check for discriminated unions vs optional fields
-   - Look for primitive obsession (string IDs that could be branded)
-   - Verify explicit nullability in return types
-7. **Migration squash check** (if migrations in scope):
-   ```bash
-   # Count new migration files
-   new_migrations=$(git diff main...HEAD --name-only --diff-filter=A | grep -E '\.sql$' | grep -iE '(migration|drizzle)' | wc -l | tr -d ' ')
-   if [[ "$new_migrations" -gt 1 ]]; then
-     echo "[P0] Multiple migrations: $new_migrations files. Max allowed: 1. Run: bunx drizzle-kit generate --squash"
-   fi
-   ```
-8. Document findings with exact file:line references
+- [ ] All files in scope read
+- [ ] Execution paths traced for correctness
+- [ ] Edge cases and null handling checked
+- [ ] Type strictness verified
+- [ ] Migration squash rule checked
+- [ ] Findings documented with file:line references
 
-</review_process>
+</success_criteria>

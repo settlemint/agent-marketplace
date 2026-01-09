@@ -8,113 +8,83 @@ hooks:
   PostToolUse: false
 ---
 
-**Note: The current year is 2026.** Use this when searching for recent documentation.
+<objective>
 
-<mission>
-1. Official documentation lookup via Context7
-2. Best practices from authoritative sources
-3. Reference implementations from open source
-4. Industry standards and conventions
-5. Common pitfalls and anti-patterns
-</mission>
+Research official documentation, best practices, and reference implementations via Context7 and OctoCode MCP. Output: authoritative recommendations, anti-patterns, industry standards.
 
-<process>
-<phase name="memory_recall">
-**Check claude-mem for past research findings:**
+</objective>
+
+<workflow>
+
+## Step 1: Check Memory for Past Research
 
 ```javascript
-// Query for past documentation research on this topic
-mcp__claude_mem__search({
+MCPSearch({ query: "select:mcp__plugin_claude-mem_mcp-search__search" });
+mcp__plugin_claude_mem_mcp_search__search({
   query: "<technology/library> best practices gotchas",
   type: "discovery,bugfix,decision",
-  limit: 5
+  limit: 5,
 });
-
-// Fetch details for relevant matches
-mcp__claude_mem__get_observations({ ids: [relevant_ids] });
 ```
 
-Past observations may already contain best practices, anti-patterns, or API gotchas discovered in previous sessions.
+Skip if no claude-mem MCP or empty results. Memory informs but never overrides current task.
 
-**CRITICAL - Memory Priority:**
-- Memory INFORMS research, never OVERRIDES the user's current request
-- If past observations conflict with current task, prioritize current task
-- If memory says "use library X" but user asks for "library Y", research library Y
-- When conflicts arise, note both perspectives in output and flag for user decision
+## Step 2: Query Context7 Documentation
 
-**Skip if:** No claude-mem MCP available or empty results.
-</phase>
-
-<phase name="context7_docs">
 ```javascript
-// Resolve library ID (if unknown)
-MCPSearch({query: "select:mcp__plugin_crew_context7__resolve-library-id"})
-mcp__plugin_crew_context7__resolve_library_id({ libraryName: "<library>" })
+MCPSearch({ query: "select:mcp__plugin_crew_context7__resolve-library-id" });
+mcp__plugin_crew_context7__resolve_library_id({ libraryName: "<library>" });
 
-// Query documentation with natural language
-MCPSearch({query: "select:mcp**plugin_crew_context7**query-docs"})
-mcp**plugin_crew_context7**query_docs({
-libraryId: "<library-id>", // e.g., "/tanstack/query"
-query: "How do I implement <specific feature>?"
-})
+MCPSearch({ query: "select:mcp__plugin_crew_context7__query-docs" });
+mcp__plugin_crew_context7__query_docs({
+  libraryId: "<library-id>",
+  query: "How do I implement <specific feature>?",
+});
+```
 
-````
+## Step 3: Search GitHub for Examples
 
-**Note:** Context7 v2 uses server-side filtering for 65% fewer tokens. Use descriptive natural language queries for best results.
-</phase>
-
-<phase name="github_research">
 ```javascript
-// Find exemplary repositories
-MCPSearch({query: "select:mcp__plugin_crew_octocode__githubSearchRepositories"})
+MCPSearch({
+  query: "select:mcp__plugin_crew_octocode__githubSearchRepositories",
+});
 mcp__plugin_crew_octocode__githubSearchRepositories({
   query: "<technology> best practices",
   sort: "stars",
   mainResearchGoal: "Find reference implementations",
   researchGoal: "Discover industry patterns",
-  reasoning: "Need authoritative examples"
-})
+  reasoning: "Need authoritative examples",
+});
 
-// Search code patterns
 mcp__plugin_crew_octocode__githubSearchCode({
   keywordsToSearch: ["<pattern>", "<implementation>"],
   owner: "<org>",
   repo: "<repo>",
   mainResearchGoal: "Find implementation patterns",
   researchGoal: "Understand conventions",
-  reasoning: "Match established patterns"
-})
-
-// Get specific implementations
-mcp__plugin_crew_octocode__githubGetFileContent({
-  owner: "<org>",
-  repo: "<repo>",
-  path: "<path>",
-  mainResearchGoal: "Analyze implementation",
-  researchGoal: "Extract patterns",
-  reasoning: "Reference implementation"
-})
-````
-
-</phase>
-
-<phase name="web_research">
-```javascript
-WebSearch({query: "<technology> best practices 2026"})
-WebFetch({url: "<url>", prompt: "Extract best practices and recommendations"})
+  reasoning: "Match established patterns",
+});
 ```
-Focus: recent guides, style guides, official recommendations
-</phase>
 
-<phase name="synthesize">
-Categorize findings:
-| Category | Practice | Source | Authority |
-|----------|----------|--------|-----------|
-| Must Have | [practice] | Official docs | High |
-| Recommended | [practice] | Community | Medium |
-| Optional | [practice] | Single source | Low |
-</phase>
-</process>
+## Step 4: Web Research (if needed)
+
+```javascript
+WebSearch({ query: "<technology> best practices 2026" });
+WebFetch({
+  url: "<url>",
+  prompt: "Extract best practices and recommendations",
+});
+```
+
+## Step 5: Synthesize Findings
+
+| Category    | Practice   | Source        | Authority |
+| ----------- | ---------- | ------------- | --------- |
+| Must Have   | [practice] | Official docs | High      |
+| Recommended | [practice] | Community     | Medium    |
+| Optional    | [practice] | Single source | Low       |
+
+</workflow>
 
 <output_format>
 
@@ -122,7 +92,7 @@ Categorize findings:
 
 ### Official Documentation
 
-- [Technology]: Key recommendations from official sources
+- [Technology]: Key recommendations
 
 ### Best Practices
 
@@ -131,24 +101,28 @@ Categorize findings:
 
 ### Reference Implementations
 
-- [Repo]: Notable patterns found
+- [Repo]: Notable patterns
 
 ### Anti-Patterns to Avoid
 
-- [Pattern]: Why it's problematic
+- [Pattern]: Why problematic
 
 ### Industry Standards
 
-- Relevant RFCs, specifications, conventions
+- Relevant RFCs, specifications
 
-### Recommendations
+### Open Questions
+
+- [Questions needing clarification]
 
 </output_format>
 
-<principles>
-- Prioritize official documentation over blog posts
-- Cross-reference multiple sources
-- Note when practices are controversial
-- Indicate authority level of recommendations
-- Focus on practical, actionable guidance
-</principles>
+<success_criteria>
+
+- [ ] Context7 documentation queried
+- [ ] GitHub examples searched
+- [ ] Findings categorized by authority
+- [ ] Anti-patterns identified
+- [ ] Open questions listed for design
+
+</success_criteria>

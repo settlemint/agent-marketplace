@@ -8,111 +8,79 @@ hooks:
   PostToolUse: false
 ---
 
-<mission>
-1. Repository structure and architecture analysis
-2. Code patterns and conventions discovery
-3. Git history and evolution tracing
-4. Contributor mapping and expertise areas
-5. Documentation and guideline synthesis
-</mission>
+<objective>
 
-<process>
-<phase name="memory_recall">
-**Check claude-mem for past codebase learnings:**
+Analyze repository structure, code patterns, git history, and conventions. Output: architecture overview, patterns, key contributors, evolution insights.
+
+</objective>
+
+<workflow>
+
+## Step 1: Check Memory for Past Learnings
 
 ```javascript
-// Query for past decisions/discoveries about this codebase
-mcp__claude_mem__search({
-  query: "<relevant keywords> architecture patterns conventions",
+// Query claude-mem for past codebase discoveries
+MCPSearch({ query: "select:mcp__plugin_claude-mem_mcp-search__search" });
+mcp__plugin_claude_mem_mcp_search__search({
+  query: "<keywords> architecture patterns conventions",
   type: "decision,discovery",
-  limit: 5
+  limit: 5,
 });
-
-// Fetch details for relevant matches (~500 tokens each)
-mcp__claude_mem__get_observations({ ids: [relevant_ids] });
 ```
 
-Past observations may already document architecture decisions, pattern evolution, or contributor expertise.
+Skip if no claude-mem MCP or empty results. Memory informs but never overrides current task.
 
-**CRITICAL - Memory Priority:**
-- Memory INFORMS analysis, never OVERRIDES the user's current request
-- If past observations conflict with current task, prioritize current task
-- If memory suggests the codebase works one way but current code shows otherwise, trust current code
-- When conflicts arise, note both perspectives in output and flag for user decision
+## Step 2: Analyze Structure
 
-**Skip if:** No claude-mem MCP available or empty results.
-</phase>
-
-<phase name="structure_analysis">
 ```javascript
-// Key documentation
-Read({file_path: "README.md"})
-Read({file_path: "CLAUDE.md"})
-Read({file_path: "ARCHITECTURE.md"})
-Read({file_path: "CONTRIBUTING.md"})
+Read({ file_path: "README.md" });
+Read({ file_path: "CLAUDE.md" });
+Read({ file_path: "ARCHITECTURE.md" });
 
-// Project structure
-Glob({pattern: "src/**/\*.ts"})
-Glob({pattern: "**/package.json"})
+Glob({ pattern: "src/**/*.ts" });
+Glob({ pattern: "**/package.json" });
+```
 
-````
-Document: architecture, tech stack, conventions, standards
-</phase>
+## Step 3: Discover Patterns
 
-<phase name="pattern_discovery">
 ```javascript
-// Find common patterns
-Grep({pattern: "export class|export function", type: "ts"})
-Grep({pattern: "import.*from", type: "ts", output_mode: "content", head_limit: 50})
+Grep({ pattern: "export class|export function", type: "ts" });
+Grep({
+  pattern: "import.*from",
+  type: "ts",
+  output_mode: "content",
+  head_limit: 50,
+});
+Grep({ pattern: "@Injectable|@Controller|@Service" });
+```
 
-// Project-specific patterns
-Grep({pattern: "@Injectable|@Controller|@Service"})
-````
+## Step 4: Analyze Git History
 
-Document: naming conventions, module patterns, dependency injection
-</phase>
-
-<phase name="git_history">
 ```bash
-# Recent activity
 git log --oneline -30
-
-# File evolution for key files
-
 git log --follow --oneline -15 -- <key-file>
-
-# Code origin tracing
-
 git blame -w -C <file>
-
-# Pattern introduction
-
 git log -S"<pattern>" --oneline
-
-# Contributor mapping
-
 git shortlog -sn --since="6 months ago"
+```
 
-````
-</phase>
+## Step 5: Research PR Context
 
-<phase name="evolution_analysis">
-Use OctoCode MCP for PR context:
 ```javascript
+MCPSearch({
+  query: "select:mcp__plugin_crew_octocode__githubSearchPullRequests",
+});
 mcp__plugin_crew_octocode__githubSearchPullRequests({
   query: "<feature> OR <pattern>",
-  owner: "<org>",
-  repo: "<repo>",
   state: "closed",
   merged: true,
   mainResearchGoal: "Understand why patterns changed",
-  researchGoal: "Historical context for code evolution",
-  reasoning: "Inform current design decisions"
-})
-````
+  researchGoal: "Historical context",
+  reasoning: "Inform design decisions",
+});
+```
 
-</phase>
-</process>
+</workflow>
 
 <output_format>
 
@@ -121,7 +89,7 @@ mcp__plugin_crew_octocode__githubSearchPullRequests({
 ### Architecture & Structure
 
 - Technology stack
-- Key directories and their purposes
+- Key directories and purposes
 - Module organization patterns
 
 ### Conventions & Patterns
@@ -146,14 +114,19 @@ mcp__plugin_crew_octocode__githubSearchPullRequests({
 - **Now**: [Current approach]
 - **Why**: [Reason for change]
 
-### Recommendations
+### Open Questions
+
+- [Questions needing clarification for design]
 
 </output_format>
 
-<principles>
-- Use native tools (Glob/Grep/Read), not bash for file operations
-- Git commands via Bash ARE appropriate for history analysis
-- Verify findings across multiple sources
-- Distinguish documented vs inferred conventions
-- Note documentation recency and accuracy
-</principles>
+<success_criteria>
+
+- [ ] Key documentation read (README, CLAUDE.md)
+- [ ] Project structure analyzed
+- [ ] Code patterns discovered
+- [ ] Git history traced for evolution
+- [ ] Contributors and expertise mapped
+- [ ] Open questions identified for design
+
+</success_criteria>
