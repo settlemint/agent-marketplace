@@ -1,5 +1,5 @@
 ---
-name: feature-video
+name: crew:work:feature-video
 description: Record a video walkthrough of a feature and add it to the PR description
 argument-hint: "[PR number or 'current'] [optional: base URL, default localhost:3000]"
 allowed-tools:
@@ -411,16 +411,16 @@ Present completion summary:
 
 ```bash
 # Record video for current branch's PR
-/crew:feature-video
+/crew:work:feature-video
 
 # Record video for specific PR
-/crew:feature-video 847
+/crew:work:feature-video 847
 
 # Record with custom base URL
-/crew:feature-video 847 http://localhost:5000
+/crew:work:feature-video 847 http://localhost:5000
 
 # Record for staging environment
-/crew:feature-video current https://staging.example.com
+/crew:work:feature-video current https://staging.example.com
 ```
 
 ## Tips

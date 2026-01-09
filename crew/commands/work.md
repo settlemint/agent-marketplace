@@ -163,7 +163,12 @@ Follow it EXACTLY. No implementation without failing test first. No exceptions.
    - If failures: add to findings and fix
    - This validates the full application works end-to-end
 
-9. **Check Completion**:
+9. **Feature Video** (for UI/frontend work):
+   - If plan has frontend/UI stories: Skill({ skill: 'crew:work:feature-video' })
+   - Records browser walkthrough demonstrating the feature
+   - Uploads video and adds to PR description
+
+10. **Check Completion**:
    - All stories status: complete
    - ZERO findings in plan (all fixed)
    - CI passing (no failures)
@@ -250,6 +255,7 @@ Read({ file_path: "/tmp/feature-after-submit.png" });
 - [ ] Integration tests passing (if test:integration exists)
 - [ ] Coverage requirements met per TDD skill
 - [ ] Browser testing for UI stories
+- [ ] Feature video recorded for UI/frontend work
 - [ ] `<promise>WORK COMPLETE</promise>` output when genuinely done
 
 </success_criteria>
