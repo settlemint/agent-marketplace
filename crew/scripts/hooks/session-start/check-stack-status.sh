@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Check git stack/worktree status on session start
-# Alerts user if branch is out of sync with parent or if worktree context matters
+# - Detects if branch's remote was deleted (merged PR) and switches to main
+# - Alerts user if branch is out of sync with parent or if worktree context matters
 #
 # PERFORMANCE: Runs git commands in parallel where possible
 
@@ -25,6 +26,62 @@ fi
 BRANCH=$(git branch --show-current 2>/dev/null || echo '')
 if [[ -z $BRANCH ]]; then
   exit 0
+fi
+
+# =============================================================================
+# CHECK FOR DELETED REMOTE BRANCH (merged/closed PR)
+# =============================================================================
+# If we're on a feature branch that was tracking a remote, but the remote
+# branch no longer exists (typically after a PR was merged), switch to main.
+
+if [[ "$BRANCH" != "main" && "$BRANCH" != "master" ]]; then
+  # Check if branch has an upstream set
+  UPSTREAM=$(git rev-parse --abbrev-ref "$BRANCH@{upstream}" 2>/dev/null || echo "")
+
+  if [[ -n "$UPSTREAM" ]]; then
+    # Fetch to update remote refs (quick, quiet)
+    git fetch origin --prune --quiet 2>/dev/null || true
+
+    # Check if the remote branch still exists
+    REMOTE_BRANCH="origin/$BRANCH"
+    if ! git show-ref --verify --quiet "refs/remotes/$REMOTE_BRANCH" 2>/dev/null; then
+      # Remote branch was deleted - likely merged PR
+      OLD_BRANCH="$BRANCH"
+
+      echo ""
+      echo "🔄 **BRANCH CLEANUP DETECTED**"
+      echo "  Branch '$OLD_BRANCH' was tracking '$REMOTE_BRANCH' which no longer exists."
+      echo "  This typically means the PR was merged or closed."
+      echo ""
+      echo "  Switching to main and pulling latest..."
+      echo ""
+
+      # Determine main branch name
+      MAIN_BRANCH="main"
+      if git show-ref --verify --quiet "refs/heads/master" 2>/dev/null; then
+        if ! git show-ref --verify --quiet "refs/heads/main" 2>/dev/null; then
+          MAIN_BRANCH="master"
+        fi
+      fi
+
+      # Switch to main and pull
+      git checkout "$MAIN_BRANCH" 2>/dev/null
+      git pull --quiet 2>/dev/null || true
+
+      # Update BRANCH variable for rest of script
+      BRANCH="$MAIN_BRANCH"
+
+      echo "  ✓ Now on '$MAIN_BRANCH' branch with latest changes"
+      echo ""
+
+      # Trigger the cleanup skill to handle branch deletion
+      echo "  **ACTION REQUIRED:** Run cleanup to remove stale branches:"
+      echo '  ```javascript'
+      echo '  Skill({ skill: "crew:git:clean" })'
+      echo '  ```'
+      echo ""
+    fi
+  fi
 fi
 
 # Detect worktree status
