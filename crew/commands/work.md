@@ -269,3 +269,11 @@ Read({ file_path: "/tmp/feature-after-submit.png" });
 - [ ] `<promise>WORK COMPLETE</promise>` output when genuinely done
 
 </success_criteria>
+
+<notes>
+
+Follow these rules:
+
+- @rules/git-safety.md - Protected files and operations
+
+</notes>

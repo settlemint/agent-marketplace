@@ -183,3 +183,9 @@ If yes: `Skill({ skill: "crew:git:stacked:slide-out" })`
 - [ ] Merged branches cleaned up (if any)
 
 </success_criteria>
+
+<notes>
+
+Follow @rules/machete-workflow.md for stacked branch operations.
+
+</notes>

@@ -92,3 +92,9 @@ Do NOT use 'git checkout' - worktrees have dedicated branches.
 - [ ] User instructed how to switch
 
 </success_criteria>
+
+<notes>
+
+Follow @rules/phantom-workflow.md and @rules/worktree-safety.md for worktree operations.
+
+</notes>

@@ -130,3 +130,9 @@ mcp__plugin_crew_octocode__githubSearchPullRequests({
 - [ ] Open questions identified for design
 
 </success_criteria>
+
+<notes>
+
+Follow @rules/codebase-assessment.md for analysis criteria.
+
+</notes>

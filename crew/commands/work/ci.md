@@ -118,3 +118,9 @@ if (failures.length === 0) {
 - [ ] Status reported (passing/failing)
 
 </success_criteria>
+
+<notes>
+
+Follow @rules/ci-requirements.md for CI check requirements.
+
+</notes>

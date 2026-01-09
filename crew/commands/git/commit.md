@@ -41,3 +41,9 @@ git commit -m "type(scope): description"
 - [ ] Conventional commit format used
 
 </success_criteria>
+
+<notes>
+
+Follow @rules/git-safety.md for protected files and operations.
+
+</notes>
