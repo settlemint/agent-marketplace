@@ -24,7 +24,7 @@ skills:
 
 <objective>
 
-Create feature branch. Enter Plan mode. Research with parallel agents. Write draft plan with `open_questions`. Review → Refine loop until no questions remain. Output: `.claude/plans/<slug>.yaml`
+Create feature branch. Enter Plan mode. Research with parallel agents. Write draft plan with `open_questions`. Exit plan mode ONLY when complete. Output: `.claude/plans/<slug>.yaml`
 
 </objective>
 
@@ -148,28 +148,22 @@ Write({ file_path: `.claude/plans/${slug}.yaml`, content: populatedTemplate });
 
 Mark `blocking: true` for questions that must be resolved before implementation.
 
-## Step 6: Exit Plan Mode
+## Step 6: Review Plan (in plan mode)
 
 ```javascript
-ExitPlanMode();
-// TodoWrite: #1-6 ✓
-```
-
-## Step 7: Review Plan
-
-```javascript
-// Reviews plan, adds open_questions, updates file
+// Reviews plan, adds open_questions, updates file - still in plan mode
 Skill({ skill: "crew:plan:review", args: `.claude/plans/${slug}.yaml` });
 
 // Reload plan to check for open_questions
 const plan = Read({ file_path: `.claude/plans/${slug}.yaml` });
-// TodoWrite: #1-6 ✓
+// TodoWrite: #1-5 ✓, #6 in_progress
 ```
 
-## Step 8: Refine Loop (if needed)
+## Step 7: Refine Loop (in plan mode)
 
 ```javascript
 // If open questions exist, refine is required (not optional)
+// Stay in plan mode throughout refinement
 while (plan.open_questions?.length > 0) {
   // Resolve current questions
   Skill({ skill: "crew:plan:refine", args: `.claude/plans/${slug}.yaml` });
@@ -180,32 +174,21 @@ while (plan.open_questions?.length > 0) {
   // Reload to check if still questions
   plan = Read({ file_path: `.claude/plans/${slug}.yaml` });
 }
+// TodoWrite: #1-6 ✓
 ```
 
-## Step 9: Ask Next Action
+## Step 8: Exit Plan Mode
 
 ```javascript
-// No open questions - ready to work
-AskUserQuestion({
-  questions: [
-    {
-      question: "Plan complete. What's next?",
-      header: "Next",
-      options: [
-        {
-          label: "Work (Recommended)",
-          description: "Execute with Ralph Loop for guaranteed completion",
-        },
-        { label: "Stop", description: "Save plan for later" },
-      ],
-      multiSelect: false,
-    },
-  ],
-});
+// ONLY exit after all refinement complete - this prompts user for approval
+ExitPlanMode();
+```
 
-if (choice === "Work") {
-  Skill({ skill: "crew:work", args: slug });
-}
+## Step 9: Execute Work
+
+```javascript
+// After user approves plan, immediately start work - no additional prompt needed
+Skill({ skill: "crew:work", args: slug });
 ```
 
 </workflow>
@@ -232,16 +215,16 @@ if (choice === "Work") {
 - [ ] EnterPlanMode at start (Step 1)
 - [ ] 4 research agents launched parallel (Step 3)
 - [ ] Draft plan written with open_questions (Step 5)
-- [ ] ExitPlanMode before review (Step 6)
-- [ ] plan-review called (Step 7)
-- [ ] Refine loop runs until no open_questions (Step 8)
-- [ ] Build/Stop choice offered (Step 9)
+- [ ] plan-review called IN plan mode (Step 6)
+- [ ] Refine loop runs until no open_questions IN plan mode (Step 7)
+- [ ] ExitPlanMode ONLY after refinement complete (Step 8)
+- [ ] crew:work starts immediately after approval (Step 9)
 
 **Output:**
 
 - [ ] Valid YAML at `.claude/plans/<slug>.yaml`
 - [ ] Stories with `id`, `priority`, `status`, `mvp`
 - [ ] Acceptance as `given`/`when`/`then`
-- [ ] open_questions resolved before build
+- [ ] open_questions resolved before ExitPlanMode
 
 </success_criteria>
