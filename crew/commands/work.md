@@ -60,6 +60,13 @@ This is NON-NEGOTIABLE. Every story MUST:
 
 <workflow>
 
+## Step 0: Load TDD Skill (MANDATORY)
+
+```javascript
+// Force load TDD skill - this is non-negotiable
+Skill({ skill: "devtools:tdd-typescript" });
+```
+
 ## Step 1: Load Plan
 
 ```javascript
@@ -100,9 +107,10 @@ Skill({
 
 ## TDD ENFORCEMENT (MANDATORY)
 
-**Load devtools:tdd-typescript skill and follow it EXACTLY.**
-Every story: RED (failing test) → GREEN (minimal impl) → REFACTOR (improve).
-No implementation without failing test first. No exceptions.
+**At start of EVERY iteration, load the TDD skill:**
+Skill({ skill: 'devtools:tdd-typescript' })
+
+Follow it EXACTLY. No implementation without failing test first. No exceptions.
 
 ## Execution Loop
 
@@ -117,7 +125,7 @@ No implementation without failing test first. No exceptions.
 
 3. **Execute Stories via TDD**:
    - P1 stories first, then P2, then P3
-   - For EACH story: Follow devtools:tdd-typescript workflow EXACTLY
+   - For EACH story: Skill({ skill: 'devtools:tdd-typescript' }) then follow workflow
    - Update story status in plan on completion
 
 4. **Run CI** (after each story):
