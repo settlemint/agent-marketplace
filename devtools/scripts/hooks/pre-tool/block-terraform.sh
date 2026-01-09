@@ -10,41 +10,43 @@ INPUT=$(cat)
 # Extract command from input
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""' 2>/dev/null)
 
-# Check for terraform/tofu commands (case insensitive)
-if echo "$COMMAND" | grep -qiE '^\s*(terraform|tofu)\s+(init|plan|apply|destroy|import|state|workspace|refresh|taint|untaint|validate|fmt|output|show|get|providers|force-unlock)'; then
+# Only block terraform/tofu apply and destroy commands (case insensitive)
+# Other commands like init, plan, validate, fmt are allowed
+if echo "$COMMAND" | grep -qiE '^\s*(terraform|tofu)\s+(apply|destroy)'; then
 	cat <<'EOF'
 {
   "decision": "block",
-  "reason": "BLOCKED: Terraform/OpenTofu execution is prohibited in Claude Code.
+  "reason": "BLOCKED: terraform apply/destroy is prohibited in Claude Code.
 
-Claude can WRITE .tf files but MUST NOT execute terraform/tofu commands.
+Claude can run terraform init, plan, validate, fmt, etc.
+But apply and destroy MUST be run by the user.
 
-Why this is blocked:
+Why apply/destroy is blocked:
 - Infrastructure mutations are irreversible
 - terraform apply can delete production databases
-- State file corruption can brick infrastructure
+- terraform destroy removes all infrastructure
 - No rollback capability for infrastructure changes
 
 What to do:
-1. Copy the terraform command Claude suggested
-2. Run it in your local terminal
-3. Review the plan output carefully before applying
+1. Review the terraform plan output
+2. Run 'terraform apply' or 'terraform destroy' in your local terminal
+3. Confirm the changes when prompted
 
-The user must run terraform commands themselves."
+The user must run apply/destroy commands themselves."
 }
 EOF
 	exit 0
 fi
 
-# Also block direct terraform binary calls that might bypass the above
-if echo "$COMMAND" | grep -qiE '(^|[;&|])\s*(terraform|tofu)\s'; then
+# Also block apply/destroy in chained commands
+if echo "$COMMAND" | grep -qiE '(^|[;&|])\s*(terraform|tofu)\s+(apply|destroy)'; then
 	cat <<'EOF'
 {
   "decision": "block",
-  "reason": "BLOCKED: Direct terraform/tofu execution is not allowed.
+  "reason": "BLOCKED: terraform apply/destroy is not allowed.
 
-Claude writes infrastructure code but does not execute it.
-Run terraform commands in your local terminal."
+Claude can run other terraform commands but apply/destroy must be run by the user.
+Run 'terraform apply' or 'terraform destroy' in your local terminal."
 }
 EOF
 	exit 0

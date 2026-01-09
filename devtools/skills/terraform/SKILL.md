@@ -14,49 +14,52 @@ triggers:
 ---
 
 <objective>
-Write and review Terraform/OpenTofu infrastructure code. **Claude is READ-ONLY for Terraform - it writes .tf files but NEVER executes terraform/tofu commands.**
+Write, review, and help manage Terraform/OpenTofu infrastructure code. Claude can run most terraform commands but **NEVER executes `apply` or `destroy`** - those must be run by the user.
 </objective>
 
 <critical_restriction>
 
-## ABSOLUTE PROHIBITION - READ THIS FIRST
+## APPLY/DESTROY PROHIBITION
 
-**Claude MUST NEVER execute ANY Terraform or OpenTofu commands. This is non-negotiable.**
+**Claude MUST NEVER execute `terraform apply` or `terraform destroy`. This is non-negotiable.**
 
 ### Forbidden Commands (NEVER run these):
 
 ```
-terraform init
-terraform plan
 terraform apply
 terraform destroy
-terraform import
-terraform state *
-terraform workspace *
-terraform refresh
-terraform taint
-terraform untaint
-terraform validate
-terraform fmt
-tofu init
-tofu plan
 tofu apply
 tofu destroy
-tofu import
-tofu state *
 ```
 
-### Why This Restriction Exists:
+### Allowed Commands (Claude CAN run these):
+
+```
+terraform init       # Initialize working directory
+terraform plan       # Preview changes
+terraform validate   # Validate configuration
+terraform fmt        # Format code
+terraform output     # Show outputs
+terraform show       # Show state/plan
+terraform state list # List resources in state
+terraform workspace list  # List workspaces
+terraform providers  # Show providers
+tofu init/plan/validate/fmt/etc.
+```
+
+### Why apply/destroy Are Blocked:
 
 1. **Infrastructure mutations are irreversible** - `terraform apply` can delete production databases
-2. **State file corruption** - Running terraform without proper state access corrupts infrastructure
-3. **Cost implications** - Terraform can provision expensive resources instantly
-4. **Security risks** - Terraform has full cloud provider credentials access
-5. **No rollback** - Unlike code, infrastructure changes often cannot be reverted
+2. **terraform destroy removes everything** - Catastrophic if run accidentally
+3. **Cost implications** - Can provision expensive resources instantly
+4. **No rollback** - Unlike code, infrastructure changes often cannot be reverted
 
 ### What Claude CAN Do:
 
 - Write `.tf` files with proper HCL syntax
+- Run `terraform init` to initialize providers
+- Run `terraform plan` to preview changes
+- Run `terraform validate` and `terraform fmt`
 - Review existing Terraform code for issues
 - Suggest improvements to modules and resources
 - Explain Terraform concepts and patterns
@@ -65,11 +68,9 @@ tofu state *
 
 ### What The User Must Do:
 
-- Run `terraform init` locally
-- Run `terraform plan` to preview changes
 - Run `terraform apply` to apply changes
-- Manage state files and workspaces
-- Handle provider authentication
+- Run `terraform destroy` to remove infrastructure
+- Review plan output before applying
 
 </critical_restriction>
 
@@ -249,41 +250,35 @@ module "vpc" {
 
 <user_instructions>
 
-When you need to test or apply Terraform changes, run these commands locally:
+Claude can run most terraform commands to help you work with infrastructure:
 
 ```bash
-# Initialize (downloads providers)
-terraform init
+# Claude CAN run these:
+terraform init           # Initialize providers
+terraform plan -out=tfplan  # Preview changes
+terraform validate       # Check syntax
+terraform fmt -recursive # Format code
+terraform output         # Show outputs
+terraform show           # Show state
 
-# Format code
-terraform fmt -recursive
-
-# Validate syntax
-terraform validate
-
-# Preview changes (REVIEW CAREFULLY)
-terraform plan -out=tfplan
-
-# Apply changes (DESTRUCTIVE - review plan first!)
-terraform apply tfplan
-
-# Destroy (VERY DESTRUCTIVE)
-terraform destroy
+# YOU must run these (Claude is blocked):
+terraform apply tfplan   # Apply changes
+terraform destroy        # Remove infrastructure
 ```
 
-**Claude will write the .tf files. You must run these commands yourself.**
+**Claude helps with init, plan, validate, format. You run apply/destroy yourself.**
 
 </user_instructions>
 
 <success_criteria>
 
-- [ ] No terraform/tofu commands executed by Claude
+- [ ] No terraform/tofu apply or destroy executed by Claude
 - [ ] All variables have description and type
 - [ ] All outputs have description
 - [ ] Sensitive values marked appropriately
 - [ ] Critical resources have lifecycle rules
 - [ ] Modules use explicit version constraints
 - [ ] No hardcoded secrets
-- [ ] User instructed to run commands locally
+- [ ] User informed they must run apply/destroy
 
 </success_criteria>
