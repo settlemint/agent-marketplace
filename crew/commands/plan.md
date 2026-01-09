@@ -180,14 +180,17 @@ while (plan.open_questions?.length > 0) {
 ## Step 9: Ask Next Action
 
 ```javascript
-// No open questions - ready to build
+// No open questions - ready to work
 AskUserQuestion({
   questions: [
     {
       question: "Plan complete. What's next?",
       header: "Next",
       options: [
-        { label: "Build (Recommended)", description: "Start implementation" },
+        {
+          label: "Work (Recommended)",
+          description: "Execute with Ralph Loop for guaranteed completion",
+        },
         { label: "Stop", description: "Save plan for later" },
       ],
       multiSelect: false,
@@ -195,8 +198,8 @@ AskUserQuestion({
   ],
 });
 
-if (choice === "Build") {
-  Skill({ skill: "crew:build", args: slug });
+if (choice === "Work") {
+  Skill({ skill: "crew:work", args: slug });
 }
 ```
 

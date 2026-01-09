@@ -92,6 +92,10 @@ open_questions:
     blocking: true
     text: "[Question needing resolution]"
 
+findings:
+  ci: []
+  review: []
+
 phases:
   - id: PH-001
     name: setup

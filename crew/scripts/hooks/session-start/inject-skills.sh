@@ -26,7 +26,7 @@ cat <<'EOF'
 | Command | Purpose |
 |---------|---------|
 | `/crew:design` | Create implementation plans with research |
-| `/crew:build` | Execute plans with progress tracking |
+| `/crew:work` | Execute plans with Ralph Loop for completion |
 | `/crew:check` | Multi-agent code review |
 | `/crew:ci` | Run CI in background haiku agent |
 | `/crew:git:commit` | Guided commit with context |
