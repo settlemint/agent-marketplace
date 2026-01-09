@@ -1,5 +1,5 @@
 ---
-name: crew:git:retarget-pr
+name: crew:git:stacked:retarget
 description: Change PR base branch to match machete parent
 allowed-tools:
   - Read
@@ -59,7 +59,7 @@ If no PR found:
 
 ```
 No PR found for current branch. Create one first with:
-Skill({ skill: "crew:git:pr" })
+Skill({ skill: "crew:git:pr:create" })
 ```
 
 ## Step 2: Compare Base and Parent

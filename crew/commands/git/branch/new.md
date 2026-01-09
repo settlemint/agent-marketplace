@@ -1,5 +1,5 @@
 ---
-name: crew:git:branch-new
+name: crew:git:branch:new
 description: Create a new branch with username prefix naming convention
 argument-hint: "[description] [--type feat|fix|hotfix|chore] [--base main|current]"
 allowed-tools:

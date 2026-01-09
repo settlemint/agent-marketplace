@@ -1,5 +1,5 @@
 ---
-name: crew:git:worktree-delete
+name: crew:git:worktree:delete
 description: Delete a phantom worktree and its branch
 argument-hint: "<worktree-name>"
 allowed-tools:

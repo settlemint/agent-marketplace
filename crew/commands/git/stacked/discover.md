@@ -1,5 +1,5 @@
 ---
-name: crew:git:discover
+name: crew:git:stacked:discover
 description: Auto-detect branch layout from git reflog
 allowed-tools:
   - Read

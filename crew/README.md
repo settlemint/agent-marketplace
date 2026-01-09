@@ -21,33 +21,33 @@ Unified orchestration for work execution, skill creation, git conventions, and s
 | `/crew:git:commit`          | Create conventional commit               |
 | `/crew:git:commit-and-push` | Commit + push + update PR                |
 | `/crew:git:push`            | Push to origin + update PR               |
-| `/crew:git:branch-new`      | Create branch with username prefix       |
-| `/crew:git:pr`              | Create pull request                      |
-| `/crew:git:fix-reviews`     | Resolve PR comments and CI failures      |
+| `/crew:git:branch:new`      | Create branch with username prefix       |
+| `/crew:git:pr:create`              | Create pull request                      |
+| `/crew:git:pr:fix-reviews`     | Resolve PR comments and CI failures      |
 
 ### Worktrees (phantom)
 
 | Command                          | Purpose                         |
 | -------------------------------- | ------------------------------- |
 | `/crew:git:worktree`             | Create worktree and auto-switch |
-| `/crew:git:worktree-switch`      | Switch to existing worktree     |
-| `/crew:git:worktree-list`        | List all worktrees              |
-| `/crew:git:worktree-delete`      | Delete a worktree               |
-| `/crew:git:worktree-checkout-pr` | Checkout PR into new worktree   |
+| `/crew:git:worktree:switch`      | Switch to existing worktree     |
+| `/crew:git:worktree:list`        | List all worktrees              |
+| `/crew:git:worktree:delete`      | Delete a worktree               |
+| `/crew:git:worktree:checkout-pr` | Checkout PR into new worktree   |
 
 ### Stacked PRs (git-machete)
 
 | Command                  | Purpose                                  |
 | ------------------------ | ---------------------------------------- |
 | `/crew:git:branch`       | Create feature branch from main          |
-| `/crew:git:stack-add`    | Add branch to machete stack              |
-| `/crew:git:stack-status` | Show branch stack with visual indicators |
-| `/crew:git:go`           | Navigate between branches in stack       |
-| `/crew:git:traverse`     | Sync entire stack with parents/remotes   |
-| `/crew:git:slide-out`    | Remove merged branches, update child PRs |
-| `/crew:git:retarget-pr`  | Change PR base to match machete parent   |
-| `/crew:git:restack-pr`   | Retarget + force push after rebase       |
-| `/crew:git:advance`      | Fast-forward merge child into current    |
+| `/crew:git:stacked:add`    | Add branch to machete stack              |
+| `/crew:git:stacked:status` | Show branch stack with visual indicators |
+| `/crew:git:stacked:go`           | Navigate between branches in stack       |
+| `/crew:git:stacked:traverse`     | Sync entire stack with parents/remotes   |
+| `/crew:git:stacked:slide-out`    | Remove merged branches, update child PRs |
+| `/crew:git:stacked:retarget`  | Change PR base to match machete parent   |
+| `/crew:git:stacked:restack`   | Retarget + force push after rebase       |
+| `/crew:git:stacked:advance`      | Fast-forward merge child into current    |
 
 ### Code Review
 
@@ -102,8 +102,8 @@ The standard flow for implementing new features or addressing issues:
 /crew:design      # Research and create implementation plan
 /crew:build       # Execute the plan with progress tracking
 /crew:check       # Multi-agent code review (7-leg)
-/crew:git:pr      # Create pull request
-/crew:git:fix-reviews  # Address reviewer feedback
+/crew:git:pr:create      # Create pull request
+/crew:git:pr:fix-reviews  # Address reviewer feedback
 ```
 
 ### Daily Git Sync
@@ -117,8 +117,8 @@ Keep your branch up-to-date with main and sync PR state:
 For stacked branches (git-machete):
 
 ```
-/crew:git:traverse   # Sync entire stack with parents and remotes
-/crew:git:slide-out  # Remove merged branches and update child PRs
+/crew:git:stacked:traverse   # Sync entire stack with parents and remotes
+/crew:git:stacked:slide-out  # Remove merged branches and update child PRs
 ```
 
 ### Quick Commits
@@ -133,11 +133,11 @@ For stacked branches (git-machete):
 
 ```
 /crew:git:branch         # Create feature branch from main
-/crew:git:stack-add      # Add branch to machete stack
-/crew:git:pr             # Create PR with stack annotations
-/crew:git:retarget-pr    # Change PR base to match machete parent
-/crew:git:restack-pr     # Retarget + force push after rebase
-/crew:git:go down        # Navigate to child branch in stack
+/crew:git:stacked:add      # Add branch to machete stack
+/crew:git:pr:create             # Create PR with stack annotations
+/crew:git:stacked:retarget    # Change PR base to match machete parent
+/crew:git:stacked:restack     # Retarget + force push after rebase
+/crew:git:stacked:go down        # Navigate to child branch in stack
 ```
 
 ### Worktrees + Stacked PRs
@@ -154,7 +154,7 @@ worktree-hotfix/        # Stack C: fix/critical (independent bugfix)
 
 ```
 /crew:git:worktree       # Create and switch to new worktree
-/crew:git:worktree-switch  # Switch between existing worktrees
+/crew:git:worktree:switch  # Switch between existing worktrees
 ```
 
 Branch names are auto-generated with username prefix: `username/type/description`
@@ -169,9 +169,9 @@ Branch names are auto-generated with username prefix: `username/type/description
 **Navigation within a stack:**
 
 ```
-/crew:git:go up          # Go to parent branch
-/crew:git:go down        # Go to child branch
-/crew:git:go next        # Go to sibling branch
+/crew:git:stacked:go up          # Go to parent branch
+/crew:git:stacked:go down        # Go to child branch
+/crew:git:stacked:go next        # Go to sibling branch
 ```
 
 The machete context automatically suggests next steps:
@@ -188,16 +188,16 @@ The machete context automatically suggests next steps:
 **Worktree management:**
 
 ```
-/crew:git:worktree-list    # See all worktrees
-/crew:git:worktree-delete  # Clean up completed worktrees
-/crew:git:worktree-checkout-pr  # Review PR in isolated worktree
+/crew:git:worktree:list    # See all worktrees
+/crew:git:worktree:delete  # Clean up completed worktrees
+/crew:git:worktree:checkout-pr  # Review PR in isolated worktree
 ```
 
 ### Code Review
 
 ```
 /crew:check              # Full 7-leg review (correctness, security, etc.)
-/crew:git:fix-reviews    # Resolve PR comments and CI failures
+/crew:git:pr:fix-reviews    # Resolve PR comments and CI failures
 ```
 
 ## Features

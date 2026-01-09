@@ -55,7 +55,7 @@ if ! git merge-base --is-ancestor "$parent" HEAD 2>/dev/null; then
   echo "Branch \`$branch\` is behind parent \`$parent\`"
   echo ""
   echo "**ACTION REQUIRED:** Use Skill(skill: \"crew:git:sync\") to rebase on parent"
-  echo "Or use Skill(skill: \"crew:git:traverse\") to sync entire stack"
+  echo "Or use Skill(skill: \"crew:git:stacked:traverse\") to sync entire stack"
 fi
 
 exit 0

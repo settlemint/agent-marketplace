@@ -1,5 +1,5 @@
 ---
-name: crew:git:worktree-switch
+name: crew:git:worktree:switch
 description: Switch to a different worktree
 argument-hint: "[worktree name]"
 allowed-tools:

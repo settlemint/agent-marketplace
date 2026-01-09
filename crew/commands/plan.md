@@ -34,7 +34,7 @@ Create feature branch. Enter Plan mode. Research with parallel agents. Write dra
 
 ```javascript
 const slug = slugify(feature); // kebab-case, max 30 chars
-Skill({ skill: "crew:git:branch-new", args: `${slug} --type feat` });
+Skill({ skill: "crew:git:branch:new", args: `${slug} --type feat` });
 ```
 
 ## Step 1: Enter Plan Mode
@@ -154,7 +154,7 @@ ExitPlanMode();
 
 ```javascript
 // Reviews plan, adds open_questions, updates file
-Skill({ skill: "crew:plan-review", args: `.claude/plans/${slug}.yaml` });
+Skill({ skill: "crew:plan:review", args: `.claude/plans/${slug}.yaml` });
 
 // Reload plan to check for open_questions
 const plan = Read({ file_path: `.claude/plans/${slug}.yaml` });
@@ -167,10 +167,10 @@ const plan = Read({ file_path: `.claude/plans/${slug}.yaml` });
 // If open questions exist, refine is required (not optional)
 while (plan.open_questions?.length > 0) {
   // Resolve current questions
-  Skill({ skill: "crew:plan-refine", args: `.claude/plans/${slug}.yaml` });
+  Skill({ skill: "crew:plan:refine", args: `.claude/plans/${slug}.yaml` });
 
   // Review may find new questions
-  Skill({ skill: "crew:plan-review", args: `.claude/plans/${slug}.yaml` });
+  Skill({ skill: "crew:plan:review", args: `.claude/plans/${slug}.yaml` });
 
   // Reload to check if still questions
   plan = Read({ file_path: `.claude/plans/${slug}.yaml` });

@@ -64,7 +64,7 @@ git push -u origin $(git branch --show-current)
 **After successful push, update PR (if exists):**
 
 ```javascript
-Skill({ skill: "crew:git:update-pr" });
+Skill({ skill: "crew:git:pr:update" });
 ```
 
 </phase>

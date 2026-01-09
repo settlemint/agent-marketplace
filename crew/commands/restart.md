@@ -105,9 +105,9 @@ AskUserQuestion({
 });
 
 // Based on selection:
-// Create PR → Skill({ skill: "crew:git:pr" });
+// Create PR → Skill({ skill: "crew:git:pr:create" });
 // Clean branches → Skill({ skill: "crew:git:clean" });
-// Sync stack → Skill({ skill: "crew:git:traverse" });
+// Sync stack → Skill({ skill: "crew:git:stacked:traverse" });
 ```
 
 **If truly nothing to resume:**

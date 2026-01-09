@@ -84,7 +84,7 @@ if [[ -f "$machete_file" ]]; then
 		merged_count=$(echo "$status_output" | grep -cE "^\s*o\s" 2>/dev/null || echo "0")
 		if [[ "$merged_count" -gt 0 ]]; then
 			echo
-			echo "🔀 **$merged_count merged branch(es) detected** — run \`Skill({ skill: \"crew:git:slide-out\" })\` to clean up"
+			echo "🔀 **$merged_count merged branch(es) detected** — run \`Skill({ skill: \"crew:git:stacked:slide-out\" })\` to clean up"
 		fi
 
 		# Check if out of sync with parent
@@ -112,18 +112,18 @@ if [[ -f "$machete_file" ]]; then
 			# Check if current branch's PR is merged or approved
 			pr_state=$(gh pr view --json state,reviewDecision -q '.state + ":" + (.reviewDecision // "NONE")' 2>/dev/null || echo "")
 			if [[ "$pr_state" == "MERGED:"* ]]; then
-				echo "✅ **PR merged** — run \`Skill({ skill: \"crew:git:slide-out\" })\` then work on child"
+				echo "✅ **PR merged** — run \`Skill({ skill: \"crew:git:stacked:slide-out\" })\` then work on child"
 			elif [[ "$pr_state" == *":APPROVED" ]]; then
-				echo "✅ **PR approved** — consider moving to child: \`Skill({ skill: \"crew:git:go\", args: \"down\" })\`"
+				echo "✅ **PR approved** — consider moving to child: \`Skill({ skill: \"crew:git:stacked:go\", args: \"down\" })\`"
 			elif [[ "$pr_state" == "OPEN:"* ]]; then
-				echo "⏳ **PR open** — awaiting review. Can work on child: \`Skill({ skill: \"crew:git:go\", args: \"down\" })\`"
+				echo "⏳ **PR open** — awaiting review. Can work on child: \`Skill({ skill: \"crew:git:stacked:go\", args: \"down\" })\`"
 			fi
 		fi
 
 		# Check if there's a sibling to work on
 		next_sibling=$(git machete show next 2>/dev/null || echo "")
 		if [[ -n "$next_sibling" ]]; then
-			echo "➡️ **Sibling branch available:** \`$next_sibling\` — \`Skill({ skill: \"crew:git:go\", args: \"next\" })\`"
+			echo "➡️ **Sibling branch available:** \`$next_sibling\` — \`Skill({ skill: \"crew:git:stacked:go\", args: \"next\" })\`"
 		fi
 
 		# Check if we're on a leaf (no children) and PR is open
@@ -160,7 +160,7 @@ if [[ -f "$machete_file" ]]; then
 else
 	echo "**No machete layout** - \`${machete_file}\` does not exist"
 	echo
-	echo "To set up stacked branches, run \`Skill({ skill: \"crew:git:discover\" })\` or:"
+	echo "To set up stacked branches, run \`Skill({ skill: \"crew:git:stacked:discover\" })\` or:"
 	echo "1. \`git machete discover\` - auto-detect layout from reflog"
 	echo "2. \`git machete edit\` - manually define layout"
 	echo

@@ -1,5 +1,5 @@
 ---
-name: crew:git:stack-add
+name: crew:git:stacked:add
 description: Add current or specified branch to the machete stack
 argument-hint: "[branch-name] [--onto parent]"
 allowed-tools:
@@ -70,7 +70,7 @@ AskUserQuestion({
 If "Discover":
 
 ```javascript
-Skill({ skill: "crew:git:discover" });
+Skill({ skill: "crew:git:stacked:discover" });
 ```
 
 If "Start with this branch":
@@ -204,9 +204,9 @@ main
 
 After adding a branch to the stack:
 
-1. **Create PR:** `Skill({ skill: "crew:git:pr" })`
-2. **Sync stack:** `Skill({ skill: "crew:git:traverse" })`
-3. **View status:** `Skill({ skill: "crew:git:stack-status" })`
+1. **Create PR:** `Skill({ skill: "crew:git:pr:create" })`
+2. **Sync stack:** `Skill({ skill: "crew:git:stacked:traverse" })`
+3. **View status:** `Skill({ skill: "crew:git:stacked:status" })`
 
 </after_adding>
 

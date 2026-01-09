@@ -170,9 +170,9 @@ EOF
 chmod +x .git/hooks/machete-status-branch
 ```
 
-### Via crew:git:setup
+### Via crew:git:stacked:setup
 
-The `Skill({ skill: "crew:git:setup" })` command can optionally install these hooks during setup.
+The `Skill({ skill: "crew:git:stacked:setup" })` command can optionally install these hooks during setup.
 
 ## Hook Behavior
 

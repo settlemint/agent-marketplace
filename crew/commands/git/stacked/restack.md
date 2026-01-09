@@ -1,5 +1,5 @@
 ---
-name: crew:git:restack-pr
+name: crew:git:stacked:restack
 description: Retarget PR, force push, and manage draft state atomically
 allowed-tools:
   - Read
@@ -165,7 +165,7 @@ git fetch origin main
 git rebase origin/main
 
 # Now restack the PR
-Skill({ skill: "crew:git:restack-pr" })
+Skill({ skill: "crew:git:stacked:restack" })
 ```
 
 **Scenario: After traverse updated the branch**
@@ -175,7 +175,7 @@ Skill({ skill: "crew:git:restack-pr" })
 git machete traverse -W -y
 
 # Restack PRs that were rebased
-Skill({ skill: "crew:git:restack-pr" })
+Skill({ skill: "crew:git:stacked:restack" })
 ```
 
 **Scenario: Batch restack entire stack**

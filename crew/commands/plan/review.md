@@ -1,5 +1,5 @@
 ---
-name: crew:plan-review
+name: crew:plan:review
 description: Review a plan with parallel reviewers + Codex, add open_questions
 argument-hint: "<plan-path>"
 hidden: true

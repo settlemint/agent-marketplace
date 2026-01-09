@@ -1,5 +1,5 @@
 ---
-name: crew:git:slide-out
+name: crew:git:stacked:slide-out
 description: Remove merged branches from stack, reconnect children, and update PRs
 allowed-tools:
   - Read

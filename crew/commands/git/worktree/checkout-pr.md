@@ -1,5 +1,5 @@
 ---
-name: crew:git:worktree-checkout-pr
+name: crew:git:worktree:checkout-pr
 description: Create a worktree from a GitHub PR or issue
 argument-hint: "<PR or issue number>"
 allowed-tools:

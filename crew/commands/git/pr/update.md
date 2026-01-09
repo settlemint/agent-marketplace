@@ -1,5 +1,5 @@
 ---
-name: crew:git:update-pr
+name: crew:git:pr:update
 description: Update PR title, body, and machete annotations
 argument-hint: "[PR number, defaults to current branch PR]"
 allowed-tools:

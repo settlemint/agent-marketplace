@@ -1,5 +1,5 @@
 ---
-name: crew:git:branch
+name: crew:git:branch:create
 description: Create a feature branch from main
 allowed-tools:
   - Read
@@ -84,17 +84,17 @@ If "Stacked branch" selected:
 
 ```javascript
 // Create branch with username prefix (from current)
-Skill({ skill: "crew:git:branch-new", args: "--base current" });
+Skill({ skill: "crew:git:branch:new", args: "--base current" });
 
 // Add to machete stack
-Skill({ skill: "crew:git:stack-add" });
+Skill({ skill: "crew:git:stacked:add" });
 ```
 
 If "Simple branch" selected:
 
 ```javascript
 // Create branch with username prefix (from main)
-Skill({ skill: "crew:git:branch-new", args: "--base main" });
+Skill({ skill: "crew:git:branch:new", args: "--base main" });
 ```
 
 </phase>
@@ -136,10 +136,10 @@ If "Stack on current":
 
 ```javascript
 // Create branch with username prefix (from current)
-Skill({ skill: "crew:git:branch-new", args: "--base current" });
+Skill({ skill: "crew:git:branch:new", args: "--base current" });
 
 // Add to machete stack
-Skill({ skill: "crew:git:stack-add" });
+Skill({ skill: "crew:git:stacked:add" });
 ```
 
 </phase>

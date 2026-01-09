@@ -1,5 +1,5 @@
 ---
-name: crew:git:go
+name: crew:git:stacked:go
 description: Navigate to branches in the machete stack
 argument-hint: "[up | down | next | prev | root | first | last]"
 allowed-tools:

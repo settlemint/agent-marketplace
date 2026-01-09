@@ -30,7 +30,7 @@ cat <<'EOF'
 | `/crew:check` | Multi-agent code review |
 | `/crew:ci` | Run CI in background haiku agent |
 | `/crew:git:commit` | Guided commit with context |
-| `/crew:git:pr` | Create PR with template |
+| `/crew:git:pr:create` | Create PR with template |
 | `/crew:git:branch` | Create feature branch |
 | `/crew:git:sync` | Sync branch with main |
 

@@ -178,16 +178,16 @@ if (isolationChoice === "New worktree") {
 
 if (isolationChoice === "Stacked branch") {
   // Create branch with username prefix (from current)
-  Skill({ skill: "crew:git:branch-new", args: "--base current" });
+  Skill({ skill: "crew:git:branch:new", args: "--base current" });
 
   // Add to machete stack
-  Skill({ skill: "crew:git:stack-add" });
+  Skill({ skill: "crew:git:stacked:add" });
   // Continue to research phase in same session
 }
 
 if (isolationChoice === "Simple branch") {
   // Create branch with username prefix (from main)
-  Skill({ skill: "crew:git:branch-new", args: "--base main" });
+  Skill({ skill: "crew:git:branch:new", args: "--base main" });
   // Continue to research phase in same session
 }
 ```

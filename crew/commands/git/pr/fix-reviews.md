@@ -1,5 +1,5 @@
 ---
-name: crew:git:fix-reviews
+name: crew:git:pr:fix-reviews
 description: Resolve all unresolved PR review comments and CI failures
 argument-hint: "[PR number, defaults to current branch PR]"
 allowed-tools:
@@ -282,7 +282,7 @@ ${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-resolve-thread.sh "PRRT_def456" "Fixed: 
 **Update PR title and body to reflect fixes:**
 
 ```javascript
-Skill({ skill: "crew:git:update-pr" });
+Skill({ skill: "crew:git:pr:update" });
 ```
 
 </phase>
@@ -297,11 +297,11 @@ Skill({ skill: "crew:git:update-pr" });
 - [ ] `bun run ci` passes locally
 - [ ] Changes committed and pushed
 - [ ] Each fixed thread resolved on GitHub with `gh-pr-resolve-thread.sh`
-- [ ] PR updated via `crew:git:update-pr`
+- [ ] PR updated via `crew:git:pr:update`
 
 **Worktree-safe completion message:**
 
 - In worktree: "Done. Run `git machete update` in other worktrees to sync."
-- In main checkout: "Done. Run `/crew:git:traverse` to sync child branches."
+- In main checkout: "Done. Run `/crew:git:stacked:traverse` to sync child branches."
 
 </success_criteria>

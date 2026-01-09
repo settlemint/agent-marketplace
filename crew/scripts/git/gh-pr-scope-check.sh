@@ -90,7 +90,7 @@ if [[ $NEEDS_UPDATE == "true" ]]; then
     echo "- $reason"
   done
   echo ""
-  echo "**ACTION REQUIRED:** Use Skill(skill: \"crew:git:update-pr\") to update title and body"
+  echo "**ACTION REQUIRED:** Use Skill(skill: \"crew:git:pr:update\") to update title and body"
   echo ""
   echo "This will preserve git-machete generated sections automatically."
 fi

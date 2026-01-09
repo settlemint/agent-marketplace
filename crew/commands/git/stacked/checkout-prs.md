@@ -1,5 +1,5 @@
 ---
-name: crew:git:checkout-prs
+name: crew:git:stacked:checkout-prs
 description: Checkout PR branches from GitHub and add to machete layout
 argument-hint: "[--mine | --all | --by=<user> | PR numbers]"
 allowed-tools:
@@ -143,7 +143,7 @@ AskUserQuestion({
 If yes:
 
 ```javascript
-Skill({ skill: "crew:git:traverse" });
+Skill({ skill: "crew:git:stacked:traverse" });
 ```
 
 </process>

@@ -1,5 +1,5 @@
 ---
-name: crew:plan-refine
+name: crew:plan:refine
 description: Resolve open questions in a plan through user interview
 argument-hint: "<plan-path>"
 hidden: true

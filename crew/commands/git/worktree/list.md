@@ -1,5 +1,5 @@
 ---
-name: crew:git:worktree-list
+name: crew:git:worktree:list
 description: List all phantom worktrees
 allowed-tools:
   - Bash

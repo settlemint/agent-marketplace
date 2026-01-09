@@ -1,5 +1,5 @@
 ---
-name: crew:git:pr
+name: crew:git:pr:create
 description: Commit, push, and open a PR
 allowed-tools:
   - Read
@@ -172,7 +172,7 @@ If user selects a parent branch (not "No"), run:
 git machete add $(git branch --show-current) --onto <selected-parent>
 ```
 
-**Note:** After PR is created, step 11 will call `crew:git:update-pr` which runs
+**Note:** After PR is created, step 11 will call `crew:git:pr:update` which runs
 `git machete github update-pr-descriptions --related` to update all parent PRs
 with the new stack chain.
 
@@ -249,7 +249,7 @@ Note: Auto-merge requires repository to have this feature enabled in settings.
 10. **Update PR annotations:**
 
 ```javascript
-Skill({ skill: "crew:git:update-pr" });
+Skill({ skill: "crew:git:pr:update" });
 ```
 
 11. Return PR URL.

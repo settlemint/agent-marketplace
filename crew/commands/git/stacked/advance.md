@@ -1,5 +1,5 @@
 ---
-name: crew:git:advance
+name: crew:git:stacked:advance
 description: Fast-forward merge child into current branch, slide out child, and update PRs
 allowed-tools:
   - Read

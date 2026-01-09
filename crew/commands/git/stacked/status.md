@@ -1,5 +1,5 @@
 ---
-name: crew:git:stack-status
+name: crew:git:stacked:status
 description: Show git-machete branch stack status with visual indicators
 allowed-tools:
   - Read
@@ -32,7 +32,7 @@ hooks:
 | 🟢 **Green**    | In sync with parent             | No action needed                             |
 | 🟡 **Yellow**   | In sync, but fork point differs | Hidden commits exist, may need investigation |
 | 🔴 **Red**      | Out of sync with parent         | Run `Skill({ skill: "crew:git:sync" })`      |
-| ⚫ **Gray** (o) | Merged into parent              | Run `Skill({ skill: "crew:git:slide-out" })` |
+| ⚫ **Gray** (o) | Merged into parent              | Run `Skill({ skill: "crew:git:stacked:slide-out" })` |
 
 </edge_colors>
 
@@ -64,7 +64,7 @@ AskUserQuestion({
 If "Discover layout":
 
 ```javascript
-Skill({ skill: "crew:git:discover" });
+Skill({ skill: "crew:git:stacked:discover" });
 ```
 
 ## Step 2: Update PR Annotations
@@ -139,7 +139,7 @@ If issues detected, suggest next steps:
 ```
 ⚠️ $red_count branch(es) out of sync with parent.
 
-Recommended: Run `Skill({ skill: "crew:git:traverse" })` to sync all branches.
+Recommended: Run `Skill({ skill: "crew:git:stacked:traverse" })` to sync all branches.
 ```
 
 **If gray edges (merged):**
@@ -147,7 +147,7 @@ Recommended: Run `Skill({ skill: "crew:git:traverse" })` to sync all branches.
 ```
 🔀 $merged_count merged branch(es) detected.
 
-Recommended: Run `Skill({ skill: "crew:git:slide-out" })` to clean up.
+Recommended: Run `Skill({ skill: "crew:git:stacked:slide-out" })` to clean up.
 ```
 
 **If all green:**
@@ -187,11 +187,11 @@ After viewing status, common next steps:
 
 | Situation                  | Command                                  |
 | -------------------------- | ---------------------------------------- |
-| Branches out of sync       | `Skill({ skill: "crew:git:traverse" })`  |
-| Merged branches to clean   | `Skill({ skill: "crew:git:slide-out" })` |
-| Need to add current branch | `Skill({ skill: "crew:git:stack-add" })` |
-| Navigate to another branch | `Skill({ skill: "crew:git:go" })`        |
-| Create PR for branch       | `Skill({ skill: "crew:git:pr" })`        |
+| Branches out of sync       | `Skill({ skill: "crew:git:stacked:traverse" })`  |
+| Merged branches to clean   | `Skill({ skill: "crew:git:stacked:slide-out" })` |
+| Need to add current branch | `Skill({ skill: "crew:git:stacked:add" })` |
+| Navigate to another branch | `Skill({ skill: "crew:git:stacked:go" })`        |
+| Create PR for branch       | `Skill({ skill: "crew:git:pr:create" })`        |
 
 </quick_actions>
 

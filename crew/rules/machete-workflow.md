@@ -29,7 +29,7 @@ Never `--force` unless explicitly requested. If push rejected:
 After successful push, update PR annotations:
 
 ```javascript
-Skill({ skill: "crew:git:update-pr" });
+Skill({ skill: "crew:git:pr:update" });
 ```
 
 ## Marker Preservation

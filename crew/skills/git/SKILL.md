@@ -42,21 +42,21 @@ Git workflow guidance: conventional commits, branch naming, PR workflows.
 
 | Command                                          | Purpose                               |
 | ------------------------------------------------ | ------------------------------------- |
-| `Skill({ skill: "crew:git:setup" })`             | Configure git + machete optimally     |
-| `Skill({ skill: "crew:git:discover" })`          | Auto-detect branch layout             |
-| `Skill({ skill: "crew:git:pr" })`                | Create PR with template               |
-| `Skill({ skill: "crew:git:update-pr" })`         | Update PR title/body                  |
-| `Skill({ skill: "crew:git:stack-status" })`      | View branch stack status              |
-| `Skill({ skill: "crew:git:stack-add" })`         | Add branch to stack                   |
-| `Skill({ skill: "crew:git:traverse" })`          | Sync all stacked branches             |
+| `Skill({ skill: "crew:git:stacked:setup" })`             | Configure git + machete optimally     |
+| `Skill({ skill: "crew:git:stacked:discover" })`          | Auto-detect branch layout             |
+| `Skill({ skill: "crew:git:pr:create" })`                | Create PR with template               |
+| `Skill({ skill: "crew:git:pr:update" })`         | Update PR title/body                  |
+| `Skill({ skill: "crew:git:stacked:status" })`      | View branch stack status              |
+| `Skill({ skill: "crew:git:stacked:add" })`         | Add branch to stack                   |
+| `Skill({ skill: "crew:git:stacked:traverse" })`          | Sync all stacked branches             |
 | `Skill({ skill: "crew:git:sync" })`              | Sync current branch with parent       |
-| `Skill({ skill: "crew:git:slide-out" })`         | Remove merged branch from stack       |
-| `Skill({ skill: "crew:git:advance" })`           | Fast-forward merge child into current |
-| `Skill({ skill: "crew:git:go" })`                | Navigate stack (up/down/next/prev)    |
-| `Skill({ skill: "crew:git:checkout-prs" })`      | Checkout PRs from GitHub              |
-| `Skill({ skill: "crew:git:retarget-pr" })`       | Change PR base branch                 |
-| `Skill({ skill: "crew:git:restack-pr" })`        | Retarget + force push atomically      |
-| `Skill({ skill: "crew:git:cleanup-unmanaged" })` | Delete branches not in layout         |
+| `Skill({ skill: "crew:git:stacked:slide-out" })`         | Remove merged branch from stack       |
+| `Skill({ skill: "crew:git:stacked:advance" })`           | Fast-forward merge child into current |
+| `Skill({ skill: "crew:git:stacked:go" })`                | Navigate stack (up/down/next/prev)    |
+| `Skill({ skill: "crew:git:stacked:checkout-prs" })`      | Checkout PRs from GitHub              |
+| `Skill({ skill: "crew:git:stacked:retarget" })`       | Change PR base branch                 |
+| `Skill({ skill: "crew:git:stacked:restack" })`        | Retarget + force push atomically      |
+| `Skill({ skill: "crew:git:stacked:cleanup" })` | Delete branches not in layout         |
 | `Skill({ skill: "crew:git:commit" })`            | Create conventional commit            |
 | `Skill({ skill: "crew:git:branch" })`            | Create feature branch                 |
 | `Skill({ skill: "crew:git:push" })`              | Push current branch                   |

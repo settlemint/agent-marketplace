@@ -1,5 +1,5 @@
 ---
-name: crew:git:traverse
+name: crew:git:stacked:traverse
 description: Sync all stacked branches with parents and remotes
 allowed-tools:
   - Read
@@ -52,7 +52,7 @@ AskUserQuestion({
 If "Discover layout":
 
 ```javascript
-Skill({ skill: "crew:git:discover" });
+Skill({ skill: "crew:git:stacked:discover" });
 ```
 
 **If in a WORKTREE:**
@@ -192,7 +192,7 @@ AskUserQuestion({
 If yes:
 
 ```javascript
-Skill({ skill: "crew:git:slide-out" });
+Skill({ skill: "crew:git:stacked:slide-out" });
 ```
 
 Report: branches rebased, pushed, needing manual intervention.
@@ -233,7 +233,7 @@ git machete traverse -W -y -n
 
 ```bash
 # Slide out merged, then traverse
-Skill({ skill: "crew:git:slide-out" })
+Skill({ skill: "crew:git:stacked:slide-out" })
 git machete traverse -W -y -H
 ```
 

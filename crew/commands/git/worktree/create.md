@@ -1,5 +1,5 @@
 ---
-name: crew:git:worktree
+name: crew:git:worktree:create
 description: Create a new phantom worktree for isolated development
 argument-hint: "[branch name or feature description]"
 allowed-tools:

@@ -1,5 +1,5 @@
 ---
-name: crew:git:setup
+name: crew:git:stacked:setup
 description: Configure optimal git-machete settings for stacked PRs
 allowed-tools:
   - Read
@@ -190,7 +190,7 @@ AskUserQuestion({
 If "Auto-discover":
 
 ```javascript
-Skill({ skill: "crew:git:discover" });
+Skill({ skill: "crew:git:stacked:discover" });
 ```
 
 ## Step 6: Verify Setup

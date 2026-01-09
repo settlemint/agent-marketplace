@@ -1,5 +1,5 @@
 ---
-name: crew:git:cleanup-unmanaged
+name: crew:git:stacked:cleanup
 description: Delete local branches not in machete layout
 allowed-tools:
   - Read
@@ -148,10 +148,10 @@ git branch -D <branch-name>
 
 ```bash
 # 1. Slide out merged branches from layout
-Skill({ skill: "crew:git:slide-out" })
+Skill({ skill: "crew:git:stacked:slide-out" })
 
 # 2. Delete unmanaged local branches
-Skill({ skill: "crew:git:cleanup-unmanaged" })
+Skill({ skill: "crew:git:stacked:cleanup" })
 
 # 3. Clean stale branches (deleted on remote)
 Skill({ skill: "crew:git:clean" })
