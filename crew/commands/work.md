@@ -249,11 +249,21 @@ Read({ file_path: "/tmp/feature-after-submit.png" });
 
 <success_criteria>
 
-- [ ] devtools:tdd-typescript skill followed for ALL stories
+**TDD Compliance:**
+
+- [ ] devtools:tdd-typescript skill loaded at start
+- [ ] RED-GREEN-REFACTOR cycle followed for each story
+- [ ] Coverage requirements met (80% lines, 75% branches, 90% functions)
+
+**Quality Gates:**
+
 - [ ] ALL findings fixed (P0, P1, P2, observations) - ZERO open
 - [ ] CI passing with no failures
 - [ ] Integration tests passing (if test:integration exists)
-- [ ] Coverage requirements met per TDD skill
+- [ ] Quality review run after each phase
+
+**Output:**
+
 - [ ] Browser testing for UI stories
 - [ ] Feature video recorded for UI/frontend work
 - [ ] `<promise>WORK COMPLETE</promise>` output when genuinely done
