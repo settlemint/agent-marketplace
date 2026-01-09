@@ -71,7 +71,7 @@ fi
 [[ -z "$CONTENT" ]] && exit 0
 
 # Count lines
-total_lines=$(echo "$CONTENT" | grep -cv '^[[:space:]]*$' || echo 0)
+total_lines=$(echo "$CONTENT" | grep -cv '^[[:space:]]*$' || true)
 [[ "$total_lines" -eq 0 ]] && exit 0
 
 # Count comment lines based on language
@@ -82,13 +82,13 @@ count_comment_lines() {
 
   case "$ext" in
     py)
-      count=$(echo "$content" | grep -c '^[[:space:]]*#' || echo 0)
+      count=$(echo "$content" | grep -c '^[[:space:]]*#' || true)
       ;;
     ts | tsx | js | jsx | java | go | rs | cpp | c | sol)
       # Count // and /* style comments
-      count=$(echo "$content" | grep -c '^\s*//' || echo 0)
-      count=$((count + $(echo "$content" | grep -c '^\s*/\*' || echo 0)))
-      count=$((count + $(echo "$content" | grep -c '^\s*\*' || echo 0)))
+      count=$(echo "$content" | grep -c '^[[:space:]]*//' || true)
+      count=$((count + $(echo "$content" | grep -c '^[[:space:]]*/\*' || true)))
+      count=$((count + $(echo "$content" | grep -c '^[[:space:]]*\*' || true)))
       ;;
   esac
 
