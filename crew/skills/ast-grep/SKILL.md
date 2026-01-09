@@ -2,6 +2,7 @@
 name: ast-grep
 description: Mass rename/replace across codebase. Use when user asks to rename functions, replace patterns, or refactor code across files. Better than grep for code changes.
 triggers:
+  # Explicit requests
   - "rename all"
   - "replace all.*with"
   - "refactor.*across"
@@ -9,6 +10,21 @@ triggers:
   - "find and replace"
   - "ast-grep"
   - "sg "
+  # Import modifications
+  - "fix.*import"
+  - "remove.*import"
+  - "unused import"
+  - "clean.*import"
+  - "update.*import.*across"
+  # Lint/code fixes at scale
+  - "fix.*across.*files"
+  - "fix all.*lint"
+  - "remove.*from.*files"
+  # Pattern-based changes
+  - "replace.*pattern"
+  - "change.*syntax"
+  - "migrate.*to"
+  - "convert all"
 ---
 
 <objective>
