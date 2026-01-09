@@ -116,13 +116,13 @@ Write({ file_path: planPath, content: yaml.stringify(plan) });
 const p0 = findings.filter((f) => f.severity === "p0").length;
 const p1 = findings.filter((f) => f.severity === "p1").length;
 const p2 = findings.filter((f) => f.severity === "p2").length;
+const obs = findings.filter((f) => f.severity === "obs").length;
+const total = p0 + p1 + p2 + obs;
 
-if (p0 > 0 || p1 > 0) {
+if (total > 0) {
   console.log(
-    `REVIEW BLOCKING: ${p0} P0, ${p1} P1 findings added to plan - fix before proceeding`,
+    `REVIEW: ${total} findings added to plan (${p0} P0, ${p1} P1, ${p2} P2, ${obs} Obs) - fix ALL before completion`,
   );
-} else if (p2 > 0) {
-  console.log(`REVIEW OK: ${p2} P2 findings added to plan - can proceed`);
 } else {
   console.log("REVIEW CLEAN - no issues found");
 }
@@ -148,9 +148,8 @@ if (p0 > 0 || p1 > 0) {
 
 - [ ] Changed files identified
 - [ ] All 7 review agents launched in parallel
-- [ ] Findings parsed with severity and location
-- [ ] Plan findings.review section updated
+- [ ] ALL findings (P0/P1/P2/Obs) written to plan
 - [ ] Existing open findings preserved
-- [ ] Summary reported with blocking status
+- [ ] Summary reports total - ALL must be fixed
 
 </success_criteria>

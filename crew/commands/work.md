@@ -20,6 +20,7 @@ skills:
   - crew:crew-patterns
   - crew:todo-tracking
   - crew:git
+  - devtools:tdd-typescript
 hooks:
   PostToolUse: false
   PreToolUse: false
@@ -35,9 +36,27 @@ hooks:
 
 <objective>
 
-Execute a plan perfectly using Ralph Loop for guaranteed completion. Parallelizes work, runs CI continuously, uses browser testing for UI, runs quality reviews, and writes all findings back to the plan for the loop to address.
+Execute a plan perfectly using Ralph Loop for guaranteed completion. **Strictly enforces TDD (Test-Driven Development)** - NO implementation code without failing tests first. Parallelizes work, runs CI continuously, uses browser testing for UI, runs quality reviews, and writes all findings back to the plan for the loop to address.
 
 </objective>
+
+<tdd_enforcement>
+
+**MANDATORY: Load and follow `devtools:tdd-typescript` skill for ALL implementation.**
+
+```javascript
+Skill({ skill: "devtools:tdd-typescript" });
+```
+
+This is NON-NEGOTIABLE. Every story MUST:
+
+1. Follow RED-GREEN-REFACTOR cycle exactly as defined in the skill
+2. Pass all phase gates (test fails → test passes → still passes)
+3. Meet coverage requirements (80% lines, 75% branches, 90% functions)
+
+**No exceptions. No shortcuts. Test fails first, then implement.**
+
+</tdd_enforcement>
 
 <workflow>
 
@@ -79,48 +98,65 @@ Skill({
 ## Plan Location
 .claude/plans/${slug}.yaml
 
+## TDD ENFORCEMENT (MANDATORY)
+
+**Load devtools:tdd-typescript skill and follow it EXACTLY.**
+Every story: RED (failing test) → GREEN (minimal impl) → REFACTOR (improve).
+No implementation without failing test first. No exceptions.
+
 ## Execution Loop
 
 1. **Read Plan**: Load .claude/plans/${slug}.yaml
-   - Check 'findings' section for issues to fix
+   - Check 'findings' section for ALL issues to fix
    - Check story statuses (pending/in_progress/complete)
 
-2. **Execute Stories** (parallel, max 6 agents):
+2. **Fix ALL Findings First**:
+   - Fix EVERY issue in findings (P0, P1, P2, observations)
+   - No new features until findings empty
+   - Mark fixed issues as status: fixed
+
+3. **Execute Stories via TDD** (one at a time for TDD discipline):
    - P1 stories first, then P2, then P3
-   - Use <pattern name='spawn-batch'/> for parallelism
-   - Each agent: implement story, write tests
+   - For EACH story:
+     a. RED: Spawn test-writer agent (write failing test)
+     b. Verify test FAILS
+     c. GREEN: Spawn implementer agent (minimal code to pass)
+     d. Verify test PASSES
+     e. REFACTOR: Spawn refactorer agent (improve, keep green)
+     f. Verify tests STILL PASS
    - Update story status in plan on completion
 
-3. **Run CI** (after each batch):
+4. **Run CI** (after each story):
    Skill({ skill: 'crew:work:ci', args: '${slug}' })
    - Writes failures to plan 'findings' section
-   - If failures: fix them before proceeding
+   - If failures: fix ALL before proceeding
 
-4. **Browser Testing** (for UI stories):
+5. **Browser Testing** (for UI stories):
    - Load MCPSearch for claude-in-chrome tools
    - Take screenshots to verify UI implementation
    - Test user flows described in acceptance criteria
 
-5. **Quality Review** (after each phase):
+6. **Quality Review** (after each phase):
    Skill({ skill: 'crew:work:review', args: '${slug}' })
-   - Writes P0/P1/P2 findings to plan
-   - Fix P0/P1 before proceeding
+   - Writes ALL findings to plan (P0/P1/P2/Obs)
+   - Fix ALL findings before proceeding
 
-6. **Commit Progress**:
+7. **Commit Progress**:
    - Conventional commits per story/fix
    - Push regularly
 
-7. **Check Completion**:
+8. **Check Completion**:
    - All stories status: complete
-   - No P0/P1 findings in plan
-   - CI passing (no failures in findings)
+   - ZERO findings in plan (all fixed)
+   - CI passing (no failures)
+   - Coverage meets requirements
    - Output: <promise>WORK COMPLETE</promise>
 
 ## Key Rules
-- Read plan at START of each iteration (it may have new findings)
-- Write ALL findings to plan (CI failures, review issues)
-- Fix findings BEFORE adding new features
-- Use browser tools for any UI work
+- TDD is NON-NEGOTIABLE: test fails first, then implement
+- Fix ALL findings (not just P0/P1) before new features
+- Read plan at START of each iteration
+- Write ALL findings to plan
 - Only output completion promise when genuinely done
 " --completion-promise "WORK COMPLETE" --max-iterations 50`,
 });
@@ -190,13 +226,11 @@ Read({ file_path: "/tmp/feature-after-submit.png" });
 
 <success_criteria>
 
-- [ ] Plan loaded and validated
-- [ ] Ralph Loop started with completion promise
-- [ ] Findings written to plan (not separate files)
-- [ ] CI runs after each batch
+- [ ] devtools:tdd-typescript skill followed for ALL stories
+- [ ] ALL findings fixed (P0, P1, P2, observations) - ZERO open
+- [ ] CI passing with no failures
+- [ ] Coverage requirements met per TDD skill
 - [ ] Browser testing for UI stories
-- [ ] Reviews run after each phase
-- [ ] All P0/P1 findings fixed before completion
-- [ ] `<promise>WORK COMPLETE</promise>` output when done
+- [ ] `<promise>WORK COMPLETE</promise>` output when genuinely done
 
 </success_criteria>
