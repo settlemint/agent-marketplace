@@ -58,7 +58,7 @@ Git workflow guidance: conventional commits, branch naming, PR workflows.
 | `Skill({ skill: "crew:git:stacked:restack" })`        | Retarget + force push atomically      |
 | `Skill({ skill: "crew:git:stacked:cleanup" })` | Delete branches not in layout         |
 | `Skill({ skill: "crew:git:commit" })`            | Create conventional commit            |
-| `Skill({ skill: "crew:git:branch" })`            | Create feature branch                 |
+| `Skill({ skill: "crew:git:branch:new" })`            | Create feature branch                 |
 | `Skill({ skill: "crew:git:push" })`              | Push current branch                   |
 | `Skill({ skill: "crew:git:clean" })`             | Clean stale branches                  |
 

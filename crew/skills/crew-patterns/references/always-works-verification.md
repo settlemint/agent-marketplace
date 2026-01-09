@@ -145,7 +145,7 @@ Logic correct but UI broken or misaligned.
 </common_failures>
 
 <integration_with_build>
-When `/crew:build` executes tasks:
+When `/crew:work` executes tasks:
 
 1. Agents implement changes
 2. Test-runner verifies tests pass

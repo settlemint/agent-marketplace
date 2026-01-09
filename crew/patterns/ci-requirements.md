@@ -68,7 +68,7 @@ Task({
 Or use the skill:
 
 ```javascript
-Skill({ skill: "crew:ci" });
+Skill({ skill: "crew:work:ci" });
 ```
 
 ## Required Checks

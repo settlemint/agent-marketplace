@@ -15,8 +15,8 @@ AGENT_TYPE="${AGENT_TYPE:-}"
 # Skip output for subagents - they have specific missions and don't need the full banner
 # Known subagent types: task, background, Bash, Explore, Plan, haiku, general-purpose
 if [[ -n "$AGENT_TYPE" && "$AGENT_TYPE" != "null" ]]; then
-  # Any non-empty agent_type means this is a subagent, skip output
-  exit 0
+	# Any non-empty agent_type means this is a subagent, skip output
+	exit 0
 fi
 
 cat <<'EOF'
@@ -25,13 +25,12 @@ cat <<'EOF'
 ### Slash Commands
 | Command | Purpose |
 |---------|---------|
-| `/crew:design` | Create implementation plans with research |
+| `/crew:plan` | Create implementation plans with research |
 | `/crew:work` | Execute plans with Ralph Loop for completion |
-| `/crew:check` | Multi-agent code review |
-| `/crew:ci` | Run CI in background haiku agent |
+| `/crew:work:ci` | Run CI in background haiku agent |
 | `/crew:git:commit` | Guided commit with context |
 | `/crew:git:pr:create` | Create PR with template |
-| `/crew:git:branch` | Create feature branch |
+| `/crew:git:branch:new` | Create feature branch |
 | `/crew:git:sync` | Sync branch with main |
 
 ### Skills - Crew Plugin (auto-loaded by triggers)
@@ -78,9 +77,9 @@ Load tools via MCPSearch before use: `MCPSearch({ query: "select:mcp__claude-in-
 
 ### Best Practices
 - **Git commits**: Use conventional format `type(scope): description`
-- **CI checks**: Use Skill(skill: "crew:ci") to run in background (keeps main thread free)
+- **CI checks**: Use Skill(skill: "crew:work:ci") to run in background (keeps main thread free)
 - **Code refactoring**: Use Skill(skill: "crew:ast-grep") for mass rename/replace (NOT grep+sed)
-- **Planning**: Use Skill(skill: "crew:design") before implementing complex features
+- **Planning**: Use Skill(skill: "crew:plan") before implementing complex features
 - **Progress**: Use TodoWrite to track multi-step tasks
 - **Validate work**: Use browser tools to verify UI changes and debug issues
 EOF

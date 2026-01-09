@@ -2,8 +2,8 @@
 name: crew-patterns
 description: Internal patterns for crew commands. Not user-facing.
 triggers:
-  - "crew:build internal"
-  - "crew:design internal"
+  - "crew:work internal"
+  - "crew:plan internal"
 context: fork
 ---
 

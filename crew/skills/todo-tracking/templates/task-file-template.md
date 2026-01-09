@@ -57,5 +57,5 @@ Example titles:
 ## Work Log
 
 ### {DATE} - Created
-**By:** /crew:design
+**By:** /crew:plan
 **Status:** Generated from plan

@@ -216,8 +216,8 @@ if [[ ${#ERRORS[@]} -eq 0 ]]; then
   echo "  • orchestration@n-skills - N-Skills orchestration"
   echo ""
   echo "Get started:"
-  echo "  /crew:design <feature>  - Plan a feature"
-  echo "  /crew:build             - Execute the plan"
+  echo "  /crew:plan <feature>  - Plan a feature"
+  echo "  /crew:work             - Execute the plan"
   echo "  /crew:check             - Review code quality"
   echo "================================"
   exit 0

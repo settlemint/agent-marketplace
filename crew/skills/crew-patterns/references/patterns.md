@@ -206,7 +206,7 @@ What to do.
 
 ### {date} - Created
 
-**By:** /crew:design
+**By:** /crew:plan
 ```
 
 Naming: `{order}-{status}-{priority}-{story}-{slug}.md`
@@ -224,7 +224,7 @@ Branch state at `.claude/branches/{slugified-branch}/state.json`:
     "iteration": 1,
     "maxIterations": 15,
     "completionPromise": "BUILD COMPLETE",
-    "prompt": "/crew:build ...",
+    "prompt": "/crew:work ...",
     "startedAt": "ISO-8601"
   },
   "build": {

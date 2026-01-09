@@ -136,6 +136,6 @@ src/
 
 ---
 
-**Next Step**: Run `/crew:build` with this plan to begin implementation.
+**Next Step**: Run `/crew:work` with this plan to begin implementation.
 
 **Detailed Tasks**: See `.claude/branches/[branch-name]/tasks.md`

@@ -148,8 +148,8 @@ TaskOutput({ task_id: "t002", block: true });
 
 | Command        | Action                             |
 | -------------- | ---------------------------------- |
-| `/crew:design` | Creates plan + task files          |
-| `/crew:build`  | Executes tasks in parallel batches |
+| `/crew:plan` | Creates plan + task files          |
+| `/crew:work`  | Executes tasks in parallel batches |
 | `/crew:check`  | Adds findings as tasks             |
 
 </command_integration>

@@ -40,9 +40,9 @@ const slugifiedBranch = branch.replace(/\//g, "-"); // JS
 
 **Created by:**
 
-- `/crew:design` - Generates initial task files from plan
+- `/crew:plan` - Generates initial task files from plan
 - `/crew:check` - Adds finding files as additional tasks
-- `/crew:build` - May add discovered tasks during implementation
+- `/crew:work` - May add discovered tasks during implementation
 - `/crew:fix` - Works through pending tasks
 
 </overview>
@@ -126,7 +126,7 @@ Create the User model with authentication fields.
 
 ### [DATE] - Created
 
-**By:** /crew:design
+**By:** /crew:plan
 **Status:** Generated from plan
 ```
 
@@ -225,7 +225,7 @@ OUTPUT:
 
 ## Command Integration
 
-### /crew:design Creates Tasks
+### /crew:plan Creates Tasks
 
 ```javascript
 // CRITICAL: Slugify branch name (replace / with -)
@@ -248,7 +248,7 @@ Write({
 // ... one file per task
 ```
 
-### /crew:build Consumes Tasks
+### /crew:work Consumes Tasks
 
 ```javascript
 // CRITICAL: Slugify branch name

@@ -199,8 +199,8 @@ The crew plugin integrates Phantom MCP for autonomous worktree management:
 
 This enables:
 
-- `/crew:design` to create worktrees for feature isolation
-- `/crew:build` to execute in isolated environments
+- `/crew:plan` to create worktrees for feature isolation
+- `/crew:work` to execute in isolated environments
 - Background agents to work in separate worktrees
 
 </mcp_integration>

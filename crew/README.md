@@ -6,12 +6,10 @@ Unified orchestration for work execution, skill creation, git conventions, and s
 
 ### Core Workflow
 
-| Command        | Purpose                                                 |
-| -------------- | ------------------------------------------------------- |
-| `/crew:design` | Create validated implementation plan from feature/issue |
-| `/crew:build`  | Execute plan with TodoWrite progress tracking           |
-| `/crew:check`  | Multi-agent 7-leg code review with triage               |
-| `/crew:fix`    | Repair skills, resolve blockers                         |
+| Command      | Purpose                                                 |
+| ------------ | ------------------------------------------------------- |
+| `/crew:plan` | Create validated implementation plan from feature/issue |
+| `/crew:work` | Execute plan with TodoWrite progress tracking           |
 
 ### Git Operations
 
@@ -22,8 +20,8 @@ Unified orchestration for work execution, skill creation, git conventions, and s
 | `/crew:git:commit-and-push` | Commit + push + update PR                |
 | `/crew:git:push`            | Push to origin + update PR               |
 | `/crew:git:branch:new`      | Create branch with username prefix       |
-| `/crew:git:pr:create`              | Create pull request                      |
-| `/crew:git:pr:fix-reviews`     | Resolve PR comments and CI failures      |
+| `/crew:git:pr:create`       | Create pull request                      |
+| `/crew:git:pr:fix-reviews`  | Resolve PR comments and CI failures      |
 
 ### Worktrees (phantom)
 
@@ -37,17 +35,17 @@ Unified orchestration for work execution, skill creation, git conventions, and s
 
 ### Stacked PRs (git-machete)
 
-| Command                  | Purpose                                  |
-| ------------------------ | ---------------------------------------- |
-| `/crew:git:branch`       | Create feature branch from main          |
-| `/crew:git:stacked:add`    | Add branch to machete stack              |
-| `/crew:git:stacked:status` | Show branch stack with visual indicators |
-| `/crew:git:stacked:go`           | Navigate between branches in stack       |
-| `/crew:git:stacked:traverse`     | Sync entire stack with parents/remotes   |
-| `/crew:git:stacked:slide-out`    | Remove merged branches, update child PRs |
+| Command                       | Purpose                                  |
+| ----------------------------- | ---------------------------------------- |
+| `/crew:git:branch:new`        | Create feature branch from main          |
+| `/crew:git:stacked:add`       | Add branch to machete stack              |
+| `/crew:git:stacked:status`    | Show branch stack with visual indicators |
+| `/crew:git:stacked:go`        | Navigate between branches in stack       |
+| `/crew:git:stacked:traverse`  | Sync entire stack with parents/remotes   |
+| `/crew:git:stacked:slide-out` | Remove merged branches, update child PRs |
 | `/crew:git:stacked:retarget`  | Change PR base to match machete parent   |
 | `/crew:git:stacked:restack`   | Retarget + force push after rebase       |
-| `/crew:git:stacked:advance`      | Fast-forward merge child into current    |
+| `/crew:git:stacked:advance`   | Fast-forward merge child into current    |
 
 ### Code Review
 
@@ -99,8 +97,8 @@ Phantom is auto-detected on session start. If not installed, worktree commands w
 The standard flow for implementing new features or addressing issues:
 
 ```
-/crew:design      # Research and create implementation plan
-/crew:build       # Execute the plan with progress tracking
+/crew:plan        # Research and create implementation plan
+/crew:work        # Execute the plan with progress tracking
 /crew:check       # Multi-agent code review (7-leg)
 /crew:git:pr:create      # Create pull request
 /crew:git:pr:fix-reviews  # Address reviewer feedback
@@ -132,7 +130,7 @@ For stacked branches (git-machete):
 ### Stacked PRs
 
 ```
-/crew:git:branch         # Create feature branch from main
+/crew:git:branch:new         # Create feature branch from main
 /crew:git:stacked:add      # Add branch to machete stack
 /crew:git:pr:create             # Create PR with stack annotations
 /crew:git:stacked:retarget    # Change PR base to match machete parent
@@ -204,7 +202,7 @@ The machete context automatically suggests next steps:
 
 ### Work Orchestration
 
-- Plan-driven development with `/crew:design`
+- Plan-driven development with `/crew:plan`
 - Progress tracking with TodoWrite integration
 - Handoffs for context preservation across sessions
 - Iteration loops for autonomous completion
