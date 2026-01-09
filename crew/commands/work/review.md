@@ -10,6 +10,7 @@ allowed-tools:
   - Grep
   - Glob
   - Task
+  - MCPSearch
 skills:
   - crew:crew-patterns
 context: fork
@@ -74,7 +75,34 @@ for (const leg of legs) {
 }
 ```
 
-## Step 4: Update Plan Findings
+## Step 4: Codex Deep Analysis
+
+```javascript
+// Load Codex MCP for deep reasoning
+MCPSearch({ query: "select:mcp__plugin_crew_codex__codex" });
+
+// Use Codex for cross-cutting analysis
+mcp__plugin_crew_codex__codex({
+  prompt: `Analyze these code review findings for patterns and systemic issues:
+
+FINDINGS:
+${findings.map((f) => `[${f.severity}] ${f.file}:${f.line} - ${f.description}`).join("\n")}
+
+Identify:
+1. Root causes that explain multiple findings
+2. Architectural issues causing repeated problems
+3. Priority escalations (P2 that should be P1 due to systemic nature)
+4. Missing findings the individual reviewers may have missed
+
+Output additional findings in format:
+[P0|P1|P2] file:line - description (CODEX: systemic issue)`,
+});
+
+// Add Codex findings to the list
+findings.push(...parseCodexFindings(codexResult));
+```
+
+## Step 5: Update Plan Findings
 
 ```javascript
 const slug = "$ARGUMENTS".trim();
@@ -110,7 +138,7 @@ plan.findings.review = [
 Write({ file_path: planPath, content: yaml.stringify(plan) });
 ```
 
-## Step 5: Report Summary
+## Step 6: Report Summary
 
 ```javascript
 const p0 = findings.filter((f) => f.severity === "p0").length;
@@ -148,6 +176,7 @@ if (total > 0) {
 
 - [ ] Changed files identified
 - [ ] All 7 review agents launched in parallel
+- [ ] Codex deep analysis for systemic issues
 - [ ] ALL findings (P0/P1/P2/Obs) written to plan
 - [ ] Existing open findings preserved
 - [ ] Summary reports total - ALL must be fixed
