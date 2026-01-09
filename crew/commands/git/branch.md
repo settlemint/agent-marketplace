@@ -25,6 +25,10 @@ allowed-tools:
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
 </worktree_status>
 
+<phantom_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/phantom-context.sh`
+</phantom_context>
+
 <stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 </stack_context>
@@ -35,79 +39,109 @@ Branch naming per @rules/git-safety.md: `type/short-description`
 
 <process>
 
-**If in a WORKTREE:**
-
-When working with worktrees, you typically want each branch in its own worktree:
+<phase name="ask-isolation">
+**Ask for branch isolation strategy:**
 
 ```javascript
 AskUserQuestion({
   questions: [
     {
-      question: "You're in a worktree. How do you want to create the branch?",
+      question: "How should the new branch be isolated?",
+      header: "Isolation",
+      options: [
+        {
+          label: "New worktree (Recommended)",
+          description: "Isolated phantom worktree for independent work",
+        },
+        {
+          label: "Stacked branch",
+          description: "Add to machete stack for dependent changes",
+        },
+        {
+          label: "Simple branch",
+          description: "Regular branch in current checkout",
+        },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
+```
+
+</phase>
+
+<phase name="execute-choice">
+**Delegate to canonical skill based on choice:**
+
+If "New worktree" selected:
+
+```javascript
+Skill({ skill: "crew:git:worktree" });
+// Worktree skill handles: username prefix, type selection, name confirmation, phantom create
+```
+
+If "Stacked branch" selected:
+
+```javascript
+// Create branch with username prefix (from current)
+Skill({ skill: "crew:git:branch-new", args: "--base current" });
+
+// Add to machete stack
+Skill({ skill: "crew:git:stack-add" });
+```
+
+If "Simple branch" selected:
+
+```javascript
+// Create branch with username prefix (from main)
+Skill({ skill: "crew:git:branch-new", args: "--base main" });
+```
+
+</phase>
+
+<phase name="worktree-context">
+**If already in a WORKTREE:**
+
+When working in a worktree, cannot switch branches. Options:
+
+```javascript
+AskUserQuestion({
+  questions: [
+    {
+      question: "You're in a worktree. How do you want to proceed?",
       header: "Method",
       options: [
         {
-          label: "Create worktree (Recommended)",
-          description: "New branch in a new worktree directory",
+          label: "Create new worktree",
+          description: "New branch in a separate worktree directory",
         },
         {
-          label: "Stacked branch here",
-          description: "Child of current branch, stay in this worktree",
-        },
-        {
-          label: "Switch branch (not recommended)",
-          description: "Checkout new branch in this worktree",
+          label: "Stack on current",
+          description: "Child of current branch in this worktree (advanced)",
         },
       ],
+      multiSelect: false,
     },
   ],
 });
 ```
 
-**Create worktree:**
-
-```bash
-# For stacked branch (child of current)
-git worktree add ../<new-branch-name> -b <type>/<name>
-git machete add <type>/<name> --onto $(git branch --show-current)
-
-# For regular branch (from main)
-git worktree add ../<new-branch-name> -b <type>/<name> origin/main
-```
-
-Tell user: `cd ../<new-branch-name>` to work in the new worktree.
-
-**If NOT in a worktree (main checkout):**
+If "Create new worktree":
 
 ```javascript
-AskUserQuestion({
-  questions: [
-    {
-      question: "What type of branch?",
-      header: "Type",
-      options: [
-        { label: "Regular branch", description: "From main" },
-        {
-          label: "Stacked branch",
-          description: "Child of current (stacked PRs)",
-        },
-      ],
-    },
-  ],
-});
+Skill({ skill: "crew:git:worktree" });
 ```
 
-**Regular:**
+If "Stack on current":
 
-```bash
-git fetch origin main && git checkout -b <type>/<name> origin/main
+```javascript
+// Create branch with username prefix (from current)
+Skill({ skill: "crew:git:branch-new", args: "--base current" });
+
+// Add to machete stack
+Skill({ skill: "crew:git:stack-add" });
 ```
 
-**Stacked:**
-
-```bash
-git checkout -b <type>/<name>
-git machete add --onto $(git rev-parse --abbrev-ref @{-1})
-```
+</phase>
 
 </process>

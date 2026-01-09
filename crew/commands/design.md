@@ -25,6 +25,10 @@ skills:
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
 </worktree_status>
 
+<phantom_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/phantom-context.sh`
+</phantom_context>
+
 <stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 </stack_context>
@@ -68,19 +72,20 @@ This provides: `<pattern name="research-agents"/>`, `<pattern name="task-file"/>
 mcp__claude_mem__search({
   query: "<feature keywords>",
   type: "decision,discovery,bugfix",
-  limit: 10
+  limit: 10,
 });
 
 // If relevant results found (~50 tokens per result), evaluate ROI
 // Fetch full details only for high-relevance matches
 mcp__claude_mem__get_observations({
-  ids: [relevant_ids]  // ~500 tokens per observation
+  ids: [relevant_ids], // ~500 tokens per observation
 });
 ```
 
 **Why:** Prevents re-discovering known gotchas and respects past architectural decisions. Costs ~1000 tokens vs re-researching from scratch.
 
 **CRITICAL - Memory vs Current Request:**
+
 - Memory INFORMS, never OVERRIDES the user's explicit request
 - User's current ask ALWAYS takes priority over past observations
 - If memory suggests approach X but user asks for approach Y → follow user's request
@@ -88,14 +93,17 @@ mcp__claude_mem__get_observations({
 
 ```javascript
 AskUserQuestion({
-  questions: [{
-    question: "I found a past observation that suggests [X], but your current request implies [Y]. Which approach should I follow?",
-    options: [
-      "Follow my current request (Y)",
-      "Use the past approach (X)",
-      "Explain both so I can decide"
-    ]
-  }]
+  questions: [
+    {
+      question:
+        "I found a past observation that suggests [X], but your current request implies [Y]. Which approach should I follow?",
+      options: [
+        "Follow my current request (Y)",
+        "Use the past approach (X)",
+        "Explain both so I can decide",
+      ],
+    },
+  ],
 });
 ```
 
@@ -121,15 +129,66 @@ AskUserQuestion({
 ```
 </phase>
 
-<phase name="branch-setup">
+<phase name="isolation-setup">
+**CRITICAL: Ask isolation question FIRST before any file creation.**
+
+If on main/master, ask how to isolate this feature:
+
 ```javascript
 const branch = Bash({ command: "git branch --show-current" }).trim();
 if (branch === "main" || branch === "master") {
-  // AskUserQuestion: feature branch or stacked branch
-  Bash({ command: `git checkout -b feat/${slug}` });
+  AskUserQuestion({
+    questions: [
+      {
+        question: "How should this feature be isolated?",
+        header: "Isolation",
+        options: [
+          {
+            label: "New worktree (Recommended)",
+            description: "Isolated phantom worktree for independent work",
+          },
+          {
+            label: "Stacked branch",
+            description: "Add to machete stack for dependent changes",
+          },
+          {
+            label: "Simple branch",
+            description: "Regular branch in current checkout",
+          },
+        ],
+        multiSelect: false,
+      },
+    ],
+  });
 }
-// If stacked: git machete add --onto <parent>
 ```
+
+**Handle isolation choice by delegating to canonical skills:**
+
+```javascript
+if (isolationChoice === "New worktree") {
+  // Delegate to worktree skill (handles username prefix, name confirmation, phantom create, cd)
+  Skill({ skill: "crew:git:worktree" });
+  // Worktree skill switches to the new directory automatically
+}
+
+if (isolationChoice === "Stacked branch") {
+  // Create branch with username prefix (from current)
+  Skill({ skill: "crew:git:branch-new", args: "--base current" });
+
+  // Add to machete stack
+  Skill({ skill: "crew:git:stack-add" });
+}
+
+if (isolationChoice === "Simple branch") {
+  // Create branch with username prefix (from main)
+  Skill({ skill: "crew:git:branch-new", args: "--base main" });
+}
+
+// All paths continue to research phase - no exit needed
+```
+
+**If already in a worktree or feature branch:** Skip isolation question, proceed with current branch.
 </phase>
 
 <phase name="parallel-research">
@@ -256,25 +315,6 @@ AskUserQuestion({
       multiSelect: false,
     },
     {
-      question: "Add this branch to the machete stack?",
-      header: "Stacking",
-      options: [
-        {
-          label: "Stack on main",
-          description: "Add branch to stack with main as parent (Recommended)",
-        },
-        {
-          label: "Stack on current",
-          description: "Add branch stacked on the current parent branch",
-        },
-        {
-          label: "No stacking",
-          description: "Keep branch independent, not in machete stack",
-        },
-      ],
-      multiSelect: false,
-    },
-    {
       question: "Enable iteration loop during build?",
       header: "Loop mode",
       options: [
@@ -295,12 +335,6 @@ AskUserQuestion({
 
 **Based on responses:**
 
-Stacking (execute first if building):
-
-- "Stack on main" → `Bash({ command: "git machete add --onto main" });`
-- "Stack on current" → `Bash({ command: "git machete add" });` (uses current parent)
-- "No stacking" → No machete action
-
 Next step:
 
 - "Start building" + "With loop" → `Skill({ skill: "crew:build", args: "<slug> --loop" });`
@@ -315,8 +349,10 @@ Next step:
 
 <success_criteria>
 
+- [ ] Isolation question asked FIRST if on main/master
+- [ ] Worktree created with phantom if chosen (auto-switched via cd)
+- [ ] Branch created/switched before any research
 - [ ] claude-mem queried for past learnings (if available)
-- [ ] Branch created before research
 - [ ] All 4 research agents launched in single message
 - [ ] Codex MCP called directly for synthesis
 - [ ] spec-flow-analyzer runs after all research collected

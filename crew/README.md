@@ -21,8 +21,19 @@ Unified orchestration for work execution, skill creation, git conventions, and s
 | `/crew:git:commit`          | Create conventional commit               |
 | `/crew:git:commit-and-push` | Commit + push + update PR                |
 | `/crew:git:push`            | Push to origin + update PR               |
+| `/crew:git:branch-new`      | Create branch with username prefix       |
 | `/crew:git:pr`              | Create pull request                      |
 | `/crew:git:fix-reviews`     | Resolve PR comments and CI failures      |
+
+### Worktrees (phantom)
+
+| Command                          | Purpose                         |
+| -------------------------------- | ------------------------------- |
+| `/crew:git:worktree`             | Create worktree and auto-switch |
+| `/crew:git:worktree-switch`      | Switch to existing worktree     |
+| `/crew:git:worktree-list`        | List all worktrees              |
+| `/crew:git:worktree-delete`      | Delete a worktree               |
+| `/crew:git:worktree-checkout-pr` | Checkout PR into new worktree   |
 
 ### Stacked PRs (git-machete)
 
@@ -70,6 +81,16 @@ Or use a local plugin directory:
 ```bash
 claude --plugin-dir ~/Development/agent-marketplace/crew
 ```
+
+### Prerequisites
+
+**Phantom CLI** (for worktree commands):
+
+```bash
+brew install phantom
+```
+
+Phantom is auto-detected on session start. If not installed, worktree commands will suggest installation.
 
 ## Standard Workflows
 
@@ -129,11 +150,21 @@ worktree-payments/      # Stack B: feat/payments (independent feature)
 worktree-hotfix/        # Stack C: fix/critical (independent bugfix)
 ```
 
+**Creating worktrees (auto-switches to new worktree):**
+
+```
+/crew:git:worktree       # Create and switch to new worktree
+/crew:git:worktree-switch  # Switch between existing worktrees
+```
+
+Branch names are auto-generated with username prefix: `username/type/description`
+
 **Why this works:**
 
 - Stacked PRs are sequential (depend on each other) → work naturally with machete
 - Worktrees isolate independent work → no context switching between unrelated features
 - Each worktree can use full machete commands (`traverse`, `go`) within its stack
+- Auto-switch means no manual `phantom shell` or `cd` needed
 
 **Navigation within a stack:**
 
@@ -153,6 +184,14 @@ The machete context automatically suggests next steps:
 
 - Single stack in worktree → all machete commands work normally
 - Multi-stack layout shared → warns about cross-stack navigation
+
+**Worktree management:**
+
+```
+/crew:git:worktree-list    # See all worktrees
+/crew:git:worktree-delete  # Clean up completed worktrees
+/crew:git:worktree-checkout-pr  # Review PR in isolated worktree
+```
 
 ### Code Review
 
@@ -199,16 +238,43 @@ crew/
 │   ├── design.md
 │   ├── build.md
 │   ├── check.md
-│   └── fix.md
+│   ├── fix.md
+│   └── git/
+│       ├── branch.md
+│       ├── branch-new.md
+│       ├── commit.md
+│       ├── commit-and-push.md
+│       ├── push.md
+│       ├── sync.md
+│       ├── pr.md
+│       ├── worktree.md
+│       ├── worktree-switch.md
+│       ├── worktree-list.md
+│       ├── worktree-delete.md
+│       └── worktree-checkout-pr.md
 ├── skills/
-│   └── crew/
-│       ├── SKILL.md
-│       ├── references/
-│       ├── templates/
-│       ├── workflows/
-│       └── scripts/
+│   ├── git/
+│   │   └── references/conventions.md
+│   ├── phantom/
+│   │   ├── SKILL.md
+│   │   ├── references/
+│   │   │   ├── commands.md
+│   │   │   ├── configuration.md
+│   │   │   └── mcp.md
+│   │   └── workflows/
+│   │       ├── create-worktree.md
+│   │       ├── cleanup.md
+│   │       └── github-workflow.md
+│   └── todo-tracking/
+├── scripts/
+│   └── git/
+│       ├── phantom-context.sh
+│       ├── machete-context.sh
+│       └── worktree-context.sh
 ├── hooks/
 │   └── hooks.json
+├── rules/
+│   └── phantom-workflow.md
 └── README.md
 ```
 

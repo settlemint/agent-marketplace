@@ -23,6 +23,11 @@
     "restate-docs": {
       "type": "http",
       "url": "https://docs.restate.dev/mcp"
+    },
+    "phantom": {
+      "type": "stdio",
+      "command": "phantom",
+      "args": ["mcp", "serve"]
     }
   }
 }
