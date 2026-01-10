@@ -40,29 +40,65 @@ Git workflow guidance: conventional commits, branch naming, PR workflows.
 
 <commands>
 
-| Command                                          | Purpose                               |
-| ------------------------------------------------ | ------------------------------------- |
-| `Skill({ skill: "crew:git:stacked:setup" })`             | Configure git + machete optimally     |
-| `Skill({ skill: "crew:git:stacked:discover" })`          | Auto-detect branch layout             |
-| `Skill({ skill: "crew:git:pr:create" })`                | Create PR with template               |
-| `Skill({ skill: "crew:git:pr:update" })`         | Update PR title/body                  |
-| `Skill({ skill: "crew:git:stacked:status" })`      | View branch stack status              |
-| `Skill({ skill: "crew:git:stacked:add" })`         | Add branch to stack                   |
-| `Skill({ skill: "crew:git:stacked:traverse" })`          | Sync all stacked branches             |
-| `Skill({ skill: "crew:git:sync" })`              | Sync current branch with parent       |
-| `Skill({ skill: "crew:git:stacked:slide-out" })`         | Remove merged branch from stack       |
-| `Skill({ skill: "crew:git:stacked:advance" })`           | Fast-forward merge child into current |
-| `Skill({ skill: "crew:git:stacked:go" })`                | Navigate stack (up/down/next/prev)    |
-| `Skill({ skill: "crew:git:stacked:checkout-prs" })`      | Checkout PRs from GitHub              |
-| `Skill({ skill: "crew:git:stacked:retarget" })`       | Change PR base branch                 |
-| `Skill({ skill: "crew:git:stacked:restack" })`        | Retarget + force push atomically      |
-| `Skill({ skill: "crew:git:stacked:cleanup" })` | Delete branches not in layout         |
-| `Skill({ skill: "crew:git:commit" })`            | Create conventional commit            |
-| `Skill({ skill: "crew:git:branch:new" })`            | Create feature branch                 |
-| `Skill({ skill: "crew:git:push" })`              | Push current branch                   |
-| `Skill({ skill: "crew:git:clean" })`             | Clean stale branches                  |
+| Command                                             | Purpose                               |
+| --------------------------------------------------- | ------------------------------------- |
+| `Skill({ skill: "crew:git:stacked:setup" })`        | Configure git + machete optimally     |
+| `Skill({ skill: "crew:git:stacked:discover" })`     | Auto-detect branch layout             |
+| `Skill({ skill: "crew:git:pr:create" })`            | Create PR with template               |
+| `Skill({ skill: "crew:git:pr:update" })`            | Update PR title/body                  |
+| `Skill({ skill: "crew:git:stacked:status" })`       | View branch stack status              |
+| `Skill({ skill: "crew:git:stacked:add" })`          | Add branch to stack                   |
+| `Skill({ skill: "crew:git:stacked:traverse" })`     | Sync all stacked branches             |
+| `Skill({ skill: "crew:git:sync" })`                 | Sync current branch with parent       |
+| `Skill({ skill: "crew:git:stacked:slide-out" })`    | Remove merged branch from stack       |
+| `Skill({ skill: "crew:git:stacked:advance" })`      | Fast-forward merge child into current |
+| `Skill({ skill: "crew:git:stacked:go" })`           | Navigate stack (up/down/next/prev)    |
+| `Skill({ skill: "crew:git:stacked:checkout-prs" })` | Checkout PRs from GitHub              |
+| `Skill({ skill: "crew:git:stacked:retarget" })`     | Change PR base branch                 |
+| `Skill({ skill: "crew:git:stacked:restack" })`      | Retarget + force push atomically      |
+| `Skill({ skill: "crew:git:stacked:cleanup" })`      | Delete branches not in layout         |
+| `Skill({ skill: "crew:git:commit" })`               | Create conventional commit            |
+| `Skill({ skill: "crew:git:branch:new" })`           | Create feature branch                 |
+| `Skill({ skill: "crew:git:push" })`                 | Push current branch                   |
+| `Skill({ skill: "crew:git:clean" })`                | Clean stale branches                  |
 
 </commands>
+
+<butler_commands>
+
+**GitButler Virtual Branch Commands** (use when GitButler is active):
+
+| Command                                      | Purpose                               |
+| -------------------------------------------- | ------------------------------------- |
+| `Skill({ skill: "crew:git:butler:status" })` | View virtual branches and base status |
+| `Skill({ skill: "crew:git:butler:branch" })` | Create virtual branch                 |
+| `Skill({ skill: "crew:git:butler:commit" })` | Commit with conventional format       |
+| `Skill({ skill: "crew:git:butler:push" })`   | Push virtual branch to remote         |
+| `Skill({ skill: "crew:git:butler:sync" })`   | Sync with upstream (rebase all)       |
+| `Skill({ skill: "crew:git:butler:undo" })`   | Undo last operation or restore        |
+| `Skill({ skill: "crew:git:butler:assign" })` | Assign files to branches (rub)        |
+
+**MCP Tool for Auto-Commit:**
+
+```javascript
+mcp__gitbutler__gitbutler_update_branches({
+  fullPrompt: "Original user request",
+  changesSummary: "- What changed\n- Why it changed",
+  currentWorkingDirectory: "/path/to/project",
+});
+```
+
+Use this MCP tool after making code changes to auto-commit with context.
+
+**Detection:** Check `.git/gitbutler` directory or run `but branch list`.
+
+**Incompatibility:** When GitButler is active:
+
+- Stacked commands (`crew:git:stacked:*`) do not work
+- Worktree commands (`crew:git:worktree:*`) do not work
+- Use butler commands instead for parallel development
+
+</butler_commands>
 
 <scripts>
 

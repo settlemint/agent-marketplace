@@ -8,9 +8,34 @@ allowed-tools:
   - Skill
 ---
 
+<butler_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/gitbutler-context.sh`
+</butler_context>
+
 <stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 </stack_context>
+
+<gitbutler_incompatible>
+
+**This command does not work with GitButler.**
+
+If `GITBUTLER_ACTIVE=true` from `<butler_context>`:
+
+```
+Stacked branches (git-machete) are not compatible with GitButler virtual branches.
+
+GitButler has its own stacking system. Use these instead:
+- `crew:git:butler:status` - View virtual branches
+- `crew:git:butler:branch` - Create virtual branch
+- `crew:git:butler:sync` - Sync with upstream
+
+To use machete, first disable GitButler in this repository.
+```
+
+Exit immediately. Do not proceed with machete commands.
+
+</gitbutler_incompatible>
 
 <objective>
 
