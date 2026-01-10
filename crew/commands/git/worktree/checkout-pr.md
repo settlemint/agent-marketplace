@@ -6,6 +6,32 @@ allowed-tools:
   - Bash
 ---
 
+<butler_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/gitbutler-context.sh`
+</butler_context>
+
+<gitbutler_incompatible>
+
+**This command does not work with GitButler.**
+
+If `GITBUTLER_ACTIVE=true` from `<butler_context>`:
+
+```
+Git worktrees are not compatible with GitButler virtual branches.
+
+GitButler uses virtual branches instead of worktrees for parallel development.
+
+For PR checkout with GitButler, use:
+- `gh pr checkout <number>` - Standard checkout (exits GitButler mode)
+- Or work directly on virtual branches
+
+To use worktrees, first disable GitButler in this repository.
+```
+
+Exit immediately. Do not proceed with worktree commands.
+
+</gitbutler_incompatible>
+
 <objective>
 
 Checkout PR or issue into a new phantom worktree.

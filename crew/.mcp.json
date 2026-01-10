@@ -28,6 +28,11 @@
       "type": "stdio",
       "command": "phantom",
       "args": ["mcp", "serve"]
+    },
+    "gitbutler": {
+      "type": "stdio",
+      "command": "but",
+      "args": ["mcp"]
     }
   }
 }
