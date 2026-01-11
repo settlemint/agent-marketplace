@@ -26,6 +26,32 @@ Create feature branch. Research with parallel agents. Write draft plan with `ope
 
 </objective>
 
+<critical_constraints>
+
+**THIS IS A PLANNING COMMAND - NOT AN IMPLEMENTATION COMMAND**
+
+❌ FORBIDDEN ACTIONS:
+
+- Writing, editing, or creating source code files
+- Making changes to the codebase
+- Running build/test commands
+- Creating or modifying any file outside `.claude/plans/`
+- Skipping to implementation before plan is approved
+
+✅ ALLOWED ACTIONS:
+
+- Reading files for research
+- Running git commands to analyze diffs
+- Spawning research agents
+- Writing plan files to `.claude/plans/<slug>.yaml`
+- Asking user questions to clarify requirements
+
+**OUTPUT**: The ONLY file you create is `.claude/plans/<slug>.yaml`
+
+If you find yourself about to write code or edit source files, STOP. You are in planning mode. Follow the workflow steps in order.
+
+</critical_constraints>
+
 <workflow>
 
 ## Step 1: Create Feature Branch
@@ -163,11 +189,30 @@ while (plan.open_questions?.length > 0) {
 // TodoWrite: #1-6 ✓
 ```
 
-## Step 8: Execute Work
+## Step 8: Present Plan and Ask to Start
 
 ```javascript
-// After plan is complete, start work
-Skill({ skill: "crew:work", args: slug });
+// Present plan summary to user
+console.log(`Plan complete: .claude/plans/${slug}.yaml`);
+// Display key sections: stories count, P1/P2/P3 breakdown, etc.
+
+// Ask user if they want to start building
+const response = AskUserQuestion({
+  questions: [
+    {
+      question: "Plan is ready. Start building?",
+      options: [
+        "Yes, start building now",
+        "No, I need to review the plan first",
+      ],
+    },
+  ],
+});
+
+if (response === "Yes, start building now") {
+  Skill({ skill: "crew:work", args: slug });
+}
+// If "No", command ends - user can run /crew:work later
 ```
 
 </workflow>
@@ -177,6 +222,8 @@ Skill({ skill: "crew:work", args: slug });
 - Single `.yaml` file at `.claude/plans/<slug>.yaml`
 - Stories embedded with P1/P2/P3 priorities
 - Research → Draft → Review → Finalize
+- **NO source code changes during planning** - only plan file created
+- Step 8 asks user via AskUserQuestion before starting work
 
 </constraints>
 
@@ -195,7 +242,8 @@ Skill({ skill: "crew:work", args: slug });
 - [ ] Draft plan written with open_questions (Step 5)
 - [ ] plan-review called (Step 6)
 - [ ] Refine loop runs until no open_questions (Step 7)
-- [ ] crew:work starts after plan complete (Step 8)
+- [ ] Plan presented and user asked to start building (Step 8)
+- [ ] crew:work invoked only if user says "Yes"
 
 **Output:**
 
