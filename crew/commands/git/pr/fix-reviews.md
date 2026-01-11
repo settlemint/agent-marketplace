@@ -55,29 +55,45 @@ If no PR found → ask user to create or specify PR number.
 
 ## Step 3: Create Todo List
 
+**CRITICAL: Include a "Resolve thread" task for EACH thread. Do NOT skip thread resolution.**
+
 ```javascript
 TodoWrite({
   todos: [
-    // For each comment from <unresolved_threads>:
+    // For EACH comment from <unresolved_threads>, create TWO todos:
+    // 1. A "Fix" todo for making the code change
     {
       content: "Fix: src/file.ts:42 - description (THREAD_ID=PRRT_xxx)",
       status: "pending",
       activeForm: "Fixing...",
     },
+    // 2. A "Resolve thread" todo - ONE PER THREAD, must be completed after pushing
+    {
+      content: "Resolve thread PRRT_xxx on GitHub",
+      status: "pending",
+      activeForm: "Resolving thread",
+    },
+    // Repeat for each thread...
+
     // For each CI failure:
     {
       content: "Fix CI: lint errors",
       status: "pending",
       activeForm: "Fixing lint",
     },
-    // Resolution tasks:
-    {
-      content: "Resolve thread PRRT_xxx",
-      status: "pending",
-      activeForm: "Resolving thread",
-    },
+
     // Final tasks:
     { content: "Commit and push", status: "pending", activeForm: "Committing" },
+    {
+      content: "Resolve ALL threads on GitHub",
+      status: "pending",
+      activeForm: "Resolving threads",
+    },
+    {
+      content: "Verify all threads resolved",
+      status: "pending",
+      activeForm: "Verifying",
+    },
     { content: "Update PR", status: "pending", activeForm: "Updating PR" },
   ],
 });
@@ -163,15 +179,46 @@ git commit -m "fix: address PR review comments"
 git push --force-with-lease
 ```
 
-## Step 9: Resolve Threads
+## Step 9: Resolve Threads (MANDATORY)
 
-For each fixed thread:
+**DO NOT SKIP THIS STEP. Unresolved threads leave PR in incomplete state.**
+
+For EACH thread that was fixed, resolve it on GitHub:
 
 ```bash
-${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-resolve-thread.sh "THREAD_ID" "Fixed: description"
+# Run this for EVERY thread ID from <unresolved_threads>
+${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-resolve-thread.sh "PRRT_xxx" "Fixed: brief description of fix"
 ```
 
-## Step 10: Update PR
+Example for multiple threads:
+
+```bash
+${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-resolve-thread.sh "PRRT_abc123" "Fixed: Added null check"
+${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-resolve-thread.sh "PRRT_def456" "Fixed: Updated variable name"
+${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-resolve-thread.sh "PRRT_ghi789" "Fixed: Removed deprecated call"
+```
+
+## Step 10: Verify All Threads Resolved
+
+**Confirm zero unresolved threads remain:**
+
+```bash
+gh api graphql -f query='
+query {
+  repository(owner: "OWNER", name: "REPO") {
+    pullRequest(number: PR_NUMBER) {
+      reviewThreads(first: 50) {
+        nodes { isResolved }
+      }
+    }
+  }
+}' --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false)] | length'
+# Should output: 0
+```
+
+If any threads remain unresolved, go back to Step 9 and resolve them.
+
+## Step 11: Update PR
 
 ```javascript
 Skill({ skill: "crew:git:pr:update" });
@@ -182,11 +229,13 @@ Skill({ skill: "crew:git:pr:update" });
 <success_criteria>
 
 - [ ] Stack synced (if machete-managed)
-- [ ] All PR comments addressed
+- [ ] All PR comments addressed (code fixes made)
 - [ ] All CI failures fixed
 - [ ] `bun run ci` passes locally
 - [ ] Changes committed and pushed
-- [ ] Threads resolved on GitHub
+- [ ] **ALL threads resolved on GitHub** (verified with query showing 0 unresolved)
 - [ ] PR updated
+
+**INCOMPLETE if any threads remain unresolved. Always verify with Step 10 query.**
 
 </success_criteria>
