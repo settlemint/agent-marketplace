@@ -1,6 +1,7 @@
 ---
 name: crew:git:pr:create
 description: Commit, push, and open a PR
+model: haiku
 allowed-tools:
   - Bash
   - AskUserQuestion
@@ -69,12 +70,23 @@ AskUserQuestion({
 
 ## Step 4: Generate PR Body
 
-Select template based on commit type:
+Select and read template based on commit type:
 
-- `feat` → `skills/git/templates/pr-feature.md`
-- `fix` → `skills/git/templates/pr-fix.md`
-- `refactor/docs/test` → `skills/git/templates/pr-refactor.md`
-- Other → `skills/git/templates/pr-default.md`
+```javascript
+// Determine template based on primary commit type
+const templateMap = {
+  feat: "pr-feature.md",
+  fix: "pr-fix.md",
+  refactor: "pr-refactor.md",
+  docs: "pr-refactor.md",
+  test: "pr-refactor.md",
+  chore: "pr-refactor.md",
+};
+const template = templateMap[commitType] || "pr-default.md";
+Read({
+  file_path: `${CLAUDE_PLUGIN_ROOT}/skills/git/templates/${template}`,
+});
+```
 
 Check for plan file: `ls .claude/plans/*.md 2>/dev/null`
 If exists, extract motivation and design decisions.

@@ -1,6 +1,7 @@
 ---
 name: crew:git:branch:create
 description: Create a feature branch
+model: haiku
 allowed-tools:
   - Skill
 ---

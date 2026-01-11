@@ -2,6 +2,7 @@
 name: crew:git:pr:update
 description: Update PR title and body
 argument-hint: "[PR number, defaults to current branch PR]"
+model: haiku
 allowed-tools:
   - Bash
 ---
@@ -38,7 +39,25 @@ ls .claude/plans/*.md 2>/dev/null
 
 ## Step 4: Generate Body
 
-Select template based on commit type. Sources:
+Select and read template based on commit type:
+
+```javascript
+// Determine template based on primary commit type
+const templateMap = {
+  feat: "pr-feature.md",
+  fix: "pr-fix.md",
+  refactor: "pr-refactor.md",
+  docs: "pr-refactor.md",
+  test: "pr-refactor.md",
+  chore: "pr-refactor.md",
+};
+const template = templateMap[commitType] || "pr-default.md";
+Read({
+  file_path: `${CLAUDE_PLUGIN_ROOT}/skills/git/templates/${template}`,
+});
+```
+
+Sources:
 
 - **Summary**: From commit messages
 - **Why**: From plan file or commit bodies

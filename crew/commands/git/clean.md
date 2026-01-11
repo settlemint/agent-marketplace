@@ -1,6 +1,7 @@
 ---
 name: crew:git:clean
 description: Clean up stale branches (deleted on remote)
+model: haiku
 allowed-tools:
   - Bash
 context: fork

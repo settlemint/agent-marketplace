@@ -2,6 +2,7 @@
 name: crew:git:commit
 description: Create a conventional commit
 argument-hint: "[commit message]"
+model: haiku
 allowed-tools:
   - Bash
 ---
