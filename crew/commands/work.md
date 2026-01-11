@@ -26,14 +26,6 @@ hooks:
   PreToolUse: false
 ---
 
-<worktree_status>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
-</worktree_status>
-
-<stack_context>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
-</stack_context>
-
 <objective>
 
 Execute a plan perfectly using Ralph Loop for guaranteed completion. **Strictly enforces TDD (Test-Driven Development)** - NO implementation code without failing tests first. Parallelizes work, runs CI continuously, uses browser testing for UI, runs quality reviews, and writes all findings back to the plan for the loop to address.

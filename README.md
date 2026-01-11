@@ -82,10 +82,6 @@ Unified orchestration for work execution, skill creation, git conventions, and s
 | `/crew:git:sync`            | `/crew:sync`            | Sync current branch with main             |
 | `/crew:git:undo`            | `/crew:undo`            | Undo last commit (keeps changes)          |
 | `/crew:git:clean`           | `/crew:clean`           | Clean up stale branches                   |
-| `/crew:git:traverse`        |                         | Sync all stacked branches (git-machete)   |
-| `/crew:git:stack-status`    |                         | Show stacked branch tree                  |
-| `/crew:git:stack-add`       |                         | Add branch to stack                       |
-| `/crew:git:slide-out`       |                         | Remove merged branch from stack           |
 | `/crew:ci`                  |                         | Run CI checks via background haiku agent  |
 
 **Features:**
@@ -94,7 +90,6 @@ Unified orchestration for work execution, skill creation, git conventions, and s
 - Session state preservation across compactions
 - Iteration loops for autonomous completion
 - Git commit and PR workflow validation
-- Stacked branches support (git-machete integration)
 - Auto-linting on file modifications
 
 ### devtools
@@ -124,7 +119,6 @@ Modern development tools with MCP-first skills. Uses Context7 for up-to-date lib
 | `motion`          | Animations (Motion/Framer)           | Context7   |
 | `recharts`        | Data visualization                   | OctoCode   |
 | `pino`            | Structured logging                   | OctoCode   |
-| `git-machete`     | Stacked branches & PRs               | -          |
 | `troubleshooting` | Debug patterns                       | -          |
 
 **Key feature:** Every skill fetches documentation from MCP before implementing, ensuring up-to-date API usage.

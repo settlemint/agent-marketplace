@@ -12,14 +12,6 @@ allowed-tools:
   - Skill
 ---
 
-<butler_context>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/gitbutler-context.sh`
-</butler_context>
-
-<stack_context>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh 2>&1`
-</stack_context>
-
 <pr_info>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-info.sh 2>&1`
 </pr_info>
@@ -34,26 +26,17 @@ allowed-tools:
 
 <objective>
 
-Sync stack, fix PR comments and CI failures, resolve threads, update PR. Max 3 CI iterations.
+Fix PR comments and CI failures, resolve threads, update PR. Max 3 CI iterations.
 
 </objective>
 
 <workflow>
 
-## Step 1: Sync Stack (if machete-managed)
-
-```bash
-if git machete is-managed "$(git branch --show-current)" 2>/dev/null; then
-  git fetch origin
-  git machete update
-fi
-```
-
-## Step 2: Validate PR
+## Step 1: Validate PR
 
 If no PR found → ask user to create or specify PR number.
 
-## Step 3: Create Todo List
+## Step 2: Create Todo List
 
 **CRITICAL: Include a "Resolve thread" task for EACH thread. Do NOT skip thread resolution.**
 
@@ -99,7 +82,7 @@ TodoWrite({
 });
 ```
 
-## Step 4: Confirm Scope
+## Step 3: Confirm Scope
 
 ```javascript
 AskUserQuestion({
@@ -118,7 +101,7 @@ AskUserQuestion({
 });
 ```
 
-## Step 5: Fix Issues
+## Step 4: Fix Issues
 
 Mark todos as `in_progress` → make fix → `completed`.
 
@@ -132,7 +115,7 @@ Task({
 });
 ```
 
-## Step 6: Verify CI
+## Step 5: Verify CI
 
 ```bash
 bun run ci
@@ -140,7 +123,7 @@ bun run ci
 
 If fails after 3 iterations → escalate to user.
 
-## Step 7: Code Quality Review
+## Step 6: Code Quality Review
 
 ```javascript
 Task({
@@ -151,27 +134,7 @@ Task({
 });
 ```
 
-## Step 8: Commit and Push
-
-**Extract PR branch name from `<pr_info>`:**
-
-```javascript
-// PR branch is the head branch of the PR (from HEAD_BRANCH in pr_info context)
-const prBranch = HEAD_BRANCH; // e.g., "feature/add-auth"
-```
-
-**If GitButler active (from `<butler_context>`):**
-
-```javascript
-// Assign all modified files to PR branch and commit
-// The --branch flag ensures files go to correct virtual branch
-Skill({ skill: "crew:git:butler:commit", args: `--branch ${prBranch}` });
-
-// Then push that branch
-Skill({ skill: "crew:git:butler:push", args: prBranch });
-```
-
-**If traditional:**
+## Step 7: Commit and Push
 
 ```bash
 git add -A
@@ -179,7 +142,7 @@ git commit -m "fix: address PR review comments"
 git push --force-with-lease
 ```
 
-## Step 9: Resolve Threads (MANDATORY)
+## Step 8: Resolve Threads (MANDATORY)
 
 **DO NOT SKIP THIS STEP. Unresolved threads leave PR in incomplete state.**
 
@@ -198,7 +161,7 @@ ${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-resolve-thread.sh "PRRT_def456" "Fixed: 
 ${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-resolve-thread.sh "PRRT_ghi789" "Fixed: Removed deprecated call"
 ```
 
-## Step 10: Verify All Threads Resolved
+## Step 9: Verify All Threads Resolved
 
 **Confirm zero unresolved threads remain:**
 
@@ -216,9 +179,9 @@ query {
 # Should output: 0
 ```
 
-If any threads remain unresolved, go back to Step 9 and resolve them.
+If any threads remain unresolved, go back to Step 8 and resolve them.
 
-## Step 11: Update PR
+## Step 10: Update PR
 
 ```javascript
 Skill({ skill: "crew:git:pr:update" });
@@ -228,7 +191,6 @@ Skill({ skill: "crew:git:pr:update" });
 
 <success_criteria>
 
-- [ ] Stack synced (if machete-managed)
 - [ ] All PR comments addressed (code fixes made)
 - [ ] All CI failures fixed
 - [ ] `bun run ci` passes locally
@@ -236,6 +198,6 @@ Skill({ skill: "crew:git:pr:update" });
 - [ ] **ALL threads resolved on GitHub** (verified with query showing 0 unresolved)
 - [ ] PR updated
 
-**INCOMPLETE if any threads remain unresolved. Always verify with Step 10 query.**
+**INCOMPLETE if any threads remain unresolved. Always verify with Step 9 query.**
 
 </success_criteria>

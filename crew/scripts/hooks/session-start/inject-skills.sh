@@ -53,7 +53,6 @@ cat <<'EOF'
 | solidity | .sol, contract, forge | Smart contracts with Foundry |
 | viem | viem, publicClient, walletClient | Ethereum client interactions |
 | tanstack-start | createFileRoute, loader | Full-stack React framework |
-| git-machete | stacked, machete, branch stack | Stacked PR workflows |
 | troubleshooting | help debug, troubleshoot | Structured debugging workflow |
 
 ### LSP Features (typescript-lsp plugin)

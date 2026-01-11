@@ -32,8 +32,7 @@ Create feature branch. Research with parallel agents. Write draft plan with `ope
 
 ```javascript
 const slug = slugify(feature); // kebab-case, max 30 chars
-// Uses router command that auto-detects GitButler and delegates appropriately
-Skill({ skill: "crew:git:branch:create", args: slug });
+Skill({ skill: "crew:git:branch:new", args: slug });
 ```
 
 ## Step 2: Initialize Tracking

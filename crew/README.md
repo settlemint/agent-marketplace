@@ -13,39 +13,17 @@ Unified orchestration for work execution, skill creation, git conventions, and s
 
 ### Git Operations
 
-| Command                     | Purpose                                  |
-| --------------------------- | ---------------------------------------- |
-| `/crew:git:sync`            | Rebase on main/parent + push + update PR |
-| `/crew:git:commit`          | Create conventional commit               |
-| `/crew:git:commit-and-push` | Commit + push + update PR                |
-| `/crew:git:push`            | Push to origin + update PR               |
-| `/crew:git:branch:new`      | Create branch with username prefix       |
-| `/crew:git:pr:create`       | Create pull request                      |
-| `/crew:git:pr:fix-reviews`  | Resolve PR comments and CI failures      |
-
-### Worktrees (phantom)
-
-| Command                          | Purpose                         |
-| -------------------------------- | ------------------------------- |
-| `/crew:git:worktree`             | Create worktree and auto-switch |
-| `/crew:git:worktree:switch`      | Switch to existing worktree     |
-| `/crew:git:worktree:list`        | List all worktrees              |
-| `/crew:git:worktree:delete`      | Delete a worktree               |
-| `/crew:git:worktree:checkout-pr` | Checkout PR into new worktree   |
-
-### Stacked PRs (git-machete)
-
-| Command                       | Purpose                                  |
-| ----------------------------- | ---------------------------------------- |
-| `/crew:git:branch:new`        | Create feature branch from main          |
-| `/crew:git:stacked:add`       | Add branch to machete stack              |
-| `/crew:git:stacked:status`    | Show branch stack with visual indicators |
-| `/crew:git:stacked:go`        | Navigate between branches in stack       |
-| `/crew:git:stacked:traverse`  | Sync entire stack with parents/remotes   |
-| `/crew:git:stacked:slide-out` | Remove merged branches, update child PRs |
-| `/crew:git:stacked:retarget`  | Change PR base to match machete parent   |
-| `/crew:git:stacked:restack`   | Retarget + force push after rebase       |
-| `/crew:git:stacked:advance`   | Fast-forward merge child into current    |
+| Command                     | Purpose                             |
+| --------------------------- | ----------------------------------- |
+| `/crew:git:sync`            | Rebase on main + push + update PR   |
+| `/crew:git:commit`          | Create conventional commit          |
+| `/crew:git:commit-and-push` | Commit + push + update PR           |
+| `/crew:git:push`            | Push to origin + update PR          |
+| `/crew:git:branch:new`      | Create branch with username prefix  |
+| `/crew:git:pr:create`       | Create pull request                 |
+| `/crew:git:pr:fix-reviews`  | Resolve PR comments and CI failures |
+| `/crew:git:clean`           | Clean up stale branches             |
+| `/crew:git:undo`            | Undo last commit (keep changes)     |
 
 ### Code Review
 
@@ -80,16 +58,6 @@ Or use a local plugin directory:
 claude --plugin-dir ~/Development/agent-marketplace/crew
 ```
 
-### Prerequisites
-
-**Phantom CLI** (for worktree commands):
-
-```bash
-brew install phantom
-```
-
-Phantom is auto-detected on session start. If not installed, worktree commands will suggest installation.
-
 ## Standard Workflows
 
 ### Feature Development
@@ -109,14 +77,7 @@ The standard flow for implementing new features or addressing issues:
 Keep your branch up-to-date with main and sync PR state:
 
 ```
-/crew:git:sync    # Rebase on main/parent + push + update PR
-```
-
-For stacked branches (git-machete):
-
-```
-/crew:git:stacked:traverse   # Sync entire stack with parents and remotes
-/crew:git:stacked:slide-out  # Remove merged branches and update child PRs
+/crew:git:sync    # Rebase on main + push + update PR
 ```
 
 ### Quick Commits
@@ -125,70 +86,6 @@ For stacked branches (git-machete):
 /crew:git:commit         # Create conventional commit
 /crew:git:commit-and-push  # Commit + push + update PR
 /crew:git:push           # Push + update PR
-```
-
-### Stacked PRs
-
-```
-/crew:git:branch:new         # Create feature branch from main
-/crew:git:stacked:add      # Add branch to machete stack
-/crew:git:pr:create             # Create PR with stack annotations
-/crew:git:stacked:retarget    # Change PR base to match machete parent
-/crew:git:stacked:restack     # Retarget + force push after rebase
-/crew:git:stacked:go down        # Navigate to child branch in stack
-```
-
-### Worktrees + Stacked PRs
-
-**Recommended pattern: One worktree per stack**
-
-```
-main-checkout/          # Stack A: feat/auth → feat/auth-ui → feat/auth-tests
-worktree-payments/      # Stack B: feat/payments (independent feature)
-worktree-hotfix/        # Stack C: fix/critical (independent bugfix)
-```
-
-**Creating worktrees (auto-switches to new worktree):**
-
-```
-/crew:git:worktree       # Create and switch to new worktree
-/crew:git:worktree:switch  # Switch between existing worktrees
-```
-
-Branch names are auto-generated with username prefix: `username/type/description`
-
-**Why this works:**
-
-- Stacked PRs are sequential (depend on each other) → work naturally with machete
-- Worktrees isolate independent work → no context switching between unrelated features
-- Each worktree can use full machete commands (`traverse`, `go`) within its stack
-- Auto-switch means no manual `phantom shell` or `cd` needed
-
-**Navigation within a stack:**
-
-```
-/crew:git:stacked:go up          # Go to parent branch
-/crew:git:stacked:go down        # Go to child branch
-/crew:git:stacked:go next        # Go to sibling branch
-```
-
-The machete context automatically suggests next steps:
-
-- ✅ **PR approved** → suggests moving to child branch
-- ⏳ **PR open** → can continue on child while awaiting review
-- 🔀 **PR merged** → suggests slide-out then move to child
-
-**Safety detection:**
-
-- Single stack in worktree → all machete commands work normally
-- Multi-stack layout shared → warns about cross-stack navigation
-
-**Worktree management:**
-
-```
-/crew:git:worktree:list    # See all worktrees
-/crew:git:worktree:delete  # Clean up completed worktrees
-/crew:git:worktree:checkout-pr  # Review PR in isolated worktree
 ```
 
 ### Code Review
@@ -254,46 +151,31 @@ crew/
 ├── .claude-plugin/
 │   └── plugin.json
 ├── commands/
-│   ├── design.md
-│   ├── build.md
+│   ├── plan.md
+│   ├── work.md
 │   ├── check.md
-│   ├── fix.md
 │   └── git/
-│       ├── branch.md
-│       ├── branch-new.md
+│       ├── branch/
+│       │   ├── create.md
+│       │   └── new.md
+│       ├── pr/
+│       │   ├── create.md
+│       │   ├── fix-reviews.md
+│       │   └── update.md
 │       ├── commit.md
 │       ├── commit-and-push.md
 │       ├── push.md
 │       ├── sync.md
-│       ├── pr.md
-│       ├── worktree.md
-│       ├── worktree-switch.md
-│       ├── worktree-list.md
-│       ├── worktree-delete.md
-│       └── worktree-checkout-pr.md
+│       ├── clean.md
+│       └── undo.md
 ├── skills/
 │   ├── git/
 │   │   └── references/conventions.md
-│   ├── phantom/
-│   │   ├── SKILL.md
-│   │   ├── references/
-│   │   │   ├── commands.md
-│   │   │   ├── configuration.md
-│   │   │   └── mcp.md
-│   │   └── workflows/
-│   │       ├── create-worktree.md
-│   │       ├── cleanup.md
-│   │       └── github-workflow.md
 │   └── todo-tracking/
 ├── scripts/
 │   └── git/
-│       ├── phantom-context.sh
-│       ├── machete-context.sh
-│       └── worktree-context.sh
 ├── hooks/
 │   └── hooks.json
-├── rules/
-│   └── phantom-workflow.md
 └── README.md
 ```
 
