@@ -30,11 +30,24 @@ Fix PR comments and CI failures, resolve threads, update PR. Max 3 CI iterations
 
 </objective>
 
+<data_usage>
+
+**CRITICAL: The sections above (`<pr_info>`, `<unresolved_threads>`, `<ci_status>`) contain ALREADY-FETCHED data.**
+
+- Parse the text content directly from these sections
+- DO NOT run `gh pr view`, `gh api graphql`, or any other fetch commands
+- The thread IDs (PRRT_xxx) are extracted from the `<unresolved_threads>` section
+- If a section shows "No PR found" or "No unresolved threads", that IS the result
+
+</data_usage>
+
 <workflow>
 
-## Step 1: Validate PR
+## Step 1: Parse Pre-Fetched Data
 
-If no PR found → ask user to create or specify PR number.
+Read the `<pr_info>`, `<unresolved_threads>`, and `<ci_status>` sections above. These are already populated with current data.
+
+If `<pr_info>` shows "No PR found" → ask user to create or specify PR number.
 
 ## Step 2: Create Todo List
 
