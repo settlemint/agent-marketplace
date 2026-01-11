@@ -21,12 +21,6 @@ BRANCH_DIR="$PROJECT_DIR/.claude/branches/$SAFE_BRANCH"
 mkdir -p "$BRANCH_DIR"
 STATE_FILE="$BRANCH_DIR/state.json"
 
-# Save ralph-loop state to branch folder if it exists
-RALPH_LOOP_FILE="$PROJECT_DIR/.claude/ralph-loop.local.md"
-if [[ -f $RALPH_LOOP_FILE ]]; then
-	cp "$RALPH_LOOP_FILE" "$BRANCH_DIR/ralph-loop.local.md"
-fi
-
 # Session Completion Discipline: Check for uncommitted work
 # "Work is NOT complete until git commit succeeds"
 UNCOMMITTED_FILES=""
@@ -163,13 +157,6 @@ if [[ -d $TODO_DIR ]]; then
 	TODOS_JSON="$TODOS_ARRAY"
 fi
 
-# Get loop state from legacy locations (check both old formats)
-LOOP_STATE='{"active":false,"iteration":0,"maxIterations":10}'
-OLD_LOOP_FILE="$PROJECT_DIR/.claude/handoffs/$SAFE_BRANCH/loop-state.json"
-if [[ -f $OLD_LOOP_FILE ]]; then
-	LOOP_STATE=$(cat "$OLD_LOOP_FILE" 2>/dev/null || echo "$LOOP_STATE")
-fi
-
 # Get handoff info from legacy location
 HANDOFF_DIR="$PROJECT_DIR/.claude/handoffs/$SAFE_BRANCH"
 HANDOFF_COUNT=0
@@ -221,7 +208,6 @@ jq -n \
 	--argjson completed_count "$COMPLETED_COUNT" \
 	--arg active_workflow "$ACTIVE_WORKFLOW" \
 	--arg workflow_args "$WORKFLOW_ARGS" \
-	--argjson loop "$LOOP_STATE" \
 	--argjson handoff_count "$HANDOFF_COUNT" \
 	--arg last_handoff "$LAST_HANDOFF" \
 	--argjson tasks_pending "$TASKS_PENDING" \
@@ -261,7 +247,6 @@ jq -n \
       count: $uncommitted_count,
       wip_task_created: ($wip_task_created == "true")
     },
-    loop: $loop,
     handoff: {
       count: $handoff_count,
       last: $last_handoff

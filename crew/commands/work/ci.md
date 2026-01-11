@@ -18,7 +18,7 @@ hooks:
 
 <objective>
 
-Run CI checks (test, lint, typecheck, format) and write all failures to the plan's findings section. This allows the Ralph Loop to see failures and fix them in the next iteration.
+Run CI checks (test, lint, typecheck, format) and write all failures to the plan's findings section.
 
 </objective>
 

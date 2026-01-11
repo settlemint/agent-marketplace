@@ -121,7 +121,7 @@ if [[ "$ratio" -gt "$MAX_COMMENT_RATIO" ]]; then
 
     if ! $is_valid && echo "$line" | grep -qE '^[[:space:]]*(#|//)'; then
       flagged_count=$((flagged_count + 1))
-      if [[ "$flagged_count" -le 5 ]]; then
+      if [[ "$flagged_count" -le 3 ]]; then
         # Truncate long lines
         short_line=$(echo "$line" | head -c 60)
         [[ ${#line} -gt 60 ]] && short_line="${short_line}..."
@@ -135,18 +135,10 @@ if [[ "$ratio" -gt "$MAX_COMMENT_RATIO" ]]; then
     warning=$(
       cat <<EOF
 
----
-**Comment Check Warning**: ${ratio}% of lines are comments (${comment_lines}/${total_lines})
-
-Flagged comments that may be unnecessary:
-$(echo -e "$flagged_examples")
-$([[ "$flagged_count" -gt 5 ]] && echo "  ... and $((flagged_count - 5)) more")
-
-**Recommendation**: Code should be self-documenting. Consider:
-- Using descriptive variable/function names instead of comments
-- Removing obvious comments that repeat what code does
-- Keeping only comments that explain *why*, not *what*
----
+Comment check: ${ratio}% of lines are comments (${comment_lines}/${total_lines})
+Flagged (sample):
+$(echo -e "$flagged_examples")$([[ "$flagged_count" -gt 3 ]] && echo "  ... and $((flagged_count - 3)) more")
+Tip: prefer self-documenting code; keep only "why" comments.
 EOF
     )
 
