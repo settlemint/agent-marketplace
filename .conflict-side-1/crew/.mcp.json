@@ -1,0 +1,38 @@
+{
+  "mcpServers": {
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "codex": {
+      "type": "stdio",
+      "command": "codex",
+      "args": [
+        "-m",
+        "gpt-5.2-codex",
+        "-c",
+        "model_reasoning_effort=xhigh",
+        "mcp-server"
+      ]
+    },
+    "octocode": {
+      "type": "stdio",
+      "command": "bunx",
+      "args": ["-y", "octocode-mcp@latest"]
+    },
+    "restate-docs": {
+      "type": "http",
+      "url": "https://docs.restate.dev/mcp"
+    },
+    "phantom": {
+      "type": "stdio",
+      "command": "phantom",
+      "args": ["mcp", "serve"]
+    },
+    "gitbutler": {
+      "type": "stdio",
+      "command": "but",
+      "args": ["mcp"]
+    }
+  }
+}

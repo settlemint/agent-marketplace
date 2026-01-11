@@ -1,0 +1,34 @@
+{
+  "env": {
+    "ENABLE_BACKGROUND_TASKS": "1",
+    "FORCE_AUTO_BACKGROUND_TASKS": "1",
+    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
+    "DISABLE_COST_WARNINGS": "1",
+    "ENABLE_LSP_TOOLS": "1",
+    "ENABLE_TOOL_SEARCH": "1",
+    "ENABLE_EXPERIMENTAL_MCP_CLI": "0",
+    "FORCE_AUTOUPDATE_PLUGINS": "1"
+  },
+  "extraKnownMarketplaces": {
+    "every-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "EveryInc/compound-engineering-plugin"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "compound-engineering@every-marketplace": true
+  },
+  "enableAllProjectMcpServers": true,
+  "includeCoAuthoredBy": false,
+  "spinnerTipsEnabled": false,
+  "permissions": {
+    "defaultMode": "bypassPermissions"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "npx -y @owloops/claude-powerline@latest --style=powerline --theme=tokyo-night",
+    "padding": 0
+  }
+}

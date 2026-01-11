@@ -1,0 +1,3 @@
+ancestorEntries = ["crew/.claude-plugin/plugin.json"]
+ourEntries = ["crew/.claude-plugin/plugin.json"]
+theirEntries = ["crew/.claude-plugin/plugin.json"]

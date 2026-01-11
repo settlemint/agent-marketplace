@@ -1,0 +1,11 @@
+{
+  "name": "crew",
+  "description": "Unified orchestration for work execution, skill creation, git conventions, and system management. Provides /crew:plan, /crew:work commands with parallel agent execution.",
+  "version": "1.92.0",
+  "author": {
+    "name": "Roderik van der Veer",
+    "email": "roderik@settlemint.com"
+  },
+  "repository": "https://github.com/settlemint/agent-marketplace",
+  "license": "MIT"
+}
