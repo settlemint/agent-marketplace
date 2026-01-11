@@ -1,6 +1,7 @@
 ---
 name: crew:git:push
 description: Push current branch to origin
+argument-hint: "[branch name]"
 allowed-tools:
   - Bash
   - Skill
@@ -31,7 +32,8 @@ GitButler is active. Redirecting to butler push workflow.
 Delegate to `crew:git:butler:push` and exit:
 
 ```javascript
-Skill({ skill: "crew:git:butler:push" });
+// Pass through branch argument if provided
+Skill({ skill: "crew:git:butler:push", args: args });
 ```
 
 </gitbutler_redirect>

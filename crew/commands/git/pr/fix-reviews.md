@@ -140,8 +140,8 @@ Task({
 **Extract PR branch name from `<pr_info>`:**
 
 ```javascript
-// PR branch is the head branch of the PR
-const prBranch = prInfo.headRefName; // e.g., "feature/add-auth"
+// PR branch is the head branch of the PR (from HEAD_BRANCH in pr_info context)
+const prBranch = HEAD_BRANCH; // e.g., "feature/add-auth"
 ```
 
 **If GitButler active (from `<butler_context>`):**

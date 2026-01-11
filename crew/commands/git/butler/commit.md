@@ -1,7 +1,7 @@
 ---
 name: crew:git:butler:commit
 description: Commit changes using GitButler MCP (preferred) or CLI
-argument-hint: "[commit message]"
+argument-hint: "[--branch <name>] [commit message]"
 allowed-tools:
   - Bash
   - AskUserQuestion
@@ -43,7 +43,37 @@ if (GITBUTLER_ACTIVE === false) {
 }
 ```
 
-## Step 2: Verify Active Branch
+## Step 2: Parse Arguments
+
+```javascript
+// Parse optional --branch argument
+const branchMatch = args?.match(/--branch\s+(\S+)/);
+const targetBranch = branchMatch ? branchMatch[1] : null;
+const commitMessage = args?.replace(/--branch\s+\S+/, "").trim() || null;
+```
+
+## Step 3: Ensure Target Branch is Active (if specified)
+
+If a target branch is specified, verify it exists and is active:
+
+```javascript
+if (targetBranch) {
+  // Check if branch exists
+  const branchList = Bash({ command: "but branch list" });
+
+  if (!branchList.includes(targetBranch)) {
+    // Create the branch if it doesn't exist
+    Bash({ command: `but branch new "${targetBranch}"` });
+  }
+
+  // Verify the target branch is active (marked with *)
+  const status = Bash({ command: "but status" });
+  // If target branch is not active, the MCP tool will commit to wrong branch
+  // Warn user and suggest creating/activating the branch
+}
+```
+
+## Step 4: Verify Active Branch
 
 Check which branch will receive the commit:
 
