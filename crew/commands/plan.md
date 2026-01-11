@@ -34,7 +34,8 @@ Create feature branch. Enter Plan mode. Research with parallel agents. Write dra
 
 ```javascript
 const slug = slugify(feature); // kebab-case, max 30 chars
-Skill({ skill: "crew:git:branch:new", args: `${slug} --type feat` });
+// Uses router command that auto-detects GitButler and delegates appropriately
+Skill({ skill: "crew:git:branch:create", args: slug });
 ```
 
 ## Step 1: Enter Plan Mode
