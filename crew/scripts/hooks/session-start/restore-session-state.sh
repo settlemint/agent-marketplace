@@ -36,6 +36,13 @@ SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-')
 BRANCH_DIR="$PROJECT_DIR/.claude/branches/$SAFE_BRANCH"
 STATE_FILE="$BRANCH_DIR/state.json"
 
+# Restore ralph-loop state from branch folder if it exists
+RALPH_LOOP_BRANCH="$BRANCH_DIR/ralph-loop.local.md"
+RALPH_LOOP_ROOT="$PROJECT_DIR/.claude/ralph-loop.local.md"
+if [[ -f $RALPH_LOOP_BRANCH ]]; then
+	cp "$RALPH_LOOP_BRANCH" "$RALPH_LOOP_ROOT"
+fi
+
 # On fresh startup, skip - user should run /crew:restart manually
 # Hook output on startup is not actionable by Claude
 if [[ $EVENT_TYPE == "startup" ]]; then
