@@ -66,10 +66,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/cleanup-claudemd.sh"
-          },
-          {
-            "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-tool/lint-modified-file.sh"
           },
           {

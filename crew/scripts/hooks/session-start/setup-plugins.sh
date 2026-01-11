@@ -158,6 +158,73 @@ force_update_plugin() {
   fi
 }
 
+# Allowed marketplaces and plugins (anything else will be removed)
+ALLOWED_MARKETPLACES=(
+  "claude-plugins-official"
+  "settlemint"
+  "n-skills"
+)
+
+ALLOWED_PLUGINS=(
+  "ralph-loop@claude-plugins-official"
+  "frontend-design@claude-plugins-official"
+  "typescript-lsp@claude-plugins-official"
+  "code-simplifier@claude-plugins-official"
+  "crew@settlemint"
+  "devtools@settlemint"
+  "n-skills@n-skills"
+)
+
+# Function to check if item is in array
+in_array() {
+  local needle="$1"
+  shift
+  for item in "$@"; do
+    [[ "$item" == "$needle" ]] && return 0
+  done
+  return 1
+}
+
+# Function to clean up unwanted marketplaces
+cleanup_marketplaces() {
+  local known_file="$HOME/.claude/plugins/known_marketplaces.json"
+  [[ -f "$known_file" ]] || return 0
+
+  local marketplaces
+  marketplaces=$(jq -r 'keys[]' "$known_file" 2>/dev/null) || return 0
+
+  for marketplace in $marketplaces; do
+    if ! in_array "$marketplace" "${ALLOWED_MARKETPLACES[@]}"; then
+      info "Removing unauthorized marketplace: $marketplace"
+      claude plugin marketplace remove "$marketplace" &>/dev/null || true
+      success "Removed $marketplace"
+    fi
+  done
+}
+
+# Function to clean up unwanted plugins
+cleanup_plugins() {
+  local installed_file="$HOME/.claude/plugins/installed_plugins.json"
+  [[ -f "$installed_file" ]] || return 0
+
+  local plugins
+  plugins=$(jq -r '.plugins | keys[]' "$installed_file" 2>/dev/null) || return 0
+
+  for plugin in $plugins; do
+    if ! in_array "$plugin" "${ALLOWED_PLUGINS[@]}"; then
+      info "Removing unauthorized plugin: $plugin"
+      claude plugin uninstall "$plugin" &>/dev/null || true
+      success "Removed $plugin"
+    fi
+  done
+}
+
+echo "Step 0: Cleanup"
+echo "---------------"
+cleanup_plugins
+cleanup_marketplaces
+echo ""
+
 echo "Step 1: Adding Marketplaces"
 echo "----------------------------"
 # Claude Official marketplace is often preinstalled - silently skip errors
@@ -167,7 +234,6 @@ else
   success "Claude Official marketplace added"
 fi
 add_marketplace "settlemint/agent-marketplace" "SettleMint"
-add_marketplace "thedotmack/claude-mem" "Claude Mem"
 add_marketplace "numman-ali/n-skills" "N-Skills"
 echo ""
 
@@ -175,7 +241,6 @@ echo "Step 2: Updating Marketplaces"
 echo "-----------------------------"
 update_marketplace "claude-plugins-official"
 update_marketplace "settlemint"
-update_marketplace "thedotmack"
 update_marketplace "n-skills"
 echo ""
 
@@ -196,7 +261,6 @@ force_update_plugin "devtools@settlemint" "devtools (development skills)"
 echo ""
 
 echo "Additional plugins:"
-force_update_plugin "claude-mem@thedotmack" "claude-mem (memory)"
 force_update_plugin "n-skills@n-skills" "n-skills (orchestration)"
 echo ""
 
@@ -212,7 +276,6 @@ if [[ ${#ERRORS[@]} -eq 0 ]]; then
   echo "  • code-simplifier@claude-plugins-official - Code refinement agent"
   echo "  • crew@settlemint - Work orchestration (/design, /build, /check)"
   echo "  • devtools@settlemint - Development skills (React, API, etc.)"
-  echo "  • claude-mem - Memory persistence"
   echo "  • n-skills - Multi-agent orchestration patterns"
   echo ""
   echo "Get started:"
