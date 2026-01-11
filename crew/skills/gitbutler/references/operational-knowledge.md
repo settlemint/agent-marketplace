@@ -4,6 +4,28 @@ Critical operational knowledge and gotchas for working with GitButler. Read this
 
 </objective>
 
+<lessons_learned>
+
+**HARD-LEARNED LESSONS FROM REAL MISTAKES**
+
+These mistakes were made in actual sessions. Don't repeat them.
+
+1. **NEVER commit to a branch with merged PRs** - Check `gh pr list --head <branch> --state merged` before ANY commit. If merged PRs exist, create a new branch.
+
+2. **NEVER use direct `git commit` with GitButler** - GitButler tracks its own state. Direct git commits break this. Always use `but commit` or the MCP tool.
+
+3. **ALWAYS sync BEFORE making changes** - Run `Bash({ command: "but base update" })` FIRST. If it fails due to uncommitted changes, you're already in trouble.
+
+4. **ALWAYS verify branch is active after creating** - `but branch new` may not activate the branch. Check `but branch list` and look for `*` marker. If not active, run `but branch apply <name>`.
+
+5. **HunkLocks are permanent** - If GitButler shows `🔒` on a file, changes to those lines are bound to existing commits. You can't move them to a new branch.
+
+6. **`but commit` shows "unknown" when it fails silently** - If commit shows `Created commit unknown`, check `but branch show <name>` to verify. 0 commits ahead = commit failed.
+
+7. **Don't mix concerns on branches** - Create new branches for new work. Don't add unrelated commits to existing branches.
+
+</lessons_learned>
+
 <critical_gotchas>
 
 **MCP Commits Go To The Active Branch**
