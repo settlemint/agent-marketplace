@@ -1,7 +1,7 @@
 ---
 name: crew:git:butler:commit
-description: Commit changes using GitButler MCP or CLI with conventional format
-argument-hint: "[commit message]"
+description: Commit changes using GitButler MCP (preferred) or CLI
+argument-hint: "[--branch <name>] [commit message]"
 allowed-tools:
   - Bash
   - AskUserQuestion
@@ -14,9 +14,23 @@ allowed-tools:
 
 <objective>
 
-Commit changes using GitButler. Prefer MCP tool for AI-driven workflows, CLI for manual commits.
+Commit changes using GitButler. **ALWAYS prefer the MCP tool** - it handles file assignment automatically and avoids ephemeral ID issues with `but rub`.
 
 </objective>
+
+<critical_warning>
+
+**ALWAYS USE MCP TOOL FOR COMMITS**
+
+The MCP tool (`mcp__gitbutler__gitbutler_update_branches`) is the preferred method because:
+
+1. It handles file assignment automatically
+2. It avoids ephemeral ID issues with `but rub`
+3. It generates semantic commit messages
+
+**NEVER use loops with `but rub`** - the short IDs (g0, m1, etc.) change after every operation, causing subsequent commands to fail.
+
+</critical_warning>
 
 <workflow>
 
@@ -29,42 +43,53 @@ if (GITBUTLER_ACTIVE === false) {
 }
 ```
 
-## Step 2: Verify Active Branch
-
-**CRITICAL:** MCP commits go to the currently ACTIVE branch (marked with `*`).
+## Step 2: Parse Arguments
 
 ```javascript
-const result = Bash({ command: "but branch list" });
-// Parse output to find the active branch (marked with *)
-const activeBranch = parseActiveBranch(result);
+// Parse optional --branch argument
+const branchMatch = args?.match(/--branch\s+(\S+)/);
+const targetBranch = branchMatch ? branchMatch[1] : null;
+const commitMessage = args?.replace(/--branch\s+\S+/, "").trim() || null;
 ```
 
-If the active branch is wrong for this commit:
+## Step 3: Ensure Target Branch is Active (if specified)
+
+If a target branch is specified, verify it exists and is active:
 
 ```javascript
-AskUserQuestion({
-  questions: [
-    {
-      question: `Commits will go to "${activeBranch}". Is this correct?`,
-      header: "Target Branch",
-      options: [
-        { label: "Yes, commit here", description: "Proceed with commit" },
-        {
-          label: "No, create new branch",
-          description: "Create a new branch first",
-        },
-      ],
-      multiSelect: false,
-    },
-  ],
-});
+if (targetBranch) {
+  // Check if branch exists
+  const branchList = Bash({ command: "but branch list" });
+
+  if (!branchList.includes(targetBranch)) {
+    // Create the branch if it doesn't exist
+    Bash({ command: `but branch new "${targetBranch}"` });
+  }
+
+  // Verify the target branch is active (marked with *)
+  const status = Bash({ command: "but status" });
+
+  // Check if target branch has the * marker (active)
+  // Pattern: look for line containing targetBranch with * prefix
+  const isActive =
+    status.includes(`*${targetBranch}`) || status.includes(`* ${targetBranch}`);
+
+  if (!isActive) {
+    // Activate the target branch so commits go to it
+    Bash({ command: `but branch apply "${targetBranch}"` });
+  }
+}
 ```
 
-If user chooses new branch:
+## Step 4: Verify Active Branch
+
+Check which branch will receive the commit:
 
 ```javascript
-Bash({ command: `but branch new "${featureName}"` });
-// New branch is now active
+Bash({ command: "but status" });
+// Look for branch marked with * - that's where commits go
+// If wrong branch, create a new one:
+// Bash({ command: "but branch new feat/correct-branch" });
 ```
 
 ## Step 3: Check for Sensitive Files
@@ -77,9 +102,9 @@ Bash({
 // If matches found, warn: "⚠️ Sensitive files detected - review before committing"
 ```
 
-## Step 4: Commit Using MCP (Preferred for AI workflows)
+## Step 4: Commit Using MCP (PREFERRED)
 
-Use the GitButler MCP tool to auto-commit changes with context:
+**This is the recommended approach:**
 
 ```javascript
 mcp__gitbutler__gitbutler_update_branches({
@@ -91,16 +116,16 @@ mcp__gitbutler__gitbutler_update_branches({
 
 The MCP tool will:
 
-- Auto-assign changes to appropriate virtual branches
+- Assign changes to the active branch automatically
 - Generate semantic commit messages
-- Handle the commit workflow automatically
+- Handle the entire commit workflow
 
-## Step 5: Alternative - CLI Commit (Manual)
+## Step 5: Alternative - CLI Commit
 
-If MCP not available or for manual control:
+Only if MCP is not available:
 
 ```javascript
-Bash({ command: 'but commit -m "type(scope): description"' });
+Bash({ command: `but commit -m "type(scope): description"` });
 ```
 
 Or let GitButler AI-generate the message:
@@ -112,10 +137,31 @@ Bash({ command: "but commit" });
 ## Step 6: Confirm
 
 ```javascript
-Bash({ command: "but branch list" });
+Bash({ command: "but status" });
 ```
 
 </workflow>
+
+<manual_assignment_warning>
+
+**If you must manually assign files (NOT RECOMMENDED):**
+
+The short IDs in `but status` are **ephemeral** - they change after EVERY operation.
+
+```bash
+# WRONG - Will fail after first rub
+but rub g0 branch && but rub m0 branch
+
+# CORRECT - One at a time with status refresh
+but status           # Get IDs
+but rub g0 branch    # Assign one
+but status           # Get NEW IDs (they changed!)
+but rub h0 branch    # Use new ID
+```
+
+**Just use the MCP tool instead - it's much simpler.**
+
+</manual_assignment_warning>
 
 <commit_format>
 
@@ -139,7 +185,7 @@ type(scope): description
 
 - [ ] Active branch verified before commit
 - [ ] No sensitive files committed
-- [ ] Conventional format used
+- [ ] MCP tool used (preferred) or CLI as fallback
 - [ ] Commit created successfully
 
 </success_criteria>

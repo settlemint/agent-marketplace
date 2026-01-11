@@ -17,6 +17,40 @@ Manually assign files to a virtual branch using the `rub` command.
 
 </objective>
 
+<critical_warning>
+
+**EPHEMERAL IDs - READ THIS FIRST**
+
+The short IDs shown in `but status` (like `g0`, `m1`, `at`) are **ephemeral** and change after EVERY operation.
+
+**NEVER chain multiple `but rub` commands** like:
+
+```bash
+# WRONG - IDs change after first rub, subsequent commands fail
+but rub g0 branch && but rub m0 branch && but rub r0 branch
+```
+
+**Instead, run ONE rub at a time:**
+
+```bash
+but status           # Get current IDs
+but rub g0 branch    # Assign one file
+but status           # IDs changed! Get new IDs
+but rub h0 branch    # Use NEW ID for next file
+```
+
+**BETTER: Use MCP tool for commits** - it handles assignment automatically:
+
+```javascript
+mcp__gitbutler__gitbutler_update_branches({
+  fullPrompt: "...",
+  changesSummary: "...",
+  currentWorkingDirectory: "...",
+});
+```
+
+</critical_warning>
+
 <workflow>
 
 ## Step 1: Check GitButler Active

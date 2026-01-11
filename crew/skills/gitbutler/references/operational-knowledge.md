@@ -10,21 +10,69 @@ Critical operational knowledge and gotchas for working with GitButler. Read this
 
 These mistakes were made in actual sessions. Don't repeat them.
 
-1. **NEVER commit to a branch with merged PRs** - Check `gh pr list --head <branch> --state merged` before ANY commit. If merged PRs exist, create a new branch.
+1. **NEVER chain `but rub` commands** - The short IDs (g0, m1, at) are EPHEMERAL and change after every operation. `but rub g0 x && but rub m0 x` FAILS because IDs change after first rub. Run ONE rub at a time with `but status` between each.
 
-2. **NEVER use direct `git commit` with GitButler** - GitButler tracks its own state. Direct git commits break this. Always use `but commit` or the MCP tool.
+2. **ALWAYS use MCP tool for commits** - The MCP tool (`mcp__gitbutler__gitbutler_update_branches`) handles file assignment automatically. It's much simpler than manual `but rub` commands.
 
-3. **ALWAYS sync BEFORE making changes** - Run `Bash({ command: "but base update" })` FIRST. If it fails due to uncommitted changes, you're already in trouble.
+3. **NEVER commit to a branch with merged PRs** - Check `gh pr list --head <branch> --state merged` before ANY commit. If merged PRs exist, create a new branch.
 
-4. **ALWAYS verify branch is active after creating** - `but branch new` may not activate the branch. Check `but branch list` and look for `*` marker. If not active, run `but branch apply <name>`.
+4. **NEVER use direct `git commit` with GitButler** - GitButler tracks its own state. Direct git commits break this. Always use `but commit` or the MCP tool.
 
-5. **HunkLocks are permanent** - If GitButler shows `🔒` on a file, changes to those lines are bound to existing commits. You can't move them to a new branch.
+5. **ALWAYS sync BEFORE making changes** - Run `Bash({ command: "but base update" })` FIRST. If it fails due to uncommitted changes, you're already in trouble.
 
-6. **`but commit` shows "unknown" when it fails silently** - If commit shows `Created commit unknown`, check `but branch show <name>` to verify. 0 commits ahead = commit failed.
+6. **ALWAYS verify branch is active after creating** - `but branch new` may not activate the branch. Check `but branch list` and look for `*` marker. If not active, run `but branch apply <name>`.
 
-7. **Don't mix concerns on branches** - Create new branches for new work. Don't add unrelated commits to existing branches.
+7. **HunkLocks are permanent** - If GitButler shows `🔒` on a file, changes to those lines are bound to existing commits. You can't move them to a new branch.
+
+8. **`but commit` shows "unknown" when it fails silently** - If commit shows `Created commit unknown`, check `but branch show <name>` to verify. 0 commits ahead = commit failed.
+
+9. **Don't mix concerns on branches** - Create new branches for new work. Don't add unrelated commits to existing branches.
 
 </lessons_learned>
+
+<ephemeral_ids>
+
+**CRITICAL: `but status` IDs are Ephemeral**
+
+The short IDs shown in `but status` output (like `g0`, `m1`, `at`) change after EVERY operation.
+
+```
+╭┄00 [Unassigned Changes]
+┊   g0 M file1.ts        ← These IDs
+┊   m0 M file2.ts        ← Change after
+┊   r0 M file3.ts        ← EVERY operation
+```
+
+**WRONG - Will fail:**
+
+```bash
+# IDs change after first rub, second command fails
+but rub g0 branch && but rub m0 branch && but rub r0 branch
+```
+
+**CORRECT - One at a time:**
+
+```bash
+but status           # g0=file1, m0=file2, r0=file3
+but rub g0 branch    # Assign file1
+but status           # NOW: h0=file2, i0=file3 (IDs CHANGED!)
+but rub h0 branch    # Assign file2 (use NEW ID)
+but status           # NOW: j0=file3 (ID CHANGED AGAIN!)
+but rub j0 branch    # Assign file3
+```
+
+**BEST - Use MCP tool instead:**
+
+```javascript
+// Handles assignment automatically - no ID issues
+mcp__gitbutler__gitbutler_update_branches({
+  fullPrompt: "...",
+  changesSummary: "...",
+  currentWorkingDirectory: "...",
+});
+```
+
+</ephemeral_ids>
 
 <critical_gotchas>
 

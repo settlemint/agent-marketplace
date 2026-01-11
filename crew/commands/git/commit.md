@@ -1,6 +1,7 @@
 ---
 name: crew:git:commit
 description: Create a conventional commit
+argument-hint: "[--branch <name>] [commit message]"
 allowed-tools:
   - Bash
   - Skill
@@ -24,10 +25,11 @@ If `GITBUTLER_ACTIVE=true` from `<butler_context>`:
 GitButler is active. Redirecting to butler commit workflow.
 ```
 
-Delegate to `crew:git:butler:commit` and exit:
+Delegate to `crew:git:butler:commit` with any branch argument:
 
 ```javascript
-Skill({ skill: "crew:git:butler:commit" });
+// Pass through --branch argument if provided
+Skill({ skill: "crew:git:butler:commit", args: args });
 ```
 
 </gitbutler_redirect>
