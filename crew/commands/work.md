@@ -181,7 +181,22 @@ Follow it EXACTLY. No implementation without failing test first. No exceptions.
 });
 ```
 
-## Step 5: Git Action (After Loop Completes)
+## Step 5: Final Quality Review (MANDATORY)
+
+**After Ralph Loop completes, ALWAYS run the quality review to ensure all findings are captured.**
+
+```javascript
+// Run the seven-leg quality review
+Skill({ skill: "crew:work:review", args: slug });
+```
+
+This step is mandatory because:
+
+1. Ralph Loop may have introduced new issues in final iterations
+2. Ensures consistent review summary format for the user
+3. Catches any issues the loop missed
+
+## Step 6: Git Action (After Review Completes)
 
 ```javascript
 AskUserQuestion({
@@ -299,6 +314,7 @@ Read({ file_path: "/tmp/feature-after-submit.png" });
 - [ ] Browser testing for UI stories
 - [ ] Feature video recorded for UI/frontend work
 - [ ] `<promise>WORK COMPLETE</promise>` output when genuinely done
+- [ ] **Final quality review run after Ralph Loop** (Step 5)
 - [ ] Git action question asked (PR/commit/push/stop)
 
 </success_criteria>
