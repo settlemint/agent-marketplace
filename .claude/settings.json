@@ -9,6 +9,19 @@
     "ENABLE_EXPERIMENTAL_MCP_CLI": "0",
     "FORCE_AUTOUPDATE_PLUGINS": "1"
   },
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "defaultMode": "bypassPermissions"
+  },
+  "enableAllProjectMcpServers": true,
+  "statusLine": {
+    "type": "command",
+    "command": "npx -y @owloops/claude-powerline@latest --style=powerline --theme=tokyo-night",
+    "padding": 0
+  },
+  "enabledPlugins": {
+    "compound-engineering@every-marketplace": true
+  },
   "extraKnownMarketplaces": {
     "every-marketplace": {
       "source": {
@@ -17,18 +30,5 @@
       }
     }
   },
-  "enabledPlugins": {
-    "compound-engineering@every-marketplace": true
-  },
-  "enableAllProjectMcpServers": true,
-  "includeCoAuthoredBy": false,
-  "spinnerTipsEnabled": false,
-  "permissions": {
-    "defaultMode": "bypassPermissions"
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "npx -y @owloops/claude-powerline@latest --style=powerline --theme=tokyo-night",
-    "padding": 0
-  }
+  "spinnerTipsEnabled": false
 }

@@ -15,7 +15,7 @@ depends_on: []
 
 ## Context Engineering Principles
 
-Based on patterns from Manus and claude-mem progressive disclosure. These principles help agents maintain focus across 50+ tool calls without losing track of goals.
+Based on patterns from Manus progressive disclosure. These principles help agents maintain focus across 50+ tool calls without losing track of goals.
 
 **Core Insight:** Context windows have limits. Use the filesystem as unlimited external memory with strategic attention refreshing and progressive disclosure.
 
@@ -28,16 +28,19 @@ Based on patterns from Manus and claude-mem progressive disclosure. These princi
 ## Three-Layer Information Architecture
 
 ### Layer 1: Index (Lightweight Metadata)
+
 - Compact list with titles, types, token counts
 - Cost: ~50 tokens per entry
 - Purpose: Rapid scanning without full context commitment
 
 ### Layer 2: Timeline (Contextual Narrative)
+
 - Chronological view with before/after context
 - Cost: ~100-200 tokens per observation
 - Purpose: Understand sequence and causality
 
 ### Layer 3: Full Details (Complete Records)
+
 - Fetch complete content only when justified
 - Cost: ~500+ tokens per item
 - Purpose: Deep dive on validated high-value items
@@ -52,16 +55,16 @@ Based on patterns from Manus and claude-mem progressive disclosure. These princi
 
 Use categorical icons for visual scanning efficiency:
 
-| Icon | Type       | When to Use                              |
-| ---- | ---------- | ---------------------------------------- |
-| 🔴   | Gotcha     | Critical edge case that breaks assumptions |
-| 🟡   | Problem    | Fix/workaround for known issue           |
-| 🔵   | How-to     | Technical explanation or implementation  |
-| 🟢   | Change     | Code/architecture modification (default) |
-| 🟣   | Discovery  | Non-obvious insight learned              |
-| 🟠   | Rationale  | Design reasoning (why it exists)         |
-| 🟤   | Decision   | Architectural choice made                |
-| ⚖️   | Trade-off  | Deliberate compromise accepted           |
+| Icon | Type      | When to Use                                |
+| ---- | --------- | ------------------------------------------ |
+| 🔴   | Gotcha    | Critical edge case that breaks assumptions |
+| 🟡   | Problem   | Fix/workaround for known issue             |
+| 🔵   | How-to    | Technical explanation or implementation    |
+| 🟢   | Change    | Code/architecture modification (default)   |
+| 🟣   | Discovery | Non-obvious insight learned                |
+| 🟠   | Rationale | Design reasoning (why it exists)           |
+| 🟤   | Decision  | Architectural choice made                  |
+| ⚖️   | Trade-off | Deliberate compromise accepted             |
 
 **Semantic compression in titles (~10 words max):**
 
@@ -69,6 +72,7 @@ Poor: `Observation about a thing`
 Good: `🔴 Hook timeout: 60s default too short for npm install`
 
 **Benefits:**
+
 - Visual pattern recognition across sessions
 - Token-efficient categorization
 - Priority signaling without reading content
@@ -83,14 +87,15 @@ Good: `🔴 Hook timeout: 60s default too short for npm install`
 Every index entry should display approximate token counts:
 
 ```markdown
-| File | Priority | Type | Title | ~Tokens |
-|------|----------|------|-------|---------|
-| 001-*.md | 🔴 P1 | 🟢 | Create structure | ~150 |
-| 010-*.md | 🔴 P1 | 🔴 | Fix null pointer | ~85 |
-| 050-*.md | 🟡 P2 | 🟣 | Discovered API quirk | ~280 |
+| File      | Priority | Type | Title                | ~Tokens |
+| --------- | -------- | ---- | -------------------- | ------- |
+| 001-\*.md | 🔴 P1    | 🟢   | Create structure     | ~150    |
+| 010-\*.md | 🔴 P1    | 🔴   | Fix null pointer     | ~85     |
+| 050-\*.md | 🟡 P2    | 🟣   | Discovered API quirk | ~280    |
 ```
 
 **ROI Decision Making:**
+
 - "Cheap" observations: ~50-100 tokens
 - "Medium" observations: ~150-300 tokens
 - "Expensive" observations: ~500+ tokens
@@ -125,11 +130,11 @@ Write({
 
 **Key Files Pattern:**
 
-| File | Purpose | When to Update |
-| --- | --- | --- |
-| `plan.md` | Goals, phases, progress | After each phase |
-| `notes.md` | Research findings, context | During exploration |
-| `errors.md` | Failed attempts, lessons | On every failure |
+| File        | Purpose                    | When to Update     |
+| ----------- | -------------------------- | ------------------ |
+| `plan.md`   | Goals, phases, progress    | After each phase   |
+| `notes.md`  | Research findings, context | During exploration |
+| `errors.md` | Failed attempts, lessons   | On every failure   |
 
 </principle_1>
 
@@ -338,12 +343,12 @@ Read({ file_path: `.claude/branches/${branch}/plan.md` });
 
 ## Manus Statistics
 
-| Metric | Value |
-| --- | --- |
-| Average tool calls per task | ~50 |
-| Input-to-output token ratio | 100:1 |
-| Plan refresh frequency | Every 10-15 tool calls |
-| Error documentation rate | 100% of failures |
+| Metric                      | Value                  |
+| --------------------------- | ---------------------- |
+| Average tool calls per task | ~50                    |
+| Input-to-output token ratio | 100:1                  |
+| Plan refresh frequency      | Every 10-15 tool calls |
+| Error documentation rate    | 100% of failures       |
 
 </statistics>
 
@@ -351,13 +356,13 @@ Read({ file_path: `.claude/branches/${branch}/plan.md` });
 
 ## Anti-Patterns to Avoid
 
-| Don't | Do Instead |
-| --- | --- |
-| Stuff everything in context | Store large content in files |
+| Don't                       | Do Instead                        |
+| --------------------------- | --------------------------------- |
+| Stuff everything in context | Store large content in files      |
 | State goals once and forget | Re-read plan before each decision |
-| Hide errors and retry | Log errors to plan file |
-| Use identical prompts | Vary phrasing for similar tasks |
-| Modify previous messages | Append new information |
-| Start executing immediately | Create plan file FIRST |
+| Hide errors and retry       | Log errors to plan file           |
+| Use identical prompts       | Vary phrasing for similar tasks   |
+| Modify previous messages    | Append new information            |
+| Start executing immediately | Create plan file FIRST            |
 
 </anti_patterns>
