@@ -1,7 +1,7 @@
 ---
 name: crew:git:butler:commit
-description: Commit changes using GitButler MCP or CLI with conventional format
-argument-hint: "[--branch <name>] [commit message]"
+description: Commit changes using GitButler MCP (preferred) or CLI
+argument-hint: "[commit message]"
 allowed-tools:
   - Bash
   - AskUserQuestion
@@ -14,9 +14,23 @@ allowed-tools:
 
 <objective>
 
-Commit changes using GitButler. When a target branch is specified, explicitly assign files to that branch before committing. This preserves parallel work while ensuring changes go to the correct branch.
+Commit changes using GitButler. **ALWAYS prefer the MCP tool** - it handles file assignment automatically and avoids ephemeral ID issues with `but rub`.
 
 </objective>
+
+<critical_warning>
+
+**ALWAYS USE MCP TOOL FOR COMMITS**
+
+The MCP tool (`mcp__gitbutler__gitbutler_update_branches`) is the preferred method because:
+
+1. It handles file assignment automatically
+2. It avoids ephemeral ID issues with `but rub`
+3. It generates semantic commit messages
+
+**NEVER use loops with `but rub`** - the short IDs (g0, m1, etc.) change after every operation, causing subsequent commands to fail.
+
+</critical_warning>
 
 <workflow>
 
@@ -29,94 +43,18 @@ if (GITBUTLER_ACTIVE === false) {
 }
 ```
 
-## Step 2: Parse Arguments
+## Step 2: Verify Active Branch
+
+Check which branch will receive the commit:
 
 ```javascript
-// Parse optional --branch argument
-const targetBranch = args.includes("--branch")
-  ? args.split("--branch")[1].trim().split(" ")[0]
-  : null;
-const commitMessage = args.replace(/--branch\s+\S+/, "").trim();
+Bash({ command: "but status" });
+// Look for branch marked with * - that's where commits go
+// If wrong branch, create a new one:
+// Bash({ command: "but branch new feat/correct-branch" });
 ```
 
-## Step 3: Get Modified Files and Branches
-
-```javascript
-// Get list of modified/staged files
-const modifiedFiles = Bash({
-  command: "git status --porcelain | awk '{print $2}'",
-});
-
-// Get available branches
-const branches = Bash({ command: "but branch list" });
-```
-
-## Step 4: Assign Files to Target Branch (if specified)
-
-**When a target branch is specified, assign ALL modified files to that branch:**
-
-```javascript
-if (targetBranch) {
-  // Verify branch exists
-  if (!branches.includes(targetBranch)) {
-    AskUserQuestion({
-      questions: [
-        {
-          question: `Branch "${targetBranch}" not found. Create it?`,
-          header: "Branch",
-          options: [
-            { label: "Create branch", description: `Create ${targetBranch}` },
-            { label: "Choose existing", description: "Pick from list" },
-          ],
-          multiSelect: false,
-        },
-      ],
-    });
-
-    if (createNew) {
-      Bash({ command: `but branch new "${targetBranch}"` });
-    }
-  }
-
-  // Assign each modified file to target branch
-  for (const file of modifiedFiles) {
-    Bash({ command: `but rub "${file}" "${targetBranch}"` });
-  }
-}
-```
-
-## Step 5: Verify Assignment (if no target specified)
-
-If no target branch specified, verify the active branch is correct:
-
-```javascript
-if (!targetBranch) {
-  const activeBranch = parseActiveBranch(branches); // Branch marked with *
-
-  AskUserQuestion({
-    questions: [
-      {
-        question: `Changes will be committed. Active branch is "${activeBranch}". Correct?`,
-        header: "Confirm",
-        options: [
-          { label: "Yes, commit", description: "Proceed with commit" },
-          { label: "Assign to different branch", description: "Choose branch" },
-        ],
-        multiSelect: false,
-      },
-    ],
-  });
-
-  if (chooseDifferent) {
-    // Show branch picker and assign files
-    for (const file of modifiedFiles) {
-      Bash({ command: `but rub "${file}" "${selectedBranch}"` });
-    }
-  }
-}
-```
-
-## Step 6: Check for Sensitive Files
+## Step 3: Check for Sensitive Files
 
 ```javascript
 Bash({
@@ -126,9 +64,9 @@ Bash({
 // If matches found, warn: "⚠️ Sensitive files detected - review before committing"
 ```
 
-## Step 7: Commit Using MCP (Preferred for AI workflows)
+## Step 4: Commit Using MCP (PREFERRED)
 
-Use the GitButler MCP tool to commit:
+**This is the recommended approach:**
 
 ```javascript
 mcp__gitbutler__gitbutler_update_branches({
@@ -140,18 +78,16 @@ mcp__gitbutler__gitbutler_update_branches({
 
 The MCP tool will:
 
-- Commit changes to their assigned branches
+- Assign changes to the active branch automatically
 - Generate semantic commit messages
-- Handle the commit workflow automatically
+- Handle the entire commit workflow
 
-## Step 8: Alternative - CLI Commit (Manual)
+## Step 5: Alternative - CLI Commit
 
-If MCP not available or for manual control:
+Only if MCP is not available:
 
 ```javascript
-Bash({
-  command: `but commit -m "${commitMessage || "type(scope): description"}"`,
-});
+Bash({ command: `but commit -m "type(scope): description"` });
 ```
 
 Or let GitButler AI-generate the message:
@@ -160,13 +96,34 @@ Or let GitButler AI-generate the message:
 Bash({ command: "but commit" });
 ```
 
-## Step 9: Confirm
+## Step 6: Confirm
 
 ```javascript
-Bash({ command: "but branch list" });
+Bash({ command: "but status" });
 ```
 
 </workflow>
+
+<manual_assignment_warning>
+
+**If you must manually assign files (NOT RECOMMENDED):**
+
+The short IDs in `but status` are **ephemeral** - they change after EVERY operation.
+
+```bash
+# WRONG - Will fail after first rub
+but rub g0 branch && but rub m0 branch
+
+# CORRECT - One at a time with status refresh
+but status           # Get IDs
+but rub g0 branch    # Assign one
+but status           # Get NEW IDs (they changed!)
+but rub h0 branch    # Use new ID
+```
+
+**Just use the MCP tool instead - it's much simpler.**
+
+</manual_assignment_warning>
 
 <commit_format>
 
@@ -188,10 +145,9 @@ type(scope): description
 
 <success_criteria>
 
-- [ ] Target branch identified (explicit or confirmed)
-- [ ] Files assigned to correct branch (if target specified)
+- [ ] Active branch verified before commit
 - [ ] No sensitive files committed
-- [ ] Conventional format used
+- [ ] MCP tool used (preferred) or CLI as fallback
 - [ ] Commit created successfully
 
 </success_criteria>
