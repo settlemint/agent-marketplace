@@ -166,7 +166,6 @@ ALLOWED_MARKETPLACES=(
 )
 
 ALLOWED_PLUGINS=(
-  "ralph-loop@claude-plugins-official"
   "frontend-design@claude-plugins-official"
   "typescript-lsp@claude-plugins-official"
   "code-simplifier@claude-plugins-official"
@@ -249,7 +248,6 @@ echo "------------------------"
 echo ""
 
 echo "Official plugins (Anthropic):"
-force_update_plugin "ralph-loop@claude-plugins-official" "ralph-loop (autonomous loops)"
 force_update_plugin "frontend-design@claude-plugins-official" "frontend-design (UI generation)"
 force_update_plugin "typescript-lsp@claude-plugins-official" "typescript-lsp (TS/JS language server)"
 force_update_plugin "code-simplifier@claude-plugins-official" "code-simplifier (code refinement)"
@@ -270,7 +268,6 @@ if [[ ${#ERRORS[@]} -eq 0 ]]; then
   echo -e "${GREEN}Setup complete!${NC}"
   echo ""
   echo "Installed plugins:"
-  echo "  • ralph-loop@claude-plugins-official - Autonomous agent loops"
   echo "  • frontend-design@claude-plugins-official - High-quality UI generation"
   echo "  • typescript-lsp@claude-plugins-official - TypeScript/JavaScript LSP"
   echo "  • code-simplifier@claude-plugins-official - Code refinement agent"

@@ -7,6 +7,15 @@
 
 set -euo pipefail
 
+is_truthy() {
+	case "${1:-}" in
+		1|true|yes|on) return 0 ;;
+		*) return 1 ;;
+	esac
+}
+
+TOKEN_SAVER="${CLAUDE_TOKEN_SAVER:-${CREW_TOKEN_SAVER:-}}"
+
 # Config file for block tracking
 readonly CONFIG_FILE="${HOME}/.claude/hooks/todo-enforcer.config.json"
 readonly DEBUG_LOG="${HOME}/.claude/hooks/todo-enforcer.log"
@@ -26,12 +35,6 @@ die() {
 if ! command -v jq &>/dev/null; then
 	die "jq is required but not installed"
 fi
-
-# Skip if in ralph-loop mode (different completion tracking)
-# Check both root location and branch-specific location
-[[ -f ".claude/ralph-loop.local.md" ]] && exit 0
-BRANCH=$(git branch --show-current 2>/dev/null | tr '/' '-' || echo '')
-[[ -n $BRANCH && -f ".claude/branches/$BRANCH/ralph-loop.local.md" ]] && exit 0
 
 # Load or initialize config
 load_config() {
@@ -144,18 +147,32 @@ save_config "$CONFIG"
 log "Blocking (count: $BLOCK_COUNT): $INCOMPLETE_COUNT incomplete"
 
 # Build the task list for display
-TASK_LIST=$(echo "$TODOS_JSON" | jq -r '
-  ([.[] | select(.status == "in_progress") | "  → [in progress] \(.content)"] +
-   [.[] | select(.status == "pending") | "  ○ [pending] \(.content)"]) |
-  join("\n")
-')
+if is_truthy "$TOKEN_SAVER"; then
+	TASK_LIST=$(echo "$TODOS_JSON" | jq -r '
+    [.[] | select(.status == "in_progress" or .status == "pending") | .content] |
+    .[0:3] | map("  - " + .) | join("\n")
+  ')
+	MORE=$((INCOMPLETE_COUNT - 3))
+	[[ $MORE -lt 0 ]] && MORE=0
+	REASON="You have $INCOMPLETE_COUNT incomplete todo(s):
+$TASK_LIST
+$([[ $MORE -gt 0 ]] && echo \"  ... and $MORE more\")
 
-# Output block decision
-REASON="You have $INCOMPLETE_COUNT incomplete todo(s):
+Complete them or update TodoWrite."
+else
+	TASK_LIST=$(echo "$TODOS_JSON" | jq -r '
+    ([.[] | select(.status == "in_progress") | "  -> [in progress] \(.content)"] +
+     [.[] | select(.status == "pending") | "  - [pending] \(.content)"]) |
+    join("\n")
+  ')
+
+	# Output block decision
+	REASON="You have $INCOMPLETE_COUNT incomplete todo(s):
 $TASK_LIST
 
 Complete these tasks before stopping.
 Mark each task as 'completed' using TodoWrite when done."
+fi
 
 jq -n --arg reason "$REASON" '{"decision": "block", "reason": $reason}'
 

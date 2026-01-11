@@ -97,19 +97,7 @@ if [[ -f $STATE_FILE ]]; then
 		echo ""
 	fi
 
-	# Check for active loop
-	LOOP_ACTIVE=$(jq -r '.loop.active // false' "$STATE_FILE" 2>/dev/null)
-	if [[ $LOOP_ACTIVE == "true" ]]; then
-		FOUND_WORK=true
-		LOOP_ITERATION=$(jq -r '.loop.iteration // 0' "$STATE_FILE" 2>/dev/null)
-		LOOP_MAX=$(jq -r '.loop.maxIterations // 10' "$STATE_FILE" 2>/dev/null)
-		LOOP_PROMISE=$(jq -r '.loop.completionPromise // empty' "$STATE_FILE" 2>/dev/null)
-		echo "### Active Iteration Loop"
-		echo ""
-		echo "Iteration $LOOP_ITERATION of $LOOP_MAX"
-		echo "Promise: $LOOP_PROMISE"
-		echo ""
-	fi
+	# No loop handling (simplified workflow)
 fi
 
 # Check for plan files

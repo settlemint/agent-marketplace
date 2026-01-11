@@ -10,6 +10,7 @@ Unified orchestration for work execution, skill creation, git conventions, and s
 | ------------ | ------------------------------------------------------- |
 | `/crew:plan` | Create validated implementation plan from feature/issue |
 | `/crew:work` | Execute plan with TodoWrite progress tracking           |
+| `/crew:restore` | Show compacted session state details                |
 
 ### Git Operations
 
@@ -102,7 +103,6 @@ Keep your branch up-to-date with main and sync PR state:
 - Plan-driven development with `/crew:plan`
 - Progress tracking with TodoWrite integration
 - Handoffs for context preservation across sessions
-- Iteration loops for autonomous completion
 
 ### Skill Management
 
@@ -123,6 +123,25 @@ Keep your branch up-to-date with main and sync PR state:
 - Git commit validation (requires CI pass)
 - PR creation validation
 - Agent type detection (skip hooks for subagents since Claude Code 2.1.2)
+
+### Token Saver / Quiet Mode
+
+Reduce context usage on heavy days by setting env vars in `.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "CLAUDE_TOKEN_SAVER": "1",
+    "CREW_QUIET": "0",
+    "CREW_TIPS": "0"
+  }
+}
+```
+
+Notes:
+- `CLAUDE_TOKEN_SAVER=1` trims hook output.
+- `CREW_QUIET=1` disables optional banners/tips.
+- `CREW_TIPS=0` disables skill suggestions (`CREW_TIPS=all` shows every time).
 
 ### Auto-Update Behavior
 
@@ -183,7 +202,6 @@ crew/
 
 These plugins work well alongside crew:
 
-- [ralph-loop](https://github.com/anthropics/claude-code-plugins) - Persistent iteration loops with custom prompts
 - [frontend-design](https://github.com/anthropics/claude-code-plugins) - UI/UX design assistance
 - [code-review](https://github.com/anthropics/claude-code-plugins) - Automated code review
 

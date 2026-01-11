@@ -7,6 +7,16 @@
 
 set +e
 
+# Truthy env helper (1/true/yes/on)
+is_truthy() {
+  case "${1:-}" in
+    1|true|yes|on) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+TOKEN_SAVER="${CLAUDE_TOKEN_SAVER:-${CREW_TOKEN_SAVER:-}}"
+
 # Session-level deduplication: only show TDD message once
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 
@@ -17,7 +27,8 @@ if [[ -z $BRANCH ]]; then
 fi
 SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-')
 BRANCH_DIR="$PROJECT_DIR/.claude/branches/$SAFE_BRANCH"
-TDD_MARKER="$BRANCH_DIR/.tdd-shown-$$"
+SESSION_ID="${CLAUDE_SESSION_ID:-$$}"
+TDD_MARKER="$BRANCH_DIR/.tdd-shown-${SESSION_ID}"
 
 # If already shown this session, skip
 if [[ -f $TDD_MARKER ]]; then
@@ -72,15 +83,26 @@ if [[ $IS_TEST_FILE == true ]]; then
 fi
 
 # For implementation files, enforce TDD (condensed output)
-cat <<'EOF'
+if is_truthy "$TOKEN_SAVER"; then
+  cat <<'EOF'
 
 <tdd-enforcement>
-**TDD Required** - Write failing test FIRST, then minimal code to pass.
-RED→GREEN→REFACTOR. Coverage: 80% lines, 75% branches, 90% functions.
+TDD required: write failing test first, then minimal code. RED->GREEN->REFACTOR.
 Load skill: `Skill({ skill: "devtools:tdd-typescript" })`
 </tdd-enforcement>
 
 EOF
+else
+  cat <<'EOF'
+
+<tdd-enforcement>
+TDD required: write failing test first, then minimal code. RED->GREEN->REFACTOR.
+Coverage targets: 80% lines, 75% branches, 90% functions.
+Load skill: `Skill({ skill: "devtools:tdd-typescript" })`
+</tdd-enforcement>
+
+EOF
+fi
 
 # Mark as shown for this session (in branch folder)
 mkdir -p "$BRANCH_DIR" 2>/dev/null

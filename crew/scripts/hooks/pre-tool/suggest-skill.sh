@@ -4,6 +4,22 @@
 
 set +e
 
+is_truthy() {
+	case "${1:-}" in
+		1|true|yes|on) return 0 ;;
+		*) return 1 ;;
+	esac
+}
+
+QUIET="${CLAUDE_QUIET:-${CREW_QUIET:-}}"
+TOKEN_SAVER="${CLAUDE_TOKEN_SAVER:-${CREW_TOKEN_SAVER:-}}"
+TIPS_MODE="${CREW_TIPS:-}"
+
+# Allow opt-out for tips
+if is_truthy "$QUIET" || [[ "$TIPS_MODE" =~ ^(0|off|false)$ ]]; then
+	exit 0
+fi
+
 INPUT=$(cat)
 
 # Single jq call to extract both fields (performance optimization)
@@ -18,20 +34,33 @@ CMD_LINE="${COMMAND%%$'\n'*}"
 # Suggestion messages based on command patterns
 SUGGESTION=""
 
+# Optional dedupe per session (default) to save tokens
+MARKER=""
+if is_truthy "$TOKEN_SAVER" || [[ "$TIPS_MODE" != "all" ]]; then
+	PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
+	BRANCH=$(git -C "$PROJECT_DIR" branch --show-current 2>/dev/null || echo '')
+	[[ -z $BRANCH ]] && BRANCH=$(git -C "$PROJECT_DIR" rev-parse --short HEAD 2>/dev/null || echo 'unknown')
+	SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-')
+	BRANCH_DIR="$PROJECT_DIR/.claude/branches/$SAFE_BRANCH"
+	SESSION_ID="${CLAUDE_SESSION_ID:-$$}"
+	MARKER="$BRANCH_DIR/.tips-shown-${SESSION_ID}"
+	[[ -f $MARKER ]] && exit 0
+fi
+
 # Git commit - suggest git skill
 if [[ $CMD_LINE =~ ^git\ commit ]]; then
-	SUGGESTION="⚠️ **USE SKILL:** Use Skill(skill: \"crew:git:commit\") for guided commits with conventions."
+	SUGGESTION="Tip: use Skill(skill: \"crew:git:commit\") for guided commits."
 fi
 
 # Direct test/lint commands - suggest /crew:work:ci
 if [[ $CMD_LINE =~ (npm|bun|pnpm|yarn)[[:space:]]+(run[[:space:]]+)?(test|lint|format|typecheck)([[:space:]]|$) ]] ||
 	[[ $CMD_LINE =~ ^[[:space:]]*(vitest|jest|biome|eslint|prettier|tsc)[[:space:]] ]]; then
-	SUGGESTION="⚠️ **USE SKILL:** Use Skill(skill: \"crew:work:ci\") to run CI in background (keeps main thread responsive)."
+	SUGGESTION="Tip: use Skill(skill: \"crew:work:ci\") to run CI in background."
 fi
 
 # Git push - remind about CI
 if [[ $CMD_LINE =~ ^git\ push ]]; then
-	SUGGESTION="⚠️ **BEFORE PUSHING:** Use Skill(skill: \"crew:work:ci\") to catch issues early."
+	SUGGESTION="Tip: run Skill(skill: \"crew:work:ci\") before push."
 fi
 
 # Sed/grep patterns that look like code refactoring - suggest ast-grep
@@ -41,11 +70,16 @@ if [[ $CMD_LINE =~ sed[[:space:]]+-i?[[:space:]]*[\'\"]?s/ ]] ||
 	[[ $CMD_LINE =~ grep[[:space:]]+-[lr].*\|.*sed ]] ||
 	[[ $CMD_LINE =~ grep[[:space:]]+-[lr].*\|.*xargs ]] ||
 	[[ $COMMAND =~ import.*from ]] && [[ $CMD_LINE =~ sed ]]; then
-	SUGGESTION="⚠️ **USE SKILL:** Consider Skill(skill: \"crew:ast-grep\") for syntax-aware code refactoring. ast-grep understands code structure, ignores strings/comments, and is safer for mass changes."
+	SUGGESTION="Tip: use Skill(skill: \"crew:ast-grep\") for syntax-aware refactors."
 fi
 
 # Output suggestion if we have one
 if [[ -n $SUGGESTION ]]; then
+	# Mark as shown for this session (token saver)
+	if [[ -n $MARKER ]]; then
+		mkdir -p "$(dirname "$MARKER")" 2>/dev/null
+		touch "$MARKER" 2>/dev/null
+	fi
 	# Use jq to properly escape the suggestion for JSON
 	jq -n --arg msg "$SUGGESTION" '{
     "hookSpecificOutput": {
