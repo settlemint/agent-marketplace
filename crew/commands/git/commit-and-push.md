@@ -2,6 +2,7 @@
 name: crew:git:commit-and-push
 description: Create a conventional commit and push to origin
 argument-hint: "[commit message]"
+model: haiku
 allowed-tools:
   - Skill
 ---

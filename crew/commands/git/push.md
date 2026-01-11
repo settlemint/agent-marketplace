@@ -2,6 +2,7 @@
 name: crew:git:push
 description: Push current branch to origin
 argument-hint: "[branch name]"
+model: haiku
 allowed-tools:
   - Bash
   - Skill

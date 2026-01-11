@@ -1,6 +1,7 @@
 ---
 name: crew:git:undo
 description: Undo last commit (keeps changes staged)
+model: haiku
 allowed-tools:
   - Bash
 ---

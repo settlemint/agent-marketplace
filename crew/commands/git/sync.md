@@ -1,6 +1,7 @@
 ---
 name: crew:git:sync
 description: Sync current branch with main
+model: haiku
 allowed-tools:
   - Bash
   - Skill
