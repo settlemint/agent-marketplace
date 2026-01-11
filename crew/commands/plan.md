@@ -1,6 +1,6 @@
 ---
 name: crew:plan
-description: Create implementation plans using native Plan mode with multi-agent orchestration
+description: Create implementation plans with multi-agent orchestration
 argument-hint: "[feature description]"
 allowed-tools:
   - Read
@@ -12,8 +12,6 @@ allowed-tools:
   - WebFetch
   - WebSearch
   - MCPSearch
-  - EnterPlanMode
-  - ExitPlanMode
   - AskUserQuestion
   - TodoWrite
   - Skill
@@ -24,24 +22,18 @@ skills:
 
 <objective>
 
-Create feature branch. Enter Plan mode. Research with parallel agents. Write draft plan with `open_questions`. Exit plan mode ONLY when complete. Output: `.claude/plans/<slug>.yaml`
+Create feature branch. Research with parallel agents. Write draft plan with `open_questions`. Refine until complete. Output: `.claude/plans/<slug>.yaml`
 
 </objective>
 
 <workflow>
 
-## Step 0: Create Feature Branch
+## Step 1: Create Feature Branch
 
 ```javascript
 const slug = slugify(feature); // kebab-case, max 30 chars
 // Uses router command that auto-detects GitButler and delegates appropriately
 Skill({ skill: "crew:git:branch:create", args: slug });
-```
-
-## Step 1: Enter Plan Mode
-
-```javascript
-EnterPlanMode();
 ```
 
 ## Step 2: Initialize Tracking
@@ -82,16 +74,14 @@ TodoWrite([
 ]);
 ```
 
-## Step 3: Spawn Research Agents (parallel)
+## Step 3: Spawn Research Agents (parallel, background)
 
 ```javascript
-// All 4 research agents in parallel using haiku (fast information gathering)
-// Per n-skills:orchestration - haiku for parallel research, sonnet for implementation
+// All 4 research agents in parallel
 Task({
   subagent_type: "crew:design:codebase-analyst",
   prompt: `Feature: ${feature}. Find: key files, patterns, anti-patterns. List open_questions: ambiguities, unclear integration points.`,
   description: "codebase",
-  model: "haiku",
   run_in_background: true,
 });
 
@@ -99,7 +89,6 @@ Task({
   subagent_type: "crew:design:docs-researcher",
   prompt: `Feature: ${feature}. Find: best practices, examples, gotchas. List open_questions: multiple valid approaches needing decision.`,
   description: "docs",
-  model: "haiku",
   run_in_background: true,
 });
 
@@ -107,7 +96,6 @@ Task({
   subagent_type: "crew:design:architecture-analyst",
   prompt: `Feature: ${feature}. Design: components, interfaces, data flow. List open_questions: trade-offs needing user input.`,
   description: "architecture",
-  model: "haiku",
   run_in_background: true,
 });
 
@@ -115,7 +103,6 @@ Task({
   subagent_type: "crew:design:quality-analyst",
   prompt: `Feature: ${feature}. Analyze: performance, security (STRIDE), UX. List open_questions: unspecified requirements, scale unknowns.`,
   description: "quality",
-  model: "haiku",
   run_in_background: true,
 });
 ```
@@ -149,10 +136,10 @@ Write({ file_path: `.claude/plans/${slug}.yaml`, content: populatedTemplate });
 
 Mark `blocking: true` for questions that must be resolved before implementation.
 
-## Step 6: Review Plan (in plan mode)
+## Step 6: Review Plan
 
 ```javascript
-// Reviews plan, adds open_questions, updates file - still in plan mode
+// Reviews plan, adds open_questions, updates file
 Skill({ skill: "crew:plan:review", args: `.claude/plans/${slug}.yaml` });
 
 // Reload plan to check for open_questions
@@ -160,11 +147,10 @@ const plan = Read({ file_path: `.claude/plans/${slug}.yaml` });
 // TodoWrite: #1-5 ✓, #6 in_progress
 ```
 
-## Step 7: Refine Loop (in plan mode)
+## Step 7: Refine Loop
 
 ```javascript
 // If open questions exist, refine is required (not optional)
-// Stay in plan mode throughout refinement
 while (plan.open_questions?.length > 0) {
   // Resolve current questions
   Skill({ skill: "crew:plan:refine", args: `.claude/plans/${slug}.yaml` });
@@ -178,17 +164,10 @@ while (plan.open_questions?.length > 0) {
 // TodoWrite: #1-6 ✓
 ```
 
-## Step 8: Exit Plan Mode
+## Step 8: Execute Work
 
 ```javascript
-// ONLY exit after all refinement complete - this prompts user for approval
-ExitPlanMode();
-```
-
-## Step 9: Execute Work
-
-```javascript
-// After user approves plan, immediately start work - no additional prompt needed
+// After plan is complete, start work
 Skill({ skill: "crew:work", args: slug });
 ```
 
@@ -212,20 +191,18 @@ Skill({ skill: "crew:work", args: slug });
 
 **Workflow:**
 
-- [ ] Feature branch created (Step 0)
-- [ ] EnterPlanMode at start (Step 1)
+- [ ] Feature branch created (Step 1)
 - [ ] 4 research agents launched parallel (Step 3)
 - [ ] Draft plan written with open_questions (Step 5)
-- [ ] plan-review called IN plan mode (Step 6)
-- [ ] Refine loop runs until no open_questions IN plan mode (Step 7)
-- [ ] ExitPlanMode ONLY after refinement complete (Step 8)
-- [ ] crew:work starts immediately after approval (Step 9)
+- [ ] plan-review called (Step 6)
+- [ ] Refine loop runs until no open_questions (Step 7)
+- [ ] crew:work starts after plan complete (Step 8)
 
 **Output:**
 
 - [ ] Valid YAML at `.claude/plans/<slug>.yaml`
 - [ ] Stories with `id`, `priority`, `status`, `mvp`
 - [ ] Acceptance as `given`/`when`/`then`
-- [ ] open_questions resolved before ExitPlanMode
+- [ ] open_questions resolved before work starts
 
 </success_criteria>

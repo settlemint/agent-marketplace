@@ -137,14 +137,22 @@ Task({
 
 ## Step 8: Commit and Push
 
-**If GitButler active (from `<butler_context>`):**
-
-Use MCP tool or butler commands:
+**Extract PR branch name from `<pr_info>`:**
 
 ```javascript
-// MCP auto-commit handles staging and committing
-// Then push via butler
-Skill({ skill: "crew:git:butler:push" });
+// PR branch is the head branch of the PR
+const prBranch = prInfo.headRefName; // e.g., "feature/add-auth"
+```
+
+**If GitButler active (from `<butler_context>`):**
+
+```javascript
+// Assign all modified files to PR branch and commit
+// The --branch flag ensures files go to correct virtual branch
+Skill({ skill: "crew:git:butler:commit", args: `--branch ${prBranch}` });
+
+// Then push that branch
+Skill({ skill: "crew:git:butler:push", args: prBranch });
 ```
 
 **If traditional:**

@@ -54,8 +54,11 @@ If GitButler active → skip branch creation, use virtual branches.
 **If GitButler active:**
 
 ```javascript
-// Use MCP tool or butler:commit
-Skill({ skill: "crew:git:butler:commit" });
+// Get the target branch name (from args or active virtual branch)
+const targetBranch = args || getActiveVirtualBranch();
+
+// Use butler:commit with explicit branch to ensure correct assignment
+Skill({ skill: "crew:git:butler:commit", args: `--branch ${targetBranch}` });
 ```
 
 **If traditional:**

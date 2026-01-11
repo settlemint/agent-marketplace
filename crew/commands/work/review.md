@@ -62,7 +62,6 @@ Fix: recommended solution
 
 Focus on ${legFocus[leg]}. Be thorough.`,
     description: `${leg}-review`,
-    model: "haiku",
     run_in_background: true,
   });
 }

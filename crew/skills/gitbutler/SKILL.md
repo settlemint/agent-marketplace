@@ -216,6 +216,47 @@ but branch new feat/correct-branch
 
 # Then commit (MCP or CLI)
 
+````
+</pattern>
+
+<pattern name="explicit_branch_assignment">
+```javascript
+// When you know which branch changes should go to (e.g., fixing a PR),
+// use explicit assignment BEFORE committing:
+
+// Get list of modified files
+const files = Bash({ command: "git status --porcelain | awk '{print $2}'" });
+
+// Assign each file to target branch using rub
+for (const file of files.split('\n').filter(f => f)) {
+  Bash({ command: `but rub "${file}" "${targetBranch}"` });
+}
+
+// Now commit - files go to correct branch
+mcp__gitbutler__gitbutler_update_branches({ ... });
+
+// Or use crew:git:butler:commit with --branch flag
+Skill({ skill: "crew:git:butler:commit", args: `--branch ${targetBranch}` });
+````
+
+</pattern>
+
+<pattern name="pr_fix_workflow">
+```javascript
+// When fixing PR comments, ensure changes go to the PR's branch:
+
+// 1. Get PR branch name
+const prBranch = Bash({ command: "gh pr view --json headRefName -q '.headRefName'" });
+
+// 2. Make your fixes
+// ...
+
+// 3. Assign files and commit to PR branch
+Skill({ skill: "crew:git:butler:commit", args: `--branch ${prBranch}` });
+
+// 4. Push the branch
+Skill({ skill: "crew:git:butler:push", args: prBranch });
+
 ```
 </pattern>
 
@@ -232,3 +273,4 @@ but branch new feat/correct-branch
 
 
 </success_criteria>
+```
