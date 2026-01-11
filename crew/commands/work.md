@@ -1,6 +1,6 @@
 ---
 name: crew:work
-description: Execute plans perfectly using Ralph Loop for iterative completion
+description: Execute plans perfectly using orchestrated agents
 argument-hint: "[plan slug]"
 allowed-tools:
   - Read
@@ -21,6 +21,7 @@ skills:
   - crew:todo-tracking
   - crew:git
   - devtools:tdd-typescript
+  - n-skills:orchestration
 hooks:
   PostToolUse: false
   PreToolUse: false
@@ -28,36 +29,23 @@ hooks:
 
 <objective>
 
-Execute a plan perfectly using Ralph Loop for guaranteed completion. **Strictly enforces TDD (Test-Driven Development)** - NO implementation code without failing tests first. Parallelizes work, runs CI continuously, uses browser testing for UI, runs quality reviews, and writes all findings back to the plan for the loop to address.
+Execute a plan using orchestrated agents. Claude decides which agents to spawn based on task needs. Uses n-skills:orchestration for parallel work and agent selection.
 
 </objective>
 
 <tdd_enforcement>
 
-**MANDATORY: Load and follow `devtools:tdd-typescript` skill for ALL implementation.**
+**MANDATORY: Load `devtools:tdd-typescript` for ALL implementation.**
 
 ```javascript
 Skill({ skill: "devtools:tdd-typescript" });
 ```
 
-This is NON-NEGOTIABLE. Every story MUST:
-
-1. Follow RED-GREEN-REFACTOR cycle exactly as defined in the skill
-2. Pass all phase gates (test fails → test passes → still passes)
-3. Meet coverage requirements (80% lines, 75% branches, 90% functions)
-
-**No exceptions. No shortcuts. Test fails first, then implement.**
+RED-GREEN-REFACTOR. Test fails first, then implement. No exceptions.
 
 </tdd_enforcement>
 
 <workflow>
-
-## Step 0: Load TDD Skill (MANDATORY)
-
-```javascript
-// Force load TDD skill - this is non-negotiable
-Skill({ skill: "devtools:tdd-typescript" });
-```
 
 ## Step 1: Verify Not on Main
 
@@ -65,7 +53,6 @@ Skill({ skill: "devtools:tdd-typescript" });
 branch=$(git branch --show-current)
 if [[ "$branch" == "main" || "$branch" == "master" ]]; then
   echo "ERROR: Cannot run crew:work on main/master branch"
-  echo "Create a feature branch first: /crew:git:branch:new <name>"
   exit 1
 fi
 ```
@@ -78,251 +65,136 @@ const planPath = `.claude/plans/${slug}.yaml`;
 const plan = Read({ file_path: planPath });
 ```
 
-## Step 3: Validate Readiness
+## Step 3: Initialize TodoWrite
 
 ```javascript
-if (plan.open_questions?.length > 0) {
-  AskUserQuestion({
-    questions: [
-      {
-        question: `Plan has ${plan.open_questions.length} open questions. Resolve first?`,
-        header: "Questions",
-        options: [
-          { label: "Yes (Recommended)", description: "Run crew:plan:refine" },
-          { label: "Continue anyway", description: "Proceed with unknowns" },
-        ],
-        multiSelect: false,
-      },
-    ],
-  });
+// Convert plan stories to TodoWrite items
+const todos = plan.stories.map((story) => ({
+  content: `${story.id}: ${story.title}`,
+  status: story.status === "complete" ? "completed" : "pending",
+  activeForm: `Working on ${story.title}`,
+}));
+TodoWrite({ todos });
+```
+
+## Step 4: Execute Stories
+
+For each story in priority order (P1 → P2 → P3):
+
+1. **Load TDD skill**: `Skill({ skill: "devtools:tdd-typescript" })`
+2. **Research if needed**: Use Task agents (Context7, OctoCode via MCP)
+3. **Write failing test first** (RED)
+4. **Implement minimal code** (GREEN)
+5. **Refactor while green** (REFACTOR)
+6. **Update TodoWrite** on completion
+
+### Agent Selection (per n-skills:orchestration)
+
+Let Claude decide which agents to spawn based on task complexity:
+
+| Complexity | Agent Tier | Use Case                        |
+| ---------- | ---------- | ------------------------------- |
+| Simple     | Haiku      | Single file, straightforward    |
+| Medium     | Sonnet     | Multi-file, some complexity     |
+| Complex    | Opus       | Architecture, security-critical |
+
+Spawn agents in parallel when tasks are independent.
+
+## Step 5: Run CI
+
+```javascript
+Skill({ skill: "crew:work:ci", args: slug });
+```
+
+Fix any failures before proceeding.
+
+## Step 6: Completion Check
+
+Verify all stories are complete:
+
+```javascript
+const plan = Read({ file_path: planPath });
+const incomplete = plan.stories.filter((s) => s.status !== "complete");
+
+if (incomplete.length > 0) {
+  // Continue working on incomplete stories
+  // Claude decides if more agents needed
+} else {
+  // All done - ask about git action
 }
 ```
 
-## Step 4: Start Ralph Loop
-
-```javascript
-Skill({
-  skill: "ralph-loop:ralph-loop",
-  args: `"Execute plan: ${slug}
-
-## Plan Location
-.claude/plans/${slug}.yaml
-
-## TDD ENFORCEMENT (MANDATORY)
-
-**At start of EVERY iteration, load the TDD skill:**
-Skill({ skill: 'devtools:tdd-typescript' })
-
-Follow it EXACTLY. No implementation without failing test first. No exceptions.
-
-## Execution Loop
-
-1. **Read Plan**: Load .claude/plans/${slug}.yaml
-   - Check 'findings' section for ALL issues to fix
-   - Check story statuses (pending/in_progress/complete)
-
-2. **Fix ALL Findings First**:
-   - Fix EVERY issue in findings (P0, P1, P2, observations)
-   - No new features until findings empty
-   - Mark fixed issues as status: fixed
-
-3. **Execute Stories via TDD**:
-   - P1 stories first, then P2, then P3
-   - For EACH story: Skill({ skill: 'devtools:tdd-typescript' }) then follow workflow
-   - Update story status in plan on completion
-
-4. **Run CI** (after each story):
-   Skill({ skill: 'crew:work:ci', args: '${slug}' })
-   - Writes failures to plan 'findings' section
-   - If failures: fix ALL before proceeding
-
-5. **Browser Testing** (for UI stories):
-   - Load MCPSearch for claude-in-chrome tools
-   - Take screenshots to verify UI implementation
-   - Test user flows described in acceptance criteria
-
-6. **Quality Review** (after each phase):
-   Skill({ skill: 'crew:work:review', args: '${slug}' })
-   - Writes ALL findings to plan (P0/P1/P2/Obs)
-   - Fix ALL findings before proceeding
-
-7. **Commit Progress**:
-   - Conventional commits per story/fix
-   - Push regularly
-
-8. **Integration Tests** (final validation):
-   - Run: bun run test:integration (if script exists)
-   - If failures: add to findings and fix
-   - This validates the full application works end-to-end
-
-9. **Feature Video** (for UI/frontend work):
-   - If plan has frontend/UI stories: Skill({ skill: 'crew:work:feature-video' })
-   - Records browser walkthrough demonstrating the feature
-   - Uploads video and adds to PR description
-
-10. **Check Completion**:
-   - All stories status: complete
-   - ZERO findings in plan (all fixed)
-   - CI passing (no failures)
-   - Integration tests passing (if they exist)
-   - Coverage meets requirements
-   - Output: <promise>WORK COMPLETE</promise>
-
-11. **Git Action** (after completion):
-   - Ask user what to do next with AskUserQuestion
-   - Options: Create PR (recommended), Commit only, Push only, Stop
-
-## Key Rules
-- TDD per devtools:tdd-typescript - NO EXCEPTIONS
-- Fix ALL findings before new features
-- Read plan at START of each iteration
-- Only output completion promise when genuinely done
-" --completion-promise "WORK COMPLETE" --max-iterations 50`,
-});
-```
-
-## Step 5: Final Quality Review (MANDATORY)
-
-**After Ralph Loop completes, ALWAYS run the quality review to ensure all findings are captured.**
-
-```javascript
-// Run the seven-leg quality review
-Skill({ skill: "crew:work:review", args: slug });
-```
-
-This step is mandatory because:
-
-1. Ralph Loop may have introduced new issues in final iterations
-2. Ensures consistent review summary format for the user
-3. Catches any issues the loop missed
-
-## Step 6: Git Action (After Review Completes)
+## Step 7: Git Action
 
 ```javascript
 AskUserQuestion({
   questions: [
     {
       question: "Work complete. What would you like to do?",
-      header: "Git action",
       options: [
-        {
-          label: "Create PR (Recommended)",
-          description: "Commit, push, and create pull request",
-        },
-        {
-          label: "Commit & Push",
-          description: "Commit changes and push to origin",
-        },
-        { label: "Commit only", description: "Commit changes without pushing" },
-        { label: "Stop", description: "Done for now, no git actions" },
+        "Create PR (Recommended)",
+        "Commit & Push",
+        "Commit only",
+        "Stop",
       ],
-      multiSelect: false,
     },
   ],
 });
 
-// Execute based on answer
 if (answer === "Create PR (Recommended)") {
-  Skill({ skill: "crew:git:pr" });
+  Skill({ skill: "crew:git:pr:create" });
 } else if (answer === "Commit & Push") {
   Skill({ skill: "crew:git:commit-and-push" });
 } else if (answer === "Commit only") {
   Skill({ skill: "crew:git:commit" });
 }
-// "Stop" = do nothing
 ```
 
 </workflow>
 
-<plan_findings_format>
+<mcp_usage>
 
-The plan file gets a 'findings' section for the loop to track:
-
-```yaml
-findings:
-  ci:
-    - id: CI-001
-      type: test
-      status: open
-      file: src/api/users.ts
-      line: 45
-      message: "Expected 200, got 404"
-      added: "2024-01-09T14:30:00Z"
-    - id: CI-002
-      type: lint
-      status: fixed
-      file: src/utils/format.ts
-      line: 12
-      message: "Unused variable 'temp'"
-      added: "2024-01-09T14:30:00Z"
-      fixed: "2024-01-09T14:35:00Z"
-
-  review:
-    - id: REV-001
-      severity: p0
-      leg: security
-      status: open
-      file: src/auth/login.ts
-      line: 47
-      message: "SQL injection via username"
-      fix: "Use parameterized query"
-      added: "2024-01-09T14:32:00Z"
-```
-
-</plan_findings_format>
-
-<browser_testing>
-
-For UI stories, use Claude-in-Chrome MCP tools:
+**Use MCP tools for research and analysis:**
 
 ```javascript
-// Load browser tools
-MCPSearch({ query: "select:mcp__claude-in-chrome__navigate" });
-MCPSearch({ query: "select:mcp__claude-in-chrome__browser_take_screenshot" });
+// Library documentation
+MCPSearch({ query: "select:mcp__plugin_crew_context7__resolve-library-id" });
+MCPSearch({ query: "select:mcp__plugin_crew_context7__query-docs" });
 
-// Navigate and verify
-mcp__claude-in-chrome__navigate({ url: "http://localhost:3000/feature" });
-mcp__claude-in-chrome__browser_take_screenshot({ name: "feature-initial" });
+// GitHub code search
+MCPSearch({ query: "select:mcp__plugin_crew_octocode__githubSearchCode" });
 
-// Test acceptance criteria
-mcp__claude-in-chrome__browser_click({ selector: "#submit-button" });
-mcp__claude-in-chrome__browser_take_screenshot({ name: "feature-after-submit" });
-
-// Read screenshots to verify
-Read({ file_path: "/tmp/feature-after-submit.png" });
+// Codex - deep reasoning for complex problems (use sparingly)
+MCPSearch({ query: "select:mcp__plugin_crew_codex__codex" });
 ```
 
-</browser_testing>
+### When to Use Codex
+
+Use Codex for problems requiring deep reasoning:
+
+- Architecture decisions with trade-offs
+- Security-critical code review
+- Complex algorithm design
+- Cross-cutting pattern analysis
+
+```javascript
+mcp__plugin_crew_codex__codex({
+  prompt: `Analyze this implementation for [security|performance|correctness]:
+
+${codeOrFindings}
+
+Identify: root causes, systemic issues, priority escalations.`,
+});
+```
+
+</mcp_usage>
 
 <success_criteria>
 
-**TDD Compliance:**
-
-- [ ] devtools:tdd-typescript skill loaded at start
-- [ ] RED-GREEN-REFACTOR cycle followed for each story
-- [ ] Coverage requirements met (80% lines, 75% branches, 90% functions)
-
-**Quality Gates:**
-
-- [ ] ALL findings fixed (P0, P1, P2, observations) - ZERO open
-- [ ] CI passing with no failures
-- [ ] Integration tests passing (if test:integration exists)
-- [ ] Quality review run after each phase
-
-**Output:**
-
-- [ ] Browser testing for UI stories
-- [ ] Feature video recorded for UI/frontend work
-- [ ] `<promise>WORK COMPLETE</promise>` output when genuinely done
-- [ ] **Final quality review run after Ralph Loop** (Step 5)
-- [ ] Git action question asked (PR/commit/push/stop)
+- [ ] TDD followed for all implementation
+- [ ] Stories executed in priority order
+- [ ] CI passing
+- [ ] All stories marked complete
+- [ ] Git action completed per user choice
 
 </success_criteria>
-
-<notes>
-
-Follow these rules:
-
-- @patterns/git-safety.md - Protected files and operations
-
-</notes>

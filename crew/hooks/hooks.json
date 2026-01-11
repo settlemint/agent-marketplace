@@ -93,10 +93,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/user-prompt-submit/enforce-tdd.sh"
-          },
-          {
-            "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/user-prompt-submit/enforce-task-first.sh"
           }
         ]
