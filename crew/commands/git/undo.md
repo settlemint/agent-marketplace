@@ -3,11 +3,34 @@ name: crew:git:undo
 description: Undo last commit (keeps changes staged)
 allowed-tools:
   - Bash
+  - Skill
 ---
+
+<butler_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/gitbutler-context.sh`
+</butler_context>
 
 <undo_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/undo-context.sh`
 </undo_context>
+
+<gitbutler_redirect>
+
+**When GitButler is active, use the butler undo workflow.**
+
+If `GITBUTLER_ACTIVE=true` from `<butler_context>`:
+
+```
+GitButler is active. Redirecting to butler undo workflow.
+```
+
+Delegate to `crew:git:butler:undo` and exit:
+
+```javascript
+Skill({ skill: "crew:git:butler:undo" });
+```
+
+</gitbutler_redirect>
 
 <objective>
 
