@@ -110,16 +110,33 @@ but branch list
 # 1. Update base to detect merged branches
 but base update
 
-# 2. List branches and check for stale ones
+# 2. Check if ACTIVE branch has merged PRs
+gh pr list --head <active-branch> --state merged
+# If merged PRs exist → DO NOT commit to this branch!
+# Create a new branch for new work instead.
+
+# 3. List branches and check for stale ones
 but branch list
 
-# 3. For each branch with 0 commits ahead:
+# 4. For each branch with 0 commits ahead:
 but branch show <branch-name>
 # If "No commits ahead" → it's stale
 
-# 4. Apply and delete stale branches
+# 5. Apply and delete stale branches
 but branch apply <stale-branch>
 but branch delete <stale-branch> -f
+```
+
+**CRITICAL: Check for Merged PRs Before Committing**
+
+Even if a branch shows commits ahead, it may have already-merged PRs. New commits to such branches are orphaned and won't be part of any PR.
+
+```bash
+# Before ANY commit, check:
+gh pr list --head $(but branch list | grep '\*' | awk '{print $NF}') --state merged
+
+# If any PRs are merged, create a new branch:
+but branch new feat/new-work
 ```
 
 **Quick Cleanup Script:**
@@ -136,25 +153,53 @@ done
 
 </cleanup_workflow>
 
+<pre_work_checklist>
+
+**BEFORE STARTING ANY NEW WORK:**
+
+1. **Sync with upstream:** `Bash({ command: "but base update" })`
+2. **Check for merged PRs on active branch:** `Bash({ command: "gh pr list --head <active-branch> --state merged" })`
+3. **If merged PRs exist:** Create a new branch for new work
+4. **Verify active branch:** `Bash({ command: "but branch list" })` - look for `*` marker
+
+</pre_work_checklist>
+
 <pre_commit_checklist>
 
-Before using MCP commit or `but commit`:
+**BEFORE ANY COMMIT:**
 
-1. **Check active branch:** `but branch list`
+1. **Check active branch:** `Bash({ command: "but branch list" })`
 2. **Verify it's the right one:** Look for `*` marker
-3. **If wrong branch:** Create new one or switch: `but branch new <name>`
-4. **Then commit:** Use MCP tool or `but commit`
+3. **Check no merged PRs:** `Bash({ command: "gh pr list --head <branch> --state merged" })`
+4. **If wrong branch or has merged PRs:** Create new branch: `Bash({ command: "but branch new feat/<name>" })`
+5. **Verify new branch is active:** Check for `*` marker again
+6. **Then commit:** Use MCP tool or `but commit`
 
 **Example Flow:**
 
-```bash
-# Starting new work
-but branch list                    # Check what's active
-but branch new feat/my-feature     # Create and activate new branch
-# ... make changes ...
-# Use MCP tool to commit OR:
-but commit -m "feat: add feature"
-but push feat/my-feature
+```javascript
+// Starting new work - ALWAYS sync first
+Bash({ command: "but base update" });
+
+// Check what's active and if it has merged PRs
+Bash({ command: "but branch list" });
+Bash({ command: "gh pr list --head <active-branch> --state merged" });
+
+// If merged PRs exist or wrong branch, create new one
+Bash({ command: "but branch new feat/my-feature" });
+
+// Verify new branch is active (CRITICAL!)
+Bash({ command: "but branch list" });
+// If not active: Bash({ command: "but branch apply feat/my-feature" });
+
+// ... make changes ...
+
+// Commit (only after verification)
+mcp__gitbutler__gitbutler_update_branches({...});
+// OR: Bash({ command: 'but commit -m "feat: add feature"' });
+
+// Push when ready
+Bash({ command: "but push feat/my-feature" });
 ```
 
 </pre_commit_checklist>

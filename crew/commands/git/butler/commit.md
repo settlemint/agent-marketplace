@@ -22,21 +22,21 @@ Commit changes using GitButler. Prefer MCP tool for AI-driven workflows, CLI for
 
 ## Step 1: Check GitButler Active
 
-If `GITBUTLER_ACTIVE=false`:
-
+```javascript
+if (GITBUTLER_ACTIVE === false) {
+  // Output: "GitButler is not initialized. Use regular git or run: but init"
+  // Exit
+}
 ```
-GitButler is not initialized. Use regular git or run: but init
-```
-
-Exit if not active.
 
 ## Step 2: Verify Active Branch
 
 **CRITICAL:** MCP commits go to the currently ACTIVE branch (marked with `*`).
 
-```bash
-but branch list
-# Look for the * marker to identify active branch
+```javascript
+const result = Bash({ command: "but branch list" });
+// Parse output to find the active branch (marked with *)
+const activeBranch = parseActiveBranch(result);
 ```
 
 If the active branch is wrong for this commit:
@@ -62,16 +62,19 @@ AskUserQuestion({
 
 If user chooses new branch:
 
-```bash
-but branch new <feature-name>
-# New branch is now active
+```javascript
+Bash({ command: `but branch new "${featureName}"` });
+// New branch is now active
 ```
 
 ## Step 3: Check for Sensitive Files
 
-```bash
-git status --porcelain | grep -E '\.(env|pem|key)$|credentials|secrets' && \
-  echo "⚠️ Sensitive files detected - review before committing"
+```javascript
+Bash({
+  command:
+    "git status --porcelain | grep -E '\\.(env|pem|key)$|credentials|secrets' || true",
+});
+// If matches found, warn: "⚠️ Sensitive files detected - review before committing"
 ```
 
 ## Step 4: Commit Using MCP (Preferred for AI workflows)

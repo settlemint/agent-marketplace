@@ -20,13 +20,15 @@ GitButler reimagines source code management with virtual branches - work on mult
 
 1. **MCP commits go to the ACTIVE branch only** - `mcp__gitbutler__gitbutler_update_branches` does NOT create branches. Always check `but branch list` first to see which branch has the `*` marker.
 
-2. **Create branch BEFORE making changes** - Run `but branch new <name>` first. This creates AND activates the branch.
+2. **`but branch new` may NOT activate the new branch** - After creating, VERIFY the new branch is active by checking for `*` marker. If not active, run `but branch apply <name>` before committing.
 
-3. **Unapplied branches must be applied before deletion** - `but branch delete` fails on unapplied branches. Apply first: `but branch apply <name> && but branch delete <name> -f`
+3. **ALWAYS verify active branch before ANY commit** - Check `but branch list` immediately before using MCP tool or `but commit`. The active branch (`*`) receives all commits.
 
-4. **Branches with 0 commits ahead are stale** - After PR merge + `but base update`, clean up stale branches.
+4. **Unapplied branches must be applied before deletion** - `but branch delete` fails on unapplied branches. Apply first: `but branch apply <name> && but branch delete <name> -f`
 
-5. **Always sync after PR merges** - Run `but base update` to rebase and detect merged branches.
+5. **Branches with 0 commits ahead are stale** - After PR merge + `but base update`, clean up stale branches with `crew:git:butler:cleanup`.
+
+6. **Don't reuse old branch names** - Create new branches with meaningful names for each task. Never commit unrelated work to an existing branch.
 
 See `references/operational-knowledge.md` for detailed gotchas and workflows.
 
@@ -167,13 +169,16 @@ but restore <snapshot-sha>
 but base update
 
 # Check for stale branches (0 commits ahead)
+
 but branch list
 
 # For each stale unapplied branch:
+
 but branch apply <stale-branch>
 but branch delete <stale-branch> -f
 
 # Or use crew command:
+
 # crew:git:butler:cleanup
 
 </pattern>

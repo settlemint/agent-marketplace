@@ -35,17 +35,16 @@ If argument provided, use it directly as the branch name.
 
 If no argument provided, generate a descriptive name:
 
-1. **Analyze the context** - What task is the user working on?
-2. **Create a clear name** using this format:
+```javascript
+// Analyze context - what task is the user working on?
+// Create a clear name using this format:
+const branchName = `${type}/${shortDescriptiveName}`;
 
-```
-{type}/{short-descriptive-name}
-
-Examples:
-- feat/add-gitbutler-detection
-- fix/branch-creation-conflict
-- refactor/simplify-hook-logic
-- chore/update-dependencies
+// Examples:
+// - feat/add-gitbutler-detection
+// - fix/branch-creation-conflict
+// - refactor/simplify-hook-logic
+// - chore/update-dependencies
 ```
 
 **Naming rules:**
