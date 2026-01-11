@@ -6,6 +6,40 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Claude Code plugin marketplace repository. It contains the `crew` plugin - an orchestration system for work execution, skill management, and git workflows. This is NOT a traditional application with build/test pipelines.
 
+## TDD Required (MANDATORY)
+
+**ALL code changes MUST follow Test-Driven Development. NO EXCEPTIONS.**
+
+### Before Writing ANY Implementation Code
+
+```javascript
+// Load the TDD skill FIRST
+Skill({ skill: "devtools:tdd-typescript" })
+```
+
+### RED-GREEN-REFACTOR Cycle
+
+| Phase | Action | Verification |
+|-------|--------|--------------|
+| **RED** | Write failing test FIRST | `bun run test` - MUST fail |
+| **GREEN** | Write minimal code | `bun run test` - MUST pass |
+| **REFACTOR** | Improve while green | `bun run test` - STILL pass |
+
+### Coverage Requirements (Non-Negotiable)
+
+- Line coverage: **80% minimum**
+- Branch coverage: **75% minimum**
+- Function coverage: **90% minimum**
+- Critical paths: **100%**
+
+### The Three Laws
+
+1. Write NO production code until a failing test exists
+2. Write ONLY enough test to demonstrate failure
+3. Write ONLY enough code to pass the test
+
+**Hooks enforce TDD on every Edit/Write operation. Follow the workflow.**
+
 ## Plugin Structure
 
 ```

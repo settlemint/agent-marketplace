@@ -49,6 +49,15 @@
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/suggest-skill.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/enforce-tdd.sh"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -82,6 +91,10 @@
     "UserPromptSubmit": [
       {
         "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/user-prompt-submit/enforce-tdd.sh"
+          },
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/user-prompt-submit/enforce-task-first.sh"
