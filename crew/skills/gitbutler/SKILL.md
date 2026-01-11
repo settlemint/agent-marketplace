@@ -134,6 +134,7 @@ mcp__gitbutler__gitbutler_update_branches({
 })
 // Then push when ready
 // but push branch-name
+```
 </pattern>
 
 <pattern name="typical_workflow">
@@ -153,7 +154,7 @@ but push add-user-auth
 # After upstream merge
 
 but base update
-
+```
 </pattern>
 
 <pattern name="parallel_features">
@@ -175,8 +176,8 @@ but rub h0 feature-b # Assign next file
 
 # Better: Use MCP tool which handles everything
 
-mcp**gitbutler**gitbutler_update_branches({ ... })
-
+mcp__gitbutler__gitbutler_update_branches({ ... })
+```
 </pattern>
 
 <pattern name="recovery">
@@ -191,7 +192,7 @@ but undo
 # Or restore to specific snapshot
 
 but restore <snapshot-sha>
-
+```
 </pattern>
 
 <pattern name="cleanup_stale_branches">
@@ -211,7 +212,7 @@ but branch delete <stale-branch> -f
 # Or use crew command:
 
 # crew:git:butler:cleanup
-
+```
 </pattern>
 
 <pattern name="pre_commit_check">
@@ -224,8 +225,7 @@ but branch list  # Look for * marker
 but branch new feat/correct-branch
 
 # Then commit (MCP or CLI)
-
-````
+```
 </pattern>
 
 <pattern name="explicit_branch_assignment">
@@ -287,7 +287,4 @@ Bash({ command: `but push ${prBranch}` });
 - Integration tested with `but base check`
 - Stale branches cleaned up after PR merges
 
-
 </success_criteria>
-```
-````
