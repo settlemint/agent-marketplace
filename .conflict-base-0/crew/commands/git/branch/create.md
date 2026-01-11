@@ -6,6 +6,10 @@ allowed-tools:
   - Skill
 ---
 
+<butler_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/gitbutler-context.sh`
+</butler_context>
+
 <stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 </stack_context>
@@ -16,17 +20,46 @@ allowed-tools:
 
 <objective>
 
-Ask isolation strategy. Delegate to worktree:create, branch:new + stacked:add, or branch:new.
+Ask isolation strategy. Delegate to appropriate branch creation command based on context.
 
 </objective>
 
 <workflow>
 
-## Step 1: Check Worktree Context
+## Step 1: Check GitButler Context
+
+If `GITBUTLER_ACTIVE=true` from `<butler_context>`:
+
+```javascript
+AskUserQuestion({
+  questions: [
+    {
+      question: "GitButler detected. How should the branch be created?",
+      header: "Branch Type",
+      options: [
+        {
+          label: "Virtual branch (Recommended)",
+          description: "GitButler virtual branch",
+        },
+        {
+          label: "Traditional branch",
+          description: "Disable GitButler workflow",
+        },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
+```
+
+If "Virtual branch" → delegate to `crew:git:butler:branch` and exit.
+If "Traditional branch" → warn user and continue to Step 2.
+
+## Step 2: Check Worktree Context
 
 If already in a worktree → offer worktree or stacked options only.
 
-## Step 2: Ask Isolation Strategy
+## Step 3: Ask Isolation Strategy
 
 ```javascript
 AskUserQuestion({
@@ -51,7 +84,13 @@ AskUserQuestion({
 });
 ```
 
-## Step 3: Execute Choice
+## Step 4: Execute Choice
+
+**If "Virtual branch":**
+
+```javascript
+Skill({ skill: "crew:git:butler:branch" });
+```
 
 **If "New worktree":**
 

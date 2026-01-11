@@ -7,6 +7,32 @@ allowed-tools:
   - AskUserQuestion
 ---
 
+<butler_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/gitbutler-context.sh`
+</butler_context>
+
+<gitbutler_incompatible>
+
+**This command does not work with GitButler.**
+
+If `GITBUTLER_ACTIVE=true` from `<butler_context>`:
+
+```
+Traditional git branches conflict with GitButler virtual branches.
+
+GitButler manages branches as virtual branches in a single workspace.
+Creating git branches directly can cause conflicts with the workspace state.
+
+Use this instead:
+- `crew:git:butler:branch` - Create a virtual branch
+
+To use traditional branches, first disable GitButler in this repository.
+```
+
+Exit immediately. Do not proceed with branch creation.
+
+</gitbutler_incompatible>
+
 <objective>
 
 Create branch: `username/type/slug` from specified base. Ask type if not provided. Confirm name.

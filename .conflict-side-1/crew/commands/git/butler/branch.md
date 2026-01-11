@@ -31,27 +31,29 @@ Exit if not active.
 
 ## Step 2: Get Branch Name
 
-If no argument provided, ask:
+If argument provided, use it directly as the branch name.
 
-```javascript
-AskUserQuestion({
-  questions: [
-    {
-      question: "What type of branch?",
-      header: "Type",
-      options: [
-        { label: "Feature (Recommended)", description: "New functionality" },
-        { label: "Fix", description: "Bug fix" },
-        { label: "Refactor", description: "Code improvement" },
-        { label: "Chore", description: "Maintenance task" },
-      ],
-      multiSelect: false,
-    },
-  ],
-});
+If no argument provided, generate a descriptive name:
+
+1. **Analyze the context** - What task is the user working on?
+2. **Create a clear name** using this format:
+
+```
+{type}/{short-descriptive-name}
+
+Examples:
+- feat/add-gitbutler-detection
+- fix/branch-creation-conflict
+- refactor/simplify-hook-logic
+- chore/update-dependencies
 ```
 
-Then generate name: `{type}-{description}` (kebab-case)
+**Naming rules:**
+
+- Use kebab-case (lowercase with hyphens)
+- Max 40 characters total
+- Be specific but concise
+- No user prefix (GitButler manages ownership differently)
 
 ## Step 3: Create Branch
 
