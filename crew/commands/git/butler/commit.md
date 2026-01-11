@@ -99,20 +99,20 @@ The MCP tool will:
 
 If MCP not available or for manual control:
 
-```bash
-but commit -m "type(scope): description"
+```javascript
+Bash({ command: 'but commit -m "type(scope): description"' });
 ```
 
 Or let GitButler AI-generate the message:
 
-```bash
-but commit
+```javascript
+Bash({ command: "but commit" });
 ```
 
 ## Step 6: Confirm
 
-```bash
-but branch list
+```javascript
+Bash({ command: "but branch list" });
 ```
 
 </workflow>

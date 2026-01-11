@@ -21,18 +21,17 @@ Undo the last GitButler operation or restore to a specific snapshot.
 
 ## Step 1: Check GitButler Active
 
-If `GITBUTLER_ACTIVE=false`:
-
+```javascript
+if (GITBUTLER_ACTIVE === false) {
+  // Output: "GitButler is not initialized. Use git reflog for recovery."
+  // Exit
+}
 ```
-GitButler is not initialized. Use git reflog for recovery.
-```
-
-Exit if not active.
 
 ## Step 2: Show Operation Log
 
-```bash
-but oplog
+```javascript
+Bash({ command: "but oplog" });
 ```
 
 ## Step 3: Choose Action
@@ -54,7 +53,10 @@ AskUserQuestion({
           label: "Restore to specific snapshot",
           description: "Pick a point from the operation log",
         },
-        { label: "Create manual snapshot", description: "Save current state" },
+        {
+          label: "Create manual snapshot",
+          description: "Save current state before risky operation",
+        },
       ],
       multiSelect: false,
     },
@@ -66,27 +68,27 @@ AskUserQuestion({
 
 **Undo last:**
 
-```bash
-but undo
+```javascript
+Bash({ command: "but undo" });
 ```
 
 **Restore to snapshot:**
 
-```bash
-but restore ${snapshotSha}
+```javascript
+Bash({ command: `but restore "${snapshotSha}"` });
 ```
 
 **Create snapshot:**
 
-```bash
-but snapshot -m "manual checkpoint before risky operation"
+```javascript
+Bash({ command: 'but snapshot -m "manual checkpoint before risky operation"' });
 ```
 
 ## Step 5: Confirm
 
-```bash
-but branch list
-but oplog | head -5
+```javascript
+Bash({ command: "but branch list" });
+Bash({ command: "but oplog | head -5" });
 ```
 
 </workflow>

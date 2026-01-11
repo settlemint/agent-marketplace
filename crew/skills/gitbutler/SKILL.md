@@ -56,6 +56,22 @@ GitButler provides an MCP server enabling AI tools to manage commits automatical
 
 <quick_start>
 
+**Starting New Work (ALWAYS do this first):**
+
+```javascript
+// 1. Sync with upstream
+Bash({ command: "but base update" });
+
+// 2. Check if active branch has merged PRs
+Bash({ command: "gh pr list --head <active-branch> --state merged" });
+
+// 3. If merged PRs exist, create new branch
+Bash({ command: "but branch new feat/my-feature" });
+
+// 4. Verify new branch is active (look for *)
+Bash({ command: "but branch list" });
+```
+
 **MCP Auto-Commit (Preferred for AI workflows):**
 
 ```javascript
@@ -64,6 +80,7 @@ mcp__gitbutler__gitbutler_update_branches({
   changesSummary: "- Added X\n- Modified Y",
   currentWorkingDirectory: "/path/to/project",
 });
+```
 
 **CLI - Create and work on a branch:**
 
@@ -72,18 +89,21 @@ but branch new feature-name
 # ... make changes ...
 but commit -m "feat: add new feature"
 but push feature-name
+```
 
 **Check upstream status:**
 
 ```bash
 but base check    # View integration state
 but base update   # Rebase on upstream changes
+```
 
 **Recovery:**
 
 ```bash
 but oplog         # View operation history
 but undo          # Revert last operation
+```
 
 </quick_start>
 
@@ -139,10 +159,12 @@ but branch new feature-a
 but branch new feature-b
 
 # Assign files to specific branches (using rub)
+
 but rub src/feature-a.ts feature-a
 but rub src/feature-b.ts feature-b
 
 # Commit each independently
+
 but commit -m "feat(a): implement feature A"
 but commit -m "feat(b): implement feature B"
 
@@ -194,6 +216,7 @@ but branch new feat/correct-branch
 
 # Then commit (MCP or CLI)
 
+```
 </pattern>
 
 </common_patterns>
@@ -206,5 +229,6 @@ but branch new feat/correct-branch
 - Branches pushed for review
 - Integration tested with `but base check`
 - Stale branches cleaned up after PR merges
+
 
 </success_criteria>

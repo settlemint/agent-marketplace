@@ -21,21 +21,20 @@ Push a virtual branch to remote, making it a normal Git branch for review.
 
 ## Step 1: Check GitButler Active
 
-If `GITBUTLER_ACTIVE=false`:
-
+```javascript
+if (GITBUTLER_ACTIVE === false) {
+  // Output: "GitButler is not initialized. Use regular git push."
+  // Exit
+}
 ```
-GitButler is not initialized. Use regular git push.
-```
-
-Exit if not active.
 
 ## Step 2: List Branches if No Argument
 
-```bash
-but branch list
+```javascript
+const result = Bash({ command: "but branch list" });
 ```
 
-If multiple branches, ask which to push:
+If multiple branches and no argument provided:
 
 ```javascript
 AskUserQuestion({
@@ -45,7 +44,7 @@ AskUserQuestion({
       header: "Branch",
       options: branches.map((b) => ({
         label: b.name,
-        description: `${b.commits} commits`,
+        description: `${b.commits} commits ahead`,
       })),
       multiSelect: false,
     },
@@ -55,20 +54,20 @@ AskUserQuestion({
 
 ## Step 3: Push Branch
 
-```bash
-but push ${branchName}
+```javascript
+Bash({ command: `but push "${branchName}"` });
 ```
 
 ## Step 4: Confirm and Next Steps
 
-```bash
-but branch list
+```javascript
+Bash({ command: "but branch list" });
 ```
 
 Inform user:
 
-- Branch is now on remote
-- Create PR with `gh pr create` or `crew:git:pr:create`
+- Branch is now on remote as a regular Git branch
+- Create PR with `gh pr create` or `Skill({ skill: "crew:git:pr:create" })`
 - Or use `but publish` for GitButler's PR creation
 
 </workflow>

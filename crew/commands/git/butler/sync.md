@@ -19,18 +19,17 @@ Rebase all virtual branches on the latest upstream changes. Remove integrated br
 
 ## Step 1: Check GitButler Active
 
-If `GITBUTLER_ACTIVE=false`:
-
+```javascript
+if (GITBUTLER_ACTIVE === false) {
+  // Output: "GitButler is not initialized. Use git pull --rebase instead."
+  // Exit
+}
 ```
-GitButler is not initialized. Use git pull --rebase instead.
-```
-
-Exit if not active.
 
 ## Step 2: Check Upstream Status
 
-```bash
-but base check
+```javascript
+Bash({ command: "but base check" });
 ```
 
 Review what will happen:
@@ -41,8 +40,8 @@ Review what will happen:
 
 ## Step 3: Update Base
 
-```bash
-but base update
+```javascript
+Bash({ command: "but base update" });
 ```
 
 This automatically:
@@ -55,16 +54,16 @@ This automatically:
 
 If conflicts detected:
 
-```
-Conflicts detected. Edit the conflicted files directly, then:
-  but commit -m "fix: resolve merge conflicts"
+```javascript
+// Output: "Conflicts detected. Edit the conflicted files directly, then:"
+Bash({ command: 'but commit -m "fix: resolve merge conflicts"' });
 ```
 
 ## Step 5: Show Result
 
-```bash
-but branch list
-but base check
+```javascript
+Bash({ command: "but branch list" });
+Bash({ command: "but base check" });
 ```
 
 </workflow>
