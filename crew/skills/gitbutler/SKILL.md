@@ -14,6 +14,24 @@ GitButler reimagines source code management with virtual branches - work on mult
 
 </objective>
 
+<critical_warnings>
+
+**READ BEFORE USING ANY GITBUTLER COMMAND**
+
+1. **MCP commits go to the ACTIVE branch only** - `mcp__gitbutler__gitbutler_update_branches` does NOT create branches. Always check `but branch list` first to see which branch has the `*` marker.
+
+2. **Create branch BEFORE making changes** - Run `but branch new <name>` first. This creates AND activates the branch.
+
+3. **Unapplied branches must be applied before deletion** - `but branch delete` fails on unapplied branches. Apply first: `but branch apply <name> && but branch delete <name> -f`
+
+4. **Branches with 0 commits ahead are stale** - After PR merge + `but base update`, clean up stale branches.
+
+5. **Always sync after PR merges** - Run `but base update` to rebase and detect merged branches.
+
+See `references/operational-knowledge.md` for detailed gotchas and workflows.
+
+</critical_warnings>
+
 <essential_principles>
 
 **Virtual Branches Are Different**
@@ -44,7 +62,6 @@ mcp__gitbutler__gitbutler_update_branches({
   changesSummary: "- Added X\n- Modified Y",
   currentWorkingDirectory: "/path/to/project",
 });
-```
 
 **CLI - Create and work on a branch:**
 
@@ -53,31 +70,29 @@ but branch new feature-name
 # ... make changes ...
 but commit -m "feat: add new feature"
 but push feature-name
-```
 
 **Check upstream status:**
 
 ```bash
 but base check    # View integration state
 but base update   # Rebase on upstream changes
-```
 
 **Recovery:**
 
 ```bash
 but oplog         # View operation history
 but undo          # Revert last operation
-```
 
 </quick_start>
 
 <routing>
 
-| Task                    | Resource                         |
-| ----------------------- | -------------------------------- |
-| CLI commands            | `references/cli-commands.md`     |
-| Virtual branch concepts | `references/virtual-branches.md` |
-| MCP/AI integration      | `references/mcp-integration.md`  |
+| Task                    | Resource                              |
+| ----------------------- | ------------------------------------- |
+| **Gotchas & workflows** | `references/operational-knowledge.md` |
+| CLI commands            | `references/cli-commands.md`          |
+| Virtual branch concepts | `references/virtual-branches.md`      |
+| MCP/AI integration      | `references/mcp-integration.md`       |
 
 </routing>
 
@@ -93,7 +108,6 @@ mcp__gitbutler__gitbutler_update_branches({
 })
 // Then push when ready
 // but push branch-name
-```
 </pattern>
 
 <pattern name="typical_workflow">
@@ -114,7 +128,6 @@ but push add-user-auth
 
 but base update
 
-````
 </pattern>
 
 <pattern name="parallel_features">
@@ -130,7 +143,6 @@ but rub src/feature-b.ts feature-b
 # Commit each independently
 but commit -m "feat(a): implement feature A"
 but commit -m "feat(b): implement feature B"
-````
 
 </pattern>
 
@@ -147,7 +159,36 @@ but undo
 
 but restore <snapshot-sha>
 
-```
+</pattern>
+
+<pattern name="cleanup_stale_branches">
+```bash
+# After PR merges - sync and cleanup
+but base update
+
+# Check for stale branches (0 commits ahead)
+but branch list
+
+# For each stale unapplied branch:
+but branch apply <stale-branch>
+but branch delete <stale-branch> -f
+
+# Or use crew command:
+# crew:git:butler:cleanup
+
+</pattern>
+
+<pattern name="pre_commit_check">
+```bash
+# ALWAYS check active branch before committing
+but branch list  # Look for * marker
+
+# If wrong branch, create new one
+
+but branch new feat/correct-branch
+
+# Then commit (MCP or CLI)
+
 </pattern>
 
 </common_patterns>
@@ -159,6 +200,6 @@ but restore <snapshot-sha>
 - Commits follow conventional format (via MCP or CLI)
 - Branches pushed for review
 - Integration tested with `but base check`
+- Stale branches cleaned up after PR merges
 
 </success_criteria>
-```

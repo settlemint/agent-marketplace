@@ -41,16 +41,32 @@ but branch list
 but base check
 ```
 
-## Step 4: Suggest Actions
+## Step 4: Check for Stale Branches
+
+```bash
+# Count stale branches (0 commits ahead)
+STALE_COUNT=$(but branch -j | jq '[.branches[] | select(.commitsAhead == 0)] | length')
+```
+
+If stale branches found, highlight them:
+
+```
+⚠️ Found ${STALE_COUNT} stale branch(es) (0 commits ahead).
+   These have been merged and can be cleaned up.
+   Run: crew:git:butler:cleanup
+```
+
+## Step 5: Suggest Actions
 
 Based on output:
 
-| Situation           | Suggestion                           |
-| ------------------- | ------------------------------------ |
-| Upstream ahead      | Run `crew:git:butler:sync` to rebase |
-| Uncommitted changes | Run `crew:git:butler:commit`         |
-| Branch ready        | Run `crew:git:butler:push`           |
-| Conflicts detected  | Edit files, then commit resolution   |
+| Situation                | Suggestion                              |
+| ------------------------ | --------------------------------------- |
+| Upstream ahead           | Run `crew:git:butler:sync` to rebase    |
+| Uncommitted changes      | Run `crew:git:butler:commit`            |
+| Branch ready             | Run `crew:git:butler:push`              |
+| Conflicts detected       | Edit files, then commit resolution      |
+| **Stale branches exist** | Run `crew:git:butler:cleanup` to remove |
 
 </workflow>
 
@@ -58,6 +74,7 @@ Based on output:
 
 - [ ] Virtual branches listed
 - [ ] Base status shown
+- [ ] Stale branches highlighted if any
 - [ ] Actions suggested for current state
 
 </success_criteria>

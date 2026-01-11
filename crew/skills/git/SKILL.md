@@ -68,15 +68,16 @@ Git workflow guidance: conventional commits, branch naming, PR workflows.
 
 **GitButler Virtual Branch Commands** (use when GitButler is active):
 
-| Command                                      | Purpose                               |
-| -------------------------------------------- | ------------------------------------- |
-| `Skill({ skill: "crew:git:butler:status" })` | View virtual branches and base status |
-| `Skill({ skill: "crew:git:butler:branch" })` | Create virtual branch                 |
-| `Skill({ skill: "crew:git:butler:commit" })` | Commit with conventional format       |
-| `Skill({ skill: "crew:git:butler:push" })`   | Push virtual branch to remote         |
-| `Skill({ skill: "crew:git:butler:sync" })`   | Sync with upstream (rebase all)       |
-| `Skill({ skill: "crew:git:butler:undo" })`   | Undo last operation or restore        |
-| `Skill({ skill: "crew:git:butler:assign" })` | Assign files to branches (rub)        |
+| Command                                       | Purpose                               |
+| --------------------------------------------- | ------------------------------------- |
+| `Skill({ skill: "crew:git:butler:status" })`  | View virtual branches and base status |
+| `Skill({ skill: "crew:git:butler:branch" })`  | Create virtual branch                 |
+| `Skill({ skill: "crew:git:butler:commit" })`  | Commit with conventional format       |
+| `Skill({ skill: "crew:git:butler:push" })`    | Push virtual branch to remote         |
+| `Skill({ skill: "crew:git:butler:sync" })`    | Sync with upstream (rebase all)       |
+| `Skill({ skill: "crew:git:butler:undo" })`    | Undo last operation or restore        |
+| `Skill({ skill: "crew:git:butler:assign" })`  | Assign files to branches (rub)        |
+| `Skill({ skill: "crew:git:butler:cleanup" })` | Delete merged/stale branches          |
 
 **MCP Tool for Auto-Commit:**
 

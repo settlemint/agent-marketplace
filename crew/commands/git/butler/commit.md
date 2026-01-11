@@ -4,6 +4,7 @@ description: Commit changes using GitButler MCP or CLI with conventional format
 argument-hint: "[commit message]"
 allowed-tools:
   - Bash
+  - AskUserQuestion
   - mcp__gitbutler__gitbutler_update_branches
 ---
 
@@ -29,14 +30,51 @@ GitButler is not initialized. Use regular git or run: but init
 
 Exit if not active.
 
-## Step 2: Check for Sensitive Files
+## Step 2: Verify Active Branch
+
+**CRITICAL:** MCP commits go to the currently ACTIVE branch (marked with `*`).
+
+```bash
+but branch list
+# Look for the * marker to identify active branch
+```
+
+If the active branch is wrong for this commit:
+
+```javascript
+AskUserQuestion({
+  questions: [
+    {
+      question: `Commits will go to "${activeBranch}". Is this correct?`,
+      header: "Target Branch",
+      options: [
+        { label: "Yes, commit here", description: "Proceed with commit" },
+        {
+          label: "No, create new branch",
+          description: "Create a new branch first",
+        },
+      ],
+      multiSelect: false,
+    },
+  ],
+});
+```
+
+If user chooses new branch:
+
+```bash
+but branch new <feature-name>
+# New branch is now active
+```
+
+## Step 3: Check for Sensitive Files
 
 ```bash
 git status --porcelain | grep -E '\.(env|pem|key)$|credentials|secrets' && \
   echo "⚠️ Sensitive files detected - review before committing"
 ```
 
-## Step 3: Commit Using MCP (Preferred for AI workflows)
+## Step 4: Commit Using MCP (Preferred for AI workflows)
 
 Use the GitButler MCP tool to auto-commit changes with context:
 
@@ -54,7 +92,7 @@ The MCP tool will:
 - Generate semantic commit messages
 - Handle the commit workflow automatically
 
-## Step 4: Alternative - CLI Commit (Manual)
+## Step 5: Alternative - CLI Commit (Manual)
 
 If MCP not available or for manual control:
 
@@ -68,7 +106,7 @@ Or let GitButler AI-generate the message:
 but commit
 ```
 
-## Step 5: Confirm
+## Step 6: Confirm
 
 ```bash
 but branch list
@@ -96,6 +134,7 @@ type(scope): description
 
 <success_criteria>
 
+- [ ] Active branch verified before commit
 - [ ] No sensitive files committed
 - [ ] Conventional format used
 - [ ] Commit created successfully
