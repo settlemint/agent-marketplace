@@ -68,8 +68,16 @@ if (targetBranch) {
 
   // Verify the target branch is active (marked with *)
   const status = Bash({ command: "but status" });
-  // If target branch is not active, the MCP tool will commit to wrong branch
-  // Warn user and suggest creating/activating the branch
+
+  // Check if target branch has the * marker (active)
+  // Pattern: look for line containing targetBranch with * prefix
+  const isActive =
+    status.includes(`*${targetBranch}`) || status.includes(`* ${targetBranch}`);
+
+  if (!isActive) {
+    // Activate the target branch so commits go to it
+    Bash({ command: `but branch apply "${targetBranch}"` });
+  }
 }
 ```
 
