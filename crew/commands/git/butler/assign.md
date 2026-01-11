@@ -21,23 +21,22 @@ Manually assign files to a virtual branch using the `rub` command.
 
 ## Step 1: Check GitButler Active
 
-If `GITBUTLER_ACTIVE=false`:
-
+```javascript
+if (GITBUTLER_ACTIVE === false) {
+  // Output: "GitButler is not initialized. File assignment requires GitButler."
+  // Exit
+}
 ```
-GitButler is not initialized. File assignment requires GitButler.
-```
-
-Exit if not active.
 
 ## Step 2: Get Current State
 
-```bash
-but branch list
+```javascript
+Bash({ command: "but branch list" });
 ```
 
 ## Step 3: Parse Arguments or Ask
 
-If both file and branch provided, proceed.
+If both file and branch provided, proceed to Step 4.
 
 Otherwise:
 
@@ -56,8 +55,14 @@ AskUserQuestion({
           label: "Unassign file",
           description: "Remove file from all branches",
         },
-        { label: "Move commit to branch", description: "Relocate a commit" },
-        { label: "Squash commits", description: "Combine two commits" },
+        {
+          label: "Move commit to branch",
+          description: "Relocate a commit",
+        },
+        {
+          label: "Squash commits",
+          description: "Combine two commits",
+        },
       ],
       multiSelect: false,
     },
@@ -69,45 +74,45 @@ AskUserQuestion({
 
 **Assign file to branch:**
 
-```bash
-but rub ${file} ${branch}
+```javascript
+Bash({ command: `but rub "${file}" "${branch}"` });
 ```
 
 **Unassign file:**
 
-```bash
-but rub ${file} 00
+```javascript
+Bash({ command: `but rub "${file}" 00` });
 ```
 
 **Move commit to branch:**
 
-```bash
-but rub ${commitSha} ${branch}
+```javascript
+Bash({ command: `but rub "${commitSha}" "${branch}"` });
 ```
 
 **Squash commits:**
 
-```bash
-but rub ${commit1} ${commit2}
+```javascript
+Bash({ command: `but rub "${commit1}" "${commit2}"` });
 ```
 
 ## Step 5: Confirm
 
-```bash
-but branch list
+```javascript
+Bash({ command: "but branch list" });
 ```
 
 </workflow>
 
 <rub_reference>
 
-| Operation   | Command                   | Result                  |
-| ----------- | ------------------------- | ----------------------- |
-| Assign file | `but rub FILE BRANCH`     | File moves to branch    |
-| Unassign    | `but rub FILE 00`         | File becomes unassigned |
-| Amend       | `but rub FILE COMMIT`     | Add file to commit      |
-| Move commit | `but rub COMMIT BRANCH`   | Commit moves to branch  |
-| Squash      | `but rub COMMIT1 COMMIT2` | Commits combined        |
+| Operation   | Command                                        | Result                  |
+| ----------- | ---------------------------------------------- | ----------------------- |
+| Assign file | `Bash({ command: "but rub FILE BRANCH" })`     | File moves to branch    |
+| Unassign    | `Bash({ command: "but rub FILE 00" })`         | File becomes unassigned |
+| Amend       | `Bash({ command: "but rub FILE COMMIT" })`     | Add file to commit      |
+| Move commit | `Bash({ command: "but rub COMMIT BRANCH" })`   | Commit moves to branch  |
+| Squash      | `Bash({ command: "but rub COMMIT1 COMMIT2" })` | Commits combined        |
 
 </rub_reference>
 

@@ -21,36 +21,53 @@ Show virtual branch status and upstream integration state. Suggest actions for c
 
 ## Step 1: Check GitButler Active
 
-If `GITBUTLER_ACTIVE=false`:
-
-```
-GitButler is not initialized in this repository.
-
-To initialize: but init --target-branch origin/main
+```javascript
+if (GITBUTLER_ACTIVE === false) {
+  // Output: "GitButler is not initialized in this repository."
+  // Output: "To initialize: but init --target-branch origin/main"
+  // Exit
+}
 ```
 
 ## Step 2: Show Virtual Branches
 
-```bash
-but branch list
+```javascript
+Bash({ command: "but branch list" });
 ```
 
 ## Step 3: Show Base Status
 
-```bash
-but base check
+```javascript
+Bash({ command: "but base check" });
 ```
 
-## Step 4: Suggest Actions
+## Step 4: Check for Stale Branches
 
-Based on output:
+```javascript
+const result = Bash({
+  command:
+    "but branch -j | jq '[.branches[] | select(.commitsAhead == 0)] | length'",
+});
+const staleCount = parseInt(result.trim(), 10);
 
-| Situation           | Suggestion                           |
-| ------------------- | ------------------------------------ |
-| Upstream ahead      | Run `crew:git:butler:sync` to rebase |
-| Uncommitted changes | Run `crew:git:butler:commit`         |
-| Branch ready        | Run `crew:git:butler:push`           |
-| Conflicts detected  | Edit files, then commit resolution   |
+if (staleCount > 0) {
+  // Output: "⚠️ Found ${staleCount} stale branch(es) (0 commits ahead)."
+  // Output: "   These have been merged and can be cleaned up."
+  // Output: "   Run: crew:git:butler:cleanup"
+}
+```
+
+## Step 5: Suggest Actions
+
+Based on output, suggest appropriate next steps:
+
+| Situation                | Suggestion                                    |
+| ------------------------ | --------------------------------------------- |
+| Upstream ahead           | `Skill({ skill: "crew:git:butler:sync" })`    |
+| Uncommitted changes      | `Skill({ skill: "crew:git:butler:commit" })`  |
+| Branch ready             | `Skill({ skill: "crew:git:butler:push" })`    |
+| Conflicts detected       | Edit files, then commit resolution            |
+| **Stale branches exist** | `Skill({ skill: "crew:git:butler:cleanup" })` |
 
 </workflow>
 
@@ -58,6 +75,7 @@ Based on output:
 
 - [ ] Virtual branches listed
 - [ ] Base status shown
+- [ ] Stale branches highlighted if any
 - [ ] Actions suggested for current state
 
 </success_criteria>
