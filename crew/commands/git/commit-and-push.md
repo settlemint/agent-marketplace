@@ -1,7 +1,7 @@
 ---
 name: crew:git:commit-and-push
 description: Create a conventional commit and push to origin
-argument-hint: "[--branch <name>] [commit message]"
+argument-hint: "[commit message]"
 allowed-tools:
   - Skill
 ---
@@ -12,7 +12,7 @@ allowed-tools:
 
 <objective>
 
-Commit changes and push. Delegates to crew:git:commit and crew:git:push. Passes through --branch argument for GitButler support.
+Commit changes and push. Delegates to crew:git:commit and crew:git:push.
 
 </objective>
 
@@ -21,17 +21,13 @@ Commit changes and push. Delegates to crew:git:commit and crew:git:push. Passes 
 ## Step 1: Commit
 
 ```javascript
-// Pass through args (including --branch for GitButler)
 Skill({ skill: "crew:git:commit", args: args });
 ```
 
 ## Step 2: Push
 
 ```javascript
-// Extract branch name if provided, pass to push
-const branchMatch = args?.match(/--branch\s+(\S+)/);
-const branchArg = branchMatch ? branchMatch[1] : "";
-Skill({ skill: "crew:git:push", args: branchArg });
+Skill({ skill: "crew:git:push" });
 ```
 
 </workflow>

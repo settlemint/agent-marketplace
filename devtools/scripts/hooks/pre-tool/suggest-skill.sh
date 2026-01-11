@@ -43,11 +43,6 @@ if [[ $CMD_LINE =~ helm|kubectl ]]; then
 	SUGGESTION="Tip: Check the helm skill for chart patterns and values.yaml conventions."
 fi
 
-# Git machete
-if [[ $CMD_LINE =~ git\ machete|machete ]]; then
-	SUGGESTION="Tip: Check the git-machete skill for stacked PR workflows."
-fi
-
 # Output suggestion if we have one
 if [[ -n $SUGGESTION ]]; then
 	jq -n --arg msg "$SUGGESTION" '{

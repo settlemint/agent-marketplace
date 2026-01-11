@@ -582,21 +582,17 @@ Before any PR merges:
 
 ### Git Commands
 
-| Command                  | Description                       |
-| ------------------------ | --------------------------------- |
-| `/crew:git:commit`       | Create conventional commit        |
-| `/crew:git:pr`           | Commit, push, and open PR         |
-| `/crew:git:push`         | Push current branch               |
-| `/crew:git:branch`       | Create feature branch             |
-| `/crew:git:sync`         | Sync with main                    |
-| `/crew:git:stack-add`    | Add branch to machete stack       |
-| `/crew:git:stack-status` | Show stack status                 |
-| `/crew:git:traverse`     | Sync all stacked branches         |
-| `/crew:git:slide-out`    | Remove merged branches from stack |
-| `/crew:git:fix-reviews`  | Resolve PR review comments        |
-| `/crew:git:update-pr`    | Update PR annotations             |
-| `/crew:git:clean`        | Clean stale branches              |
-| `/crew:git:undo`         | Undo last commit (keeps changes)  |
+| Command                 | Description                      |
+| ----------------------- | -------------------------------- |
+| `/crew:git:commit`      | Create conventional commit       |
+| `/crew:git:pr`          | Commit, push, and open PR        |
+| `/crew:git:push`        | Push current branch              |
+| `/crew:git:branch`      | Create feature branch            |
+| `/crew:git:sync`        | Sync with main                   |
+| `/crew:git:fix-reviews` | Resolve PR review comments       |
+| `/crew:git:update-pr`   | Update PR annotations            |
+| `/crew:git:clean`       | Clean stale branches             |
+| `/crew:git:undo`        | Undo last commit (keeps changes) |
 
 ---
 
@@ -688,7 +684,7 @@ Hooks are the nervous system of the Agent Native Development Workflow. They fire
 
 ### Why Hooks Matter
 
-**The invisible hand problem**: AI assistants don't know things you haven't told them. They don't know your git branch status. They don't know linting rules. They don't know about your machete stack. Hooks inject this context automatically.
+**The invisible hand problem**: AI assistants don't know things you haven't told them. They don't know your git branch status. They don't know linting rules. They don't know what state your project is in. Hooks inject this context automatically.
 
 **The consistency problem**: Humans forget. We forget to lint. We forget to commit. We forget to update state. Hooks enforce consistency mechanically - after every file edit, lint runs. After every session, state saves. No discipline required.
 
@@ -713,7 +709,7 @@ Hooks are the nervous system of the Agent Native Development Workflow. They fire
 │  [Tool Executes]                                                │
 │       │                                                         │
 │       ▼                                                         │
-│  PostToolUse ──► lint, sync machete, track agents               │
+│  PostToolUse ──► lint, track agents                             │
 │       │                                                         │
 │       ▼                                                         │
 │  PreCompact ──► save all state before context compaction        │
@@ -729,11 +725,11 @@ Hooks are the nervous system of the Agent Native Development Workflow. They fire
 ```json
 {
   "hooks": {
-    "SessionStart": [...],    // Restore state, check stack
+    "SessionStart": [...],    // Restore state
     "PreCompact": [...],      // Save state before compaction
     "Stop": [...],            // Check loop continuation
     "PreToolUse": [...],      // Suggest skills
-    "PostToolUse": [...],     // Lint, sync machete, track agents
+    "PostToolUse": [...],     // Lint, track agents
     "UserPromptSubmit": [...]  // Enforce task-first workflow
   }
 }
@@ -751,10 +747,6 @@ Restores context after compaction:
 - Detects stuck agents from previous session
 
 **Performance**: Single `jq` call extracts all fields at once (~400ms savings).
-
-**[check-stack-status.sh](https://github.com/settlemint/agent-marketplace/blob/main/crew/scripts/hooks/session-start/check-stack-status.sh)**
-
-Reports git-machete stack status and worktree safety warnings.
 
 **[check-linters.sh](https://github.com/settlemint/agent-marketplace/blob/main/crew/scripts/hooks/session-start/check-linters.sh)**
 
@@ -796,10 +788,6 @@ Auto-formats after Edit/Write:
 - Runs forge fmt for Solidity
 - Runs shfmt + shellcheck for shell scripts
 
-**[sync-machete-stack.sh](https://github.com/settlemint/agent-marketplace/blob/main/crew/scripts/hooks/post-tool/sync-machete-stack.sh)**
-
-Keeps git-machete stack in sync after branch operations.
-
 **[track-agent-spawn.sh](https://github.com/settlemint/agent-marketplace/blob/main/crew/scripts/hooks/post-tool/track-agent-spawn.sh)** / **[track-agent-complete.sh](https://github.com/settlemint/agent-marketplace/blob/main/crew/scripts/hooks/post-tool/track-agent-complete.sh)**
 
 Maintains agent registry in `.claude/branches/{branch}/agents.json`:
@@ -822,9 +810,9 @@ Suggests relevant skills based on command:
 Commands in markdown with `!` prefix execute inline without tool calls:
 
 ```markdown
-<worktree_status>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/worktree-context.sh`
-</worktree_status>
+<git_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/commit-context.sh`
+</git_context>
 ```
 
 This gathers all context in a single invocation, dramatically reducing LLM roundtrips.
@@ -1107,48 +1095,11 @@ TodoWrite({
 
 Git is already the backbone of modern software development. The Agent Native Development Workflow doesn't replace git - it enhances it with sophisticated branch management and PR workflows that enable truly parallel feature development.
 
-### Why Advanced Git Integration?
-
-**The big PR problem**: Large features mean large PRs. Large PRs mean slow reviews, merge conflicts, and deployment risk. The solution is smaller, stacked PRs - but managing stacked branches manually is tedious and error-prone.
-
-**The concurrent work problem**: Developers often need to work on multiple features simultaneously. Context-switching between branches loses mental state. Git worktrees solve this by allowing multiple branches to be checked out in different directories.
+### Why Git Integration Matters
 
 **The convention problem**: Every team debates commit message formats, branch naming, PR templates. The workflow encodes conventions directly, eliminating debates and ensuring consistency.
 
-### Git-Machete for Stacked Branches
-
-Git-machete enables stacked PRs for parallel feature development:
-
-```bash
-# View stack status
-git machete status
-
-# Sync all branches with parents and remotes
-git machete traverse
-
-# Remove merged branches
-git machete slide-out
-
-# Create PR with stack context
-git machete github create-pr
-```
-
-### Worktrees for Concurrent Work
-
-Worktrees allow multiple branches to be checked out simultaneously:
-
-```bash
-# Create worktree for feature branch
-git worktree add ../feature-branch feat/new-feature
-
-# Each worktree has independent working directory
-# Share the same git objects (efficient)
-```
-
-**Worktree Safety Rules**:
-
-- Safe: `git machete update`, `git machete status`
-- Dangerous: `git machete traverse`, `git checkout <branch>`
+**The big PR problem**: Large features mean large PRs. Large PRs mean slow reviews, merge conflicts, and deployment risk. The workflow encourages smaller, focused PRs with clear context.
 
 ### Conventional Commits
 
@@ -1281,12 +1232,11 @@ The devtools plugin provides framework expertise (24 skills total):
 
 ### Infrastructure Skills
 
-| Skill                  | Triggers                 | Purpose                                       |
-| ---------------------- | ------------------------ | --------------------------------------------- |
-| `devtools:turbo`       | `turbo.json`, `monorepo` | Turborepo monorepo build system               |
-| `devtools:helm`        | `chart`, `values.yaml`   | Kubernetes Helm charts                        |
-| `devtools:restate`     | `ctx.run`, `ctx.sleep`   | Durable execution for fault-tolerant services |
-| `devtools:git-machete` | `stacked`, `machete`     | Git branch management with stacked PRs        |
+| Skill              | Triggers                 | Purpose                                       |
+| ------------------ | ------------------------ | --------------------------------------------- |
+| `devtools:turbo`   | `turbo.json`, `monorepo` | Turborepo monorepo build system               |
+| `devtools:helm`    | `chart`, `values.yaml`   | Kubernetes Helm charts                        |
+| `devtools:restate` | `ctx.run`, `ctx.sleep`   | Durable execution for fault-tolerant services |
 
 ### Utility Skills
 
@@ -1485,7 +1435,6 @@ This script automatically:
 
 - Claude Code CLI (`claude`) - [Get it here](https://claude.ai/code)
 - Node.js 20+ and bun
-- git-machete (`brew install git-machete` or `pipx install git-machete`)
 - GitHub CLI (`gh`)
 
 ### Manual Install
@@ -1751,23 +1700,6 @@ PR includes values diff for each environment
 
 # Simply continue:
 /crew:restart
-```
-
-### Example: Stacked PRs
-
-```bash
-# Create base feature branch
-/crew:git:branch feat/base-feature
-
-# Work on it, then create stacked branch
-/crew:git:branch feat/dependent-feature
-/crew:git:stack-add --onto feat/base-feature
-
-# Create PRs with stack annotations
-/crew:git:pr
-
-# When base merges, update stack
-/crew:git:slide-out feat/base-feature
 ```
 
 ---

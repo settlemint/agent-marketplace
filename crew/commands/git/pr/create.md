@@ -8,37 +8,17 @@ allowed-tools:
   - Read
 ---
 
-<butler_context>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/gitbutler-context.sh`
-</butler_context>
-
-<stack_context>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh 2>&1`
-</stack_context>
-
 <pr_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/pr-context.sh 2>&1`
 </pr_context>
 
 <objective>
 
-Stage, commit, ask PR options (stacking, draft, auto-merge), create PR, update annotations.
+Stage, commit, ask PR options (draft, auto-merge), create PR.
 
 </objective>
 
 <workflow>
-
-## Step 0: Check GitButler
-
-If `GITBUTLER_ACTIVE=true` from `<butler_context>`:
-
-GitButler uses a different workflow for PRs:
-
-1. Use `crew:git:butler:commit` for committing (or MCP tool)
-2. Use `crew:git:butler:push` to push virtual branch
-3. Then create PR with `gh pr create`
-
-Inform user and adapt workflow accordingly - skip traditional commit/push steps.
 
 ## Step 1: Check State
 
@@ -47,56 +27,14 @@ git branch --show-current && git status --short
 ```
 
 If on main → create feature branch first.
-If GitButler active → skip branch creation, use virtual branches.
 
 ## Step 2: Stage and Commit
-
-**If GitButler active:**
-
-```javascript
-// Get the target branch name (from args or active virtual branch)
-const targetBranch = args || getActiveVirtualBranch();
-
-// Use butler:commit with explicit branch to ensure correct assignment
-Skill({ skill: "crew:git:butler:commit", args: `--branch ${targetBranch}` });
-```
-
-**If traditional:**
 
 ```bash
 git add . && git commit -m "type(scope): msg"
 ```
 
-## Step 3: Ask Stacking (if not machete-managed)
-
-If `<stack_context>` shows "is NOT in machete layout":
-
-```javascript
-AskUserQuestion({
-  questions: [
-    {
-      question: "Add this branch to a stack?",
-      header: "Stacking",
-      options: [
-        {
-          label: "No (Recommended)",
-          description: "Standalone PR against main",
-        },
-        { label: "Stack on parent", description: "Add to machete stack" },
-      ],
-      multiSelect: false,
-    },
-  ],
-});
-```
-
-If stacking selected:
-
-```bash
-git machete add $(git branch --show-current) --onto <selected-parent>
-```
-
-## Step 4: Ask PR Options
+## Step 3: Ask PR Options
 
 ```javascript
 AskUserQuestion({
@@ -129,7 +67,7 @@ AskUserQuestion({
 });
 ```
 
-## Step 5: Generate PR Body
+## Step 4: Generate PR Body
 
 Select template based on commit type:
 
@@ -141,43 +79,21 @@ Select template based on commit type:
 Check for plan file: `ls .claude/plans/*.md 2>/dev/null`
 If exists, extract motivation and design decisions.
 
-## Step 6: Create PR
-
-**If GitButler active:**
-
-```javascript
-// Push via butler workflow
-Skill({ skill: "crew:git:butler:push" });
-```
-
-Then create PR:
-
-```bash
-gh pr create --title "type(scope): description" --body "..." [--draft]
-```
-
-**If machete-managed:**
-
-```bash
-git machete github create-pr [--draft]
-git machete github anno-prs
-```
-
-**If traditional:**
+## Step 5: Create PR
 
 ```bash
 git push -u origin $(git branch --show-current)
 gh pr create --title "type(scope): description" --body "..." [--draft]
 ```
 
-## Step 7: Enable Auto-merge (if selected)
+## Step 6: Enable Auto-merge (if selected)
 
 ```bash
 PR_NUM=$(gh pr view --json number -q '.number')
 gh pr merge $PR_NUM --auto --squash
 ```
 
-## Step 8: Update PR Annotations
+## Step 7: Update PR Annotations
 
 ```javascript
 Skill({ skill: "crew:git:pr:update" });
@@ -190,9 +106,7 @@ Return PR URL.
 <success_criteria>
 
 - [ ] Changes committed
-- [ ] Stacking configured (if selected)
 - [ ] PR created (draft or ready)
 - [ ] Auto-merge enabled (if selected)
-- [ ] Machete annotations updated (if stacked)
 
 </success_criteria>

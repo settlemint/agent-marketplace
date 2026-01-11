@@ -1,38 +1,14 @@
 ---
 name: crew:git:commit
 description: Create a conventional commit
-argument-hint: "[--branch <name>] [commit message]"
+argument-hint: "[commit message]"
 allowed-tools:
   - Bash
-  - Skill
 ---
-
-<butler_context>
-!`${CLAUDE_PLUGIN_ROOT}/scripts/git/gitbutler-context.sh`
-</butler_context>
 
 <commit_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/commit-context.sh`
 </commit_context>
-
-<gitbutler_redirect>
-
-**When GitButler is active, use the butler commit workflow.**
-
-If `GITBUTLER_ACTIVE=true` from `<butler_context>`:
-
-```
-GitButler is active. Redirecting to butler commit workflow.
-```
-
-Delegate to `crew:git:butler:commit` with any branch argument:
-
-```javascript
-// Pass through --branch argument if provided
-Skill({ skill: "crew:git:butler:commit", args: args });
-```
-
-</gitbutler_redirect>
 
 <objective>
 
@@ -41,10 +17,6 @@ Create conventional commit. Check for sensitive files. Format: `type(scope): des
 </objective>
 
 <workflow>
-
-## Step 0: Check GitButler
-
-If GitButler is active, delegate to `crew:git:butler:commit` and exit.
 
 ## Step 1: Check for Sensitive Files
 

@@ -10,8 +10,8 @@ set -uo pipefail
 # Check if we have a PR for this branch
 PR_JSON=$(gh pr view --json number,title,body,commits 2>/dev/null)
 if [[ -z $PR_JSON ]]; then
-  # No PR exists, nothing to check
-  exit 0
+	# No PR exists, nothing to check
+	exit 0
 fi
 
 PR_NUMBER=$(echo "$PR_JSON" | jq -r '.number')
@@ -49,50 +49,48 @@ REASONS=()
 
 # Multiple commits but title only mentions one thing
 if [[ $COMMIT_COUNT -gt 1 ]]; then
-  # Check if title seems too narrow for the scope
-  if [[ ${#SCOPE_PARTS[@]} -gt 1 ]]; then
-    NEEDS_UPDATE="true"
-    REASONS+=("PR has ${COMMIT_COUNT} commits spanning multiple types: ${SCOPE_PARTS[*]}")
-  fi
+	# Check if title seems too narrow for the scope
+	if [[ ${#SCOPE_PARTS[@]} -gt 1 ]]; then
+		NEEDS_UPDATE="true"
+		REASONS+=("PR has ${COMMIT_COUNT} commits spanning multiple types: ${SCOPE_PARTS[*]}")
+	fi
 fi
 
 # Check if body is too short for the scope
 BODY_LENGTH=${#PR_BODY}
 if [[ $BODY_LENGTH -lt 100 && $COMMIT_COUNT -gt 2 ]]; then
-  NEEDS_UPDATE="true"
-  REASONS+=("PR body is short ($BODY_LENGTH chars) but has $COMMIT_COUNT commits")
+	NEEDS_UPDATE="true"
+	REASONS+=("PR body is short ($BODY_LENGTH chars) but has $COMMIT_COUNT commits")
 fi
 
 # Check if significant files changed but not mentioned
 if [[ $FILE_COUNT -gt 10 ]]; then
-  NEEDS_UPDATE="true"
-  REASONS+=("$FILE_COUNT files changed - ensure PR description covers the scope")
+	NEEDS_UPDATE="true"
+	REASONS+=("$FILE_COUNT files changed - ensure PR description covers the scope")
 fi
 
 # Output results
 if [[ $NEEDS_UPDATE == "true" ]]; then
-  echo ""
-  echo "## PR Scope Review (PR #${PR_NUMBER})"
-  echo ""
-  echo "**Current title:** $PR_TITLE"
-  echo ""
-  echo "**Commits in PR ($COMMIT_COUNT):**"
-  echo '```'
-  echo "$COMMIT_MESSAGES" | head -10
-  [[ $COMMIT_COUNT -gt 10 ]] && echo "... and $((COMMIT_COUNT - 10)) more"
-  echo '```'
-  echo ""
-  echo "**Scope:** ${SCOPE_PARTS[*]:-"(no conventional commits)"}"
-  echo "**Files changed:** $FILE_COUNT"
-  echo ""
-  echo "### Suggestions"
-  for reason in "${REASONS[@]}"; do
-    echo "- $reason"
-  done
-  echo ""
-  echo "**ACTION REQUIRED:** Use Skill(skill: \"crew:git:pr:update\") to update title and body"
-  echo ""
-  echo "This will preserve git-machete generated sections automatically."
+	echo ""
+	echo "## PR Scope Review (PR #${PR_NUMBER})"
+	echo ""
+	echo "**Current title:** $PR_TITLE"
+	echo ""
+	echo "**Commits in PR ($COMMIT_COUNT):**"
+	echo '```'
+	echo "$COMMIT_MESSAGES" | head -10
+	[[ $COMMIT_COUNT -gt 10 ]] && echo "... and $((COMMIT_COUNT - 10)) more"
+	echo '```'
+	echo ""
+	echo "**Scope:** ${SCOPE_PARTS[*]:-"(no conventional commits)"}"
+	echo "**Files changed:** $FILE_COUNT"
+	echo ""
+	echo "### Suggestions"
+	for reason in "${REASONS[@]}"; do
+		echo "- $reason"
+	done
+	echo ""
+	echo "**ACTION REQUIRED:** Use Skill(skill: \"crew:git:pr:update\") to update title and body"
 fi
 
 exit 0
