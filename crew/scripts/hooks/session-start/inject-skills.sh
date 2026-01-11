@@ -33,9 +33,19 @@ cat <<'EOF'
 | `/crew:git:branch:new` | Create feature branch |
 | `/crew:git:sync` | Sync branch with main |
 
+### TDD ENFORCEMENT (MANDATORY)
+**ALL code changes require Test-Driven Development:**
+1. Load skill: `Skill({ skill: "devtools:tdd-typescript" })`
+2. Write failing test FIRST (RED)
+3. Write minimal code to pass (GREEN)
+4. Refactor while green (REFACTOR)
+
+Coverage: 80% lines, 75% branches, 90% functions, 100% critical paths
+
 ### Skills - Crew Plugin (auto-loaded by triggers)
 | Skill | Triggers | Purpose |
 |-------|----------|---------|
+| tdd-enforcement | implement, add, create, fix | Universal TDD enforcement |
 | ast-grep | rename, replace, refactor, imports | AST-aware code search & refactor |
 | git | commit, branch, pr | Git conventions and workflows |
 | skill-builder | skill, create skill | Skill creation framework |
