@@ -6,6 +6,10 @@ allowed-tools:
   - Bash
 ---
 
+<butler_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/gitbutler-context.sh`
+</butler_context>
+
 <pr_info>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/gh-pr-info.sh 2>&1`
 </pr_info>
@@ -13,6 +17,13 @@ allowed-tools:
 <stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh 2>&1`
 </stack_context>
+
+<gitbutler_note>
+
+This command works with GitButler - it only updates PR metadata via GitHub CLI,
+which is compatible with virtual branches. No git commit/push operations are performed.
+
+</gitbutler_note>
 
 <objective>
 

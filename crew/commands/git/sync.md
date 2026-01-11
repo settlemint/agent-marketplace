@@ -3,7 +3,12 @@ name: crew:git:sync
 description: Sync current branch with main (or parent if stacked)
 allowed-tools:
   - Bash
+  - Skill
 ---
+
+<butler_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/gitbutler-context.sh`
+</butler_context>
 
 <sync_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/sync-context.sh`
@@ -12,6 +17,24 @@ allowed-tools:
 <stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh`
 </stack_context>
+
+<gitbutler_redirect>
+
+**When GitButler is active, use the butler sync workflow.**
+
+If `GITBUTLER_ACTIVE=true` from `<butler_context>`:
+
+```
+GitButler is active. Redirecting to butler sync workflow.
+```
+
+Delegate to `crew:git:butler:sync` and exit:
+
+```javascript
+Skill({ skill: "crew:git:butler:sync" });
+```
+
+</gitbutler_redirect>
 
 <objective>
 

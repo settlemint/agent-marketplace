@@ -6,6 +6,10 @@ allowed-tools:
   - Skill
 ---
 
+<butler_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/gitbutler-context.sh`
+</butler_context>
+
 <push_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/push-context.sh 2>&1`
 </push_context>
@@ -13,6 +17,24 @@ allowed-tools:
 <stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh 2>&1`
 </stack_context>
+
+<gitbutler_redirect>
+
+**When GitButler is active, use the butler push workflow.**
+
+If `GITBUTLER_ACTIVE=true` from `<butler_context>`:
+
+```
+GitButler is active. Redirecting to butler push workflow.
+```
+
+Delegate to `crew:git:butler:push` and exit:
+
+```javascript
+Skill({ skill: "crew:git:butler:push" });
+```
+
+</gitbutler_redirect>
 
 <objective>
 

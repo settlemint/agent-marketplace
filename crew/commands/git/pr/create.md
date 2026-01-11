@@ -8,6 +8,10 @@ allowed-tools:
   - Read
 ---
 
+<butler_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/gitbutler-context.sh`
+</butler_context>
+
 <stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh 2>&1`
 </stack_context>
@@ -24,6 +28,18 @@ Stage, commit, ask PR options (stacking, draft, auto-merge), create PR, update a
 
 <workflow>
 
+## Step 0: Check GitButler
+
+If `GITBUTLER_ACTIVE=true` from `<butler_context>`:
+
+GitButler uses a different workflow for PRs:
+
+1. Use `crew:git:butler:commit` for committing (or MCP tool)
+2. Use `crew:git:butler:push` to push virtual branch
+3. Then create PR with `gh pr create`
+
+Inform user and adapt workflow accordingly - skip traditional commit/push steps.
+
 ## Step 1: Check State
 
 ```bash
@@ -31,8 +47,18 @@ git branch --show-current && git status --short
 ```
 
 If on main → create feature branch first.
+If GitButler active → skip branch creation, use virtual branches.
 
 ## Step 2: Stage and Commit
+
+**If GitButler active:**
+
+```javascript
+// Use MCP tool or butler:commit
+Skill({ skill: "crew:git:butler:commit" });
+```
+
+**If traditional:**
 
 ```bash
 git add . && git commit -m "type(scope): msg"
@@ -113,6 +139,19 @@ Check for plan file: `ls .claude/plans/*.md 2>/dev/null`
 If exists, extract motivation and design decisions.
 
 ## Step 6: Create PR
+
+**If GitButler active:**
+
+```javascript
+// Push via butler workflow
+Skill({ skill: "crew:git:butler:push" });
+```
+
+Then create PR:
+
+```bash
+gh pr create --title "type(scope): description" --body "..." [--draft]
+```
 
 **If machete-managed:**
 

@@ -12,6 +12,10 @@ allowed-tools:
   - Skill
 ---
 
+<butler_context>
+!`${CLAUDE_PLUGIN_ROOT}/scripts/git/gitbutler-context.sh`
+</butler_context>
+
 <stack_context>
 !`${CLAUDE_PLUGIN_ROOT}/scripts/git/machete-context.sh 2>&1`
 </stack_context>
@@ -132,6 +136,18 @@ Task({
 ```
 
 ## Step 8: Commit and Push
+
+**If GitButler active (from `<butler_context>`):**
+
+Use MCP tool or butler commands:
+
+```javascript
+// MCP auto-commit handles staging and committing
+// Then push via butler
+Skill({ skill: "crew:git:butler:push" });
+```
+
+**If traditional:**
 
 ```bash
 git add -A
