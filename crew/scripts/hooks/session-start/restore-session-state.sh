@@ -80,12 +80,10 @@ STATE_DATA=$(jq -r '
 ' "$STATE_FILE" 2>/dev/null)
 
 # Parse tab-separated values into variables
-IFS=$'\t' read -r COMPACTED_AT PLAN_EXISTS PLAN_FILE PLAN_PREVIEW_ESC PENDING_COUNT TODOS_JSON \
+# Note: _ is used for unused PLAN_PREVIEW_ESC (removed for token savings)
+IFS=$'\t' read -r COMPACTED_AT PLAN_EXISTS PLAN_FILE _ PENDING_COUNT TODOS_JSON \
 	ACTIVE_WORKFLOW WORKFLOW_ARGS LOOP_ACTIVE LOOP_ITERATION LOOP_MAX LOOP_PROMISE \
 	TASKS_PENDING TASKS_P1 TASKS_P2 TASKS_P3 NEXT_TASK <<<"$STATE_DATA"
-
-# Unescape newlines in plan preview
-PLAN_PREVIEW=$(echo -e "$PLAN_PREVIEW_ESC")
 
 # Exit if no compaction timestamp (invalid state file)
 if [[ -z $COMPACTED_AT ]]; then
@@ -104,12 +102,9 @@ if [[ -n $ACTIVE_WORKFLOW ]]; then
 	echo ""
 fi
 
-# Show plan context if exists (include preview to avoid file read)
-if [[ $PLAN_EXISTS == "true" && -n $PLAN_PREVIEW ]]; then
-	echo "CONTEXT: Active plan at $PLAN_FILE"
-	echo "─────────────────────────────────────────"
-	echo "$PLAN_PREVIEW"
-	echo "─────────────────────────────────────────"
+# Show plan reference if exists (preview removed to save ~500 tokens)
+if [[ $PLAN_EXISTS == "true" && -n $PLAN_FILE ]]; then
+	echo "CONTEXT: Active plan at $PLAN_FILE (use Read tool if needed)"
 	echo ""
 fi
 

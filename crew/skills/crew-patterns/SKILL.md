@@ -9,59 +9,32 @@ context: fork
 
 <objective>
 
-Reusable patterns for crew command implementation. All crew commands reference these patterns instead of duplicating code examples.
+Crew-specific patterns. For orchestration (Task, TodoWrite, AskUserQuestion), use `n-skills:orchestration`.
 
 </objective>
 
-<quick_start>
-
-Reference patterns by name in commands:
-
-```xml
-<!-- In command files -->
-<process>
-Use <pattern name="spawn-batch"/> for parallel agent execution.
-Use <pattern name="test-runner"/> after each batch.
-</process>
-```
-
-</quick_start>
-
 <routing>
 
-| Pattern                     | Purpose                                      |
-| --------------------------- | -------------------------------------------- |
-| `user-questions-constraint` | **MANDATORY** - Use AskUserQuestion always   |
-| `spawn-batch`               | Launch parallel agents (max 6)               |
-| `test-runner`               | Bash subagent for test execution             |
-| `large-output`              | Bash subagent for commands with large output |
-| `todo-progress`             | TodoWrite status tracking                    |
-| `ask-user`                  | AskUserQuestion templates                    |
-| `task-file`                 | Task file frontmatter format                 |
-| `collect-results`           | TaskOutput collection pattern                |
-| `always-works`              | Verification sanity checks for builds        |
+| Pattern       | Reference                                 | Purpose                          |
+| ------------- | ----------------------------------------- | -------------------------------- |
+| Orchestration | `n-skills:orchestration`                  | Task, TodoWrite, AskUserQuestion |
+| Bash subagent | `references/patterns.md#bash-subagent`    | Large output handling            |
+| Task files    | `references/patterns.md#task-file`        | File-based task format           |
+| Branch state  | `references/patterns.md#branch-state`     | State persistence                |
+| Build checks  | `references/always-works-verification.md` | Sanity checks                    |
 
 </routing>
 
 <constraints>
 
-**CRITICAL: Follow `<pattern name="user-questions-constraint"/>` at ALL times.**
-
-Never output plain text questions with bullet options. Always use AskUserQuestion tool.
+**CRITICAL: Always use AskUserQuestion for user choices (see `references/patterns.md#user-questions-constraint`).**
 
 </constraints>
-
-<references>
-
-- `references/patterns.md` - All pattern definitions
-- `references/always-works-verification.md` - Build verification sanity checks
-
-</references>
 
 <success_criteria>
 
 - Commands reference patterns by name
-- No duplicate code examples across commands
-- Single source of truth for each pattern
+- Orchestration delegated to n-skills:orchestration
+- Crew-specific patterns in references/patterns.md
 
 </success_criteria>
