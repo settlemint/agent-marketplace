@@ -3,24 +3,15 @@ name: crew:work
 description: Execute plans perfectly using orchestrated agents
 argument-hint: "[plan slug]"
 allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - Grep
-  - Glob
   - Task
+  - TaskOutput
   - AskUserQuestion
   - TodoWrite
-  - WebFetch
-  - WebSearch
-  - MCPSearch
   - Skill
 skills:
   - crew:crew-patterns
   - crew:todo-tracking
   - crew:git
-  - devtools:tdd-typescript
   - n-skills:orchestration
 hooks:
   PostToolUse: false
@@ -29,172 +20,202 @@ hooks:
 
 <objective>
 
-Execute a plan using orchestrated agents. Claude decides which agents to spawn based on task needs. Uses n-skills:orchestration for parallel work and agent selection.
+Execute a plan using orchestrated background agents. Workers implement; you orchestrate.
+
+**Input:** Plan at `.claude/plans/<slug>.yaml`
+**Output:** Working code, passing CI, git action of user's choice
 
 </objective>
 
-<tdd_enforcement>
+<orchestration_role>
 
-**MANDATORY: Load `devtools:tdd-typescript` for ALL implementation.**
+**You are the ORCHESTRATOR.** Per `n-skills:orchestration`:
 
-```javascript
-Skill({ skill: "devtools:tdd-typescript" });
+- **NEVER** use tools directly (Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, MCPSearch)
+- **ONLY** use: Task, TaskOutput, TodoWrite, AskUserQuestion, Skill
+- Spawn WORKER agents for ALL implementation, testing, and file operations
+- All agents run with `run_in_background=True`
+
+The orchestration skill defines all patterns. You decide WHICH patterns based on story complexity.
+
+</orchestration_role>
+
+<worker_requirements>
+
+### TDD Enforcement (For All Workers)
+
+Every implementation worker MUST follow TDD. Include in worker prompt:
+
+```
+TDD REQUIRED:
+1. RED: Write failing test first
+2. GREEN: Minimal code to pass
+3. REFACTOR: Clean while green
+
+Use `devtools:tdd-typescript` skill patterns. Test MUST fail before implementation.
 ```
 
-RED-GREEN-REFACTOR. Test fails first, then implement. No exceptions.
+### Worker Preamble (REQUIRED)
 
-</tdd_enforcement>
+Every spawned agent MUST receive this preamble:
+
+```
+CONTEXT: You are a WORKER agent, not an orchestrator.
+
+RULES:
+- Complete ONLY the task described below
+- Use tools directly (Read, Write, Edit, Bash, Glob, Grep, etc.)
+- Do NOT spawn sub-agents or manage tasks
+- Follow TDD: write failing test FIRST, then implement
+- Report completion with absolute file paths
+
+TASK:
+[specific task with acceptance criteria]
+```
+
+### MCP Tools for Workers
+
+Workers should use these MCP tools when needed:
+
+**Context7** — Library documentation
+
+- `resolve-library-id` → `query-docs` for API references and examples
+
+**OctoCode** — GitHub research (use during implementation blocks)
+
+- `packageSearch` → Find package source repos
+- `githubSearchCode` → Find real-world usage patterns
+- `githubGetFileContent` → Read library internals when docs are unclear
+- `githubSearchPullRequests` → Find how others solved similar problems
+  - Search merged PRs with `keywordsToSearch` matching your problem
+  - `withComments=true` reveals solutions and gotchas
+
+**Codex** — Deep reasoning (use sparingly)
+
+- Security reviews, complex debugging, architecture decisions
+
+</worker_requirements>
 
 <workflow>
 
-## Step 1: Verify Not on Main
+## Phase 1: Setup
 
-```bash
-branch=$(git branch --show-current)
-if [[ "$branch" == "main" || "$branch" == "master" ]]; then
-  echo "ERROR: Cannot run crew:work on main/master branch"
-  exit 1
-fi
-```
+Spawn a haiku worker to:
 
-## Step 2: Load Plan
+1. Verify not on main branch
+2. Read the plan file and return story list
 
 ```javascript
-const slug = "$ARGUMENTS".trim() || inferFromBranch();
-const planPath = `.claude/plans/${slug}.yaml`;
-const plan = Read({ file_path: planPath });
+Task({
+  subagent_type: "Explore",
+  model: "haiku",
+  description: "Load plan",
+  prompt: `WORKER TASK: Read plan and return stories.
+
+  1. Check branch: git branch --show-current (fail if main/master)
+  2. Read: .claude/plans/${slug}.yaml
+  3. Return: list of stories with id, title, priority, status`,
+  run_in_background: true,
+});
 ```
 
-## Step 3: Initialize TodoWrite
+## Phase 2: Initialize Tracking
+
+Convert plan stories to TodoWrite for session visibility:
 
 ```javascript
-// Convert plan stories to TodoWrite items
-const todos = plan.stories.map((story) => ({
-  content: `${story.id}: ${story.title}`,
-  status: story.status === "complete" ? "completed" : "pending",
-  activeForm: `Working on ${story.title}`,
-}));
-TodoWrite({ todos });
+TodoWrite([
+  {
+    content: "STORY-001: Title",
+    status: "in_progress",
+    activeForm: "Implementing...",
+  },
+  { content: "STORY-002: Title", status: "pending", activeForm: "Waiting..." },
+]);
 ```
 
-## Step 4: Execute Stories
+## Phase 3: Execute Stories (Orchestrated)
 
-For each story in priority order (P1 → P2 → P3):
+Use patterns from `n-skills:orchestration`:
 
-1. **Load TDD skill**: `Skill({ skill: "devtools:tdd-typescript" })`
-2. **Research if needed**: Use Task agents (Context7, OctoCode via MCP)
-3. **Write failing test first** (RED)
-4. **Implement minimal code** (GREEN)
-5. **Refactor while green** (REFACTOR)
-6. **Update TodoWrite** on completion
+| Pattern        | When to Use                                    |
+| -------------- | ---------------------------------------------- |
+| **Fan-Out**    | Independent stories (no shared files)          |
+| **Pipeline**   | Sequential stories (dependencies)              |
+| **Map-Reduce** | Multi-file changes (parallel edit → integrate) |
 
-### Agent Selection (per n-skills:orchestration)
+### Agent/Model Selection
 
-Let Claude decide which agents to spawn based on task complexity:
+| Task Complexity        | Model   | Agent Type        |
+| ---------------------- | ------- | ----------------- |
+| Single file, simple    | `opus`  | `general-purpose` |
+| Multi-file, moderate   | `opus`  | `general-purpose` |
+| Security-critical      | `opus`  | `general-purpose` |
+| Architecture decisions | `opus`  | `Plan`            |
+| Exploration/research   | `haiku` | `Explore`         |
 
-| Complexity | Agent Tier | Use Case                        |
-| ---------- | ---------- | ------------------------------- |
-| Simple     | Haiku      | Single file, straightforward    |
-| Medium     | Sonnet     | Multi-file, some complexity     |
-| Complex    | Opus       | Architecture, security-critical |
+### Execution Loop
 
-Spawn agents in parallel when tasks are independent.
+1. Identify stories ready to work (no dependencies or dependencies complete)
+2. Spawn background workers for ready stories (parallel if independent)
+3. Wait for notifications or poll with TaskOutput
+4. Update TodoWrite to mark completed and start next
+5. Repeat until all stories complete
 
-## Step 5: Run CI
+### Error Recovery
+
+Per `n-skills:orchestration`:
+
+- **Timeout**: Retry with smaller scope or simpler model
+- **Incomplete**: Create follow-up task for remainder
+- **Wrong approach**: Retry with clearer prompt
+- **After 2 failures**: Ask user for guidance
+
+## Phase 4: Run CI
 
 ```javascript
 Skill({ skill: "crew:work:ci", args: slug });
 ```
 
-Fix any failures before proceeding.
+If CI fails, spawn workers to fix failures. Repeat until green.
 
-## Step 6: Completion Check
+## Phase 5: Completion
 
-Verify all stories are complete:
-
-```javascript
-const plan = Read({ file_path: planPath });
-const incomplete = plan.stories.filter((s) => s.status !== "complete");
-
-if (incomplete.length > 0) {
-  // Continue working on incomplete stories
-  // Claude decides if more agents needed
-} else {
-  // All done - ask about git action
-}
-```
-
-## Step 7: Git Action
+When all stories complete and CI passes:
 
 ```javascript
 AskUserQuestion({
   questions: [
     {
-      question: "Work complete. What would you like to do?",
+      question: "All work complete. What would you like to do?",
+      header: "Git Action",
       options: [
-        "Create PR (Recommended)",
-        "Commit & Push",
-        "Commit only",
-        "Stop",
+        {
+          label: "Create PR (Recommended)",
+          description: "Commit, push, and open pull request",
+        },
+        {
+          label: "Commit & Push",
+          description: "Commit changes and push to origin",
+        },
+        { label: "Commit only", description: "Create commit without pushing" },
+        { label: "Continue working", description: "Keep making changes" },
       ],
+      multiSelect: false,
     },
   ],
 });
-
-if (answer === "Create PR (Recommended)") {
-  Skill({ skill: "crew:git:pr:create" });
-} else if (answer === "Commit & Push") {
-  Skill({ skill: "crew:git:commit-and-push" });
-} else if (answer === "Commit only") {
-  Skill({ skill: "crew:git:commit" });
-}
 ```
 
 </workflow>
 
-<mcp_usage>
-
-**Use MCP tools for research and analysis:**
-
-```javascript
-// Library documentation
-MCPSearch({ query: "select:mcp__plugin_crew_context7__resolve-library-id" });
-MCPSearch({ query: "select:mcp__plugin_crew_context7__query-docs" });
-
-// GitHub code search
-MCPSearch({ query: "select:mcp__plugin_crew_octocode__githubSearchCode" });
-
-// Codex - deep reasoning for complex problems (use sparingly)
-MCPSearch({ query: "select:mcp__plugin_crew_codex__codex" });
-```
-
-### When to Use Codex
-
-Use Codex for problems requiring deep reasoning:
-
-- Architecture decisions with trade-offs
-- Security-critical code review
-- Complex algorithm design
-- Cross-cutting pattern analysis
-
-```javascript
-mcp__plugin_crew_codex__codex({
-  prompt: `Analyze this implementation for [security|performance|correctness]:
-
-${codeOrFindings}
-
-Identify: root causes, systemic issues, priority escalations.`,
-});
-```
-
-</mcp_usage>
-
 <success_criteria>
 
-- [ ] TDD followed for all implementation
+- [ ] All work done by background workers (orchestrator never uses Read/Write/Edit)
+- [ ] TDD followed (failing tests before implementation)
+- [ ] TodoWrite shows real-time progress
 - [ ] Stories executed in priority order
 - [ ] CI passing
-- [ ] All stories marked complete
 - [ ] Git action completed per user choice
 
 </success_criteria>
