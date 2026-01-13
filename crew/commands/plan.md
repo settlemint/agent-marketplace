@@ -128,31 +128,74 @@ RULES:
 - Do NOT spawn sub-agents or manage tasks
 - Report findings with absolute file paths
 
+LIBRARY VERIFICATION (MANDATORY):
+When researching ANY library/framework, ALWAYS:
+1. Load Context7: MCPSearch({ query: "select:mcp__plugin_crew_context7__query-docs" })
+2. Fetch docs: mcp__plugin_crew_context7__query-docs({ libraryId: "/<org>/<repo>", query: "your question" })
+
+When searching GitHub for patterns/examples:
+1. Load OctoCode: MCPSearch({ query: "select:mcp__plugin_crew_octocode__githubSearchCode" })
+2. Search: mcp__plugin_crew_octocode__githubSearchCode({ keywordsToSearch: [...], owner: "...", repo: "..." })
+
 TASK:
 [specific task]
 ```
 
-### MCP Tools for Workers
+### MCP Tools for Workers (REQUIRED for Library Research)
 
-Workers should use these MCP tools for research:
+**CRITICAL:** Workers MUST use these tools when researching libraries. Do not rely on training data.
 
-**Context7** — Library documentation
+**Context7** — Library documentation (USE FIRST for any library)
 
-- `resolve-library-id` → `query-docs` for framework/library docs
+```javascript
+// Step 1: Load the tool
+MCPSearch({ query: "select:mcp__plugin_crew_context7__query-docs" });
 
-**OctoCode** — GitHub research (powerful for patterns and decisions)
+// Step 2: Query docs (known library IDs skip resolve step)
+mcp__plugin_crew_context7__query_docs({
+  libraryId: "/reactjs/react.dev", // or resolve first if unknown
+  query: "How do I use the new use hook in React 19?",
+});
 
-- `packageSearch` → Find package repo URLs (start here for libraries)
-- `githubViewRepoStructure` → Explore repo layout (root first, then drill)
-- `githubSearchCode` → Find patterns across repos (use owner+repo for precision)
-- `githubGetFileContent` → Read specific files (use matchString for large files)
-- `githubSearchPullRequests` → **Code archaeology**: understand WHY code was written
-  - Use `type="metadata"` first, then `partialContent` for specific files
-  - `withComments=true` reveals decision rationale
+// Common library IDs:
+// /reactjs/react.dev, /tailwindlabs/tailwindcss, /tanstack/router
+// /tanstack/query, /tanstack/form, /drizzle-team/drizzle-orm
+// /trpc/trpc, /honojs/hono, /restate-developers/restate
+```
 
-**Codex** — Deep reasoning
+**OctoCode** — GitHub research (USE for patterns, real-world examples, and decisions)
 
-- `codex` for architectural analysis requiring extended thinking
+```javascript
+// Step 1: Load the tool
+MCPSearch({ query: "select:mcp__plugin_crew_octocode__githubSearchCode" });
+
+// Step 2: Search for patterns
+mcp__plugin_crew_octocode__githubSearchCode({
+  keywordsToSearch: ["createFileRoute", "loader"],
+  owner: "tanstack",
+  repo: "router",
+  path: "examples",
+  mainResearchGoal: "Find TanStack Router file route patterns",
+  researchGoal: "Locate loader implementation examples",
+  reasoning: "Need current patterns for file-based routing",
+});
+
+// For understanding WHY decisions were made:
+mcp__plugin_crew_octocode__githubSearchPullRequests({
+  owner: "...",
+  repo: "...",
+  keywordsToSearch: ["feature", "fix"],
+  type: "metadata", // then partialContent for details
+  withComments: true, // reveals decision rationale
+});
+```
+
+**Codex** — Deep reasoning (USE for architectural analysis)
+
+```javascript
+MCPSearch({ query: "select:mcp__plugin_crew_codex__codex" });
+mcp__plugin_crew_codex__codex({ prompt: "Analyze..." });
+```
 
 ## Phase 3: Synthesize Plan
 

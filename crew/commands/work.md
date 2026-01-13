@@ -70,30 +70,79 @@ RULES:
 - Follow TDD: write failing test FIRST, then implement
 - Report completion with absolute file paths
 
+LIBRARY VERIFICATION (MANDATORY):
+Before using ANY library/framework API, ALWAYS verify current usage:
+1. Load Context7: MCPSearch({ query: "select:mcp__plugin_crew_context7__query-docs" })
+2. Fetch docs: mcp__plugin_crew_context7__query-docs({ libraryId: "/<org>/<repo>", query: "how to [your task]" })
+
+When unsure about patterns or stuck on implementation:
+1. Load OctoCode: MCPSearch({ query: "select:mcp__plugin_crew_octocode__githubSearchCode" })
+2. Search real examples: mcp__plugin_crew_octocode__githubSearchCode({ keywordsToSearch: [...], owner: "...", repo: "..." })
+
+DO NOT rely on training data for library APIs - they change frequently.
+
 TASK:
 [specific task with acceptance criteria]
 ```
 
-### MCP Tools for Workers
+### MCP Tools for Workers (REQUIRED Before Implementation)
 
-Workers should use these MCP tools when needed:
+**CRITICAL:** Workers MUST verify library APIs before using them. Training data is often outdated.
 
-**Context7** — Library documentation
+**Context7** — Library documentation (ALWAYS check before using a library)
 
-- `resolve-library-id` → `query-docs` for API references and examples
+```javascript
+// Step 1: Load the tool
+MCPSearch({ query: "select:mcp__plugin_crew_context7__query-docs" });
 
-**OctoCode** — GitHub research (use during implementation blocks)
+// Step 2: Query for your specific use case
+mcp__plugin_crew_context7__query_docs({
+  libraryId: "/tanstack/query",
+  query: "How do I use useQuery with suspense and error boundaries?",
+});
 
-- `packageSearch` → Find package source repos
-- `githubSearchCode` → Find real-world usage patterns
-- `githubGetFileContent` → Read library internals when docs are unclear
-- `githubSearchPullRequests` → Find how others solved similar problems
-  - Search merged PRs with `keywordsToSearch` matching your problem
-  - `withComments=true` reveals solutions and gotchas
+// Common library IDs (skip resolve for these):
+// /reactjs/react.dev, /tailwindlabs/tailwindcss, /tanstack/router
+// /tanstack/query, /tanstack/form, /tanstack/table
+// /drizzle-team/drizzle-orm, /trpc/trpc, /honojs/hono
+// /vitest-dev/vitest, /restate-developers/restate
+```
 
-**Codex** — Deep reasoning (use sparingly)
+**OctoCode** — GitHub research (USE when docs are unclear or need real examples)
 
-- Security reviews, complex debugging, architecture decisions
+```javascript
+// Step 1: Load the tool
+MCPSearch({ query: "select:mcp__plugin_crew_octocode__githubSearchCode" });
+
+// Step 2: Find real-world patterns
+mcp__plugin_crew_octocode__githubSearchCode({
+  keywordsToSearch: ["useQuery", "suspense", "errorBoundary"],
+  owner: "tanstack",
+  repo: "query",
+  path: "examples",
+  mainResearchGoal: "Find TanStack Query suspense patterns",
+  researchGoal: "Locate real implementations with error handling",
+  reasoning: "Need working examples for suspense integration",
+});
+
+// When stuck, search merged PRs for solutions:
+mcp__plugin_crew_octocode__githubSearchPullRequests({
+  owner: "...",
+  repo: "...",
+  keywordsToSearch: ["fix", "error", "your problem"],
+  state: "merged",
+  withComments: true, // reveals solutions and gotchas
+});
+```
+
+**Codex** — Deep reasoning (use for security, debugging, architecture)
+
+```javascript
+MCPSearch({ query: "select:mcp__plugin_crew_codex__codex" });
+mcp__plugin_crew_codex__codex({
+  prompt: "Analyze security implications of...",
+});
+```
 
 **Code-Simplifier** — Code refinement (use during REFACTOR phase)
 
