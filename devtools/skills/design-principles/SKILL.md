@@ -335,6 +335,24 @@ echo "Border-radius variations:" && grep -rhoE "border-radius:\s*[0-9]+px" --inc
 **Note:** These checks validate implementation consistency. The initial design direction choice (warm vs cool, dense vs generous) requires understanding product context - agents should use AskUserQuestion to clarify with the user before implementing.
 </agent_verification>
 
+<related_skills>
+
+**Comprehensive UI audit:** Load via `Skill({ skill: "devtools:vercel-design-guidelines" })` when:
+
+- Auditing against Vercel's official design guidelines
+- Checking accessibility (keyboard, focus, hit targets)
+- Reviewing animations and reduced motion support
+- Validating form design and error handling
+- Checking copywriting and content patterns
+
+**React performance:** Load via `Skill({ skill: "devtools:react-best-practices" })` when:
+
+- Implementing components following performance best practices
+- Optimizing bundle size and loading performance
+- Implementing data fetching patterns
+
+</related_skills>
+
 <success*criteria>
 Every interface should look designed by a team that obsesses over 1-pixel differences. Not stripped — \_crafted*. And designed for its specific context.
 

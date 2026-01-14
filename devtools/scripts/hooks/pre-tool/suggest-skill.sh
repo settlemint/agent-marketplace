@@ -6,8 +6,8 @@ set +e
 
 is_truthy() {
 	case "${1:-}" in
-		1|true|yes|on) return 0 ;;
-		*) return 1 ;;
+	1 | true | yes | on) return 0 ;;
+	*) return 1 ;;
 	esac
 }
 
@@ -70,6 +70,16 @@ fi
 # Helm
 if [[ $CMD_LINE =~ helm|kubectl ]]; then
 	SUGGESTION="Tip: check devtools:helm for chart and values.yaml conventions."
+fi
+
+# Next.js - suggest react-best-practices for performance patterns
+if [[ $CMD_LINE =~ next\ (build|dev|start)|npm\ run\ (build|dev)|bun\ run\ (build|dev) ]]; then
+	SUGGESTION="Tip: check devtools:react-best-practices for React/Next.js performance patterns."
+fi
+
+# React component creation - suggest react-best-practices
+if [[ $CMD_LINE =~ create.*component|generate.*component ]]; then
+	SUGGESTION="Tip: check devtools:react-best-practices for optimal component patterns."
 fi
 
 # Output suggestion if we have one
