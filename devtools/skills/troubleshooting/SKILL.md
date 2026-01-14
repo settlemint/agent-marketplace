@@ -341,6 +341,15 @@ mcp__context7__query_docs({
 
 </mcp_for_debugging>
 
+<reference_index>
+
+| Reference                 | Content                                                |
+| ------------------------- | ------------------------------------------------------ |
+| `regenerate-vs-repair.md` | When to delete and regenerate code vs trying to fix it |
+| `boundary-complexity.md`  | AI cognition degradation at system boundaries          |
+
+</reference_index>
+
 <success_criteria>
 
 - [ ] Observed actual output before editing code
