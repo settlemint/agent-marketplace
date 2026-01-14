@@ -533,6 +533,31 @@ const results = await Promise.all([
 // P3: Note - document for future, proceed
 ```
 
+### Apply Rule of Five for Complex Changes
+
+For complex implementations, apply iterative review convergence:
+
+```javascript
+Skill({ skill: "devtools:rule-of-five" });
+```
+
+**When to apply multi-pass review:**
+
+- Changes touch 5+ files
+- Security-sensitive code
+- Core architecture changes
+- First review found 3+ P1/P2 issues
+
+**Convergence process:**
+
+1. After initial multi-domain review, if significant findings exist
+2. Spawn fix workers for P1/P2 findings
+3. Run review pass 2 (focus: did fixes introduce new issues?)
+4. Repeat until review pass finds no new P1/P2 findings
+5. Stop when converged or 5 passes completed
+
+For simple changes (1-2 files, no P1 findings), single review pass suffices.
+
 ### Fix Critical Findings
 
 If P1/P2 findings exist, spawn fix workers:

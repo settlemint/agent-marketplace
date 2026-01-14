@@ -22,6 +22,7 @@ Crew-specific patterns. For orchestration (Task, TodoWrite, AskUserQuestion), us
 | Task files    | `references/patterns.md#task-file`        | File-based task format           |
 | Branch state  | `references/patterns.md#branch-state`     | State persistence                |
 | Build checks  | `references/always-works-verification.md` | Sanity checks                    |
+| Merge wall    | `references/merge-wall.md`                | Swarm merge coordination         |
 
 </routing>
 

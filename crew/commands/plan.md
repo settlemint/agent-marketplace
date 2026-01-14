@@ -273,7 +273,33 @@ stories:
 
 **Template location:** `crew/skills/todo-tracking/templates/plan-template.md`
 
-## Phase 4: Present and Offer Work
+## Phase 4: Plan Convergence (Rule of Five)
+
+Apply iterative review to achieve plan quality. Load the skill:
+
+```javascript
+Skill({ skill: "devtools:rule-of-five" });
+```
+
+**Review passes:**
+
+| Pass | Focus        | Questions to Answer                                         |
+| ---- | ------------ | ----------------------------------------------------------- |
+| 1    | Completeness | Are all requirements covered? Any missing stories?          |
+| 2    | Dependencies | Are story dependencies correct? Is execution order optimal? |
+| 3    | Scope        | Is each story right-sized? Any that should split or merge?  |
+| 4    | Architecture | Does this fit the codebase patterns? Any design concerns?   |
+| 5    | Strategy     | Is this the right approach? Any simpler alternatives?       |
+
+**Convergence criteria:**
+
+- Pass produces no new changes
+- Agent declares "this plan is as good as it can get"
+- 5 passes completed
+
+For simple features (1-2 stories), 2-3 passes suffice. For complex plans, complete all 5.
+
+## Phase 5: Present and Offer Work
 
 After plan is written:
 
