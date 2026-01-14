@@ -166,6 +166,22 @@ if [[ -d $HANDOFF_DIR ]]; then
 	LAST_HANDOFF=$(find "$HANDOFF_DIR" -maxdepth 1 -name "*.md" -type f 2>/dev/null | xargs ls -t 2>/dev/null | head -1 || echo "")
 fi
 
+# Get routing state (for intelligent request routing)
+ROUTING_FILE="$BRANCH_DIR/routing.json"
+ROUTING_MODE="idle"
+ROUTING_ENTERED=""
+ROUTING_CONFIDENCE=""
+if [[ -f $ROUTING_FILE ]]; then
+	ROUTING_MODE=$(jq -r '.current_mode // "idle"' "$ROUTING_FILE" 2>/dev/null)
+	ROUTING_ENTERED=$(jq -r '.entered_at // ""' "$ROUTING_FILE" 2>/dev/null)
+	ROUTING_CONFIDENCE=$(jq -r '.confidence // ""' "$ROUTING_FILE" 2>/dev/null)
+fi
+
+# Get failure budget state
+FAILURE_WORKER=$(jq -r '.failure_budget.worker.current // 0' "$STATE_FILE" 2>/dev/null || echo "0")
+FAILURE_CI=$(jq -r '.failure_budget.ci.iterations // 0' "$STATE_FILE" 2>/dev/null || echo "0")
+FAILURE_REVIEW=$(jq -r '.failure_budget.review.passes // 0' "$STATE_FILE" 2>/dev/null || echo "0")
+
 # Scan task files in .claude/branches/{branch}/tasks/
 # Task naming: {order}-{status}-{priority}-{story}-{slug}.md
 TASKS_DIR="$BRANCH_DIR/tasks"
@@ -217,10 +233,26 @@ jq -n \
 	--arg next_task "$NEXT_TASK" \
 	--argjson uncommitted_count "$UNCOMMITTED_COUNT" \
 	--arg wip_task_created "$WIP_TASK_CREATED" \
+	--arg routing_mode "$ROUTING_MODE" \
+	--arg routing_entered "$ROUTING_ENTERED" \
+	--arg routing_confidence "$ROUTING_CONFIDENCE" \
+	--argjson failure_worker "$FAILURE_WORKER" \
+	--argjson failure_ci "$FAILURE_CI" \
+	--argjson failure_review "$FAILURE_REVIEW" \
 	'{
     branch: $branch,
     session: $session,
     compacted_at: $time,
+    routing: {
+      current_mode: $routing_mode,
+      entered_at: $routing_entered,
+      confidence: $routing_confidence
+    },
+    failure_budget: {
+      worker: { current: $failure_worker, max: 5 },
+      ci: { iterations: $failure_ci, max: 3 },
+      review: { passes: $failure_review }
+    },
     workflow: {
       phase: (if $active_workflow != "" then "executing" else "idle" end),
       active: $active_workflow,
