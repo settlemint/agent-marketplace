@@ -83,6 +83,18 @@ Self-contained knowledge modules with:
 - Required tags: `<objective>`, `<quick_start>`, `<success_criteria>`
 - Optional: `<routing>`, `<workflow>`, `<references>`, `<templates>`, `<scripts>`
 
+**Skill Reference Format (MANDATORY):** When referencing skills in documentation, always use the `Skill()` call format:
+
+```javascript
+// Correct - executable format
+Skill({ skill: "devtools:react-best-practices" })
+
+// Wrong - plain text reference
+Load `devtools:react-best-practices`
+```
+
+This ensures skills can be loaded programmatically when users follow the documentation.
+
 ### State Management
 
 - Branch state: `.claude/branches/{branch}/state.json`

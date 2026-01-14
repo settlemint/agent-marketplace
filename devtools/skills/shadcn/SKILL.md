@@ -309,6 +309,22 @@ className={cn("base-class", isActive && "active")}
 </pitfall>
 </anti_patterns>
 
+<related_skills>
+
+**Design guidelines:** Load via `Skill({ skill: "devtools:vercel-design-guidelines" })` when:
+
+- Auditing UI for accessibility compliance
+- Checking interactions, animations, and form design
+- Reviewing copywriting and content patterns
+
+**Design system:** Load via `Skill({ skill: "devtools:design-principles" })` when:
+
+- Setting up design direction and color foundations
+- Establishing spacing, typography, and depth strategies
+- Building consistent card layouts and navigation
+
+</related_skills>
+
 <success_criteria>
 
 - [ ] shadcn MCP server used for component discovery/installation

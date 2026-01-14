@@ -213,6 +213,22 @@ const MyTrigger = forwardRef((props, ref) => (
 - Test with screen readers
   </constraints>
 
+<related_skills>
+
+**Design guidelines:** Load via `Skill({ skill: "devtools:vercel-design-guidelines" })` when:
+
+- Auditing keyboard accessibility and focus management
+- Checking hit targets and loading states
+- Validating form labels and error handling patterns
+
+**Design system:** Load via `Skill({ skill: "devtools:design-principles" })` when:
+
+- Styling Radix components with consistent design tokens
+- Establishing depth strategy (borders vs shadows)
+- Creating isolated control containers
+
+</related_skills>
+
 <success_criteria>
 
 - [ ] Context7 docs fetched for current API

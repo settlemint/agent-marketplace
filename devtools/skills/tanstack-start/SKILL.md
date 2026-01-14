@@ -241,6 +241,21 @@ src/
 - Catch-all: `[...].tsx`
   </constraints>
 
+<related_skills>
+
+**React performance:** Load via `Skill({ skill: "devtools:react-best-practices" })` when:
+
+- Optimizing data loading and eliminating waterfalls
+- Implementing efficient Suspense boundaries
+- Reducing re-renders and bundle size
+
+**TanStack Query:** Load via `Skill({ skill: "devtools:react" })` for TanStack Query patterns when:
+
+- Setting up query client and cache configuration
+- Implementing mutations and optimistic updates
+
+</related_skills>
+
 <success_criteria>
 
 - [ ] Context7 docs fetched for current API

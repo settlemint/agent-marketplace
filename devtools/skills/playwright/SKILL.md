@@ -146,6 +146,21 @@ npx playwright show-report             # View HTML report
 ```
 </commands>
 
+<related_skills>
+
+**Design guidelines:** Load via `Skill({ skill: "devtools:vercel-design-guidelines" })` when:
+
+- Testing accessibility patterns (keyboard, focus, ARIA)
+- Validating interaction patterns
+- Checking responsive design behavior
+
+**Design system:** Load via `Skill({ skill: "devtools:design-principles" })` when:
+
+- Verifying design consistency across views
+- Testing visual hierarchy and spacing
+
+</related_skills>
+
 <success_criteria>
 
 - [ ] Context7 docs fetched for current API

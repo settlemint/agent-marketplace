@@ -163,6 +163,23 @@ export function MyComponent({
 
 </component_pattern>
 
+<related_skills>
+
+**Performance optimization:** Load via `Skill({ skill: "devtools:react-best-practices" })` when:
+
+- Optimizing React/Next.js bundle size
+- Eliminating data fetching waterfalls
+- Improving re-render performance
+- Using Suspense, `React.cache()`, or transitions
+
+**UI design audit:** Load via `Skill({ skill: "devtools:vercel-design-guidelines" })` when:
+
+- Reviewing UI for accessibility issues
+- Checking design compliance against best practices
+- Auditing interactions, animations, and layout
+
+</related_skills>
+
 <success_criteria>
 
 - [ ] Context7 docs fetched before implementation

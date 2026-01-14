@@ -304,6 +304,22 @@ test("modal animation completes", async ({ page }) => {
 **Key principle:** Validate animation correctness through code patterns, state testing, and performance metrics. Reserve "natural feel" judgment for human review, but ensure the implementation is technically sound.
 </agent_verification>
 
+<related_skills>
+
+**Design guidelines:** Load via `Skill({ skill: "devtools:vercel-design-guidelines" })` when:
+
+- Verifying animations respect `prefers-reduced-motion`
+- Checking animation timing and interruptibility
+- Auditing transition patterns against best practices
+
+**Design system:** Load via `Skill({ skill: "devtools:design-principles" })` when:
+
+- Establishing animation timing values (150ms micro, 200-250ms larger)
+- Choosing appropriate easing curves
+- Avoiding spring/bouncy effects in enterprise UI
+
+</related_skills>
+
 <success_criteria>
 
 - [ ] Context7 docs fetched for current API
@@ -312,7 +328,3 @@ test("modal animation completes", async ({ page }) => {
 - [ ] Performance-friendly properties animated
 - [ ] Spring transitions for natural feel
       </success_criteria>
-
-```
-
-```

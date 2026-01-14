@@ -41,6 +41,14 @@ The orchestration skill defines all patterns. You decide WHICH patterns based on
 
 </orchestration_role>
 
+<constraints>
+
+- This codebase will outlive you. Every shortcut becomes someone else's burden. Every hack compounds into technical debt that slows the whole team down.
+- You are not just writing code. You are shaping the future of this project. The patterns you establish will be copied. The corners you cut will be cut again.
+- Fight entropy. Leave the codebase better than you found it.
+
+</constraints>
+
 <worker_requirements>
 
 ### TDD Enforcement (For All Workers)
@@ -69,6 +77,69 @@ RULES:
 - Do NOT spawn sub-agents or manage tasks
 - Follow TDD: write failing test FIRST, then implement
 - Report completion with absolute file paths
+
+SKILL LOADING (MANDATORY - load BEFORE starting work):
+Use Skill() tool to load domain-specific knowledge. Skills contain patterns, constraints, and success criteria.
+
+FRONTEND:
+| Domain | Load Skill |
+|--------|------------|
+| React/Next.js | Skill({ skill: "devtools:react" }) |
+| React performance | Skill({ skill: "devtools:react-best-practices" }) |
+| UI components | Skill({ skill: "devtools:shadcn" }) |
+| Radix primitives | Skill({ skill: "devtools:radix" }) |
+| Animations | Skill({ skill: "devtools:motion" }) |
+| TanStack Start | Skill({ skill: "devtools:tanstack-start" }) |
+| Charts | Skill({ skill: "devtools:recharts" }) |
+| i18n | Skill({ skill: "devtools:i18n" }) |
+
+DESIGN:
+| Domain | Load Skill |
+|--------|------------|
+| Design system | Skill({ skill: "devtools:design-principles" }) |
+| UI/UX audit | Skill({ skill: "devtools:vercel-design-guidelines" }) |
+
+TESTING:
+| Domain | Load Skill |
+|--------|------------|
+| Unit tests | Skill({ skill: "devtools:vitest" }) |
+| E2E tests | Skill({ skill: "devtools:playwright" }) |
+| TDD workflow | Skill({ skill: "devtools:tdd-typescript" }) |
+
+BACKEND/API:
+| Domain | Load Skill |
+|--------|------------|
+| API routes | Skill({ skill: "devtools:api" }) |
+| Database | Skill({ skill: "devtools:drizzle" }) |
+| Durable execution | Skill({ skill: "devtools:restate" }) |
+| Logging | Skill({ skill: "devtools:pino" }) |
+| Authentication | Skill({ skill: "devtools:better-auth" }) |
+| Validation | Skill({ skill: "devtools:zod" }) |
+
+BLOCKCHAIN:
+| Domain | Load Skill |
+|--------|------------|
+| Smart contracts | Skill({ skill: "devtools:solidity" }) |
+| Ethereum client | Skill({ skill: "devtools:viem" }) |
+| Subgraphs | Skill({ skill: "devtools:thegraph" }) |
+
+DEVOPS:
+| Domain | Load Skill |
+|--------|------------|
+| Helm charts | Skill({ skill: "devtools:helm" }) |
+| Terraform | Skill({ skill: "devtools:terraform" }) |
+| Monorepo builds | Skill({ skill: "devtools:turbo" }) |
+| Debugging | Skill({ skill: "devtools:troubleshooting" }) |
+
+CREW:
+| Domain | Load Skill |
+|--------|------------|
+| Mass refactoring | Skill({ skill: "crew:ast-grep" }) |
+| Git conventions | Skill({ skill: "crew:git" }) |
+| Skill creation | Skill({ skill: "crew:skill-builder" }) |
+| Task tracking | Skill({ skill: "crew:todo-tracking" }) |
+
+Load relevant skills FIRST based on the task domain.
 
 LIBRARY VERIFICATION (MANDATORY):
 Before using ANY library/framework API, ALWAYS verify current usage:
@@ -315,12 +386,17 @@ Task({
 
 CONTEXT: Implementation complete. Verify architectural consistency.
 
+SKILLS TO LOAD FIRST:
+- Skill({ skill: "devtools:react" }) - for React/component patterns
+- Skill({ skill: "devtools:design-principles" }) - for UI architecture
+
 TOOLS:
 - Use Codex MCP for design analysis
 - MCPSearch to load: mcp__plugin_crew_codex__codex
 
 CHECKLIST:
 - [ ] Follows existing codebase patterns
+- [ ] Follows skill constraints (check <constraints> sections)
 - [ ] Proper separation of concerns
 - [ ] No circular dependencies introduced
 - [ ] Consistent naming conventions
@@ -328,11 +404,45 @@ CHECKLIST:
 - [ ] No premature optimization
 
 PROCESS:
-1. Get changed files: ${changedFiles}
-2. Compare patterns to existing codebase
-3. Use Codex to analyze design decisions
+1. Load relevant skills for the domain
+2. Get changed files: ${changedFiles}
+3. Compare patterns to skill constraints
+4. Use Codex to analyze design decisions
 
 OUTPUT: JSON array of findings with file, pattern_violation, recommendation`,
+  run_in_background: true,
+});
+
+// 2b. UI/UX Review (for frontend changes)
+Task({
+  subagent_type: "general-purpose",
+  model: "opus",
+  description: "UI/UX review",
+  prompt: `WORKER TASK: UI/UX quality review against design guidelines.
+
+CONTEXT: Implementation complete. Check UI quality and accessibility.
+
+SKILLS TO LOAD FIRST (MANDATORY):
+- Skill({ skill: "devtools:vercel-design-guidelines" })
+- Skill({ skill: "devtools:design-principles" })
+
+CHECKLIST (from skills):
+- [ ] Keyboard accessibility (focus management, tab order)
+- [ ] Hit targets ≥24px (44px on mobile)
+- [ ] Loading states don't flicker
+- [ ] prefers-reduced-motion respected
+- [ ] Form labels and error handling
+- [ ] Color contrast meets APCA standards
+- [ ] Spacing on 4px grid
+- [ ] Consistent depth strategy (shadows/borders)
+
+PROCESS:
+1. Load both skills above
+2. Get changed .tsx files: ${changedFiles} | grep -E "\\.(tsx|css)$"
+3. For each UI file, check against skill success_criteria
+4. Run validation scripts from design-principles skill
+
+OUTPUT: JSON array with file, line, category (Interactions/Animations/Layout/etc), severity, issue, fix`,
   run_in_background: true,
 });
 
@@ -345,6 +455,10 @@ Task({
 
 CONTEXT: Implementation complete. Verify test adequacy.
 
+SKILLS TO LOAD FIRST:
+- Skill({ skill: "devtools:vitest" }) - for unit test patterns
+- Skill({ skill: "devtools:playwright" }) - for E2E test patterns
+
 CHECKLIST:
 - [ ] All new functions have tests
 - [ ] Edge cases covered
@@ -352,12 +466,14 @@ CHECKLIST:
 - [ ] Integration points tested
 - [ ] Mocks are appropriate (not over-mocking)
 - [ ] Tests are deterministic
+- [ ] Follows skill test patterns and locator strategies
 
 PROCESS:
-1. Get changed implementation files: ${changedFiles}
-2. Find corresponding test files
-3. Analyze coverage gaps
-4. Check test quality (not just quantity)
+1. Load relevant test skills
+2. Get changed implementation files: ${changedFiles}
+3. Find corresponding test files
+4. Analyze coverage gaps against skill success_criteria
+5. Check test quality (not just quantity)
 
 OUTPUT: JSON array with file, coverage_gap, missing_test_case`,
   run_in_background: true,
@@ -372,6 +488,11 @@ Task({
 
 CONTEXT: Implementation complete. Check quality metrics.
 
+SKILLS TO LOAD FIRST:
+- For React code: Skill({ skill: "devtools:react-best-practices" })
+- For UI components: Skill({ skill: "devtools:vercel-design-guidelines" })
+- For design patterns: Skill({ skill: "devtools:design-principles" })
+
 CHECKLIST:
 - [ ] Cognitive complexity acceptable (<15 per function)
 - [ ] No dead code introduced
@@ -379,11 +500,13 @@ CHECKLIST:
 - [ ] Type safety (no 'any' unless justified)
 - [ ] Error handling complete
 - [ ] Logging appropriate
+- [ ] Follows skill success_criteria for relevant domains
 
 PROCESS:
-1. Get changed files: ${changedFiles}
-2. Analyze each for quality issues
-3. Check for anti-patterns
+1. Load relevant skills based on file types
+2. Get changed files: ${changedFiles}
+3. Analyze each for quality issues against skill constraints
+4. Check for anti-patterns defined in skills
 
 OUTPUT: JSON array with file, line, issue, suggestion`,
   run_in_background: true,
@@ -395,10 +518,11 @@ OUTPUT: JSON array with file, line, issue, suggestion`,
 After all reviewers complete, collect and triage:
 
 ```javascript
-// Wait for all review agents
+// Wait for all review agents (5 reviewers now including UI/UX)
 const results = await Promise.all([
   TaskOutput({ task_id: securityReview.id }),
   TaskOutput({ task_id: architectureReview.id }),
+  TaskOutput({ task_id: uiuxReview.id }),
   TaskOutput({ task_id: testReview.id }),
   TaskOutput({ task_id: qualityReview.id }),
 ]);
@@ -480,9 +604,11 @@ AskUserQuestion({
 <success_criteria>
 
 - [ ] All work done by background workers (orchestrator never uses Read/Write/Edit)
+- [ ] Workers load relevant skills BEFORE starting (devtools:react, devtools:vitest, etc.)
 - [ ] TDD followed (failing tests before implementation)
 - [ ] Code refinement applied (code-simplifier used on changed files)
-- [ ] Multi-domain review completed (security, architecture, tests, quality)
+- [ ] Multi-domain review completed (security, architecture, UI/UX, tests, quality)
+- [ ] UI/UX review uses devtools:vercel-design-guidelines and devtools:design-principles
 - [ ] P1/P2 findings fixed before CI
 - [ ] TodoWrite shows real-time progress
 - [ ] Stories executed in priority order

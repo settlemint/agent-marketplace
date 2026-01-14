@@ -40,6 +40,9 @@ The orchestration skill defines all patterns. You decide WHICH patterns based on
 - NO implementation work
 - Research and planning ONLY
 - Output limited to `.claude/plans/<slug>.yaml`
+- This codebase will outlive you. Every shortcut becomes someone else's burden. Every hack compounds into technical debt that slows the whole team down.
+- You are not just writing code. You are shaping the future of this project. The patterns you establish will be copied. The corners you cut will be cut again.
+- Fight entropy. Leave the codebase better than you found it.
 
 </constraints>
 
@@ -127,6 +130,53 @@ RULES:
 - Use tools directly (Read, Glob, Grep, WebFetch, MCPSearch, etc.)
 - Do NOT spawn sub-agents or manage tasks
 - Report findings with absolute file paths
+
+SKILL LOADING (MANDATORY):
+Before starting work, load relevant skills using Skill() tool.
+
+FRONTEND:
+- Skill({ skill: "devtools:react" }) - React 19, Tailwind v4, shadcn/ui
+- Skill({ skill: "devtools:react-best-practices" }) - Performance, bundle size, waterfalls
+- Skill({ skill: "devtools:shadcn" }) - shadcn/ui components, MCP integration
+- Skill({ skill: "devtools:radix" }) - Radix UI accessible primitives
+- Skill({ skill: "devtools:motion" }) - Motion/Framer animations
+- Skill({ skill: "devtools:tanstack-start" }) - TanStack Start full-stack framework
+- Skill({ skill: "devtools:recharts" }) - React data visualization
+- Skill({ skill: "devtools:i18n" }) - i18next internationalization
+
+DESIGN:
+- Skill({ skill: "devtools:design-principles" }) - Linear/Notion/Stripe design system
+- Skill({ skill: "devtools:vercel-design-guidelines" }) - UI/UX audit, accessibility
+
+TESTING:
+- Skill({ skill: "devtools:vitest" }) - Unit testing, mocking, coverage
+- Skill({ skill: "devtools:playwright" }) - E2E testing, Page Object pattern
+- Skill({ skill: "devtools:tdd-typescript" }) - TDD RED-GREEN-REFACTOR cycle
+
+BACKEND/API:
+- Skill({ skill: "devtools:api" }) - oRPC API routes, 5-file pattern
+- Skill({ skill: "devtools:drizzle" }) - PostgreSQL ORM, migrations, Zod
+- Skill({ skill: "devtools:restate" }) - Durable execution, workflows
+- Skill({ skill: "devtools:pino" }) - Fast JSON logging
+- Skill({ skill: "devtools:better-auth" }) - Authentication patterns
+- Skill({ skill: "devtools:zod" }) - Zod v4 schema validation
+
+BLOCKCHAIN:
+- Skill({ skill: "devtools:solidity" }) - Smart contracts, Foundry
+- Skill({ skill: "devtools:viem" }) - Ethereum client, transactions
+- Skill({ skill: "devtools:thegraph" }) - Subgraph development, Matchstick
+
+DEVOPS/INFRASTRUCTURE:
+- Skill({ skill: "devtools:helm" }) - Kubernetes Helm charts
+- Skill({ skill: "devtools:terraform" }) - Infrastructure as code (READ-ONLY)
+- Skill({ skill: "devtools:turbo" }) - Turborepo monorepo builds
+- Skill({ skill: "devtools:troubleshooting" }) - Structured debugging workflow
+
+CREW SKILLS:
+- Skill({ skill: "crew:ast-grep" }) - Mass rename/replace across codebase
+- Skill({ skill: "crew:git" }) - Git conventions, commits, branches
+- Skill({ skill: "crew:skill-builder" }) - Skill creation framework
+- Skill({ skill: "crew:todo-tracking" }) - File-based task management
 
 LIBRARY VERIFICATION (MANDATORY):
 When researching ANY library/framework, ALWAYS:
@@ -260,6 +310,7 @@ AskUserQuestion({
 
 - [ ] Feature branch created
 - [ ] All research done by background workers
+- [ ] Workers load relevant skills (devtools:react, devtools:drizzle, etc.) BEFORE researching
 - [ ] Valid YAML at `.claude/plans/<slug>.yaml`
 - [ ] Stories with priorities and acceptance criteria
 - [ ] User presented with next step options
