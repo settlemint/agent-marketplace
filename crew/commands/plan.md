@@ -108,12 +108,12 @@ githubSearchPullRequests(owner, repo, keywords)
 
 ### Agent Selection
 
-| Task Type              | Model   | Agent Type        |
-| ---------------------- | ------- | ----------------- |
-| Find files/patterns    | `haiku` | `Explore`         |
-| Read documentation     | `haiku` | `Explore`         |
-| Analyze patterns       | `opus`  | `general-purpose` |
-| Architecture decisions | `opus`  | `general-purpose` |
+| Task Type              | Model  | Agent Type        |
+| ---------------------- | ------ | ----------------- |
+| Find files/patterns    | `opus` | `Explore`         |
+| Read documentation     | `opus` | `Explore`         |
+| Analyze patterns       | `opus` | `general-purpose` |
+| Architecture decisions | `opus` | `general-purpose` |
 
 ### Worker Preamble (REQUIRED)
 
