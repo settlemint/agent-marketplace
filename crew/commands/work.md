@@ -157,7 +157,7 @@ mcp__plugin_crew_codex__codex({
 
 ## Phase 1: Setup
 
-Spawn a haiku worker to:
+Spawn an opus worker to:
 
 1. Verify not on main branch
 2. Read the plan file and return story list
@@ -165,7 +165,7 @@ Spawn a haiku worker to:
 ```javascript
 Task({
   subagent_type: "Explore",
-  model: "haiku",
+  model: "opus",
   description: "Load plan",
   prompt: `WORKER TASK: Read plan and return stories.
 
@@ -203,13 +203,13 @@ Use patterns from `n-skills:orchestration`:
 
 ### Agent/Model Selection
 
-| Task Complexity        | Model   | Agent Type        |
-| ---------------------- | ------- | ----------------- |
-| Single file, simple    | `opus`  | `general-purpose` |
-| Multi-file, moderate   | `opus`  | `general-purpose` |
-| Security-critical      | `opus`  | `general-purpose` |
-| Architecture decisions | `opus`  | `Plan`            |
-| Exploration/research   | `haiku` | `Explore`         |
+| Task Complexity        | Model  | Agent Type        |
+| ---------------------- | ------ | ----------------- |
+| Single file, simple    | `opus` | `general-purpose` |
+| Multi-file, moderate   | `opus` | `general-purpose` |
+| Security-critical      | `opus` | `general-purpose` |
+| Architecture decisions | `opus` | `Plan`            |
+| Exploration/research   | `opus` | `Explore`         |
 
 ### Execution Loop
 
