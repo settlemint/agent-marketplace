@@ -4,6 +4,14 @@ SettleMint development tools for Claude Code.
 
 ## Installation
 
+**One-line setup (recommended):**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/settlemint/agent-marketplace/main/setup.sh | bash
+```
+
+This installs all dependencies (jq, gh, shfmt, shellcheck, ast-grep), configures marketplaces, and installs the full plugin suite including Trail of Bits security plugins.
+
 **Interactive (inside Claude Code):**
 
 ```bash
