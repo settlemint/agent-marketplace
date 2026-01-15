@@ -1,8 +1,43 @@
 ---
 name: playwright
 description: Playwright E2E testing with Page Object pattern, web-first assertions, and proper locators. Triggers on playwright, e2e, page object, getByRole.
+license: MIT
 triggers:
-  ["playwright", "e2e", "page object", "getByRole", "getByLabel", "getByTestId"]
+  - "playwright"
+  - "playwrite"
+  - "plawright"
+  - "e2e"
+  - "end[- ]?to[- ]?end"
+  - "page[- ]?object"
+  - "getByRole"
+  - "getByLabel"
+  - "getByTestId"
+  - "getByText"
+  - "browser.*test"
+  - "test.*browser"
+  - "integration.*test"
+  - "test.*integration"
+  - "web.*test"
+  - "test.*web.*app"
+  - "automat.*browser"
+  - "browser.*automat"
+  - "headless"
+  - "headed.*test"
+  - "toBeVisible"
+  - "toHaveText"
+  - "click.*fill"
+  - "waitFor"
+  - "\\.spec\\.ts"
+  - "npx playwright"
+  - "test\\.describe"
+  - "functional.*test"
+  - "ui.*test"
+  - "test.*ui"
+  - "user.*flow.*test"
+  - "test.*user.*flow"
+  - "smoke.*test"
+  - "regression.*test"
+  - "cross[- ]?browser"
 ---
 
 <objective>
@@ -136,6 +171,16 @@ await expect(page).toHaveTitle("Title");
 **Locator Priority:** `getByRole()` → `getByLabel()` → `getByText()` → `getByTestId()` → CSS
 </constraints>
 
+<anti_patterns>
+**Common mistakes to avoid:**
+
+- Using `isVisible()` instead of `toBeVisible()` (no auto-wait)
+- Hardcoded `waitForTimeout()` instead of web-first assertions
+- CSS selectors for elements that have accessible names
+- Selectors directly in test files instead of Page Objects
+- Committing `.only` or `.skip` to version control
+  </anti_patterns>
+
 <commands>
 ```bash
 npx playwright test                    # Run all tests
@@ -145,6 +190,40 @@ npx playwright test -g "login"         # Filter by name
 npx playwright show-report             # View HTML report
 ```
 </commands>
+
+<library_ids>
+Skip resolve step for these known IDs:
+
+| Library    | Context7 ID           |
+| ---------- | --------------------- |
+| Playwright | /microsoft/playwright |
+
+</library_ids>
+
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production Playwright testing patterns",
+      researchGoal: "Search for page object and E2E patterns",
+      reasoning: "Need real-world examples of Playwright usage",
+      keywordsToSearch: ["getByRole", "playwright", "test.describe"],
+      extension: "ts",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Page objects: `keywordsToSearch: ["extends BasePage", "playwright", "page object"]`
+- Assertions: `keywordsToSearch: ["toBeVisible", "toHaveText", "expect"]`
+- Auth: `keywordsToSearch: ["storageState", "playwright", "authentication"]`
+  </research>
 
 <related_skills>
 
@@ -159,6 +238,10 @@ npx playwright show-report             # View HTML report
 - Verifying design consistency across views
 - Testing visual hierarchy and spacing
 
+**Testing methodology (Trail of Bits):** Load for comprehensive testing:
+
+- `Skill({ skill: "trailofbits:testing-handbook-skills" })` — Fuzzers, sanitizers, coverage guidance
+
 </related_skills>
 
 <success_criteria>
@@ -169,3 +252,13 @@ npx playwright show-report             # View HTML report
 - [ ] Tests are isolated
 - [ ] Proper locator strategy
       </success_criteria>
+
+<evolution>
+**Extension Points:**
+
+- Add custom fixtures for common test setup patterns
+- Create domain-specific Page Object base classes
+- Add visual regression testing with screenshot comparisons
+
+**Timelessness:** E2E testing with semantic locators and auto-waiting assertions applies to any web testing framework.
+</evolution>

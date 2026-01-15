@@ -1,16 +1,48 @@
 ---
 name: vitest
 description: Vitest unit testing patterns for TypeScript. Covers test structure, mocking, assertions, and coverage. Triggers on vitest, describe, it, expect, mock.
+license: MIT
 triggers:
-  [
-    "vitest",
-    "describe",
-    "\\bit\\(",
-    "expect",
-    "mock",
-    "\\.test\\.ts",
-    "\\.spec\\.ts",
-  ]
+  - "vitest"
+  - "vite.*test"
+  - "describe\\("
+  - "\\bit\\("
+  - "\\btest\\("
+  - "expect\\("
+  - "\\bmock"
+  - "vi\\.fn"
+  - "vi\\.mock"
+  - "vi\\.spyOn"
+  - "vi\\.stub"
+  - "\\.test\\.ts"
+  - "\\.spec\\.ts"
+  - "unit.*test"
+  - "test.*unit"
+  - "write.*test"
+  - "add.*test"
+  - "create.*test"
+  - "test.*file"
+  - "test.*coverage"
+  - "coverage.*report"
+  - "beforeEach"
+  - "afterEach"
+  - "beforeAll"
+  - "afterAll"
+  - "toBe\\("
+  - "toEqual\\("
+  - "toHaveBeenCalled"
+  - "toThrow"
+  - "mockReturnValue"
+  - "mockResolvedValue"
+  - "mockImplementation"
+  - "bun.*test"
+  - "run.*test"
+  - "test.*pass"
+  - "test.*fail"
+  - "assert"
+  - "spy"
+  - "fake.*timer"
+  - "useFakeTimers"
 ---
 
 <objective>
@@ -220,7 +252,14 @@ await expect(promise).rejects.toThrow("error");
 </assertions>
 
 <constraints>
+**Banned:**
+- Test interdependencies (tests must run in any order)
+- Shared mutable state between tests
+- Testing implementation details (test behavior, not internals)
+- `.only` or `.skip` committed to main branch
+
 **Required:**
+
 - One concept per test (single assertion focus)
 - Descriptive test names ("should X when Y")
 - Clean setup with beforeEach
@@ -229,6 +268,15 @@ await expect(promise).rejects.toThrow("error");
 
 **Naming:** Test files=`*.test.ts` or `*.spec.ts`
 </constraints>
+
+<anti_patterns>
+
+- **Test Interdependence:** Tests that rely on other tests running first; breaks isolation
+- **Implementation Testing:** Testing private methods or internal state; breaks on refactoring
+- **Mock Leakage:** Mocks persisting between tests; use `vi.resetAllMocks()` in afterEach
+- **Assertion-Free Tests:** Tests without expect statements; false positives
+- **Overmocking:** Mocking so much that tests don't verify real behavior
+  </anti_patterns>
 
 <commands>
 ```bash
@@ -239,6 +287,51 @@ vitest run -t "pattern" # Filter by name
 ```
 </commands>
 
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production Vitest testing patterns",
+      researchGoal: "Search for mocking and test organization patterns",
+      reasoning: "Need real-world examples of Vitest usage",
+      keywordsToSearch: ["vi.mock", "describe", "vitest"],
+      extension: "ts",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Mocking: `keywordsToSearch: ["vi.mock", "vi.spyOn", "mockImplementation"]`
+- Async testing: `keywordsToSearch: ["resolves", "rejects", "toThrow"]`
+- Coverage: `keywordsToSearch: ["vitest", "coverage", "c8"]`
+  </research>
+
+<related_skills>
+
+**TDD workflow:** Load via `Skill({ skill: "devtools:tdd-typescript" })` when:
+
+- Following RED-GREEN-REFACTOR cycle
+- Writing tests before implementation
+- Enforcing coverage requirements
+
+**E2E testing:** Load via `Skill({ skill: "devtools:playwright" })` when:
+
+- Testing user flows end-to-end
+- Browser automation testing
+- Integration testing with real browser
+
+**Advanced testing (Trail of Bits):** Load these for enhanced test quality:
+
+- `Skill({ skill: "trailofbits:property-based-testing" })` — Property-based testing guidance
+- `Skill({ skill: "trailofbits:testing-handbook-skills" })` — Fuzzers, sanitizers, coverage
+  </related_skills>
+
 <success_criteria>
 
 - [ ] Context7 docs fetched for current API
@@ -247,3 +340,12 @@ vitest run -t "pattern" # Filter by name
 - [ ] Descriptive test names
 - [ ] Coverage for edge cases
       </success_criteria>
+
+<evolution>
+**Extension Points:**
+- Add domain-specific test templates (API testing, React components)
+- Extend with snapshot testing patterns for UI components
+- Integrate with CI/CD for automated test reporting
+
+**Timelessness:** Unit testing principles are fundamental to software quality; Vitest's Jest-compatible API means patterns transfer across testing frameworks.
+</evolution>

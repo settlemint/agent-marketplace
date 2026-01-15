@@ -2,7 +2,15 @@
 # Block Terraform/OpenTofu command execution
 # Returns "BLOCK" to prevent execution if terraform/tofu command detected
 
-set -euo pipefail
+# Hooks must never fail
+set +e
+
+# --- Logging setup ---
+SCRIPT_DIR=$(dirname "$0")
+SCRIPT_NAME="block-terraform"
+# shellcheck source=../lib/common.sh
+source "$SCRIPT_DIR/../lib/common.sh"
+log_init
 
 # Read hook input from stdin
 INPUT=$(cat)
@@ -13,6 +21,7 @@ COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""' 2>/dev/null)
 # Only block terraform/tofu apply and destroy commands (case insensitive)
 # Other commands like init, plan, validate, fmt are allowed
 if echo "$COMMAND" | grep -qiE '^\s*(terraform|tofu)\s+(apply|destroy)'; then
+	log_warn "event=TERRAFORM_BLOCKED" "command=$COMMAND"
 	cat <<'EOF'
 {
   "decision": "block",
@@ -40,6 +49,7 @@ fi
 
 # Also block apply/destroy in chained commands
 if echo "$COMMAND" | grep -qiE '(^|[;&|])\s*(terraform|tofu)\s+(apply|destroy)'; then
+	log_warn "event=TERRAFORM_BLOCKED" "command=$COMMAND" "reason=chained_command"
 	cat <<'EOF'
 {
   "decision": "block",

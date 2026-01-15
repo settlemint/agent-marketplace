@@ -1,18 +1,63 @@
 ---
 name: drizzle
 description: Drizzle ORM patterns for PostgreSQL schemas, queries, migrations, and Zod integration. Triggers on drizzle, pgTable, db.select, db.insert, migration.
+license: MIT
 triggers:
-  [
-    "drizzle",
-    "pgTable",
-    "db\\.select",
-    "db\\.insert",
-    "db\\.update",
-    "db\\.delete",
-    "db\\.query",
-    "migration",
-    "drizzle-zod",
-  ]
+  # Library name and variations
+  - "\\bdrizzle\\b"
+  - "drizzle-orm"
+  - "drizzle-kit"
+  - "drizzle-zod"
+  - "drizzle/pg-core"
+  # Schema definitions
+  - "pgTable"
+  - "mysqlTable"
+  - "sqliteTable"
+  - "\\$inferInsert"
+  - "\\$inferSelect"
+  # Column types
+  - "text\\([\"']"
+  - "varchar\\([\"']"
+  - "boolean\\([\"']"
+  - "timestamp\\([\"']"
+  - "integer\\([\"']"
+  - "serial\\([\"']"
+  # Query operations
+  - "db\\.select"
+  - "db\\.insert"
+  - "db\\.update"
+  - "db\\.delete"
+  - "db\\.query"
+  - "db\\.transaction"
+  # Query helpers
+  - "\\beq\\("
+  - "\\band\\("
+  - "\\bor\\("
+  - "\\bdesc\\("
+  - "\\basc\\("
+  - "\\blike\\("
+  - "\\bilike\\("
+  # Migration and commands
+  - "db:generate"
+  - "db:migrate"
+  - "db:push"
+  - "db:studio"
+  - "drizzle\\.config"
+  # Relationships
+  - "\\.references\\("
+  - "onDelete.*cascade"
+  - "relations\\("
+  # User intent - database work
+  - "(?i)create.*table"
+  - "(?i)database.*schema"
+  - "(?i)add.*column"
+  - "(?i)run.*migration"
+  - "(?i)generate.*migration"
+  - "(?i)postgres.*query"
+  - "(?i)sql.*query"
+  - "(?i)foreign.*key"
+  - "(?i)database.*index"
+  - "(?i)orm.*query"
 ---
 
 <objective>
@@ -140,6 +185,15 @@ await db.delete(contacts).where(eq(contacts.id, id));
 **Naming:** Schema files=`lowercase-with-hyphens.ts`, Tables=singular noun
 </constraints>
 
+<anti_patterns>
+
+- Forgetting `$inferInsert` and `$inferSelect` type exports
+- Timestamps without `{ withTimezone: true }`
+- Foreign keys without explicit `onDelete` action
+- Editing generated migration files manually
+- Multiple snapshots with same `prevId` (breaks migration chain)
+  </anti_patterns>
+
 <commands>
 ```bash
 bun run db:generate    # Generate migration from schema changes
@@ -190,6 +244,46 @@ export const contracts = pgTable("contracts", {
 This eliminates manual normalization throughout the codebase and ensures consistency.
 </gotchas>
 
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production Drizzle ORM patterns",
+      researchGoal: "Search for schema design and query patterns",
+      reasoning: "Need real-world examples of Drizzle usage",
+      keywordsToSearch: ["pgTable", "drizzle-orm", "relations"],
+      extension: "ts",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Schema patterns: `keywordsToSearch: ["pgTable", "$inferInsert", "$inferSelect"]`
+- Relations: `keywordsToSearch: ["relations", "one", "many", "drizzle"]`
+- Migrations: `keywordsToSearch: ["drizzle-kit", "migrate", "generate"]`
+  </research>
+
+<related_skills>
+
+**Schema validation:** Load via `Skill({ skill: "devtools:zod" })` when:
+
+- Generating Zod schemas from Drizzle tables
+- Validating input before database operations
+- Creating type-safe API contracts
+
+**Testing:** Load via `Skill({ skill: "devtools:vitest" })` when:
+
+- Writing unit tests for database queries
+- Mocking database connections
+- Testing migrations
+  </related_skills>
+
 <success_criteria>
 
 - [ ] Context7 docs fetched for current API
@@ -199,3 +293,12 @@ This eliminates manual normalization throughout the codebase and ensures consist
 - [ ] Indexes defined for foreign keys
 - [ ] Migration generated and tested
       </success_criteria>
+
+<evolution>
+**Extension Points:**
+- Add custom column types for domain-specific normalization
+- Create shared schema utilities for common patterns
+- Build type-safe query builders for complex operations
+
+**Timelessness:** Type-safe ORMs with near-zero overhead represent the future of database access in TypeScript applications.
+</evolution>

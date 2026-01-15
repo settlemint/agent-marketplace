@@ -1,7 +1,36 @@
 ---
 name: i18n
 description: Internationalization with i18next and react-i18next. Covers translation setup, namespaces, pluralization, and language detection. Triggers on i18n, i18next, translation, t().
-triggers: ["i18n", "i18next", "translation", "t\\(", "useTranslation", "Trans"]
+license: MIT
+triggers:
+  - "i18n"
+  - "i18next"
+  - "react-i18next"
+  - "translation"
+  - "translate"
+  - "t\\("
+  - "useTranslation"
+  - "Trans"
+  - "internationali[zs]"
+  - "locali[zs]"
+  - "locale"
+  - "multilingual"
+  - "multi.?language"
+  - "multiple.?languages"
+  - "language.?switch"
+  - "switch.?language"
+  - "change.?language"
+  - "fallbackLng"
+  - "namespace"
+  - "plurali[zs]"
+  - "interpolation"
+  - "RTL"
+  - "right.?to.?left"
+  - "LTR"
+  - "left.?to.?right"
+  - "language.?detection"
+  - "translation.?file"
+  - "\.json.?translation"
 ---
 
 <objective>
@@ -179,6 +208,64 @@ src/
 - Namespaces: `common`, `dashboard`, `settings`, etc.
   </constraints>
 
+<anti_patterns>
+
+- Hardcoding text in components instead of using translation keys
+- Forgetting fallback language configuration
+- Using `escapeValue: true` with React (double escaping)
+- Deeply nested translation keys that are hard to maintain
+- Missing pluralization rules for countable items
+  </anti_patterns>
+
+<library_ids>
+Skip resolve step for these known IDs:
+
+| Library       | Context7 ID            |
+| ------------- | ---------------------- |
+| i18next       | /i18next/i18next       |
+| react-i18next | /i18next/react-i18next |
+
+</library_ids>
+
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production i18next patterns",
+      researchGoal: "Search for translation and namespace patterns",
+      reasoning: "Need real-world examples of i18n setup",
+      keywordsToSearch: ["useTranslation", "i18next", "namespace"],
+      extension: "ts",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Configuration: `keywordsToSearch: ["i18n.init", "resources", "fallbackLng"]`
+- Pluralization: `keywordsToSearch: ["_one", "_other", "count", "i18next"]`
+- React usage: `keywordsToSearch: ["useTranslation", "Trans", "react-i18next"]`
+  </research>
+
+<related_skills>
+
+**React components:** Load via `Skill({ skill: "devtools:react" })` when:
+
+- Building language switcher components
+- Integrating translations with forms
+- Managing locale state
+
+**Zod validation:** Load via `Skill({ skill: "devtools:zod" })` when:
+
+- Validating locale codes
+- Building typed translation keys
+  </related_skills>
+
 <success_criteria>
 
 - [ ] Context7 docs fetched for current API
@@ -187,3 +274,12 @@ src/
 - [ ] Pluralization works correctly
 - [ ] No hardcoded strings in components
       </success_criteria>
+
+<evolution>
+**Extension Points:**
+- Add language detection plugins for browser/server
+- Create extraction scripts for translation keys
+- Build locale-aware formatting utilities
+
+**Timelessness:** Internationalization requirements grow with global reach; i18next patterns scale from single-language to multi-region deployments.
+</evolution>

@@ -74,6 +74,63 @@ def validate_xml_tags(content: str) -> tuple[bool, list[str]]:
     return len(errors) == 0, errors
 
 
+def extract_skill_name(content: str) -> str | None:
+    """Extract skill name from frontmatter."""
+    if not content.startswith("---"):
+        return None
+
+    parts = content.split("---", 2)
+    if len(parts) < 3:
+        return None
+
+    try:
+        frontmatter = yaml.safe_load(parts[1].strip())
+        return frontmatter.get("name")
+    except yaml.YAMLError:
+        return None
+
+
+def extract_related_skills(content: str) -> list[str]:
+    """Extract skill references from related_skills section."""
+    related_skills = []
+
+    # Look for related_skills tag content
+    match = re.search(r"<related_skills>(.*?)</related_skills>", content, re.DOTALL)
+    if match:
+        section = match.group(1)
+        # Extract skill names from Skill() calls
+        skill_refs = re.findall(r'Skill\(\s*\{\s*skill:\s*["\']([^"\']+)["\']', section)
+        related_skills.extend(skill_refs)
+        # Also check for plain skill names in bullet points
+        bullet_refs = re.findall(r"[-*]\s*`([a-z][a-z0-9:_-]+)`", section)
+        related_skills.extend(bullet_refs)
+
+    return list(set(related_skills))
+
+
+def validate_skill_name(name: str) -> tuple[bool, list[str]]:
+    """Validate skill name follows conventions."""
+    errors = []
+
+    if not name:
+        errors.append("Skill name is empty")
+        return False, errors
+
+    # Check for valid characters
+    if not re.match(r"^[a-z][a-z0-9:-]*$", name):
+        errors.append(
+            f"Invalid skill name '{name}': must be lowercase, start with letter, contain only a-z, 0-9, :, -"
+        )
+
+    # Check for proper namespacing
+    if ":" in name:
+        parts = name.split(":")
+        if any(not p for p in parts):
+            errors.append(f"Invalid skill name '{name}': empty namespace segment")
+
+    return len(errors) == 0, errors
+
+
 def validate_skill_file(filepath: Path) -> tuple[bool, list[str]]:
     """Validate a single skill file."""
     errors = []
@@ -87,11 +144,36 @@ def validate_skill_file(filepath: Path) -> tuple[bool, list[str]]:
     fm_valid, fm_errors = validate_frontmatter(content)
     errors.extend(fm_errors)
 
+    # Validate skill name
+    name = extract_skill_name(content)
+    if name:
+        name_valid, name_errors = validate_skill_name(name)
+        errors.extend(name_errors)
+
     # Validate XML tags
     xml_valid, xml_errors = validate_xml_tags(content)
     errors.extend(xml_errors)
 
     return len(errors) == 0, errors
+
+
+def validate_dependencies(
+    files: list[Path], known_skills: set[str]
+) -> tuple[bool, dict[Path, list[str]]]:
+    """Validate that all related_skills references exist."""
+    dependency_errors: dict[Path, list[str]] = {}
+
+    for filepath in files:
+        content = filepath.read_text()
+        related = extract_related_skills(content)
+
+        missing = [s for s in related if s not in known_skills]
+        if missing:
+            dependency_errors[filepath] = [
+                f"References unknown skill: {s}" for s in missing
+            ]
+
+    return len(dependency_errors) == 0, dependency_errors
 
 
 def main():
@@ -112,13 +194,28 @@ def main():
 
     all_valid = True
 
+    # First pass: validate individual files and collect skill names
+    known_skills: set[str] = set()
     for filepath in files:
         valid, errors = validate_skill_file(filepath)
+        name = extract_skill_name(filepath.read_text())
+        if name:
+            known_skills.add(name)
 
         if valid:
             print(f"✓ {filepath}")
         else:
             all_valid = False
+            print(f"✗ {filepath}")
+            for error in errors:
+                print(f"  - {error}")
+
+    # Second pass: validate dependencies
+    deps_valid, dep_errors = validate_dependencies(files, known_skills)
+    if not deps_valid:
+        all_valid = False
+        print("\nDependency errors:")
+        for filepath, errors in dep_errors.items():
             print(f"✗ {filepath}")
             for error in errors:
                 print(f"  - {error}")

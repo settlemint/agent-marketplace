@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-This is a Claude Code plugin marketplace repository. It contains the `crew` plugin - an orchestration system for work execution, skill management, and git workflows. This is NOT a traditional application with build/test pipelines.
+This is a Claude Code plugin marketplace repository. It contains the `devtools` and `flow` plugins for development tools and workflow automation. This is NOT a traditional application with build/test pipelines.
 
 ## TDD Required (MANDATORY)
 
@@ -38,43 +38,22 @@ Skill({ skill: "devtools:tdd-typescript" })
 2. Write ONLY enough test to demonstrate failure
 3. Write ONLY enough code to pass the test
 
-**Hooks enforce TDD on every Edit/Write operation. Follow the workflow.**
-
 ## Plugin Structure
 
 ```
-crew/
+devtools/
 ├── .claude-plugin/plugin.json    # Plugin metadata
-├── commands/                     # Slash commands (/crew:design, /crew:build, etc.)
-│   ├── design.md                 # Create implementation plans
-│   ├── build.md                  # Execute work with tracking
-│   ├── check.md                  # Multi-agent code review
-│   ├── fix.md                    # Resolve blockers
-│   └── git/                      # Git workflow commands
-├── skills/                       # Domain expertise modules
-│   ├── agent-architecture/       # Agent patterns, loops, state
-│   ├── skill-builder/            # Skill creation framework
-│   ├── git/                      # Git conventions
-│   ├── mcp/                      # MCP server integration
-│   └── todo-tracking/            # File-based task management
-├── scripts/                      # Shell/Python automation
-│   ├── git/                      # Git helper scripts
-│   ├── hooks/                    # Lifecycle hook implementations
-│   └── skills/                   # Skill utilities (Python)
-├── hooks/hooks.json              # Claude hook definitions
-└── .mcp.json                     # MCP server configuration
+├── .mcp.json                     # MCP server configuration
+└── skills/                       # Domain expertise modules
+
+flow/
+├── .claude-plugin/plugin.json    # Plugin metadata
+├── skills/                       # Workflow skills
+├── scripts/                      # Hook implementations
+└── hooks/hooks.json              # Hook definitions
 ```
 
-## Architecture Concepts
-
-### Commands (4-Phase Pattern)
-
-- `/crew:design` - Research and create plan in `.claude/plans/<slug>.md`
-- `/crew:build` - Execute plan with TodoWrite progress tracking
-- `/crew:check` - Multi-agent review, triage findings by severity (P1/P2/P3)
-- `/crew:fix` - Repair skills, resolve PR comments, run CI validation
-
-### Skills
+## Skills
 
 Self-contained knowledge modules with:
 
@@ -95,39 +74,25 @@ Load `devtools:react-best-practices`
 
 This ensures skills can be loaded programmatically when users follow the documentation.
 
-### State Management
+## MCP Servers
 
-- Branch state: `.claude/branches/{branch}/state.json`
-- Session state: Saved on compaction, restored on resume
-- Plans stored in: `.claude/plans/`
-
-### Hooks
-
-Lifecycle automation (non-blocking):
-
-- `SessionStart` - Restore state on startup, check available linters
-- `PreCompact` - Save state before compaction
-- `PreToolUse` - Suggest relevant skills (e.g., /crew:ci for test commands)
-- `PostToolUse` - Auto-lint on file edits, sync machete stack, track agents
-- `Stop` - Check for agent loops
-
-### MCP Servers
-
-Configured in `crew/.mcp.json`:
+Configured in `devtools/.mcp.json`:
 
 - **Context7** - Library documentation lookup
 - **OctoCode** - GitHub repository search
 - **Codex** - Deep reasoning/code analysis
+- **Shadcn** - shadcn/ui component integration
+- **Playwright** - E2E testing support
 
 ## Installation Methods
 
 ```bash
 # Via marketplace
 /plugin marketplace add settlemint/agent-marketplace
-/plugin install crew@settlemint
+/plugin install devtools@settlemint
 
 # Local development
-claude --plugin-dir ~/Development/agent-marketplace/crew
+claude --plugin-dir ~/Development/agent-marketplace/devtools
 ```
 
 ## Shell Script Quality
@@ -151,8 +116,8 @@ shellcheck <file>           # Lint for issues
 
 | Plugin   | Manifest                              |
 | -------- | ------------------------------------- |
-| crew     | `crew/.claude-plugin/plugin.json`     |
 | devtools | `devtools/.claude-plugin/plugin.json` |
+| flow     | `flow/.claude-plugin/plugin.json`     |
 
 ```bash
 # Before committing, update the version in ALL affected plugins:
@@ -165,10 +130,11 @@ This ensures users get the latest changes when the plugin syncs from the marketp
 
 ## Key Files
 
-| File                              | Purpose                 |
-| --------------------------------- | ----------------------- |
-| `crew/.claude-plugin/plugin.json` | Plugin metadata         |
-| `crew/hooks/hooks.json`           | Hook definitions        |
-| `crew/.mcp.json`                  | MCP server config       |
-| `.claude/settings.json`           | Project Claude settings |
-| `.claude-plugin/marketplace.json` | Marketplace registry    |
+| File                                 | Purpose                 |
+| ------------------------------------ | ----------------------- |
+| `devtools/.claude-plugin/plugin.json`| Plugin metadata         |
+| `devtools/.mcp.json`                 | MCP server config       |
+| `flow/.claude-plugin/plugin.json`    | Plugin metadata         |
+| `flow/hooks/hooks.json`              | Hook definitions        |
+| `.claude/settings.json`              | Project Claude settings |
+| `.claude-plugin/marketplace.json`    | Marketplace registry    |

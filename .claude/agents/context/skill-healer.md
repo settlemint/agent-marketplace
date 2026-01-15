@@ -36,8 +36,8 @@ Determine:
 ## Step 3: Verify Correct API
 
 ```javascript
-MCPSearch({ query: "select:mcp__plugin_crew_context7__query-docs" });
-mcp__plugin_crew_context7__query_docs({
+MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" });
+mcp__plugin_devtools_context7__query_docs({
   libraryId: "/library/id",
   query: "How do I correctly use <specific-api>?",
 });

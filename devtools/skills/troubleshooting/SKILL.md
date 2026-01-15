@@ -1,12 +1,61 @@
 ---
 name: troubleshooting
 description: Structured debugging workflow. Only when user explicitly asks for help debugging.
+license: MIT
 triggers:
   - "help.*debug"
+  - "debug.*help"
   - "how.*fix"
-  - "why.*not working"
+  - "fix.*this"
+  - "why.*not.*work"
+  - "not.*working"
+  - "doesn'?t.*work"
+  - "won'?t.*work"
+  - "stopped.*working"
   - "troubleshoot"
   - "debug.*this"
+  - "debug.*issue"
+  - "debug.*problem"
+  - "debug.*error"
+  - "what'?s.*wrong"
+  - "find.*bug"
+  - "hunt.*bug"
+  - "track.*down"
+  - "root.*cause"
+  - "diagnos"
+  - "investigat"
+  - "broken"
+  - "crash"
+  - "fail"
+  - "error.*message"
+  - "exception"
+  - "stack.*trace"
+  - "unexpected.*behavio"
+  - "strange.*behavio"
+  - "weird.*behavio"
+  - "not.*expected"
+  - "should.*but"
+  - "supposed.*to"
+  - "used.*to.*work"
+  - "was.*working"
+  - "suddenly"
+  - "all.*of.*sudden"
+  - "can'?t.*figure"
+  - "stuck"
+  - "help.*understand.*error"
+  - "what.*causing"
+  - "why.*happening"
+  - "ECONNREFUSED"
+  - "ENOENT"
+  - "EPERM"
+  - "Module.*not.*found"
+  - "not.*assignable"
+  - "hydration.*mismatch"
+  - "undefined.*is.*not"
+  - "cannot.*read.*property"
+  - "TypeError"
+  - "ReferenceError"
+  - "SyntaxError"
 agent: Explore
 ---
 
@@ -24,6 +73,29 @@ Systematically debug and resolve development issues across the stack. Use struct
 5. **Fix** - Apply targeted solution
 6. **Verify** - Run quality gate before committing
    </quick_start>
+
+<constraints>
+**Banned:**
+- Editing code before observing actual output
+- Fixing bugs without reproduction steps
+- Committing fixes without running CI/quality gate
+- Making multiple changes simultaneously (confuses root cause)
+
+**Required:**
+
+- Verify issue exists before attempting fix
+- Run quality gate (`bun run ci`) before every commit
+- Create regression test for fixed bugs
+  </constraints>
+
+<anti_patterns>
+
+- **Shotgun Debugging:** Making random changes hoping something works
+- **Print Statement Pollution:** Adding console.log everywhere without removing them
+- **Assumption-Driven Fixes:** Fixing what you think is wrong without evidence
+- **Blame Shifting:** Assuming external services are broken before checking your code
+- **Zombie Code:** Commenting out code instead of deleting it; creates confusion
+  </anti_patterns>
 
 <observe_before_editing>
 **CRITICAL: Confirm what the system actually produced before editing code.**
@@ -341,6 +413,32 @@ mcp__context7__query_docs({
 
 </mcp_for_debugging>
 
+<lsp_for_debugging>
+**Use LSP tools for semantic code navigation during debugging:**
+
+When debugging errors with stack traces, LSP provides type-aware navigation:
+
+- `lspGotoDefinition(lineHint)` - Jump to error source from stack trace locations
+- `lspCallHierarchy(incoming, lineHint)` - Trace what called the failing function
+- `lspFindReferences(lineHint)` - Find all call sites that might trigger the error
+
+**Workflow:**
+
+1. Grep for error message → get file + lineHint
+2. `lspGotoDefinition` → jump to source
+3. `lspCallHierarchy(incoming)` → trace callers
+
+**CRITICAL:** Always search first to get `lineHint` (1-indexed line number). Never call LSP tools without a lineHint from search results.
+
+**When to use:**
+
+- Stack traces point to specific lines → use LSP to navigate
+- Need to understand call chain → use `lspCallHierarchy`
+- Finding all places that trigger an error → use `lspFindReferences`
+
+Load LSP skill for detailed patterns: `Skill({ skill: "devtools:typescript-lsp" })`
+</lsp_for_debugging>
+
 <reference_index>
 
 | Reference                 | Content                                                |
@@ -349,6 +447,24 @@ mcp__context7__query_docs({
 | `boundary-complexity.md`  | AI cognition degradation at system boundaries          |
 
 </reference_index>
+
+<related_skills>
+
+**Testing:** Load via `Skill({ skill: "devtools:vitest" })` when:
+
+- Writing regression tests for fixed bugs
+- Reproducing issues with failing tests
+
+**Iterative review:** Load via `Skill({ skill: "devtools:rule-of-five" })` when:
+
+- Fix requires multiple review passes
+- Complex bug with architectural implications
+
+**React debugging:** Load via `Skill({ skill: "devtools:react" })` when:
+
+- Debugging React component issues
+- Investigating hydration mismatches
+  </related_skills>
 
 <success_criteria>
 
@@ -360,3 +476,12 @@ mcp__context7__query_docs({
 - [ ] Issue verified resolved
 - [ ] No regressions introduced
       </success_criteria>
+
+<evolution>
+**Extension Points:**
+- Add domain-specific debugging references (React, database, network)
+- Extend with team-specific runbooks for common failure modes
+- Integrate with monitoring/alerting patterns
+
+**Timelessness:** Systematic debugging is a fundamental engineering skill; observe-reproduce-isolate-fix workflow applies to any technology stack.
+</evolution>

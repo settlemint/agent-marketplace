@@ -1,7 +1,7 @@
 {
   "name": "flow",
-  "description": "Workflow orchestration, state management, and productivity automation for Claude Code. Provides /flow:init, /flow:status, /flow:analyze, /flow:suggest commands with comprehensive hook lifecycle management.",
-  "version": "1.0.0",
+  "description": "Hook-based agent enhancement and workflow automation for Claude Code. Enhances native Explore, Plan, and General-purpose agents with Rule of Five convergence patterns.",
+  "version": "1.16.0",
   "author": {
     "name": "Roderik van der Veer",
     "email": "roderik@settlemint.com"

@@ -1,3 +1,6 @@
 .claude/branches
 .claude/plans
 **/CLAUDE.md
+
+# Ensure docs are tracked (even if .claude is ignored elsewhere)
+!.claude/docs/

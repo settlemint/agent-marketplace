@@ -1,7 +1,33 @@
 ---
 name: helm
 description: Kubernetes Helm chart development with values.yaml, templates, and subchart patterns. Triggers on helm, chart, kubernetes, values.yaml.
-triggers: ["helm", "chart", "kubernetes", "k8s", "values\\.yaml", "\\.tpl"]
+license: MIT
+triggers:
+  [
+    "helm",
+    "helms",
+    "heml",
+    "chart\\.yaml",
+    "values\\.yaml",
+    "\\.tpl$",
+    "_helpers\\.tpl",
+    "kubernetes",
+    "k8s",
+    "kube",
+    "deploy.*kubernetes",
+    "kubernetes.*deploy",
+    "subchart",
+    "helm\\s+(install|upgrade|template|lint|package)",
+    "\\{\\{-?\\s*(define|include|template)",
+    "\\.Values\\.",
+    "\\.Release\\.",
+    "\\.Chart\\.",
+    "bitnami",
+    "artifacthub",
+    "chart\\s*dependenc",
+    "helm\\s*repo",
+    "helmfile",
+  ]
 ---
 
 <objective>
@@ -24,9 +50,10 @@ mcp__octocode__githubGetFileContent({
   matchString: "primary",
   mainResearchGoal: "Understand Bitnami chart patterns",
   researchGoal: "Find PostgreSQL configuration options",
-  reasoning: "Need to configure external chart correctly"
-})
+  reasoning: "Need to configure external chart correctly",
+});
 ```
+
 </mcp_first>
 
 <quick_start>
@@ -72,6 +99,7 @@ app.kubernetes.io/name: {{ include "mychart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 ```
+
 </quick_start>
 
 <constraints>
@@ -83,6 +111,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 - Template files over 200 lines
 
 **Required:**
+
 - Every values field: `# -- (type) description` annotation
 - Standard Kubernetes labels (`app.kubernetes.io/*`)
 - Support both inline and `existingSecret` for secrets
@@ -90,6 +119,15 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
 **Naming:** Charts=`kebab-case`, Templates=`<resource>.yaml`, Values=`camelCase`
 </constraints>
+
+<anti_patterns>
+
+- Hardcoding values that should be configurable
+- Changing label selectors on existing deployments (breaks updates)
+- Putting secrets directly in values.yaml
+- Template files over 200 lines without splitting
+- Building workarounds before researching external chart capabilities
+  </anti_patterns>
 
 <external_charts>
 **Always research external chart capabilities before workarounds:**
@@ -107,9 +145,10 @@ mcp__octocode__githubGetFileContent({
   matchString: "rbac",
   mainResearchGoal: "Find Grafana RBAC options",
   researchGoal: "Check if namespace-scoped RBAC is supported",
-  reasoning: "Avoid custom workaround if chart supports it natively"
-})
+  reasoning: "Avoid custom workaround if chart supports it natively",
+});
 ```
+
 </external_charts>
 
 <commands>
@@ -121,11 +160,69 @@ helm install my-release ./my-chart # Install
 ```
 </commands>
 
+<library_ids>
+Skip resolve step for these known IDs:
+
+| Library | Context7 ID |
+| ------- | ----------- |
+| Helm    | /helm/helm  |
+
+</library_ids>
+
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production Helm chart patterns",
+      researchGoal: "Search for template and values patterns",
+      reasoning: "Need real-world examples of Helm usage",
+      keywordsToSearch: [".Values", "define", "include", "template"],
+      extension: "yaml",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Templates: `keywordsToSearch: ["define", "include", "_helpers.tpl"]`
+- Values patterns: `keywordsToSearch: [".Values", "existingSecret", "enabled"]`
+- Labels: `keywordsToSearch: ["app.kubernetes.io", "labels", "selectorLabels"]`
+- Dependencies: `keywordsToSearch: ["Chart.yaml", "dependencies", "subchart"]`
+  </research>
+
+<related_skills>
+
+**Infrastructure provisioning:** Load via `Skill({ skill: "devtools:terraform" })` when:
+
+- Provisioning Kubernetes cluster before chart deployment
+- Managing cloud infrastructure for Helm releases
+
+**Container builds:** Load via `Skill({ skill: "devtools:turbo" })` when:
+
+- Building container images in monorepo
+- CI/CD pipelines that build then deploy charts
+  </related_skills>
+
 <success_criteria>
+
 - [ ] All values have `# -- (type)` annotations
 - [ ] Uses `.Values` references (no hardcoding)
 - [ ] Standard Kubernetes labels
 - [ ] `existingSecret` pattern for secrets
 - [ ] `helm lint` passes with 0 warnings
 - [ ] External charts researched before workarounds
-</success_criteria>
+      </success_criteria>
+
+<evolution>
+**Extension Points:**
+- Create reusable template helpers in _helpers.tpl
+- Add conditional resources for optional features
+- Build umbrella charts for complex deployments
+
+**Timelessness:** Helm remains the de facto standard for Kubernetes package management; these patterns apply across cloud providers.
+</evolution>

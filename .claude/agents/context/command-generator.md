@@ -39,8 +39,8 @@ Note conventions: YAML frontmatter, workflow phases, tool usage, UI interaction 
 ## Step 3: Query Framework Docs (if needed)
 
 ```javascript
-MCPSearch({ query: "select:mcp__plugin_crew_context7__query-docs" });
-mcp__plugin_crew_context7__query_docs({
+MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" });
+mcp__plugin_devtools_context7__query_docs({
   libraryId: "/library/id",
   query: "How do I implement <relevant-pattern>?",
 });

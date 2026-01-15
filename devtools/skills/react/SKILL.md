@@ -1,17 +1,51 @@
 ---
 name: react
 description: React 19 components with Tailwind CSS v4, shadcn/ui, forms, tables, routing, data fetching, and i18n. Triggers on .tsx files, component, tailwind, tanstack, form, table, router.
-triggers:
-  [
-    "\\.tsx",
-    "component",
-    "tailwind",
-    "tanstack",
-    "form",
-    "table",
-    "router",
-    "react",
-    "shadcn",
+license: MIT
+triggers: [
+    # File extensions and imports
+    "\\.tsx$",
+    "\\.jsx$",
+    'from [''"]react[''"]',
+    "import.*React",
+
+    # React core concepts
+    "(?i)react\\s*(19|component|hook|state|prop|context)",
+    "(?i)\\b(useState|useEffect|useRef|useMemo|useCallback|useContext|useReducer)\\b",
+    "(?i)\\b(use\\s+hook|custom\\s+hook|create\\s+hook)\\b",
+    "(?i)\\b(jsx|tsx|functional\\s+component|class\\s+component)\\b",
+    "(?i)\\b(server\\s+component|client\\s+component|rsc)\\b",
+    "(?i)\\b(suspense|lazy|concurrent)\\b",
+
+    # TanStack libraries
+    "(?i)tanstack",
+    "(?i)@tanstack/(router|query|form|table)",
+    "(?i)\\b(useQuery|useMutation|queryClient)\\b",
+    "(?i)\\b(useForm|form\\s+validation|field\\s+validation)\\b",
+    "(?i)\\b(useReactTable|columnDef|data\\s+table)\\b",
+    "(?i)\\b(createFileRoute|useNavigate|file.?based\\s+routing)\\b",
+
+    # Tailwind CSS
+    "(?i)tailwind(css)?",
+    "(?i)\\bcn\\s*\\(",
+    "(?i)class.?name.*=",
+    "(?i)\\b(utility\\s+classes|responsive\\s+design)\\b",
+
+    # Component patterns
+    "(?i)\\b(build|create|make|add|write)\\s+(a\\s+)?component\\b",
+    "(?i)\\b(button|card|modal|dialog|dropdown|menu|nav|header|footer|sidebar)\\s+component\\b",
+    "(?i)\\b(form|input|select|checkbox|radio|textarea)\\s+(component|field)\\b",
+    "(?i)\\b(list|grid|layout|container)\\s+component\\b",
+
+    # UI/Frontend general
+    "(?i)\\b(ui|frontend|front.?end|user\\s+interface)\\b",
+    "(?i)\\b(render|display|show)\\s+(data|content|list|table)\\b",
+    "(?i)\\b(styled?|styling|css.?in.?js)\\b",
+
+    # Common typos
+    "(?i)\\breact[0-9]*\\b",
+    "(?i)\\btailwnd\\b",
+    "(?i)\\btanstak\\b",
   ]
 ---
 
@@ -121,6 +155,16 @@ Skip resolve step for these known IDs:
 **Naming:** Components=`PascalCase`, files=`kebab-case.tsx`, props=`<Component>Props`
 </constraints>
 
+<anti_patterns>
+**Common mistakes to avoid:**
+
+- Using `useEffect` for derived state (compute inline or useMemo)
+- Barrel file re-exports causing bundle bloat
+- Components over 150 lines without decomposition
+- Inline styles instead of Tailwind utility classes
+- Creating new components when existing UI primitives suffice
+  </anti_patterns>
+
 <routing>
 | Task | Action |
 |------|--------|
@@ -163,6 +207,57 @@ export function MyComponent({
 
 </component_pattern>
 
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production React 19 patterns",
+      researchGoal: "Search for server component and action patterns",
+      reasoning: "Need real-world examples of React 19 features",
+      keywordsToSearch: ["use server", "server component", "React 19"],
+      extension: "tsx",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Server components: `keywordsToSearch: ["use client", "server component"]`
+- TanStack patterns: `keywordsToSearch: ["useQuery", "queryClient"]`
+- Form handling: `keywordsToSearch: ["useForm", "TanStack Form"]`
+  </research>
+
+<lsp_for_components>
+**Use LSP for React codebase navigation:**
+
+LSP tools help navigate component hierarchies and understand prop drilling:
+
+- `lspGotoDefinition(lineHint)` - Jump to component implementations from JSX usage
+- `lspFindReferences(lineHint)` - Find all places a component is rendered
+- `lspCallHierarchy(lineHint)` - Trace hook usage and data flow
+
+**Workflow:**
+
+1. Grep for component name → get lineHint
+2. `lspFindReferences` → find all render locations
+3. `lspGotoDefinition` → jump to component source
+
+**CRITICAL:** Always search first to get `lineHint` (1-indexed line number). Never call LSP tools without a lineHint from search results.
+
+**When to use:**
+
+- Finding where a component is used → `lspFindReferences`
+- Jumping to component definition → `lspGotoDefinition`
+- Understanding prop drilling → `lspCallHierarchy`
+
+Load LSP skill for detailed patterns: `Skill({ skill: "devtools:typescript-lsp" })`
+</lsp_for_components>
+
 <related_skills>
 
 **Performance optimization:** Load via `Skill({ skill: "devtools:react-best-practices" })` when:
@@ -188,3 +283,13 @@ export function MyComponent({
 - [ ] Exports prop types
 - [ ] Uses existing UI primitives where available
       </success_criteria>
+
+<evolution>
+**Extension Points:**
+
+- Add domain-specific component patterns as project grows
+- Integrate new TanStack libraries as they release
+- Extend with custom hooks for project-specific logic
+
+**Timelessness:** Component composition, state management, and data fetching patterns transcend specific React versions.
+</evolution>

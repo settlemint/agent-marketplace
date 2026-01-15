@@ -1,0 +1,171 @@
+#!/usr/bin/env bash
+# Common utilities for flow hooks
+# Source this file in hook scripts for consistent logging and utilities
+
+# --- Log Levels ---
+LOG_DEBUG=0
+LOG_INFO=1
+LOG_WARN=2
+LOG_ERROR=3
+
+# Current log level (default: INFO)
+FLOW_LOG_LEVEL=${FLOW_LOG_LEVEL:-$LOG_INFO}
+
+# --- Paths ---
+# Project directory (where .claude/ lives)
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
+
+# Log directory structure
+FLOW_LOG_DIR="$PROJECT_DIR/.claude/flow/logs"
+FLOW_LOG_FILE="${FLOW_LOG_FILE:-$FLOW_LOG_DIR/flow.log}"
+
+# Script identification (set by sourcing script)
+SCRIPT_NAME="${SCRIPT_NAME:-unknown}"
+
+# --- Color Codes (for stderr output) ---
+COLOR_RESET="\033[0m"
+COLOR_DEBUG="\033[36m" # Cyan
+COLOR_INFO="\033[32m"  # Green
+COLOR_WARN="\033[33m"  # Yellow
+COLOR_ERROR="\033[31m" # Red
+
+# --- Logging Functions ---
+
+# Initialize logging (call after setting SCRIPT_NAME)
+log_init() {
+	mkdir -p "$FLOW_LOG_DIR" 2>/dev/null || true
+	# Create per-hook log directory if SCRIPT_NAME is set
+	if [[ -n "$SCRIPT_NAME" && "$SCRIPT_NAME" != "unknown" ]]; then
+		mkdir -p "$FLOW_LOG_DIR/hooks/$SCRIPT_NAME" 2>/dev/null || true
+	fi
+}
+
+# Get current ISO 8601 timestamp
+_timestamp() {
+	date -u +"%Y-%m-%dT%H:%M:%SZ"
+}
+
+# Get today's date for log file rotation
+_today() {
+	date -u +"%Y-%m-%d"
+}
+
+# Core log function
+# Usage: _log LEVEL "message" [key=value ...]
+_log() {
+	local level=$1
+	shift
+	local message=$1
+	shift
+
+	local color=""
+	local prefix=""
+
+	case $level in
+	DEBUG)
+		[[ $FLOW_LOG_LEVEL -gt $LOG_DEBUG ]] && return
+		color=$COLOR_DEBUG
+		prefix="DEBUG"
+		;;
+	INFO)
+		[[ $FLOW_LOG_LEVEL -gt $LOG_INFO ]] && return
+		color=$COLOR_INFO
+		prefix="INFO"
+		;;
+	WARN)
+		[[ $FLOW_LOG_LEVEL -gt $LOG_WARN ]] && return
+		color=$COLOR_WARN
+		prefix="WARN"
+		;;
+	ERROR)
+		color=$COLOR_ERROR
+		prefix="ERROR"
+		;;
+	*)
+		prefix="INFO"
+		color=$COLOR_INFO
+		;;
+	esac
+
+	local timestamp
+	timestamp=$(_timestamp)
+
+	# Build log entry with key=value pairs
+	local log_entry="[$timestamp] $prefix script=$SCRIPT_NAME"
+	if [[ -n "$message" ]]; then
+		log_entry="$log_entry $message"
+	fi
+	# Append any additional key=value pairs
+	while [[ $# -gt 0 ]]; do
+		log_entry="$log_entry $1"
+		shift
+	done
+
+	# Write to combined log file
+	echo "$log_entry" >>"$FLOW_LOG_FILE" 2>/dev/null || true
+
+	# Write to per-hook daily log file
+	if [[ -n "$SCRIPT_NAME" && "$SCRIPT_NAME" != "unknown" ]]; then
+		local hook_log
+		hook_log="$FLOW_LOG_DIR/hooks/$SCRIPT_NAME/$(_today).log"
+		echo "$log_entry" >>"$hook_log" 2>/dev/null || true
+	fi
+
+	# Also output to stderr with colors (for terminal visibility during debugging)
+	if [[ "${FLOW_LOG_STDERR:-}" == "1" ]]; then
+		echo -e "${color}[Flow:${prefix}:${SCRIPT_NAME}]${COLOR_RESET} $message $*" >&2
+	fi
+}
+
+# Convenience functions
+log_debug() { _log DEBUG "$@"; }
+log_info() { _log INFO "$@"; }
+log_warn() { _log WARN "$@"; }
+log_error() { _log ERROR "$@"; }
+
+# Structured event logging (matches enhance-agent.sh pattern)
+# Usage: log_event STATUS "key=value" ...
+log_event() {
+	local status=$1
+	shift
+	_log INFO "event=$status" "$@"
+}
+
+# --- Utility Functions ---
+
+# Check if a command exists
+has_command() {
+	command -v "$1" &>/dev/null
+}
+
+# Safe JSON extraction with jq (returns empty string on failure)
+json_get() {
+	local input=$1
+	local path=$2
+	echo "$input" | jq -r "$path // \"\"" 2>/dev/null || echo ""
+}
+
+# Get session ID (for deduplication markers)
+get_session_id() {
+	echo "${CLAUDE_SESSION_ID:-$$}"
+}
+
+# Check if a session marker exists (for once-per-session hints)
+session_marker_exists() {
+	local marker_name=$1
+	local session_id
+	session_id=$(get_session_id)
+	local marker_file="$PROJECT_DIR/.claude/flow/hooks/.${marker_name}-${session_id}"
+	[[ -f "$marker_file" ]]
+}
+
+# Create a session marker
+create_session_marker() {
+	local marker_name=$1
+	local session_id
+	session_id=$(get_session_id)
+	local marker_dir="$PROJECT_DIR/.claude/flow/hooks"
+	local marker_file="$marker_dir/.${marker_name}-${session_id}"
+	mkdir -p "$marker_dir" 2>/dev/null || true
+	touch "$marker_file" 2>/dev/null || true
+}

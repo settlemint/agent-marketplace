@@ -4,7 +4,7 @@ description: Repair skills, resolve skill blockers, tune skill configuration (pr
 argument-hint: "[skill name or issue description]"
 ---
 
-!`crew/scripts/workflow/fix-context.sh`
+!`devtools/scripts/workflow/fix-context.sh`
 
 ## Input
 
@@ -22,7 +22,7 @@ AskUserQuestion({
       header: "Plugin",
       options: [
         {
-          label: "crew (Recommended)",
+          label: "devtools (Recommended)",
           description: "Orchestration, workflows, git, agents",
         },
         {
@@ -125,7 +125,7 @@ AskUserQuestion({
       header: "Plugin",
       options: [
         {
-          label: "crew (Recommended)",
+          label: "devtools (Recommended)",
           description: "Orchestration, workflows, git, agents",
         },
         {
@@ -185,7 +185,7 @@ Tools:
 - Grep for pattern search
 
 MCP: Context7 for correct library patterns
-mcp__plugin_crew_context7__query_docs({
+mcp__plugin_devtools_context7__query_docs({
   libraryId: "/library/id",
   query: "What is the correct API pattern?"
 })`,

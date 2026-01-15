@@ -2,28 +2,26 @@
 # Suggest flow skills based on command patterns
 # Runs on: PreToolUse (Bash)
 
-set -euo pipefail
+# Hooks must never fail
+set +e
+
+# --- Logging setup ---
+SCRIPT_DIR=$(dirname "$0")
+SCRIPT_NAME="suggest-flow-skill"
+# shellcheck source=../lib/common.sh
+source "$SCRIPT_DIR/../lib/common.sh"
+log_init
 
 # Read tool input from stdin
 TOOL_INPUT=$(cat)
-COMMAND=$(echo "$TOOL_INPUT" | jq -r '.tool_input.command // ""')
+COMMAND=$(echo "$TOOL_INPUT" | jq -r '.tool_input.command // ""' 2>/dev/null || echo "")
 
 # Skip if no command
 if [[ -z "$COMMAND" ]]; then
 	exit 0
 fi
 
-# Pattern matching for skill suggestions
-case "$COMMAND" in
-*workflow* | *process* | *pipeline*)
-	echo "Tip: Consider using flow:flow-patterns skill for workflow design"
-	;;
-*analyze* | *audit* | *review*)
-	echo "Tip: Consider using flow:flow-analysis skill for structured analysis"
-	;;
-*optimize* | *refactor* | *improve*)
-	echo "Tip: Consider using flow:flow-optimization skill for optimization patterns"
-	;;
-esac
+# No suggestions currently - flow uses hook-based agent enhancement
+# rather than explicit skill suggestions for bash commands
 
 exit 0

@@ -15,7 +15,7 @@ AskUserQuestion({
       header: "Plugin",
       options: [
         {
-          label: "crew (Recommended)",
+          label: "devtools (Recommended)",
           description: "Orchestration, workflows, git, agents",
         },
         {
@@ -31,7 +31,7 @@ AskUserQuestion({
 
 ## Step 2: Add the Template
 
-Read and follow the workflow in `crew/skills/skill-builder/workflows/add-template.md`.
+Read and follow the workflow in `devtools/skills/skill-builder/workflows/add-template.md`.
 
 Skills location: `{selected_plugin}/skills/` based on the user's selection above.
 

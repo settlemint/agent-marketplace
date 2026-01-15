@@ -1,8 +1,33 @@
 ---
 name: pino
 description: Pino fast JSON logger for Node.js. Covers log levels, child loggers, transports, and redaction. Triggers on pino, logger, log.info, log.error.
+license: MIT
 triggers:
-  ["pino", "logger", "log\\.info", "log\\.error", "log\\.warn", "log\\.debug"]
+  [
+    "pino",
+    "pino-pretty",
+    "pino-http",
+    "pinojs",
+    "logger\\.info",
+    "logger\\.error",
+    "logger\\.warn",
+    "logger\\.debug",
+    "logger\\.fatal",
+    "logger\\.trace",
+    "log\\.info",
+    "log\\.error",
+    "log\\.warn",
+    "log\\.debug",
+    "child\\s*logger",
+    "structured\\s*log",
+    "json\\s*log",
+    "log.*transport",
+    "log.*redact",
+    "request.*log",
+    "node.*logger",
+    "fast.*logger",
+    "log\\s*level",
+  ]
 ---
 
 <objective>
@@ -208,6 +233,64 @@ const logger = pino({
 - Avoid logging in hot paths
   </constraints>
 
+<anti_patterns>
+**Common mistakes to avoid:**
+
+- String interpolation instead of structured data: `log.info(\`User ${id}\`)` loses queryability
+- Missing `err` property for errors: `log.error(error)` should be `log.error({ err: error })`
+- Logging sensitive data without redaction (passwords, tokens, PII)
+- Using `console.log` instead of Pino in production code
+- Creating new logger instances instead of using child loggers for context
+  </anti_patterns>
+
+<library_ids>
+Skip resolve step for these known IDs:
+
+| Library     | Context7 ID         |
+| ----------- | ------------------- |
+| Pino        | /pinojs/pino        |
+| pino-pretty | /pinojs/pino-pretty |
+
+</library_ids>
+
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production Pino logging patterns",
+      researchGoal: "Search for logger configuration and transports",
+      reasoning: "Need real-world examples of Pino setup",
+      keywordsToSearch: ["pino", "logger", "child", "redact"],
+      extension: "ts",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Transports: `keywordsToSearch: ["pino", "transport", "targets", "destination"]`
+- Redaction: `keywordsToSearch: ["pino", "redact", "password", "secret"]`
+- HTTP logging: `keywordsToSearch: ["pino-http", "request", "middleware"]`
+  </research>
+
+<related_skills>
+
+**API development:** Load via `Skill({ skill: "devtools:api" })` when:
+
+- Adding request logging middleware
+- Logging API errors
+
+**Testing:** Load via `Skill({ skill: "devtools:vitest" })` when:
+
+- Mocking loggers in tests
+- Verifying log output
+  </related_skills>
+
 <success_criteria>
 
 - [ ] Logger configured with appropriate level
@@ -216,3 +299,13 @@ const logger = pino({
 - [ ] Sensitive data redacted
 - [ ] Pretty printing in development only
       </success_criteria>
+
+<evolution>
+**Extension Points:**
+
+- Add custom transports for new log destinations (Datadog, Loki, etc.)
+- Extend serializers for domain-specific object formatting
+- Add new redaction patterns as sensitive data types emerge
+
+**Timelessness:** Structured JSON logging is the foundation of modern observability. Pino patterns apply to any logging library.
+</evolution>

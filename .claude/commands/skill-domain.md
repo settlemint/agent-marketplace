@@ -19,7 +19,7 @@ AskUserQuestion({
           description: "Framework/library patterns (React, Drizzle, etc.)",
         },
         {
-          label: "crew",
+          label: "devtools",
           description: "Orchestration, workflows, git, agents",
         },
       ],
@@ -31,7 +31,7 @@ AskUserQuestion({
 
 ## Step 2: Create the Skill
 
-Read and follow the workflow in `crew/skills/skill-builder/workflows/create-domain-expertise-skill.md`.
+Read and follow the workflow in `devtools/skills/skill-builder/workflows/create-domain-expertise-skill.md`.
 
 Create the skill in: `{selected_plugin}/skills/` based on the user's selection above.
 

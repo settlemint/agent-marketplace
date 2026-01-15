@@ -1,73 +1,53 @@
 # Flow Plugin
 
-Workflow orchestration, state management, and productivity automation for Claude Code.
+Hook-based agent enhancement and workflow automation for Claude Code.
 
-## Features
+## Architecture
 
-- **Workflow Management**: Start, pause, and complete structured workflows
-- **State Persistence**: Automatic state saving across sessions
-- **Intent Analysis**: Smart skill suggestions based on user input
-- **Progress Tracking**: Automatic tracking of file modifications
+Flow uses **native Claude agents + hook-injected enhancements** rather than custom slash commands:
+
+1. **Native agents** (Explore, Plan, General-purpose) do the actual work
+2. **Hooks** detect context and inject domain expertise via skill suggestions
+3. **State persistence** tracks workflows across sessions
 
 ## Skills
 
-### Core Workflow Skills
+### Agent Enhancement Skills
 
-| Skill          | Usage                              | Description                                    |
-| -------------- | ---------------------------------- | ---------------------------------------------- |
-| `flow:init`    | `Skill({ skill: "flow:init" })`    | Initialize flow in the current project         |
-| `flow:status`  | `Skill({ skill: "flow:status" })`  | Show current workflow status                   |
-| `flow:analyze` | `Skill({ skill: "flow:analyze" })` | Analyze codebase for patterns and improvements |
-| `flow:suggest` | `Skill({ skill: "flow:suggest" })` | Suggest improvements based on analysis         |
+Meta-skills that enhance built-in Claude Code agents with Rule of Five convergence patterns.
 
-### Workflow Lifecycle Skills
+| Skill                          | Usage                                              | Description                                        |
+| ------------------------------ | -------------------------------------------------- | -------------------------------------------------- |
+| `flow:enhance:explore`         | `Skill({ skill: "flow:enhance:explore" })`         | 5-angle exploration, progressive disclosure        |
+| `flow:enhance:plan`            | `Skill({ skill: "flow:enhance:plan" })`            | 5-pass refinement, parallelization mapping         |
+| `flow:enhance:general-purpose` | `Skill({ skill: "flow:enhance:general-purpose" })` | 30-second reality check, evidence-based completion |
 
-| Skill                    | Usage                                        | Description                   |
-| ------------------------ | -------------------------------------------- | ----------------------------- |
-| `flow:workflow:start`    | `Skill({ skill: "flow:workflow:start" })`    | Start a new workflow          |
-| `flow:workflow:pause`    | `Skill({ skill: "flow:workflow:pause" })`    | Pause the current workflow    |
-| `flow:workflow:complete` | `Skill({ skill: "flow:workflow:complete" })` | Complete the current workflow |
+### Workflow Skills
 
-### Pattern & Knowledge Skills
-
-| Skill                      | Usage                                          | Description                          |
-| -------------------------- | ---------------------------------------------- | ------------------------------------ |
-| `flow:guides:patterns`     | `Skill({ skill: "flow:guides:patterns" })`     | Core workflow patterns and templates |
-| `flow:guides:analysis`     | `Skill({ skill: "flow:guides:analysis" })`     | Codebase analysis patterns           |
-| `flow:guides:optimization` | `Skill({ skill: "flow:guides:optimization" })` | Optimization strategies              |
-
-## Quick Start
-
-```javascript
-// Initialize flow in your project
-Skill({ skill: "flow:init" });
-
-// Start a new workflow
-Skill({ skill: "flow:workflow:start" });
-
-// Check current status
-Skill({ skill: "flow:status" });
-
-// Analyze codebase
-Skill({ skill: "flow:analyze" });
-
-// Get improvement suggestions
-Skill({ skill: "flow:suggest" });
-
-// Complete workflow
-Skill({ skill: "flow:workflow:complete" });
-```
+| Skill                 | Usage                                     | Description                |
+| --------------------- | ----------------------------------------- | -------------------------- |
+| `flow:fix-pr-reviews` | `Skill({ skill: "flow:fix-pr-reviews" })` | Resolve PR review comments |
 
 ## Hooks
 
-The plugin implements all Claude Code hook lifecycle events:
+The plugin implements Claude Code hook lifecycle events:
 
-- **SessionStart**: Initialize flow state, check dependencies
-- **PreToolUse**: Suggest skills, validate actions
-- **PostToolUse**: Track progress, verify outputs
-- **PreCompact**: Save state before compaction
-- **UserPromptSubmit**: Analyze user intent
-- **Stop**: Cleanup and finalization
+| Hook              | Purpose                                   |
+| ----------------- | ----------------------------------------- |
+| SessionStart      | Initialize flow state, check dependencies |
+| PreToolUse (Task) | Enhance agents with matching skills       |
+| PostToolUse       | Track progress, verify outputs            |
+| PreCompact        | Save state before compaction              |
+| Stop              | Cleanup and finalization                  |
+
+## How Enhancement Works
+
+When you launch an Explore, Plan, or General-purpose agent:
+
+1. `enhance-agent.sh` hook detects the agent type
+2. Hook outputs a skill suggestion directive
+3. Claude loads the matching `flow:enhance:*` skill
+4. Agent runs with enhanced patterns (Rule of Five, convergence signals, etc.)
 
 ## Installation
 
@@ -86,23 +66,14 @@ claude --plugin-dir ~/path/to/flow
 flow/
 ├── .claude-plugin/plugin.json    # Plugin metadata
 ├── hooks/hooks.json              # Hook definitions
-├── .mcp.json                     # MCP server configuration
-├── skills/                       # All skills
-│   ├── init/                     # Initialize flow
-│   ├── status/                   # Show status
-│   ├── analyze/                  # Analyze codebase
-│   ├── suggest/                  # Suggest improvements
-│   ├── workflow/                 # Workflow lifecycle (namespaced)
-│   │   ├── start/                # Start workflow
-│   │   ├── pause/                # Pause workflow
-│   │   └── complete/             # Complete workflow
-│   ├── guides/                   # Knowledge & pattern skills (namespaced)
-│   │   ├── patterns/             # Workflow patterns
-│   │   ├── analysis/             # Analysis patterns
-│   │   └── optimization/         # Optimization patterns
-├── scripts/                      # Hook and utility scripts
-├── agents/                       # Agent definitions
-└── rules/                        # Pattern matching rules
+├── skills/
+│   ├── enhance/                  # Agent enhancement skills
+│   │   ├── explore/              # Explore agent enhancement
+│   │   ├── plan/                 # Plan agent enhancement
+│   │   └── general-purpose/      # General-purpose enhancement
+│   └── fix-pr-reviews/           # PR review resolution
+└── scripts/
+    └── hooks/                    # Hook implementations
 ```
 
 ## License

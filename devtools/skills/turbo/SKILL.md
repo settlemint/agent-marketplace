@@ -1,7 +1,30 @@
 ---
 name: turbo
 description: Turborepo monorepo build system with task pipelines, caching, and package management. Triggers on turbo, turbo.json, monorepo.
-triggers: ["turbo", "turbo\\.json", "monorepo", "workspace"]
+license: MIT
+triggers:
+  [
+    "turbo",
+    "turborepo",
+    "turbo\\.json",
+    "monorepo",
+    "mono-repo",
+    "mono\\s*repo",
+    "workspace",
+    "pnpm-workspace",
+    "dependsOn.*\\^",
+    "\\^build",
+    "task\\s*pipeline",
+    "remote\\s*cach",
+    "vercel.*turbo",
+    "turbo\\s+(build|run|prune)",
+    "turbo.*filter",
+    "--filter=",
+    "package.*workspace",
+    "lerna",
+    "nx\\s+monorepo",
+    "build\\s*system.*mono",
+  ]
 ---
 
 <objective>
@@ -130,7 +153,14 @@ turbo build --dry-run          # Preview what will run
 </commands>
 
 <constraints>
+**Banned:**
+- Missing `outputs` on cacheable tasks (breaks caching)
+- Circular dependencies in `dependsOn`
+- Caching dev/watch mode tasks
+- Overly broad `inputs` patterns (cache misses)
+
 **Required:**
+
 - Define `outputs` for cacheable tasks
 - Use `^` prefix for dependency ordering
 - Set `cache: false` for dev tasks
@@ -143,6 +173,68 @@ turbo build --dry-run          # Preview what will run
 - Enable remote caching for CI
   </constraints>
 
+<anti_patterns>
+
+- **Cache Thrashing:** Overly broad `inputs` causing unnecessary cache invalidation
+- **Missing Dependencies:** Tasks that depend on others without explicit `dependsOn`
+- **Cached Dev Tasks:** Long-running dev tasks with caching enabled; wastes storage
+- **Monolithic Pipeline:** All tasks in one pipeline; split by concern for parallelism
+- **Implicit Ordering:** Relying on alphabetical ordering instead of explicit dependencies
+  </anti_patterns>
+
+<library_ids>
+Skip resolve step for these known IDs:
+
+| Library   | Context7 ID       |
+| --------- | ----------------- |
+| Turborepo | /vercel/turborepo |
+
+</library_ids>
+
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production Turborepo patterns",
+      researchGoal: "Search for task pipeline and caching patterns",
+      reasoning: "Need real-world examples of Turborepo usage",
+      keywordsToSearch: ["turbo.json", "dependsOn", "outputs"],
+      extension: "json",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Pipelines: `keywordsToSearch: ["dependsOn", "^build", "tasks"]`
+- Caching: `keywordsToSearch: ["outputs", "inputs", "cache"]`
+- Filtering: `keywordsToSearch: ["--filter", "workspace", "packages"]`
+- Remote cache: `keywordsToSearch: ["remoteCache", "teamId", "TURBO_TOKEN"]`
+  </research>
+
+<related_skills>
+
+**Testing:** Load via `Skill({ skill: "devtools:vitest" })` when:
+
+- Configuring test tasks in turbo pipeline
+- Running tests across monorepo packages
+
+**TypeScript:** Load via `Skill({ skill: "devtools:tdd-typescript" })` when:
+
+- Setting up TypeScript builds in pipeline
+- Configuring type checking tasks
+
+**Deployment:** Load via `Skill({ skill: "devtools:helm" })` when:
+
+- Deploying monorepo packages to Kubernetes
+- Building container images for deployment
+  </related_skills>
+
 <success_criteria>
 
 - [ ] Context7 docs fetched for current config
@@ -151,3 +243,12 @@ turbo build --dry-run          # Preview what will run
 - [ ] Dev tasks have `cache: false`
 - [ ] Pipeline is efficient (parallel where possible)
       </success_criteria>
+
+<evolution>
+**Extension Points:**
+- Add team-specific task patterns via templates
+- Extend with remote caching configuration for CI providers
+- Integrate with deployment workflows for monorepo releases
+
+**Timelessness:** Build orchestration and caching are fundamental to scalable development; task dependency graphs apply to any build system.
+</evolution>

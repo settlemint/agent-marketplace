@@ -15,7 +15,7 @@ AskUserQuestion({
       header: "Plugin",
       options: [
         {
-          label: "crew (Recommended)",
+          label: "devtools (Recommended)",
           description: "Orchestration, workflows, git, agents",
         },
         {
@@ -31,7 +31,7 @@ AskUserQuestion({
 
 ## Step 2: Create the Skill
 
-Read and follow the workflow in `crew/skills/skill-builder/workflows/create-new-skill.md`.
+Read and follow the workflow in `devtools/skills/skill-builder/workflows/create-new-skill.md`.
 
 Create the skill in: `{selected_plugin}/skills/` based on the user's selection above.
 

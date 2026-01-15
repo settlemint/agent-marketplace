@@ -1,15 +1,32 @@
 ---
 name: terraform
 description: Terraform/OpenTofu infrastructure as code patterns. READ-ONLY - Claude NEVER executes terraform commands.
+license: MIT
 triggers:
   [
     "terraform",
     "opentofu",
     "tofu",
+    "terrafrom",
+    "terrform",
     "\\.tf$",
     "tfvars",
     "tfstate",
-    "provider\\s*\"",
+    "provider\\s*[\"\\{]",
+    "resource\\s*\"",
+    "module\\s*\"",
+    "data\\s*\"\\w+\"",
+    "infrastructure.*(code|as)",
+    "iac\\b",
+    "hcl\\b",
+    "aws_|azurerm_|google_",
+    "hashicorp",
+    "state\\s*(file|backend|lock)",
+    "backend\\s*\"s3\"",
+    "plan\\s+output",
+    "apply\\s+change",
+    "provision.*infra",
+    "cloud\\s*resource",
   ]
 ---
 
@@ -154,8 +171,16 @@ environments/
 - Module versioning with explicit versions
 
 **Naming:** Resources=`snake_case`, Modules=`kebab-case`, Variables=`snake_case`
-
 </constraints>
+
+<anti_patterns>
+
+- **Hardcoded Values:** Magic strings/numbers in resources instead of variables
+- **Monolithic State:** Single state file for entire infrastructure; split by environment/component
+- **Missing Lifecycle Rules:** Databases without `prevent_destroy`; data loss risk
+- **Implicit Dependencies:** Relying on implicit ordering instead of explicit `depends_on`
+- **Unversioned Modules:** Using `main` branch for modules; always pin versions
+  </anti_patterns>
 
 <patterns>
 
@@ -270,6 +295,55 @@ terraform destroy        # Remove infrastructure
 
 </user_instructions>
 
+<library_ids>
+Skip resolve step for these known IDs:
+
+| Library   | Context7 ID                       |
+| --------- | --------------------------------- |
+| Terraform | /hashicorp/terraform              |
+| AWS       | /hashicorp/terraform-provider-aws |
+
+</library_ids>
+
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production Terraform patterns",
+      researchGoal: "Search for module and resource patterns",
+      reasoning: "Need real-world examples of Terraform usage",
+      keywordsToSearch: ["resource", "module", "variable", "terraform"],
+      extension: "tf",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Modules: `keywordsToSearch: ["module", "source", "version", "terraform"]`
+- AWS resources: `keywordsToSearch: ["aws_", "provider", "resource"]`
+- State management: `keywordsToSearch: ["backend", "s3", "dynamodb_table"]`
+- Lifecycle rules: `keywordsToSearch: ["lifecycle", "prevent_destroy", "ignore_changes"]`
+  </research>
+
+<related_skills>
+
+**Kubernetes deployment:** Load via `Skill({ skill: "devtools:helm" })` when:
+
+- Deploying to Kubernetes after infrastructure provisioning
+- Managing Helm charts for applications on provisioned infrastructure
+
+**CI/CD pipelines:** Load via `Skill({ skill: "devtools:turbo" })` when:
+
+- Building monorepo that includes Terraform modules
+- Running Terraform in CI pipelines
+  </related_skills>
+
 <success_criteria>
 
 - [ ] No terraform/tofu apply or destroy executed by Claude
@@ -280,5 +354,13 @@ terraform destroy        # Remove infrastructure
 - [ ] Modules use explicit version constraints
 - [ ] No hardcoded secrets
 - [ ] User informed they must run apply/destroy
+      </success_criteria>
 
-</success_criteria>
+<evolution>
+**Extension Points:**
+- Add provider-specific patterns via references (AWS, GCP, Azure)
+- Extend with Terratest templates for infrastructure testing
+- Integrate with CI/CD patterns for automated plan/apply workflows
+
+**Timelessness:** Infrastructure as Code is a foundational DevOps practice; Terraform/OpenTofu patterns apply regardless of cloud provider evolution.
+</evolution>

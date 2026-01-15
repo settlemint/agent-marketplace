@@ -1,13 +1,46 @@
 ---
 name: rule-of-five
 description: Multi-pass convergence pattern for designs, plans, implementations, and reviews. 5 iterations until quality converges.
+license: MIT
 triggers:
+  # Explicit mentions
   - "rule of five"
-  - "5[- ]pass"
+  - "rule of 5"
+  - "5[- ]?pass"
+  - "five[- ]?pass"
+  - "multi[- ]?pass"
+  # Convergence patterns
   - "convergence"
-  - "iterative review"
-  - "multi[- ]pass"
+  - "converge"
+  - "iterate.*until"
+  - "iterative (review|refinement|improvement)"
+  # Review intent
   - "review.*again"
+  - "review.*(multiple|several|few) times?"
+  - "keep review"
+  - "another (pass|review|iteration)"
+  - "one more (pass|review|look)"
+  - "deeper review"
+  - "thorough review"
+  # Quality improvement intent
+  - "make (it |this )?better"
+  - "improve.*quality"
+  - "not good enough"
+  - "can (we |you )?do better"
+  - "polish.*until"
+  - "refine.*until"
+  # Specific use cases
+  - "review (my |this )?(design|plan|code|implementation)"
+  - "check (my |this )?work"
+  - "self[- ]?review"
+  - "as good as (it |we )?can"
+  - "highest quality"
+  # Escalating review
+  - "escalat(e|ing) review"
+  - "architecture review"
+  - "existential review"
+  - "strategic review"
+  - "deep dive"
 ---
 
 <objective>
@@ -67,12 +100,70 @@ Achieve higher quality through iterative refinement. Have agents review their ow
 | convergence-signals.md | How to detect when work has converged |
 </reference_index>
 
+<constraints>
+**Banned:** Single-pass outputs for complex work, skipping review phases, declaring convergence before 3 passes
+
+**Required:**
+
+- Minimum 3 passes for non-trivial work
+- Each pass must broaden scope (code → architecture → existential)
+- Document findings from each pass
+- Declare convergence only when new findings approach zero
+  </constraints>
+
+<anti_patterns>
+**Common mistakes to avoid:**
+
+- Stopping after first output looks good (premature convergence)
+- All passes reviewing at same depth level (no escalation)
+- Skipping existential questions ("Are we solving the right problem?")
+- Rubber-stamping passes without genuine critique
+- Not documenting findings between passes
+  </anti_patterns>
+
 <integration>
 - Use after `devtools:tdd-typescript` for test quality convergence.
-- Integrate with `/crew:plan` for design convergence.
-- Integrate with `/crew:work` for implementation convergence.
-- Combine with `/crew:health` for code health audits.
+- Apply to design documents and implementation plans.
+- Combine with code health audits for systematic quality improvement.
 </integration>
+
+<research>
+**Find code review patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find code review and quality patterns",
+      researchGoal: "Search for review checklist and quality gate patterns",
+      reasoning: "Need real-world examples of review workflows",
+      keywordsToSearch: ["review", "checklist", "quality-gate"],
+      extension: "md",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Review checklists: `keywordsToSearch: ["code-review", "checklist", "guidelines"]`
+- Quality gates: `keywordsToSearch: ["quality-gate", "ci", "pre-commit"]`
+- Architecture review: `keywordsToSearch: ["ADR", "architecture", "decision"]`
+  </research>
+
+<related_skills>
+
+**TDD workflow:** Load via `Skill({ skill: "devtools:tdd-typescript" })` when:
+
+- Applying convergence to test quality
+- Iterating on test coverage
+
+**Debugging:** Load via `Skill({ skill: "devtools:troubleshooting" })` when:
+
+- Convergence reveals bugs to investigate
+- Root cause analysis needed
+  </related_skills>
 
 <success_criteria>
 
@@ -82,3 +173,13 @@ Achieve higher quality through iterative refinement. Have agents review their ow
 - [ ] Agent declares convergence or 5 passes complete
 - [ ] Output quality measurably higher than single-pass
       </success_criteria>
+
+<evolution>
+**Extension Points:**
+
+- Add domain-specific review checklists per pass level
+- Create automated convergence detection heuristics
+- Integrate with CI for mandatory multi-pass reviews
+
+**Timelessness:** Iterative refinement and self-review are fundamental quality assurance patterns across all engineering disciplines.
+</evolution>

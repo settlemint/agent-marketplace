@@ -4,6 +4,13 @@
 
 set +e
 
+# --- Logging setup ---
+SCRIPT_DIR=$(dirname "$0")
+SCRIPT_NAME="suggest-skill"
+# shellcheck source=../lib/common.sh
+source "$SCRIPT_DIR/../lib/common.sh"
+log_init
+
 is_truthy() {
 	case "${1:-}" in
 	1 | true | yes | on) return 0 ;;
@@ -84,6 +91,7 @@ fi
 
 # Output suggestion if we have one
 if [[ -n $SUGGESTION ]]; then
+	log_info "event=SKILL_SUGGESTED" "suggestion=$SUGGESTION"
 	# Mark as shown for this session (token saver)
 	if [[ -n $MARKER ]]; then
 		mkdir -p "$(dirname "$MARKER")" 2>/dev/null

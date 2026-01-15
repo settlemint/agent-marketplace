@@ -1,32 +1,14 @@
 # Agent Marketplace
 
-SettleMint agent orchestration and development tools for Claude Code.
+SettleMint development tools for Claude Code.
 
 ## Installation
-
-**One-liner (recommended):**
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/settlemint/agent-marketplace/main/crew/scripts/hooks/session-start/setup-plugins.sh | bash
-```
-
-This installs all recommended plugins with status notifications:
-
-- SettleMint crew & devtools
-- Dev Browser automation
-
-**Core plugin only:**
-
-```bash
-claude plugin marketplace add settlemint/agent-marketplace
-claude plugin install crew@settlemint
-```
 
 **Interactive (inside Claude Code):**
 
 ```bash
 /plugin marketplace add settlemint/agent-marketplace
-/plugin install crew@settlemint
+/plugin install devtools@settlemint
 ```
 
 **Or add to your project's `.claude/settings.json`:**
@@ -42,54 +24,13 @@ claude plugin install crew@settlemint
     }
   },
   "enabledPlugins": {
-    "crew@settlemint": true,
-    "devtools@settlemint": true
+    "devtools@settlemint": true,
+    "flow@settlemint": true
   }
 }
 ```
 
-## Browser Automation
-
-Claude Code has native browser automation via the `mcp__claude-in-chrome__*` tools when the Claude-in-Chrome extension is installed. Use these tools to:
-
-- **Validate UI changes**: Take screenshots and compare implementations
-- **Debug issues**: Inspect page content, console logs, network requests
-- **Test workflows**: Navigate through user flows to verify functionality
-- **Explore documentation**: Fetch and analyze web content
-
-The browser tools are automatically available when the extension is active. Use `MCPSearch` to load specific tools before calling them.
-
 ## Plugins
-
-### crew
-
-Unified orchestration for work execution, skill creation, git conventions, and system management.
-
-**Commands:**
-
-| Command                     | Alias                   | Purpose                                   |
-| --------------------------- | ----------------------- | ----------------------------------------- |
-| `/crew:design`              |                         | Create validated implementation plan      |
-| `/crew:build`               |                         | Execute work with progress tracking       |
-| `/crew:check`               |                         | Multi-agent code review + triage          |
-| `/crew:restart`             |                         | Resume pending work from previous session |
-| `/crew:skill:fix`           | `/crew:fix`             | Repair skills, resolve blockers           |
-| `/crew:git:commit`          | `/crew:commit`          | Create conventional commit                |
-| `/crew:git:push`            | `/crew:push`            | Push current branch to origin             |
-| `/crew:git:commit-and-push` | `/crew:commit-and-push` | Commit and push in one step               |
-| `/crew:git:branch`          | `/crew:branch`          | Create feature branch from main           |
-| `/crew:git:pr`              | `/crew:pr`              | Commit, push, and open PR                 |
-| `/crew:git:sync`            | `/crew:sync`            | Sync current branch with main             |
-| `/crew:git:undo`            | `/crew:undo`            | Undo last commit (keeps changes)          |
-| `/crew:git:clean`           | `/crew:clean`           | Clean up stale branches                   |
-| `/crew:ci`                  |                         | Run CI checks via background haiku agent  |
-
-**Features:**
-
-- Plan-driven development with progress tracking
-- Session state preservation across compactions
-- Git commit and PR workflow validation
-- Auto-linting on file modifications
 
 ### devtools
 
@@ -141,13 +82,6 @@ Example:
   }
 }
 ```
-
-## Acknowledgments
-
-This plugin builds on ideas and patterns from:
-
-- [compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) - Knowledge compounding and session handoffs
-- [gas town](https://github.com/steveyegge/gastown) - Agent orchestration
 
 ## License
 
