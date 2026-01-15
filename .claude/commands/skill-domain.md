@@ -19,7 +19,7 @@ AskUserQuestion({
           description: "Framework/library patterns (React, Drizzle, etc.)",
         },
         {
-          label: "devtools",
+          label: "flow",
           description: "Orchestration, workflows, git, agents",
         },
       ],
