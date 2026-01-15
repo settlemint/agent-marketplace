@@ -2,6 +2,6 @@
 .claude/plans
 .claude/flow
 **/CLAUDE.md
-
+.claude/devtools
 # Ensure docs are tracked (even if .claude is ignored elsewhere)
 !.claude/docs/
