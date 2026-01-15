@@ -30,7 +30,7 @@ triggers:
   - "left.?to.?right"
   - "language.?detection"
   - "translation.?file"
-  - "\.json.?translation"
+  - '\\.json.?translation'
 ---
 
 <objective>

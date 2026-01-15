@@ -15,8 +15,9 @@ Fix PR comments and CI failures. Resolve threads with **educational feedback** t
 
 <data_usage>
 The context above contains ALREADY-FETCHED data. Parse it directly.
-DO NOT run `gh pr view`, `gh api graphql`, or refetch.
+DO NOT refetch initial PR data - use the parsed context.
 Thread IDs (PRRT_xxx) are in the unresolved threads section.
+Note: Post-fix verification queries (step 5) are allowed.
 </data_usage>
 
 <workflow>

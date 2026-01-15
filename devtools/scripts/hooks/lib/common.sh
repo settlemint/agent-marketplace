@@ -43,8 +43,8 @@ _today() {
 _log() {
 	local level=$1
 	shift
-	local message=$1
-	shift
+	local message="${1:-}"
+	[[ $# -gt 0 ]] && shift
 
 	local prefix=""
 

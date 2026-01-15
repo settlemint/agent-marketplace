@@ -183,6 +183,16 @@ log_skill_activation() {
 	local source="$4"
 	shift 4
 
+	# Collect extra key=value args into JSON object
+	local extra_json="{}"
+	while [[ $# -gt 0 ]]; do
+		local kv="$1"
+		local key="${kv%%=*}"
+		local value="${kv#*=}"
+		extra_json=$(echo "$extra_json" | jq --arg k "$key" --arg v "$value" '. + {($k): $v}' 2>/dev/null || echo "$extra_json")
+		shift
+	done
+
 	# Truncate prompt to 200 chars for storage efficiency
 	local prompt_excerpt="${prompt:0:200}"
 	[[ ${#prompt} -gt 200 ]] && prompt_excerpt="${prompt_excerpt}..."
@@ -196,7 +206,7 @@ log_skill_activation() {
 	local branch
 	branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
 
-	# Build JSON entry
+	# Build JSON entry with extra metadata
 	local entry
 	entry=$(jq -n \
 		--arg ts "$timestamp" \
@@ -206,6 +216,7 @@ log_skill_activation() {
 		--arg trigger "$trigger" \
 		--arg prompt "$prompt_excerpt" \
 		--arg source "$source" \
+		--argjson extra "$extra_json" \
 		'{
 			timestamp: $ts,
 			session_id: $session,
@@ -213,7 +224,8 @@ log_skill_activation() {
 			skill: $skill,
 			trigger_pattern: $trigger,
 			prompt_excerpt: $prompt,
-			source: $source
+			source: $source,
+			metadata: $extra
 		}' 2>/dev/null)
 
 	# Append to JSONL file
