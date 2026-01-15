@@ -19,16 +19,5 @@
     "command": "npx -y @owloops/claude-powerline@latest --style=powerline --theme=tokyo-night",
     "padding": 0
   },
-  "enabledPlugins": {
-    "compound-engineering@every-marketplace": true
-  },
-  "extraKnownMarketplaces": {
-    "every-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "EveryInc/compound-engineering-plugin"
-      }
-    }
-  },
   "spinnerTipsEnabled": false
 }
