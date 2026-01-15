@@ -16,15 +16,23 @@ triggers:
 Route git tasks to the appropriate specialized skill.
 </objective>
 
+<quick_start>
+
+1. **Identify task** — What git operation is needed?
+2. **Route to skill** — Use the appropriate slash command or skill
+3. **Execute** — The specialized skill handles the details
+
+</quick_start>
+
 <routing>
 
 | Task | Skill | Command |
 |------|-------|---------|
-| Create commit | `devtools:commit` | `/commit` |
-| Create branch | `devtools:branch` | `/branch` |
-| Create PR | `devtools:pr` | `/pr` |
-| Push to remote | `devtools:push` | `/push` |
-| Sync with main | `devtools:sync` | `/sync` |
+| Create commit | `Skill({ skill: "devtools:commit" })` | `/commit` |
+| Create branch | `Skill({ skill: "devtools:branch" })` | `/branch` |
+| Create PR | `Skill({ skill: "devtools:pr" })` | `/pr` |
+| Push to remote | `Skill({ skill: "devtools:push" })` | `/push` |
+| Sync with main | `Skill({ skill: "devtools:sync" })` | `/sync` |
 
 </routing>
 
@@ -53,11 +61,11 @@ gh pr create --title "type(scope): description" --body "..."
 
 **What do you want to do?**
 
-- "commit changes" / "save work" → Load `devtools:commit`
-- "create branch" / "new feature" → Load `devtools:branch`
-- "create PR" / "submit for review" → Load `devtools:pr`
-- "push" / "upload commits" → Load `devtools:push`
-- "sync" / "merge main" / "rebase" → Load `devtools:sync`
+- "commit changes" / "save work" → `Skill({ skill: "devtools:commit" })`
+- "create branch" / "new feature" → `Skill({ skill: "devtools:branch" })`
+- "create PR" / "submit for review" → `Skill({ skill: "devtools:pr" })`
+- "push" / "upload commits" → `Skill({ skill: "devtools:push" })`
+- "sync" / "merge main" / "rebase" → `Skill({ skill: "devtools:sync" })`
 
 </decision_tree>
 

@@ -85,7 +85,7 @@ For each conflicted file:
 
 ```bash
 # After merge conflicts resolved
-git commit -m "merge: resolve conflicts with $BASE"
+git commit -m "merge: resolve conflicts with main"
 
 # After rebase conflicts resolved
 git rebase --continue

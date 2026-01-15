@@ -51,8 +51,11 @@ case "$COMMAND" in
 esac
 
 if [[ -n "$DESTRUCTIVE_WARNING" ]]; then
-	# Log destructive git operation without persisting full command (avoid leaking credentials)
+	# Log destructive git operation
 	log_warn "event=DESTRUCTIVE_GIT_COMMAND" "warning=$DESTRUCTIVE_WARNING"
+	# Show warning to user
+	echo "⚠️  WARNING: $DESTRUCTIVE_WARNING" >&2
+	echo "   Consider using /sync skill for safer git operations." >&2
 fi
 
 # Log large git add commands without recording raw command to avoid leaking credentials
