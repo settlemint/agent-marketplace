@@ -307,10 +307,10 @@ echo ""
 
 echo "Python packages:"
 info "Installing PyYAML..."
-if pip3 install --quiet PyYAML; then
+if pip3 install --user --quiet PyYAML 2>/dev/null || pip3 install --quiet PyYAML 2>/dev/null; then
   success "PyYAML installed"
 else
-  warn "PyYAML install failed"
+  warn "PyYAML install failed (try: pip3 install --user PyYAML)"
 fi
 echo ""
 
