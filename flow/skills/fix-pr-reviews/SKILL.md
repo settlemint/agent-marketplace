@@ -45,11 +45,14 @@ Fix all unresolved PR review comments and CI failures. Resolve each thread after
 
 <data_usage>
 
-**CRITICAL:** The sections above contain ALREADY-FETCHED data. Parse directly.
+**CRITICAL:** Use the inline-fetched data from sections above - it refreshes on each skill invocation.
 
-- DO NOT run `gh pr view`, `gh api graphql`, or refetch
-- Thread IDs (PRRT_xxx) are in `<unresolved_threads>`
+- Thread IDs (PRRT_xxx) are in `<unresolved_threads>` - parse directly
 - If "No PR found" → ask user to create or specify PR number
+- **Never assume "already done"** - always process whatever threads are returned
+- Keep invoking until 0 unresolved threads remain
+
+**NEVER create report files** like `FIX_REVIEW_REPORT.md` - work directly in the conversation.
 
 </data_usage>
 

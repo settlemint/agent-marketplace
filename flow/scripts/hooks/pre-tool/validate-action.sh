@@ -23,11 +23,11 @@ if [[ -z "$FILE_PATH" ]]; then
 	exit 0
 fi
 
-# Check for protected paths - log only, don't output to avoid hook error display
+# Check for protected paths - log and warn user (security-critical)
 case "$FILE_PATH" in
 *.env | *.env.* | *credentials* | *secret* | *.pem | *.key)
 	log_warn "event=SENSITIVE_FILE_EDIT" "file=$FILE_PATH"
-	# Silent - warning is logged but not shown to user
+	echo '{"feedback": "Warning: Editing sensitive file. Ensure no secrets are committed."}' >&2
 	;;
 esac
 

@@ -19,36 +19,39 @@ Sync current branch with main (or specified base): fetch, merge/rebase, resolve 
 
 <quick_start>
 
-1. **Fetch:** `git fetch origin main`
-2. **Merge:** `git merge origin/main` (or rebase if preferred)
-3. **Resolve conflicts:** Fix each conflict, stage files
-4. **Push:** `git push --force-with-lease` (if rebased)
+1. **Set base:** `BASE=${1:-main}` (defaults to main if not provided)
+2. **Fetch:** `git fetch origin $BASE`
+3. **Merge:** `git merge origin/$BASE` (or rebase if preferred)
+4. **Resolve conflicts:** Fix each conflict, stage files
+5. **Push:** `git push --force-with-lease` (if rebased)
 
 </quick_start>
 
 <workflow>
 
-**Step 1: Check current state**
+**Step 1: Set base branch and check state**
 
 ```bash
+# Use provided base branch or default to main
+BASE="${1:-main}"
 git status
 git branch --show-current
 ```
 
-**Step 2: Fetch latest main**
+**Step 2: Fetch latest from base branch**
 
 ```bash
-git fetch origin main
+git fetch origin "$BASE"
 ```
 
 **Step 3: Merge or rebase**
 
 ```bash
 # Merge (preserves history, creates merge commit)
-git merge origin/main --no-edit
+git merge "origin/$BASE" --no-edit
 
 # OR Rebase (linear history, rewrites commits)
-git rebase origin/main
+git rebase "origin/$BASE"
 ```
 
 **Step 4: Resolve conflicts (if any)**
@@ -61,7 +64,7 @@ For each conflicted file:
    your changes
    =======
    incoming changes
-   >>>>>>> origin/main
+   >>>>>>> origin/$BASE
    ```
 
 2. Decide which version to keep:
@@ -81,7 +84,7 @@ For each conflicted file:
 
 ```bash
 # After merge conflicts resolved
-git commit -m "merge: resolve conflicts with main"
+git commit -m "merge: resolve conflicts with $BASE"
 
 # After rebase conflicts resolved
 git rebase --continue

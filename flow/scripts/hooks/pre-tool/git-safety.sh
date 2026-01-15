@@ -51,14 +51,14 @@ case "$COMMAND" in
 esac
 
 if [[ -n "$DESTRUCTIVE_WARNING" ]]; then
-	# Log destructive commands but don't show output (avoids hook error display)
-	log_warn "event=DESTRUCTIVE_GIT_COMMAND" "command=$COMMAND" "warning=$DESTRUCTIVE_WARNING"
+	# Log destructive git operation without persisting full command (avoid leaking credentials)
+	log_warn "event=DESTRUCTIVE_GIT_COMMAND" "warning=$DESTRUCTIVE_WARNING"
 fi
 
-# Log large git add commands - no output to avoid noise
+# Log large git add commands without recording raw command to avoid leaking credentials
 case "$COMMAND" in
 *"git add ."* | *"git add -A"* | *"git add --all"*)
-	log_info "event=LARGE_GIT_ADD" "command=$COMMAND"
+	log_info "event=LARGE_GIT_ADD"
 	;;
 esac
 

@@ -5,6 +5,7 @@
       "url": "https://mcp.context7.com/mcp"
     },
     "baz": {
+      "type": "stdio",
       "command": "npx",
       "args": [
         "-y",

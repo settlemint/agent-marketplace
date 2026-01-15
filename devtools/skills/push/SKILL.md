@@ -44,8 +44,10 @@ fi
 **Step 2: Run QA if needed**
 
 ```bash
-bun run ci
-mkdir -p .claude/state && date +%s > .claude/state/qa-timestamp
+# Only update timestamp if CI passes
+if bun run ci; then
+    mkdir -p .claude/state && date +%s > .claude/state/qa-timestamp
+fi
 ```
 
 **Step 3: Push**
