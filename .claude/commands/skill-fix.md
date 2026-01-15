@@ -23,11 +23,11 @@ AskUserQuestion({
       options: [
         {
           label: "devtools (Recommended)",
-          description: "Orchestration, workflows, git, agents",
+          description: "Framework/library patterns (React, Drizzle, etc.)",
         },
         {
-          label: "devtools",
-          description: "Framework/library patterns (React, Drizzle, etc.)",
+          label: "flow",
+          description: "Orchestration, workflows, git, agents",
         },
       ],
       multiSelect: false,
@@ -126,11 +126,11 @@ AskUserQuestion({
       options: [
         {
           label: "devtools (Recommended)",
-          description: "Orchestration, workflows, git, agents",
+          description: "Framework/library patterns (React, Drizzle, etc.)",
         },
         {
-          label: "devtools",
-          description: "Framework/library patterns (React, Drizzle, etc.)",
+          label: "flow",
+          description: "Orchestration, workflows, git, agents",
         },
       ],
       multiSelect: false,
