@@ -3,6 +3,7 @@ name: branch
 description: Create a feature branch with naming convention. Use when asked to "create branch", "new branch", or "start feature".
 license: MIT
 user_invocable: true
+command: /branch
 argument-hint: "[branch description or type/name]"
 triggers:
   - "create branch"

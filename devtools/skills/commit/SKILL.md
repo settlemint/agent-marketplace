@@ -3,6 +3,7 @@ name: commit
 description: Create a conventional commit. Use when asked to "commit changes" or "save my work".
 license: MIT
 user_invocable: true
+command: /commit
 argument-hint: "[optional commit message]"
 triggers:
   - "commit"
@@ -19,7 +20,6 @@ Create a conventional commit with proper format: `type(scope): description`. Sta
 1. **Check status:** `git status` to see what changed
 2. **Stage files:** `git add <specific-files>` (never blind `git add .`)
 3. **Commit:** `git commit -m "type(scope): description"`
-4. **Bump version:** Update plugin.json if applicable
 
 </quick_start>
 
@@ -70,13 +70,6 @@ EOF
 )"
 ```
 
-**Step 4: Bump version if needed**
-
-For plugin changes, update version in `plugin.json`:
-- patch: 1.1.0 → 1.1.1 (bug fixes)
-- minor: 1.1.0 → 1.2.0 (new features)
-- major: 1.1.0 → 2.0.0 (breaking changes)
-
 </workflow>
 
 <constraints>
@@ -98,6 +91,5 @@ For plugin changes, update version in `plugin.json`:
 1. [ ] Commit uses `type(scope): description` format
 2. [ ] Only relevant files staged
 3. [ ] No secrets committed
-4. [ ] Version bump included (if plugin change)
 
 </success_criteria>

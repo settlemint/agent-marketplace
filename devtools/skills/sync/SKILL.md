@@ -3,6 +3,7 @@ name: sync
 description: Sync branch with main and resolve conflicts. Use when asked to "sync with main", "merge main", "update branch", or "pull latest".
 license: MIT
 user_invocable: true
+command: /sync
 argument-hint: "[base branch, defaults to main]"
 triggers:
   - "sync"
