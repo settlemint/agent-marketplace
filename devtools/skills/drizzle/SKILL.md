@@ -71,6 +71,8 @@ Build database schemas and queries using Drizzle ORM with PostgreSQL. Drizzle ge
 MCPSearch({ query: "select:mcp__plugin_devtools_context7__query-docs" })
 ```
 
+MCPSearch discovers and loads MCP tools before use.
+
 ```typescript
 // Drizzle schema patterns
 mcp__context7__query_docs({
@@ -286,13 +288,13 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] Context7 docs fetched for current API
-- [ ] Table has `$inferInsert` and `$inferSelect` type exports
-- [ ] All timestamps use `{ withTimezone: true }`
-- [ ] Foreign keys have `onDelete` action
-- [ ] Indexes defined for foreign keys
-- [ ] Migration generated and tested
-      </success_criteria>
+1. [ ] Context7 docs fetched for current API
+2. [ ] Table has `$inferInsert` and `$inferSelect` type exports
+3. [ ] All timestamps use `{ withTimezone: true }`
+4. [ ] Foreign keys have `onDelete` action
+5. [ ] Indexes defined for foreign keys
+6. [ ] Migration generated and tested
+</success_criteria>
 
 <evolution>
 **Extension Points:**

@@ -1,6 +1,6 @@
 ---
 name: thegraph
-description: TheGraph subgraph development with AssemblyScript handlers, schema definitions, and Matchstick testing. Triggers on subgraph, thegraph, graphql, mapping.ts.
+description: TheGraph subgraph development with AssemblyScript. Use when asked to "index blockchain events", "create subgraph", or "query on-chain data". Covers schema definitions, handlers, and Matchstick testing.
 license: MIT
 triggers: [
     # Library and tool names
@@ -243,13 +243,13 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] OctoCode searched for graph-ts patterns
-- [ ] All entities have `id` field
-- [ ] All handlers call `.save()`
-- [ ] `codegen` runs without errors
-- [ ] `compile` succeeds
-- [ ] Tests cover critical handlers
-      </success_criteria>
+1. [ ] OctoCode searched for graph-ts patterns
+2. [ ] All entities have `id` field
+3. [ ] All handlers call `.save()`
+4. [ ] `codegen` runs without errors
+5. [ ] `compile` succeeds
+6. [ ] Tests cover critical handlers
+</success_criteria>
 
 <evolution>
 **Extension Points:**

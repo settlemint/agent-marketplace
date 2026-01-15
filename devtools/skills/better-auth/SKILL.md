@@ -1,6 +1,6 @@
 ---
 name: better-auth
-description: Better Auth library patterns. Only for projects using better-auth package.
+description: Better Auth library patterns. Use when asked to "setup authentication", "add passkey login", or "configure social auth". Only for projects using better-auth package.
 license: MIT
 triggers:
   # Library name and variations
@@ -90,6 +90,13 @@ mcp__octocode__githubSearchCode({
 </mcp_first>
 
 <quick_start>
+**Workflow:**
+1. Generate auth schema: `bunx @better-auth/cli generate`
+2. Configure server with database adapter
+3. Setup client with `createAuthClient`
+4. Add protected routes with session checks
+5. Test auth flow end-to-end
+
 **Server setup (lib/auth/index.ts):**
 
 ```typescript
@@ -253,12 +260,13 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] OctoCode searched for current patterns
-- [ ] Auth instance configured with database
-- [ ] Client hooks set up correctly
-- [ ] Protected routes check session
-- [ ] Social providers configured (if needed)
-      </success_criteria>
+1. [ ] OctoCode searched for current patterns
+2. [ ] Auth instance configured with database
+3. [ ] Client hooks set up correctly
+4. [ ] Protected routes check session
+5. [ ] Social providers configured (if needed)
+6. [ ] BETTER_AUTH_SECRET env variable set
+</success_criteria>
 
 <evolution>
 **Extension Points:**

@@ -276,11 +276,11 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] Pattern matches expected structures (test with `--debug-query`)
-- [ ] Correct language flag (`tsx` for JSX, `typescript` for pure TS)
-- [ ] Preview changes before applying refactors
-- [ ] Use `--json` for programmatic analysis
-      </success_criteria>
+1. [ ] Pattern matches expected structures (test with `--debug-query`)
+2. [ ] Correct language flag (`tsx` for JSX, `typescript` for pure TS)
+3. [ ] Preview changes before applying refactors
+4. [ ] Use `--json` for programmatic analysis
+</success_criteria>
 
 <evolution>
 **Extension Points:**

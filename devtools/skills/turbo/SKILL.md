@@ -1,6 +1,6 @@
 ---
 name: turbo
-description: Turborepo monorepo build system with task pipelines, caching, and package management. Triggers on turbo, turbo.json, monorepo.
+description: Turborepo monorepo build system. Use when asked to "setup monorepo", "configure build pipeline", or "add turbo caching". Covers task pipelines, caching, and package management.
 license: MIT
 triggers:
   [
@@ -237,12 +237,12 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] Context7 docs fetched for current config
-- [ ] Tasks have proper `dependsOn`
-- [ ] `outputs` defined for cacheable tasks
-- [ ] Dev tasks have `cache: false`
-- [ ] Pipeline is efficient (parallel where possible)
-      </success_criteria>
+1. [ ] Context7 docs fetched for current config
+2. [ ] Tasks have proper `dependsOn`
+3. [ ] `outputs` defined for cacheable tasks
+4. [ ] Dev tasks have `cache: false`
+5. [ ] Pipeline is efficient (parallel where possible)
+</success_criteria>
 
 <evolution>
 **Extension Points:**

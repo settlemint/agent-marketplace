@@ -1,6 +1,6 @@
 ---
 name: motion
-description: Motion (formerly Framer Motion) for React animations. Covers transitions, gestures, layout animations, and exit animations. Triggers on motion, animate, framer.
+description: Motion (formerly Framer Motion) for React animations. Use when asked to "add animation", "animate component", or "create transition". Covers transitions, gestures, layout animations, and exit animations.
 license: MIT
 triggers:
   - "motion"
@@ -91,6 +91,13 @@ mcp__context7__query_docs({
 </mcp_first>
 
 <quick_start>
+**Workflow:**
+1. Import `motion` components from `motion/react`
+2. Add `initial`, `animate`, `exit` props
+3. Wrap conditionals in `AnimatePresence`
+4. Use `variants` for complex orchestration
+5. Add `transition` for timing control
+
 **Basic animation:**
 
 ```tsx
@@ -193,12 +200,12 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] Context7 docs fetched for current API
-- [ ] Exit animations wrapped in AnimatePresence
-- [ ] Variants used for staggered children
-- [ ] Performance-friendly properties animated
-- [ ] Spring transitions for natural feel
-      </success_criteria>
+1. [ ] Context7 docs fetched for current API
+2. [ ] Exit animations wrapped in AnimatePresence
+3. [ ] Variants used for staggered children
+4. [ ] Performance-friendly properties animated (transform, opacity)
+5. [ ] Spring transitions for natural feel
+</success_criteria>
 
 <evolution>
 **Extension Points:**

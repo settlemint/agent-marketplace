@@ -1,6 +1,6 @@
 ---
 name: recharts
-description: Recharts for React data visualization. Covers line, bar, area, pie charts with responsive containers and customization. Triggers on recharts, chart, LineChart, BarChart.
+description: Recharts for React data visualization. Use when asked to "create chart", "visualize data", or "add dashboard chart". Covers line, bar, area, pie charts with responsive containers.
 license: MIT
 triggers:
   - "recharts"
@@ -201,6 +201,14 @@ function DistributionChart({ data }) {
 </quick_start>
 
 <chart_types>
+**Chart selection decision tree:**
+- Showing change over time? → `LineChart` or `AreaChart`
+- Comparing categories? → `BarChart`
+- Part-to-whole relationships? → `PieChart`
+- Correlations between variables? → `ScatterChart`
+- Multiple dimensions? → `RadarChart`
+- Mixed data types? → `ComposedChart`
+
 | Component | Use Case |
 |-----------|----------|
 | `LineChart` | Trends over time |
@@ -324,12 +332,12 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] Chart wrapped in ResponsiveContainer
-- [ ] Proper axes with labels
-- [ ] Tooltip for interactivity
-- [ ] Appropriate chart type for data
-- [ ] Accessible colors (sufficient contrast)
-      </success_criteria>
+1. [ ] Chart wrapped in ResponsiveContainer
+2. [ ] Proper axes with labels
+3. [ ] Tooltip for interactivity
+4. [ ] Appropriate chart type for data
+5. [ ] Accessible colors (sufficient contrast)
+</success_criteria>
 
 <evolution>
 **Extension Points:**

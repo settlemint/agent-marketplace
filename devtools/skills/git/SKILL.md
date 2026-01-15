@@ -1,6 +1,6 @@
 ---
 name: git
-description: Git workflows - commits, branches, PRs. Smart QA before push. Conventional commit format and feature branch workflow.
+description: Git workflows - commits, branches, PRs. Use when asked to "commit changes", "create PR", or "fix merge conflict". Smart QA before push with conventional commit format.
 license: MIT
 triggers:
   - "commit"
@@ -263,11 +263,12 @@ After completing each task:
 
 <success_criteria>
 
-- Commit: `type(scope): description`
-- Branch: `username/type/short-description`
-- No secrets committed
-- QA passed (or fresh) before push/PR
-  </success_criteria>
+1. [ ] Commit uses `type(scope): description` format
+2. [ ] Branch follows `username/type/short-description` pattern
+3. [ ] No secrets committed
+4. [ ] QA passed (or fresh) before push/PR
+5. [ ] Version bump included in plugin.json
+</success_criteria>
 
 <evolution>
 **Extension Points:**

@@ -1,6 +1,6 @@
 ---
 name: vitest
-description: Vitest unit testing patterns for TypeScript. Covers test structure, mocking, assertions, and coverage. Triggers on vitest, describe, it, expect, mock.
+description: Vitest unit testing patterns for TypeScript. Use when asked to "write unit tests", "mock dependencies", or "add test coverage". Covers test structure, mocking, assertions, and coverage.
 license: MIT
 triggers:
   - "vitest"
@@ -334,12 +334,12 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] Context7 docs fetched for current API
-- [ ] Tests are isolated (no dependencies)
-- [ ] Mocks used for external services
-- [ ] Descriptive test names
-- [ ] Coverage for edge cases
-      </success_criteria>
+1. [ ] Context7 docs fetched for current API
+2. [ ] Tests are isolated (no dependencies)
+3. [ ] Mocks used for external services
+4. [ ] Descriptive test names
+5. [ ] Coverage for edge cases
+</success_criteria>
 
 <evolution>
 **Extension Points:**

@@ -1,6 +1,6 @@
 ---
 name: playwright
-description: Playwright E2E testing with Page Object pattern, web-first assertions, and proper locators. Triggers on playwright, e2e, page object, getByRole.
+description: Playwright E2E testing. Use when asked to "write E2E test", "test user flow", or "automate browser testing". Covers Page Object pattern, web-first assertions, and proper locators.
 license: MIT
 triggers:
   - "playwright"
@@ -75,6 +75,13 @@ mcp__context7__query_docs({
 </mcp_first>
 
 <quick_start>
+**Workflow:**
+1. Create Page Object extending BasePage
+2. Add locators using getByRole/getByLabel priority
+3. Write test with describe.serial for related tests
+4. Use web-first assertions (toBeVisible, toHaveText)
+5. Run with `npx playwright test`
+
 **Page Object pattern:**
 
 ```typescript
@@ -246,12 +253,12 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] Context7 docs fetched for current API
-- [ ] Page objects encapsulate selectors
-- [ ] Web-first assertions used
-- [ ] Tests are isolated
-- [ ] Proper locator strategy
-      </success_criteria>
+1. [ ] Context7 docs fetched for current API
+2. [ ] Page objects encapsulate selectors
+3. [ ] Web-first assertions used
+4. [ ] Tests are isolated
+5. [ ] Proper locator strategy (getByRole preferred)
+</success_criteria>
 
 <evolution>
 **Extension Points:**

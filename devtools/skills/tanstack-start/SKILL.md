@@ -1,6 +1,6 @@
 ---
 name: tanstack-start
-description: TanStack Start full-stack React framework. Covers file-based routing, SSR, data loading, and server functions. Triggers on tanstack start, createFileRoute, loader.
+description: TanStack Start full-stack React framework. Use when asked to "create route", "add file-based routing", "implement SSR", or "create server function". Covers file-based routing, SSR, data loading, and server functions.
 license: MIT
 triggers:
   # Explicit library mentions
@@ -265,12 +265,27 @@ src/
 - Use `context` for shared data (queryClient, session)
 - Handle errors with `errorComponent`
 
+**Error handling example:**
+
+```typescript
+export const Route = createFileRoute("/dashboard")({
+  loader: async () => fetchData(),
+  component: DashboardPage,
+  errorComponent: ({ error }) => (
+    <div className="p-4 text-red-600">
+      <h2>Error loading dashboard</h2>
+      <p>{error.message}</p>
+    </div>
+  ),
+});
+```
+
 **Naming:**
 
 - Layout routes: prefix with `_` (e.g., `_authenticated.tsx`)
 - Dynamic params: prefix with `$` (e.g., `$userId.tsx`)
 - Catch-all: `[...].tsx`
-  </constraints>
+</constraints>
 
 <anti_patterns>
 **Common mistakes to avoid:**
@@ -335,12 +350,13 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] Context7 docs fetched for current API
-- [ ] Routes use `createFileRoute`
-- [ ] Loaders fetch data server-side
-- [ ] Search params validated with Zod
-- [ ] Layouts use `Outlet` for children
-      </success_criteria>
+1. [ ] Context7 docs fetched for current API
+2. [ ] Routes use `createFileRoute`
+3. [ ] Loaders fetch data server-side
+4. [ ] Search params validated with Zod
+5. [ ] Layouts use `Outlet` for children
+6. [ ] Error handling via `errorComponent`
+</success_criteria>
 
 <evolution>
 **Extension Points:**
