@@ -1,7 +1,37 @@
 ---
 name: recharts
 description: Recharts for React data visualization. Covers line, bar, area, pie charts with responsive containers and customization. Triggers on recharts, chart, LineChart, BarChart.
-triggers: ["recharts", "chart", "LineChart", "BarChart", "AreaChart", "PieChart", "ResponsiveContainer"]
+license: MIT
+triggers:
+  - "recharts"
+  - "chart"
+  - "LineChart"
+  - "BarChart"
+  - "AreaChart"
+  - "PieChart"
+  - "ScatterChart"
+  - "RadarChart"
+  - "ComposedChart"
+  - "ResponsiveContainer"
+  - "graph"
+  - "data.?viz"
+  - "visualization"
+  - "visualize.?data"
+  - "plot"
+  - "histogram"
+  - "trend.?line"
+  - "sparkline"
+  - "metrics.?chart"
+  - "analytics.?chart"
+  - "dashboard.?chart"
+  - "XAxis"
+  - "YAxis"
+  - "Tooltip"
+  - "CartesianGrid"
+  - "Legend"
+  - "time.?series"
+  - "display.?data"
+  - "show.?data.?over.?time"
 ---
 
 <objective>
@@ -24,8 +54,8 @@ mcp__octocode__githubSearchCode({
   path: "src/chart",
   mainResearchGoal: "Understand Recharts component structure",
   researchGoal: "Find chart composition patterns",
-  reasoning: "Need current API for chart components"
-})
+  reasoning: "Need current API for chart components",
+});
 
 // ResponsiveContainer
 mcp__octocode__githubSearchCode({
@@ -35,9 +65,10 @@ mcp__octocode__githubSearchCode({
   path: "src/component",
   mainResearchGoal: "Understand responsive charts",
   researchGoal: "Find responsive container patterns",
-  reasoning: "Need current API for responsive charts"
-})
+  reasoning: "Need current API for responsive charts",
+});
 ```
+
 </mcp_first>
 
 <quick_start>
@@ -81,7 +112,14 @@ function SalesChart() {
 **Bar chart:**
 
 ```tsx
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 function RevenueChart({ data }) {
   return (
@@ -100,7 +138,14 @@ function RevenueChart({ data }) {
 **Area chart:**
 
 ```tsx
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 function TrendChart({ data }) {
   return (
@@ -152,6 +197,7 @@ function DistributionChart({ data }) {
   );
 }
 ```
+
 </quick_start>
 
 <chart_types>
@@ -185,7 +231,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-<Tooltip content={<CustomTooltip />} />
+<Tooltip content={<CustomTooltip />} />;
 ```
 
 **Custom axis tick:**
@@ -199,8 +245,9 @@ const CustomTick = ({ x, y, payload }) => (
   </g>
 );
 
-<XAxis tick={<CustomTick />} />
+<XAxis tick={<CustomTick />} />;
 ```
+
 </customization>
 
 <constraints>
@@ -210,15 +257,86 @@ const CustomTick = ({ x, y, payload }) => (
 - Use `dataKey` to map data fields
 
 **Performance:**
+
 - Limit data points for large datasets
 - Use `isAnimationActive={false}` for static charts
 - Consider virtualization for very large datasets
-</constraints>
+  </constraints>
+
+<anti_patterns>
+**Common mistakes to avoid:**
+
+- Charts without ResponsiveContainer (breaks on resize)
+- Missing width/height props causing invisible charts
+- Animation enabled on large datasets (performance issues)
+- Wrong chart type for data (pie chart for trends, line for categories)
+- Inaccessible color schemes with poor contrast
+  </anti_patterns>
+
+<library_ids>
+Skip resolve step for these known IDs:
+
+| Library  | Context7 ID        |
+| -------- | ------------------ |
+| Recharts | /recharts/recharts |
+
+</library_ids>
+
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production Recharts patterns",
+      researchGoal: "Search for chart composition and customization",
+      reasoning: "Need real-world examples of Recharts usage",
+      keywordsToSearch: ["LineChart", "ResponsiveContainer", "recharts"],
+      extension: "tsx",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Custom tooltips: `keywordsToSearch: ["CustomTooltip", "Tooltip content", "recharts"]`
+- Dashboard charts: `keywordsToSearch: ["AreaChart", "ComposedChart", "dashboard"]`
+- Time series: `keywordsToSearch: ["XAxis", "time series", "date format"]`
+  </research>
+
+<related_skills>
+
+**React components:** Load via `Skill({ skill: "devtools:react" })` when:
+
+- Building chart wrapper components
+- Managing chart state and data
+- Integrating with data fetching
+
+**Design system:** Load via `Skill({ skill: "devtools:design-principles" })` when:
+
+- Choosing chart colors and theming
+- Ensuring accessible color contrast
+- Maintaining consistent visual hierarchy
+  </related_skills>
 
 <success_criteria>
+
 - [ ] Chart wrapped in ResponsiveContainer
 - [ ] Proper axes with labels
 - [ ] Tooltip for interactivity
 - [ ] Appropriate chart type for data
 - [ ] Accessible colors (sufficient contrast)
-</success_criteria>
+      </success_criteria>
+
+<evolution>
+**Extension Points:**
+
+- Create custom chart components with consistent theming
+- Add domain-specific tooltip and legend formatters
+- Build dashboard-ready chart wrappers with loading states
+
+**Timelessness:** Data visualization principles and chart composition patterns apply across all charting libraries.
+</evolution>

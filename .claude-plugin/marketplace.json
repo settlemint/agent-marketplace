@@ -11,19 +11,6 @@
   },
   "plugins": [
     {
-      "name": "crew",
-      "source": "./crew",
-      "description": "Unified orchestration for work execution, skill creation, git conventions, and system management. Provides /design, /build, /check, /fix commands.",
-      "version": "1.0.0",
-      "author": {
-        "name": "Roderik van der Veer"
-      },
-      "repository": "https://github.com/settlemint/agent-marketplace",
-      "license": "MIT",
-      "keywords": ["orchestration", "workflow", "planning", "review"],
-      "category": "development"
-    },
-    {
       "name": "devtools",
       "source": "./devtools",
       "description": "Modern development tools for React, APIs, blockchain, databases, and testing. MCP-first skills with Context7 integration for up-to-date documentation.",
@@ -33,8 +20,29 @@
       },
       "repository": "https://github.com/settlemint/agent-marketplace",
       "license": "MIT",
-      "keywords": ["react", "api", "blockchain", "database", "testing", "mcp", "context7"],
+      "keywords": [
+        "react",
+        "api",
+        "blockchain",
+        "database",
+        "testing",
+        "mcp",
+        "context7"
+      ],
       "category": "development"
+    },
+    {
+      "name": "flow",
+      "source": "./flow",
+      "description": "Workflow orchestration, state management, and productivity automation for Claude Code. Provides /flow:init, /flow:status, /flow:analyze commands with comprehensive hook lifecycle management.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Roderik van der Veer"
+      },
+      "repository": "https://github.com/settlemint/agent-marketplace",
+      "license": "MIT",
+      "keywords": ["workflow", "state", "automation", "productivity", "hooks"],
+      "category": "productivity"
     }
   ]
 }

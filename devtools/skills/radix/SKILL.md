@@ -1,16 +1,54 @@
 ---
 name: radix
 description: Radix UI primitives for accessible React components. Covers dialogs, dropdowns, popovers, and form controls. Triggers on radix, Dialog, Popover, DropdownMenu.
-triggers:
-  [
-    "radix",
+license: MIT
+triggers: [
+    # Library name and imports
+    "(?i)\\bradix\\b",
     "@radix-ui",
-    "Dialog",
-    "Popover",
-    "DropdownMenu",
-    "Select",
-    "Tooltip",
-    "Tabs",
+    'from [''"]@radix-ui',
+
+    # Core components (case-insensitive for user queries)
+    "(?i)\\b(Dialog|Modal|AlertDialog)\\b",
+    "(?i)\\b(Popover|Tooltip|HoverCard)\\b",
+    "(?i)\\b(DropdownMenu|ContextMenu|MenuBar)\\b",
+    "(?i)\\bSelect\\b",
+    "(?i)\\b(Tabs|TabsList|TabsContent)\\b",
+    "(?i)\\b(Accordion|Collapsible)\\b",
+    "(?i)\\b(Checkbox|RadioGroup|Switch|Toggle)\\b",
+    "(?i)\\b(Slider|ScrollArea|Progress)\\b",
+    "(?i)\\b(Avatar|AspectRatio|Separator)\\b",
+    "(?i)\\b(NavigationMenu|Toolbar)\\b",
+    "(?i)\\bToast\\b",
+
+    # Radix patterns and APIs
+    "(?i)\\basChild\\b",
+    "(?i)\\b\\.Root\\b",
+    "(?i)\\b\\.Trigger\\b",
+    "(?i)\\b\\.Content\\b",
+    "(?i)\\b\\.Portal\\b",
+    "(?i)\\bonOpenChange\\b",
+
+    # Accessibility intent
+    "(?i)\\b(accessible|a11y|accessibility)\\s+(component|ui|dialog|modal|menu)\\b",
+    "(?i)\\b(keyboard|focus|screen\\s*reader)\\s+(navigation|support|friendly)\\b",
+    "(?i)\\b(aria|role|focus\\s+trap|focus\\s+management)\\b",
+    "(?i)\\bwcag\\b",
+
+    # Intent-based patterns
+    "(?i)\\b(unstyled|headless)\\s+(component|ui|primitive)\\b",
+    "(?i)\\b(build|create|add)\\s+(a\\s+)?(modal|dialog|dropdown|popover|tooltip|menu)\\b",
+    "(?i)\\b(primitive|composable)\\s+component\\b",
+
+    # Common use cases
+    "(?i)\\b(confirmation|alert)\\s+(dialog|modal)\\b",
+    "(?i)\\b(action|context|right.?click)\\s+menu\\b",
+    "(?i)\\b(toggle|boolean|switch)\\s+(input|control)\\b",
+    "(?i)\\b(collapsible|expandable|accordion)\\s+(section|panel|content)\\b",
+
+    # Common typos
+    "(?i)\\bradiks\\b",
+    "(?i)\\bradiux\\b",
   ]
 ---
 
@@ -213,6 +251,51 @@ const MyTrigger = forwardRef((props, ref) => (
 - Test with screen readers
   </constraints>
 
+<anti_patterns>
+**Common mistakes to avoid:**
+
+- Forgetting `asChild` when using custom trigger components
+- Missing `Portal` for overlays (causes z-index issues)
+- Omitting `Title` from dialogs (accessibility violation)
+- Not forwarding refs in custom trigger components
+- Inline styles instead of Tailwind classes for consistency
+  </anti_patterns>
+
+<library_ids>
+Skip resolve step for these known IDs:
+
+| Library  | Context7 ID               |
+| -------- | ------------------------- |
+| Radix UI | /radix-ui/primitives      |
+| Tailwind | /tailwindlabs/tailwindcss |
+
+</library_ids>
+
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production Radix UI patterns",
+      researchGoal: "Search for accessible component patterns",
+      reasoning: "Need real-world examples of Radix usage",
+      keywordsToSearch: ["@radix-ui", "Dialog.Root", "asChild"],
+      extension: "tsx",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Dialog patterns: `keywordsToSearch: ["Dialog.Root", "Dialog.Portal", "onOpenChange"]`
+- Dropdown: `keywordsToSearch: ["DropdownMenu", "DropdownMenu.Content"]`
+- Form controls: `keywordsToSearch: ["Select.Root", "Checkbox", "RadioGroup"]`
+  </research>
+
 <related_skills>
 
 **Design guidelines:** Load via `Skill({ skill: "devtools:vercel-design-guidelines" })` when:
@@ -237,3 +320,13 @@ const MyTrigger = forwardRef((props, ref) => (
 - [ ] Accessible labels provided
 - [ ] Styled with Tailwind (not inline)
       </success_criteria>
+
+<evolution>
+**Extension Points:**
+
+- Wrap Radix primitives in project-specific styled components
+- Add animation variants with Framer Motion integration
+- Create compound components combining multiple primitives
+
+**Timelessness:** Accessible, unstyled primitives are the foundation of any design system. Radix patterns apply to headless UI libraries.
+</evolution>

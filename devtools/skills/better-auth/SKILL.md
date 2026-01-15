@@ -1,11 +1,44 @@
 ---
 name: better-auth
 description: Better Auth library patterns. Only for projects using better-auth package.
+license: MIT
 triggers:
+  # Library name and variations
   - "better-auth"
   - "betterAuth"
+  - "better_auth"
+  - "@better-auth"
+  # API patterns
   - "authClient"
   - "auth\\.api"
+  - "createAuthClient"
+  - "drizzleAdapter.*auth"
+  # Hooks and methods
+  - "useSession"
+  - "signIn\\.email"
+  - "signIn\\.social"
+  - "signOut\\("
+  # Plugins
+  - "passkey\\(\\)"
+  - "twoFactor\\(\\)"
+  - "magicLink\\(\\)"
+  - "organization\\(\\)"
+  # User intent - authentication
+  - "(?i)add.*authentication"
+  - "(?i)implement.*auth"
+  - "(?i)setup.*login"
+  - "(?i)add.*passkey"
+  - "(?i)webauthn"
+  - "(?i)social.*provider"
+  - "(?i)google.*login"
+  - "(?i)github.*login"
+  - "(?i)session.*management"
+  - "(?i)2fa|two.*factor"
+  - "(?i)magic.*link"
+  - "(?i)email.*password.*auth"
+  # CLI commands
+  - "@better-auth/cli"
+  - "BETTER_AUTH_SECRET"
 ---
 
 <objective>
@@ -152,6 +185,15 @@ socialProviders: {
 - Use HTTPS in production
   </constraints>
 
+<anti_patterns>
+
+- Storing sessions in localStorage (use httpOnly cookies)
+- Checking auth only on client side (always verify server-side)
+- Exposing user IDs in URLs without authorization checks
+- Using predictable session tokens or IDs
+- Skipping CSRF protection on auth endpoints
+  </anti_patterns>
+
 <commands>
 ```bash
 # Generate auth schema
@@ -162,14 +204,67 @@ bunx @better-auth/cli generate -y --config=src/lib/auth/index.ts
 bun run db:generate
 bun run db:migrate
 
-```
+````
 </commands>
 
+<library_ids>
+Skip resolve step for these known IDs:
+
+| Library     | Context7 ID               |
+| ----------- | ------------------------- |
+| better-auth | /better-auth/better-auth  |
+</library_ids>
+
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [{
+    mainResearchGoal: "Find production Better Auth patterns",
+    researchGoal: "Search for authentication and session patterns",
+    reasoning: "Need real-world examples of Better Auth usage",
+    keywordsToSearch: ["betterAuth", "signIn", "useSession"],
+    extension: "ts",
+    limit: 10
+  }]
+})
+````
+
+**Common searches:**
+
+- Passkeys: `keywordsToSearch: ["passkey", "webauthn", "better-auth"]`
+- Social login: `keywordsToSearch: ["socialProviders", "google", "github"]`
+- Session: `keywordsToSearch: ["useSession", "getSession", "auth.api"]`
+  </research>
+
+<related_skills>
+
+**Database schema:** Load via `Skill({ skill: "devtools:drizzle" })` when:
+
+- Setting up auth database schema
+- Running auth migrations
+
+**React components:** Load via `Skill({ skill: "devtools:react" })` when:
+
+- Building login/signup forms
+- Creating auth UI components
+  </related_skills>
+
 <success_criteria>
+
 - [ ] OctoCode searched for current patterns
 - [ ] Auth instance configured with database
 - [ ] Client hooks set up correctly
 - [ ] Protected routes check session
 - [ ] Social providers configured (if needed)
-</success_criteria>
-```
+      </success_criteria>
+
+<evolution>
+**Extension Points:**
+- Add custom plugins for organization-specific auth flows
+- Extend with additional social providers as needed
+- Create custom session enrichment middleware
+
+**Timelessness:** Authentication is a universal requirement; Better Auth provides TypeScript-first patterns that evolve with the ecosystem.
+</evolution>

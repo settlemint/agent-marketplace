@@ -1,48 +1,134 @@
 ---
 name: vercel-design-guidelines
 description: Check web interfaces against Vercel's design guidelines. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", "check my site against best practices", or "apply Vercel design guidelines".
+license: MIT
+triggers:
+  # Explicit mentions
+  - "vercel.*design"
+  - "vercel.*guidelines?"
+  - "vercel.*best practices"
+  # UI review intent
+  - "review (my |the )?ui"
+  - "review (my |the )?ux"
+  - "audit (my |the )?(ui|ux|design)"
+  - "check (my |the )?(ui|ux|design)"
+  - "critique (my |the )?(ui|ux|design)"
+  - "feedback.*(ui|ux|design)"
+  # Accessibility review
+  - "check accessibility"
+  - "accessibility audit"
+  - "a11y (check|review|audit)"
+  - "wcag (compliance|check|review)"
+  - "aria.*review"
+  - "keyboard (accessibility|navigation)"
+  - "focus (management|trap|ring)"
+  - "screen reader"
+  # Design system checks
+  - "design (system )?review"
+  - "design guidelines"
+  - "ui (best )?practices"
+  - "ux (best )?practices"
+  - "interface.*review"
+  # Specific guideline categories
+  - "animation.*guidelines?"
+  - "reduced[- ]?motion"
+  - "loading state"
+  - "form (validation|ux)"
+  - "error (message|handling).*ux"
+  - "hit target"
+  - "color contrast"
+  - "apca"
+  # Intent patterns
+  - "(is|are) (my |the )?(ui|design|interface).*good"
+  - "improve (my |the )?(ui|ux|design)"
+  - "polish (my |the )?(ui|ux|design)"
+  - "what('s| is) wrong.*(ui|ux|design)"
 ---
 
-# Vercel Design Guidelines
+<objective>
+Review web interfaces against Vercel's comprehensive design guidelines and propose fixes. Analyze code for interactions, animations, layout, content, forms, performance, design, and copywriting compliance.
+</objective>
 
-Review web interfaces against Vercel's comprehensive design guidelines and propose fixes.
+<quick_start>
 
-## How It Works
+1. Fetch fresh guidelines from `https://vercel.com/design/guidelines`
+2. Read user's source files (components, styles, HTML)
+3. Check against each applicable guideline category
+4. Report violations with specific line references
+5. Propose concrete fixes with code examples
+   </quick_start>
 
-1. Read the user's code (components, CSS, HTML)
-2. Check against Vercel design guidelines (interactions, animations, layout, content, forms, performance, design, copywriting)
-3. Report violations with specific line references
-4. Propose concrete fixes with code examples
+<constraints>
+<banned>
+- Never skip accessibility checks
+- Never approve designs without verifying keyboard navigation
+- Never ignore `prefers-reduced-motion` requirements
+- Never use `transition: all` in recommendations
+- Never recommend disabled zoom
+- Never skip form label associations
+</banned>
+<required>
+- Always fetch fresh guidelines before auditing
+- Always report issues with file:line references
+- Always categorize findings by severity (Critical/Warning/Suggestion)
+- Always provide concrete code fixes
+- Always check APCA color contrast standards
+- Always verify hit targets meet minimum sizes
+</required>
+</constraints>
 
-## Usage
+<audit_categories>
+<category name="Interactions">
+Keyboard accessibility, focus management, hit targets, loading states, URL persistence
+</category>
+<category name="Animations">
+Reduced motion, GPU acceleration, easing, interruptibility
+</category>
+<category name="Layout">
+Optical adjustment, alignment, responsive testing, safe areas
+</category>
+<category name="Content">
+Inline help, skeletons, empty states, typography, accessibility
+</category>
+<category name="Forms">
+Labels, validation, autocomplete, error handling, submit behavior
+</category>
+<category name="Performance">
+Re-renders, layout thrashing, virtualization, preloading
+</category>
+<category name="Design">
+Shadows, borders, radii, contrast, color accessibility
+</category>
+<category name="Copywriting">
+Active voice, title case, clarity, error messaging
+</category>
+</audit_categories>
 
-When a user asks to review their UI or check against design guidelines:
+<workflow>
+<step name="fetch_guidelines">
+Fetch the live guidelines from `https://vercel.com/design/guidelines` to ensure checking against latest standards.
+</step>
+<step name="read_source">
+Read the relevant source files (components, styles, HTML) from the user's codebase.
+</step>
+<step name="analyze">
+Analyze the code against each applicable guideline category.
+</step>
+<step name="report">
+Report findings grouped by category with severity levels:
+- **Critical**: Accessibility violations, broken functionality
+- **Warning**: UX issues, performance concerns
+- **Suggestion**: Polish, best practices
+</step>
+<step name="propose_fixes">
+Provide concrete code fixes for each violation found.
+</step>
+</workflow>
 
-1. Fetch the live guidelines from `https://vercel.com/design/guidelines`
-2. Read the relevant source files (components, styles, HTML)
-3. Analyze the code against each applicable guideline category
-4. Report findings grouped by category with severity
-
-**Guidelines URL:** https://vercel.com/design/guidelines
-
-Always fetch fresh guidelines to ensure you're checking against the latest standards.
-
-## Audit Categories
-
-- **Interactions**: Keyboard accessibility, focus management, hit targets, loading states, URL persistence
-- **Animations**: Reduced motion, GPU acceleration, easing, interruptibility
-- **Layout**: Optical adjustment, alignment, responsive testing, safe areas
-- **Content**: Inline help, skeletons, empty states, typography, accessibility
-- **Forms**: Labels, validation, autocomplete, error handling, submit behavior
-- **Performance**: Re-renders, layout thrashing, virtualization, preloading
-- **Design**: Shadows, borders, radii, contrast, color accessibility
-- **Copywriting**: Active voice, title case, clarity, error messaging
-
-## Output Format
-
+<output_format>
 Present findings as:
 
-```
+````
 ## {Category} Issues
 
 ### {Severity}: {Guideline Name}
@@ -52,17 +138,37 @@ Present findings as:
 **Fix:**
 ```{language}
 {Proposed code fix}
-```
-```
-
-Severity levels:
-- **Critical**: Accessibility violations, broken functionality
-- **Warning**: UX issues, performance concerns
-- **Suggestion**: Polish, best practices
-
-## Example Review
+````
 
 ```
+
+Final summary format:
+
+```
+
+# Design Guidelines Audit
+
+Reviewed {N} files against Vercel design guidelines.
+
+## Summary
+
+- Critical: {N} issues
+- Warning: {N} issues
+- Suggestions: {N} items
+
+{Detailed findings by category}
+
+## Recommended Priority
+
+1. {First critical fix}
+2. {Second critical fix}
+   ...
+
+````
+</output_format>
+
+<examples>
+<example name="interactions_critical">
 ## Interactions Issues
 
 ### Critical: Keyboard Accessibility
@@ -72,13 +178,16 @@ Severity levels:
 **Fix:**
 ```tsx
 // Add focus trap using @radix-ui/react-focus-guards or similar
-import { FocusScope } from '@radix-ui/react-focus-scope';
+import { FocusScope } from "@radix-ui/react-focus-scope";
 
 <FocusScope trapped>
   <ModalContent>{children}</ModalContent>
-</FocusScope>
-```
+</FocusScope>;
+````
 
+</example>
+
+<example name="loading_state_warning">
 ### Warning: Loading State Duration
 **File:** `components/Button.tsx:15`
 **Issue:** No minimum loading duration - causes flicker on fast responses
@@ -89,25 +198,26 @@ const [isLoading, setIsLoading] = useState(false);
 const minimumLoadingTime = 300;
 
 async function handleClick() {
-  setIsLoading(true);
-  const start = Date.now();
-  await action();
-  const elapsed = Date.now() - start;
-  if (elapsed < minimumLoadingTime) {
-    await new Promise(r => setTimeout(r, minimumLoadingTime - elapsed));
-  }
-  setIsLoading(false);
+setIsLoading(true);
+const start = Date.now();
+await action();
+const elapsed = Date.now() - start;
+if (elapsed < minimumLoadingTime) {
+await new Promise((r) => setTimeout(r, minimumLoadingTime - elapsed));
 }
-```
-```
+setIsLoading(false);
+}
 
-## Quick Checklist
+````
+</example>
+</examples>
 
+<quick_checklist>
 For rapid reviews, check these high-impact items first:
 
 - [ ] All interactive elements keyboard accessible
 - [ ] Visible focus rings on focusable elements
-- [ ] Hit targets ≥24px (44px on mobile)
+- [ ] Hit targets >= 24px (44px on mobile)
 - [ ] Form inputs have associated labels
 - [ ] Loading states don't flicker
 - [ ] `prefers-reduced-motion` respected
@@ -115,25 +225,94 @@ For rapid reviews, check these high-impact items first:
 - [ ] Errors show how to fix, not just what's wrong
 - [ ] Color contrast meets APCA standards
 - [ ] No zoom disabled
+</quick_checklist>
 
-## Present Results to User
+<anti_patterns>
+<anti_pattern name="missing_focus_trap">
+Modals and dialogs without focus trapping allow keyboard users to navigate outside, breaking accessibility.
+</anti_pattern>
+<anti_pattern name="transition_all">
+Using `transition: all` causes performance issues and unexpected animations on unintended properties.
+</anti_pattern>
+<anti_pattern name="disabled_zoom">
+Setting `user-scalable=no` or `maximum-scale=1` prevents users with low vision from zooming.
+</anti_pattern>
+<anti_pattern name="unlabeled_inputs">
+Form inputs without associated `<label>` elements fail screen reader accessibility requirements.
+</anti_pattern>
+<anti_pattern name="flicker_loading">
+Loading states that appear and disappear too quickly cause jarring visual flicker.
+</anti_pattern>
+<anti_pattern name="ignore_reduced_motion">
+Animations that don't respect `prefers-reduced-motion` can cause vestibular issues for users.
+</anti_pattern>
+<anti_pattern name="small_hit_targets">
+Interactive elements smaller than 24px (44px on mobile) are difficult for users to tap accurately.
+</anti_pattern>
+</anti_patterns>
 
-After reviewing:
+<research>
+Find accessibility and design patterns on GitHub when stuck:
 
-```
-# Design Guidelines Audit
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find accessibility and UX patterns",
+      researchGoal: "Search for focus management and ARIA patterns",
+      reasoning: "Need real-world examples of accessible UI",
+      keywordsToSearch: ["FocusScope", "aria-", "focus-trap"],
+      extension: "tsx",
+      limit: 10,
+    },
+  ],
+});
+````
 
-Reviewed {N} files against Vercel design guidelines.
+Common searches:
 
-## Summary
-- Critical: {N} issues
-- Warning: {N} issues
-- Suggestions: {N} items
+- Focus management: `keywordsToSearch: ["FocusScope", "focus-trap", "tabIndex"]`
+- Animations: `keywordsToSearch: ["prefers-reduced-motion", "motion-safe"]`
+- Loading states: `keywordsToSearch: ["Skeleton", "loading", "suspense"]`
+- Forms: `keywordsToSearch: ["aria-invalid", "aria-describedby", "form"]`
+  </research>
 
-{Detailed findings by category}
+<related_skills>
+<skill name="devtools:design-principles">
+Load when building components following design system patterns or making color, spacing, and typography decisions.
+</skill>
+<skill name="devtools:react-best-practices">
+Load when optimizing component rendering or implementing data fetching patterns.
+</skill>
+<skill name="devtools:radix">
+Load when building accessible UI primitives or implementing compound components.
+</skill>
+</related_skills>
 
-## Recommended Priority
-1. {First critical fix}
-2. {Second critical fix}
-...
-```
+<success_criteria>
+
+- [ ] Fresh guidelines fetched before audit
+- [ ] All audit categories checked against code
+- [ ] Findings include file:line references
+- [ ] Each violation has severity classification
+- [ ] Concrete code fixes provided for all issues
+- [ ] Summary includes issue counts by severity
+- [ ] Priority recommendations given for critical fixes
+- [ ] Accessibility violations marked as Critical
+- [ ] User can act on findings without further research
+      </success_criteria>
+
+<evolution>
+<extension_point name="custom_categories">
+Add project-specific guideline categories by extending audit_categories with team standards.
+</extension_point>
+<extension_point name="severity_rules">
+Customize severity classification based on project requirements (e.g., all a11y issues as Critical).
+</extension_point>
+<extension_point name="output_formats">
+Extend output_format to support different reporting styles (JSON, GitHub issues, Jira tickets).
+</extension_point>
+<extension_point name="automation">
+Integrate with CI/CD to run design audits on pull requests automatically.
+</extension_point>
+</evolution>

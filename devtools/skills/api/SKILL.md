@@ -1,12 +1,36 @@
 ---
 name: api
 description: oRPC API routes with 5-file pattern. Only for projects using oRPC.
+license: MIT
 triggers:
-  - "orpc"
+  # Library name and typos
+  - "\\borpc\\b"
+  - "\\bo-rpc\\b"
+  - "\\bunnoq/orpc\\b"
+  # File patterns
   - "\\.contract\\.ts"
   - "\\.router\\.ts"
   - "\\.impl\\.ts"
+  - "\\.schema\\.ts"
+  # API patterns
   - "createProcedure"
+  - "oc\\.route"
+  - "oc\\.input"
+  - "oc\\.output"
+  - "publicRouter"
+  - "authRouter"
+  - "onboardedRouter"
+  - "tokenRouter"
+  # User intent - creating APIs
+  - "(?i)create.*api.*route"
+  - "(?i)add.*api.*endpoint"
+  - "(?i)build.*api"
+  - "(?i)new.*route"
+  - "(?i)type.*safe.*api"
+  - "(?i)rpc.*endpoint"
+  - "(?i)api.*handler"
+  - "(?i)5.*file.*pattern"
+  - "(?i)five.*file.*pattern"
 ---
 
 <objective>
@@ -98,6 +122,58 @@ routes/token/
 **Naming:** Files=`<domain>.<action>.<type>.ts`, Handlers=`<domain><Action>Handler`
 </constraints>
 
+<anti_patterns>
+
+- Mixing business logic in router files (keep routers thin)
+- Creating generic CRUD endpoints instead of domain-specific actions
+- Skipping schema validation for "simple" endpoints
+- Hardcoding error messages instead of using typed error codes
+- Returning raw database entities without transformation
+  </anti_patterns>
+
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production oRPC patterns",
+      researchGoal: "Search for API route and contract patterns",
+      reasoning: "Need real-world examples of oRPC usage",
+      keywordsToSearch: ["oc.route", "oc.input", "createProcedure"],
+      extension: "ts",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Contracts: `keywordsToSearch: ["oc.route", "oc.input", "oc.output"]`
+- Routers: `keywordsToSearch: ["publicRouter", "authRouter", "onboardedRouter"]`
+- Testing: `keywordsToSearch: ["orpc", "spec.ts", "test"]`
+  </research>
+
+<related_skills>
+
+**Schema validation:** Load via `Skill({ skill: "devtools:zod" })` when:
+
+- Defining input/output schemas
+- Using `.meta()` for OpenAPI descriptions
+
+**Testing:** Load via `Skill({ skill: "devtools:vitest" })` when:
+
+- Writing route spec tests
+- Mocking dependencies
+
+**API security (Trail of Bits):** Load these for security hardening:
+
+- `Skill({ skill: "trailofbits:semgrep-rule-creator" })` — Create API security rules
+- `Skill({ skill: "trailofbits:static-analysis" })` — CodeQL, Semgrep for API security
+  </related_skills>
+
 <success_criteria>
 
 - [ ] All 5 files created (contract, schema, router, impl, spec)
@@ -106,3 +182,12 @@ routes/token/
 - [ ] Schema uses `.meta({ description })`
 - [ ] Spec has success and error test cases
       </success_criteria>
+
+<evolution>
+**Extension Points:**
+- Add new router layers by extending the router hierarchy
+- Create domain-specific error types in shared error module
+- Add middleware via oRPC plugin system
+
+**Timelessness:** Type-safe RPC with explicit contracts is a proven pattern that scales from startups to enterprise.
+</evolution>

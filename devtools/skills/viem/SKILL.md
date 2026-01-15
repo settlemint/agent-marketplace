@@ -1,19 +1,55 @@
 ---
 name: viem
 description: Viem blockchain client patterns for Ethereum interactions, transactions, signing, encoding, and smart contract calls. Triggers on viem, publicClient, walletClient, chain, abi.
-triggers:
-  [
-    "viem",
-    "ox",
-    "publicClient",
-    "walletClient",
-    "transport",
-    "chain",
-    "abi",
-    "transaction",
-    "signature",
-    "encode",
-    "decode",
+license: MIT
+triggers: [
+    # Library name and imports
+    "\\bviem\\b",
+    "\\b(from|import)\\s+['\"]viem",
+    "viem/(chains|accounts|actions)",
+
+    # Client patterns
+    "\\b(public|wallet|test)Client\\b",
+    "\\bcreate(Public|Wallet|Test)Client\\b",
+    "\\b(http|webSocket)\\(\\)",
+
+    # Core functions
+    "\\b(read|write|simulate)Contract\\b",
+    "\\b(send|sign)Transaction\\b",
+    "\\bsign(Message|TypedData)\\b",
+    "\\bwaitForTransactionReceipt\\b",
+
+    # Encoding/decoding
+    "\\b(encode|decode)(FunctionData|FunctionResult|AbiParameters|EventLog)\\b",
+    "\\b(parse|format)(Ether|Units|Gwei)\\b",
+
+    # Account utilities
+    "\\bprivateKeyToAccount\\b",
+    "\\bmnemonicToAccount\\b",
+    "\\bgetAddress\\b",
+    "\\bisAddress\\b",
+
+    # Chain utilities
+    "\\bdefineChain\\b",
+    "\\b(mainnet|sepolia|polygon|arbitrum|optimism)\\b",
+
+    # Standards
+    "\\bEIP-?712\\b",
+    "\\btyped\\s*data\\b",
+    "\\bERC-?4337\\b",
+    "\\buser\\s*operation\\b",
+
+    # Migration intents
+    "(migrate|switch|replace).*(ethers|web3)",
+    "ethers.*alternative",
+    "\\bethers\\.?js\\b.*viem",
+
+    # Development intents
+    "(connect|interact).*(blockchain|ethereum|chain)",
+    "(send|sign).*(transaction|message)",
+    "(read|call|query).*(contract|blockchain)",
+    "\\babi\\b.*typescript",
+    "type.?safe.*contract",
   ]
 ---
 
@@ -137,7 +173,11 @@ isAddress("0x..."); // Validates format
 </utilities>
 
 <constraints>
-**Banned:** SSRF protection for config-sourced URLs (they're developer-controlled)
+**Banned:**
+- Hardcoded private keys in source code
+- Missing error handling for blockchain operations
+- Creating new clients on every call (cache them)
+- Ignoring transaction receipts (always wait for confirmation)
 
 **Required:**
 
@@ -147,6 +187,67 @@ isAddress("0x..."); // Validates format
 - Type-safe ABI interactions
   </constraints>
 
+<anti_patterns>
+
+- **Uncached Clients:** Creating new publicClient/walletClient on every call; cache by network
+- **Fire and Forget:** Sending transactions without waiting for receipt; state uncertainty
+- **Hardcoded Chains:** Using chain objects directly instead of lazy resolution
+- **Missing Gas Estimation:** Not using simulateContract before writeContract
+- **Plain Text Keys:** Storing private keys in code or config files
+  </anti_patterns>
+
+<library_ids>
+Skip resolve step for these known IDs:
+
+| Library | Context7 ID |
+| ------- | ----------- |
+| Viem    | /wevm/viem  |
+
+</library_ids>
+
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production viem patterns",
+      researchGoal: "Search for client and contract patterns",
+      reasoning: "Need real-world examples of viem usage",
+      keywordsToSearch: ["createPublicClient", "readContract", "writeContract"],
+      extension: "ts",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Clients: `keywordsToSearch: ["createPublicClient", "createWalletClient", "http"]`
+- Contracts: `keywordsToSearch: ["readContract", "writeContract", "simulateContract"]`
+- Signing: `keywordsToSearch: ["signMessage", "signTypedData", "EIP712"]`
+- Utils: `keywordsToSearch: ["parseEther", "formatEther", "parseUnits"]`
+  </research>
+
+<related_skills>
+
+**Smart contracts:** Load via `Skill({ skill: "devtools:solidity" })` when:
+
+- Writing Solidity contracts to interact with
+- Understanding contract ABIs
+
+**Indexing:** Load via `Skill({ skill: "devtools:thegraph" })` when:
+
+- Querying indexed blockchain data
+- Building data layer for blockchain app
+
+**Contract security (Trail of Bits):** Load when interacting with contracts:
+
+- `Skill({ skill: "trailofbits:building-secure-contracts" })` — Audit contracts before interaction
+  </related_skills>
+
 <success_criteria>
 
 - [ ] Context7 docs fetched for current API
@@ -155,3 +256,12 @@ isAddress("0x..."); // Validates format
 - [ ] Type-safe ABI interactions
 - [ ] Proper error handling for blockchain ops
       </success_criteria>
+
+<evolution>
+**Extension Points:**
+- Add chain-specific patterns via references (L2s, custom chains)
+- Extend with ERC-4337 account abstraction patterns
+- Integrate with wallet connection libraries (wagmi, RainbowKit)
+
+**Timelessness:** Viem is the modern standard for Ethereum interactions; type-safe blockchain client patterns apply regardless of protocol evolution.
+</evolution>

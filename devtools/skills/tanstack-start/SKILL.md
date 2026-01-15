@@ -1,15 +1,46 @@
 ---
 name: tanstack-start
 description: TanStack Start full-stack React framework. Covers file-based routing, SSR, data loading, and server functions. Triggers on tanstack start, createFileRoute, loader.
+license: MIT
 triggers:
-  [
-    "tanstack start",
-    "createFileRoute",
-    "createRootRoute",
-    "loader",
-    "serverFn",
-    "ssr",
-  ]
+  # Explicit library mentions
+  - "tanstack[- ]?start"
+  - "tanstack[- ]?router"
+  - "@tanstack/(react-)?start"
+  - "@tanstack/(react-)?router"
+  # API patterns
+  - "createFileRoute"
+  - "createRootRoute"
+  - "createServerFn"
+  - "serverFn"
+  - "useLoaderData"
+  - "useSearch"
+  - "beforeLoad"
+  # Intent patterns - file-based routing
+  - "file[- ]?based rout(e|ing)"
+  - "route.*\\$.*param"
+  - "dynamic route.*react"
+  - "nested (layout|route)s?"
+  - "layout route"
+  # Intent patterns - SSR
+  - "ssr.*react"
+  - "server[- ]?side render"
+  - "streaming.*react"
+  - "deferred (data|loading)"
+  - "full[- ]?stack react"
+  # Intent patterns - server functions
+  - "server (function|action)s?"
+  - "rpc.*react"
+  # Vinxi/Nitro (underlying tech)
+  - "vinxi"
+  - "nitro.*react"
+  # Common typos
+  - "tankstack"
+  - "tan stack"
+  # File patterns
+  - "__root\\.tsx"
+  - "routes/.*\\$"
+  - "_authenticated"
 ---
 
 <objective>
@@ -241,6 +272,52 @@ src/
 - Catch-all: `[...].tsx`
   </constraints>
 
+<anti_patterns>
+**Common mistakes to avoid:**
+
+- Fetching data in components instead of loaders (causes waterfalls)
+- Missing Zod validation for search params (type safety loss)
+- Forgetting `beforeLoad` for auth-protected routes
+- Not using `context` for shared state (props drilling)
+- Awaiting non-critical data instead of streaming with Suspense
+  </anti_patterns>
+
+<library_ids>
+Skip resolve step for these known IDs:
+
+| Library         | Context7 ID      |
+| --------------- | ---------------- |
+| TanStack Start  | /tanstack/start  |
+| TanStack Router | /tanstack/router |
+| TanStack Query  | /tanstack/query  |
+
+</library_ids>
+
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production TanStack Start patterns",
+      researchGoal: "Search for file-based routing and SSR patterns",
+      reasoning: "Need real-world examples of TanStack Start usage",
+      keywordsToSearch: ["createFileRoute", "createServerFn", "tanstack"],
+      extension: "tsx",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Routing: `keywordsToSearch: ["createFileRoute", "beforeLoad", "loader"]`
+- Server functions: `keywordsToSearch: ["createServerFn", "server action"]`
+- Auth: `keywordsToSearch: ["_authenticated", "redirect", "context.session"]`
+  </research>
+
 <related_skills>
 
 **React performance:** Load via `Skill({ skill: "devtools:react-best-practices" })` when:
@@ -264,3 +341,13 @@ src/
 - [ ] Search params validated with Zod
 - [ ] Layouts use `Outlet` for children
       </success_criteria>
+
+<evolution>
+**Extension Points:**
+
+- Add domain-specific route patterns and layouts
+- Create reusable loader utilities for common data fetching
+- Build type-safe server function wrappers
+
+**Timelessness:** File-based routing, SSR, and type-safe data loading are foundational full-stack React patterns.
+</evolution>

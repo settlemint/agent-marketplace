@@ -2,10 +2,20 @@
 # Enforce TDD workflow for implementation requests
 # Triggered on UserPromptSubmit for implementation-related prompts
 
+# Hooks must never fail
+set +e
+
+# --- Logging setup ---
+SCRIPT_DIR=$(dirname "$0")
+SCRIPT_NAME="enforce-tdd"
+# shellcheck source=lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
+log_init
+
 is_truthy() {
 	case "${1:-}" in
-		1|true|yes|on) return 0 ;;
-		*) return 1 ;;
+	1 | true | yes | on) return 0 ;;
+	*) return 1 ;;
 	esac
 }
 
@@ -34,6 +44,8 @@ if echo "$CLAUDE_USER_PROMPT" | grep -qiE "implement|add feature|build feature|c
 		exit 0
 	fi
 
+	log_info "event=TDD_REMINDER_SHOWN" "token_saver=$TOKEN_SAVER"
+
 	if is_truthy "$TOKEN_SAVER"; then
 		cat <<'EOF'
 CONTEXT: TDD required. Write failing test first; then minimal code (RED->GREEN->REFACTOR).
@@ -49,3 +61,5 @@ Load skill `devtools:tdd-typescript`.
 EOF
 	fi
 fi
+
+exit 0

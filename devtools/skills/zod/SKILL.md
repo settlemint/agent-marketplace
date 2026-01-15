@@ -1,13 +1,66 @@
 ---
 name: zod
 description: Zod v4 schema patterns. For projects using Zod validation library.
+license: MIT
 triggers:
-  - "zod"
+  # Library name
+  - "\\bzod\\b"
+  - 'from ["'']zod["'']'
+  # Basic types
   - "z\\.object"
   - "z\\.string"
   - "z\\.number"
+  - "z\\.boolean"
+  - "z\\.array"
   - "z\\.enum"
+  - "z\\.literal"
+  - "z\\.union"
+  - "z\\.tuple"
+  - "z\\.record"
+  - "z\\.map"
+  - "z\\.set"
+  - "z\\.date"
+  - "z\\.bigint"
+  # Type inference
   - "z\\.infer"
+  - "z\\.input"
+  - "z\\.output"
+  # Validation methods
+  - "\\.parse\\("
+  - "\\.safeParse\\("
+  - "\\.parseAsync\\("
+  # Schema modifiers
+  - "\\.optional\\("
+  - "\\.nullable\\("
+  - "\\.transform\\("
+  - "\\.refine\\("
+  - "\\.superRefine\\("
+  - "\\.meta\\("
+  - "\\.describe\\("
+  # Zod v4 specific
+  - "z\\.xor"
+  - "\\.exactOptional"
+  - "\\.apply\\("
+  - "z\\.looseRecord"
+  # Composition
+  - "\\.pick\\("
+  - "\\.omit\\("
+  - "\\.extend\\("
+  - "\\.merge\\("
+  - "\\.partial\\("
+  - "\\.required\\("
+  # User intent - validation
+  - "(?i)validate.*input"
+  - "(?i)form.*validation"
+  - "(?i)schema.*validation"
+  - "(?i)type.*safe.*validation"
+  - "(?i)input.*validation"
+  - "(?i)api.*validation"
+  - "(?i)request.*validation"
+  - "(?i)runtime.*type.*check"
+  - "(?i)parse.*json"
+  - "(?i)validate.*data"
+  - "(?i)zod.*schema"
 ---
 
 <objective>
@@ -207,6 +260,55 @@ export type AssetType = z.infer<typeof AssetTypeEnum>;
 **Naming:** Schema files=`lowercase-with-hyphens.ts`
 </constraints>
 
+<anti_patterns>
+
+- **Using .describe() in v4:** Use `.meta({ description })` instead; .describe() is legacy
+- **Composition on Refined Schemas:** Using .pick()/.omit() on refined schemas throws; split base first
+- **Missing Type Exports:** Schemas without `z.infer<>` type exports; forces inline inference
+- **Duplicate Schemas:** Same validation logic defined in multiple places; import from shared location
+- **Untyped any:** Using `z.any()` without documentation; loses type safety benefits
+  </anti_patterns>
+
+<research>
+**Find patterns on GitHub when stuck:**
+
+```typescript
+mcp__plugin_devtools_octocode__githubSearchCode({
+  queries: [
+    {
+      mainResearchGoal: "Find production Zod v4 patterns",
+      researchGoal: "Search for schema composition and validation patterns",
+      reasoning: "Need real-world examples of Zod v4 features",
+      keywordsToSearch: ["z.object", ".meta(", "z.infer"],
+      extension: "ts",
+      limit: 10,
+    },
+  ],
+});
+```
+
+**Common searches:**
+
+- Schema composition: `keywordsToSearch: ["z.object", ".extend(", ".merge("]`
+- Transforms: `keywordsToSearch: [".transform(", ".refine(", "superRefine"]`
+- API validation: `keywordsToSearch: ["z.infer", "safeParse", "parseAsync"]`
+  </research>
+
+<related_skills>
+
+**Database schemas:** Load via `Skill({ skill: "devtools:drizzle" })` when:
+
+- Creating database tables from Zod schemas
+- Using drizzle-zod for schema generation
+- Validating database input/output
+
+**Form validation:** Load via `Skill({ skill: "devtools:react" })` when:
+
+- Integrating with TanStack Form
+- Building type-safe form components
+- Handling validation errors in UI
+  </related_skills>
+
 <success_criteria>
 
 - [ ] Context7 docs fetched for current v4 API
@@ -216,3 +318,12 @@ export type AssetType = z.infer<typeof AssetTypeEnum>;
 - [ ] Uses v4.3+ features: `z.xor()`, `.exactOptional()`, `.apply()`
 - [ ] Has unit tests for valid/invalid cases
       </success_criteria>
+
+<evolution>
+**Extension Points:**
+- Add domain-specific schema templates (API requests, form validation)
+- Extend with custom refinement patterns for business rules
+- Integrate with OpenAPI generation for API documentation
+
+**Timelessness:** Runtime type validation is essential for data boundaries; Zod's TypeScript-first approach provides patterns applicable to any validation library.
+</evolution>
