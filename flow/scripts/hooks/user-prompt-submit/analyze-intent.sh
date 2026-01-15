@@ -80,8 +80,8 @@ source "$LIB_DIR/skill-matcher.sh"
 CLASSIFICATION="SKIP"
 SUGGESTED_SKILLS=""
 
-# Match skills from triggers
-SUGGESTED_SKILLS=$(match_skills_from_triggers "$MSG_LOWER" "$LIB_DIR")
+# Match skills from triggers (with activation logging for evaluation)
+SUGGESTED_SKILLS=$(match_skills_from_triggers "$MSG_LOWER" "$LIB_DIR" "log" "analyze-intent")
 
 # TRIVIAL indicators - no hint needed (but not if skills matched)
 TRIVIAL_PATTERN='(typo|comment|rename[[:space:]]|move[[:space:]]|copy[[:space:]]|delete[[:space:]]line|remove[[:space:]]line|add[[:space:]]line|fix[[:space:]]indent|add[[:space:]]comment)'

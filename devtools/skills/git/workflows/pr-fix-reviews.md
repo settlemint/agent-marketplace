@@ -1,6 +1,6 @@
 ---
 name: pr-fix-reviews
-description: Fix PR review comments and CI failures
+description: Fix PR review comments and CI failures with educational feedback
 ---
 
 <context>
@@ -10,7 +10,7 @@ description: Fix PR review comments and CI failures
 </context>
 
 <objective>
-Fix PR comments and CI failures. Resolve threads. Max 3 CI iterations.
+Fix PR comments and CI failures. Resolve threads with **educational feedback** to teach reviewers. Max 3 CI iterations.
 </objective>
 
 <data_usage>
@@ -27,9 +27,10 @@ Thread IDs (PRRT_xxx) are in the unresolved threads section.
    ```bash
    git add -A && git commit -m "fix: address PR review comments" && git push --force-with-lease
    ```
-4. **Resolve threads:** For EACH thread fixed:
+4. **Resolve threads with educational feedback:** For EACH thread, explain whether reviewer was correct:
    ```bash
-   ${SKILL_ROOT}/scripts/pr-resolve.sh "PRRT_xxx" "Fixed: brief description"
+   # Format: "[symbol] Assessment. Explanation. Learning: insight. Fixed in [hash]."
+   ${SKILL_ROOT}/scripts/pr-resolve.sh "PRRT_xxx" "✓ Correct! [why they were right]. Learning: [insight]. Fixed in abc123."
    ```
 5. **Verify:** Check all threads resolved:
    ```bash
@@ -43,13 +44,25 @@ If CI fails after push: fix and retry (max 3 times), then escalate.
 
 <thread_resolution>
 
-**MANDATORY:** Resolve each thread after pushing fix.
+**MANDATORY:** Resolve each thread with **educational feedback**.
+
+**Symbols:**
+
+- ✓ Reviewer was correct
+- ◐ Reviewer was partially correct
+- ✗ Reviewer was incorrect (teach respectfully)
+
+**Examples:**
 
 ```bash
-# Get thread IDs from context
-# For each PRRT_xxx:
-${SKILL_ROOT}/scripts/pr-resolve.sh "PRRT_abc123" "Fixed: added null check"
-${SKILL_ROOT}/scripts/pr-resolve.sh "PRRT_def456" "Fixed: renamed variable"
+# Reviewer was correct
+${SKILL_ROOT}/scripts/pr-resolve.sh "PRRT_abc" "✓ Good catch! The null check was missing. Learning: Always validate optional props. Fixed in abc123."
+
+# Reviewer was partially correct
+${SKILL_ROOT}/scripts/pr-resolve.sh "PRRT_def" "◐ Valid concern but useMemo is premature here since component rarely re-renders. Added comment explaining tradeoff. Learning: Consider render frequency before memoization. Fixed in def456."
+
+# Reviewer was incorrect (explain respectfully)
+${SKILL_ROOT}/scripts/pr-resolve.sh "PRRT_ghi" "✗ This pattern is intentional for TypeScript discriminated unions. The 'redundant' check enables type narrowing. Learning: Discriminated unions need explicit guards. Added clarifying comment."
 ```
 
 </thread_resolution>

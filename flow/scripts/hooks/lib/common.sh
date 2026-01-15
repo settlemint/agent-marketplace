@@ -169,3 +169,57 @@ create_session_marker() {
 	mkdir -p "$marker_dir" 2>/dev/null || true
 	touch "$marker_file" 2>/dev/null || true
 }
+
+# --- Skill Activation Logging ---
+# Logs skill activations for pattern evaluation
+# Usage: log_skill_activation "skill_name" "trigger_pattern" "prompt_excerpt" "source" ["extra_key=value"]
+
+SKILL_ACTIVATION_LOG="$PROJECT_DIR/.claude/flow/skill-activations.jsonl"
+
+log_skill_activation() {
+	local skill="$1"
+	local trigger="$2"
+	local prompt="$3"
+	local source="$4"
+	shift 4
+
+	# Truncate prompt to 200 chars for storage efficiency
+	local prompt_excerpt="${prompt:0:200}"
+	[[ ${#prompt} -gt 200 ]] && prompt_excerpt="${prompt_excerpt}..."
+
+	local timestamp
+	timestamp=$(_timestamp)
+
+	local session_id
+	session_id=$(get_session_id)
+
+	local branch
+	branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+
+	# Build JSON entry
+	local entry
+	entry=$(jq -n \
+		--arg ts "$timestamp" \
+		--arg session "$session_id" \
+		--arg branch "$branch" \
+		--arg skill "$skill" \
+		--arg trigger "$trigger" \
+		--arg prompt "$prompt_excerpt" \
+		--arg source "$source" \
+		'{
+			timestamp: $ts,
+			session_id: $session,
+			branch: $branch,
+			skill: $skill,
+			trigger_pattern: $trigger,
+			prompt_excerpt: $prompt,
+			source: $source
+		}' 2>/dev/null)
+
+	# Append to JSONL file
+	mkdir -p "$(dirname "$SKILL_ACTIVATION_LOG")" 2>/dev/null || true
+	echo "$entry" >>"$SKILL_ACTIVATION_LOG" 2>/dev/null || true
+
+	# Also log to standard flow log for immediate visibility
+	log_info "event=SKILL_ACTIVATED" "skill=$skill" "trigger=$trigger" "source=$source"
+}

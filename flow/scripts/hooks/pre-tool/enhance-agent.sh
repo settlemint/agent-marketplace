@@ -65,6 +65,8 @@ if [[ "$IS_TARGET" == "true" ]]; then
 	if [[ -f "$SKILL_PATH" ]]; then
 		SKILLS_TO_INJECT="$SKILL_NAME"
 		log_event "ENHANCE" "agent=$SUBAGENT_TYPE" "skill=$SKILL_NAME"
+		# Log activation for evaluation
+		log_skill_activation "$SKILL_NAME" "target_agent=$SUBAGENT_TYPE" "$TASK_PROMPT" "enhance-agent:flow"
 	else
 		log_event "SKIP" "agent=$SUBAGENT_TYPE" "skill=$SKILL_NAME" "reason=skill_missing"
 	fi
@@ -85,6 +87,8 @@ if [[ -n "$TASK_PROMPT" ]]; then
 				SKILLS_TO_INJECT="flow:enhance:review"
 			fi
 			log_event "ENHANCE" "agent=$SUBAGENT_TYPE" "skill=flow:enhance:review" "reason=prompt_match"
+			# Log activation for evaluation
+			log_skill_activation "flow:enhance:review" "$REVIEW_PATTERN" "$TASK_PROMPT" "enhance-agent:review"
 		fi
 	fi
 fi
@@ -102,12 +106,14 @@ if [[ -n "$HAS_PR" ]]; then
 			SKILLS_TO_INJECT="flow:enhance:pr-awareness"
 		fi
 		log_event "ENHANCE" "agent=$SUBAGENT_TYPE" "skill=flow:enhance:pr-awareness" "reason=pr_detected"
+		# Log activation for evaluation
+		log_skill_activation "flow:enhance:pr-awareness" "pr_detected=$HAS_PR" "$TASK_PROMPT" "enhance-agent:pr"
 	fi
 fi
 
-# 4. Domain skills (matched from triggers in prompt)
+# 4. Domain skills (matched from triggers in prompt, with activation logging)
 if [[ -n "$TASK_PROMPT" ]]; then
-	MATCHED_SKILLS=$(match_skills_from_triggers "$TASK_PROMPT" "$LIB_DIR")
+	MATCHED_SKILLS=$(match_skills_from_triggers "$TASK_PROMPT" "$LIB_DIR" "log" "enhance-agent:domain")
 
 	if [[ -n "$MATCHED_SKILLS" ]]; then
 		if [[ -n "$SKILLS_TO_INJECT" ]]; then

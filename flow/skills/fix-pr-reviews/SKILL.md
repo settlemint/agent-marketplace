@@ -25,7 +25,7 @@ triggers:
 
 <objective>
 
-Fix all unresolved PR review comments and CI failures. Resolve each thread after pushing fixes. Max 3 CI iterations.
+Fix all unresolved PR review comments and CI failures. Resolve each thread after pushing fixes with **educational feedback** to teach reviewers. Max 3 CI iterations.
 
 </objective>
 
@@ -34,7 +34,10 @@ Fix all unresolved PR review comments and CI failures. Resolve each thread after
 1. **Parse context** - Extract PR info, threads, and CI status from sections above
 2. **Fix each issue** - Read file, make code fix, move to next
 3. **Commit and push** - Stage all, commit with message, push
-4. **Resolve threads** - Reply to each thread with fix description, mark resolved
+4. **Resolve threads** - Reply with **educational feedback** explaining:
+   - Whether reviewer was correct and why
+   - What you learned or what the fix teaches
+   - Mark thread as resolved
 5. **Verify** - Query for 0 unresolved threads
 
 </quick_start>
@@ -75,18 +78,63 @@ git commit -m "fix: address PR review comments"
 git push --force-with-lease
 ```
 
-**Step 4: Resolve Threads**
+**Step 4: Resolve Threads with Educational Feedback**
 
-MANDATORY - For EACH fixed thread:
+MANDATORY - For EACH fixed thread, provide **educational feedback** that teaches:
+
+**Response Format:**
+
+```
+[ASSESSMENT]: Was the reviewer correct? (Yes/Partially/No)
+
+[EXPLANATION]: Why they were right/wrong and what the fix addresses.
+
+[LEARNING]: Key insight for future reviews.
+
+Fixed in commit [hash].
+```
+
+**Examples:**
+
+1. Reviewer was correct:
+
+```
+✓ Correct catch! This null check was missing and could cause runtime errors.
+The defensive programming pattern you suggested is the right approach here.
+Learning: Always validate optional props before accessing nested properties.
+Fixed in abc123.
+```
+
+2. Reviewer was partially correct:
+
+```
+◐ Partially correct. The performance concern is valid, but useMemo here
+would be premature optimization since this component rarely re-renders.
+However, I've added a comment explaining the tradeoff.
+Learning: Consider render frequency before adding memoization.
+Fixed in def456.
+```
+
+3. Reviewer was incorrect (teach respectfully):
+
+```
+✗ Actually, this pattern is intentional. TypeScript's discriminated unions
+require this structure for proper type narrowing. The "redundant" check
+enables type inference in the subsequent block.
+Learning: Discriminated unions need explicit type guards for narrowing.
+No change needed, but added a clarifying comment.
+```
+
+**Execute:**
 
 ```bash
-# Get owner/repo for GraphQL
 OWNER=$(gh repo view --json owner -q '.owner.login')
 REPO=$(gh repo view --json name -q '.name')
 
-# Reply and resolve
-gh api graphql -f query='mutation($id: ID!, $body: String!) { addPullRequestReviewThreadReply(input: {pullRequestReviewThreadId: $id, body: $body}) { comment { id } } }' -F id="PRRT_xxx" -F body="Fixed: description"
+# Reply with educational feedback
+gh api graphql -f query='mutation($id: ID!, $body: String!) { addPullRequestReviewThreadReply(input: {pullRequestReviewThreadId: $id, body: $body}) { comment { id } } }' -F id="PRRT_xxx" -F body="✓ Correct catch! [explanation]. Learning: [insight]. Fixed in [hash]."
 
+# Resolve thread
 gh api graphql -f query='mutation($id: ID!) { resolveReviewThread(input: {threadId: $id}) { thread { isResolved } } }' -F id="PRRT_xxx"
 ```
 
