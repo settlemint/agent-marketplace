@@ -1,7 +1,8 @@
 ---
-name: flow:fix-pr-reviews
+name: fix-pr-reviews
 description: Fix all unresolved PR review comments and CI failures. Resolves threads after pushing fixes.
 license: MIT
+user_invocable: true
 argument-hint: "[PR number, defaults to current branch PR]"
 triggers:
   - "fix pr"
