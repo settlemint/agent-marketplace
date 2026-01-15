@@ -3,6 +3,7 @@ name: fix-pr-reviews
 description: Fix all unresolved PR review comments and CI failures. Resolves threads after pushing fixes.
 license: MIT
 user_invocable: true
+command: /fix-pr-reviews
 argument-hint: "[PR number, defaults to current branch PR]"
 triggers:
   - "fix pr"
@@ -152,22 +153,6 @@ gh api graphql -f query='query { repository(owner:"OWNER", name:"REPO") { pullRe
 If CI fails after push: fix and retry (max 3 times), then escalate.
 
 </workflow>
-
-<smart_qa>
-
-Before pushing:
-
-- Check if `bun run ci` was run in last 5 minutes
-- If stale: run CI first
-- If fresh: proceed with push
-
-```bash
-[[ -f .claude/state/qa-timestamp ]] && \
-  [[ $(($(date +%s) - $(cat .claude/state/qa-timestamp))) -lt 300 ]] && \
-  echo "QA fresh" || echo "Run: bun run ci"
-```
-
-</smart_qa>
 
 <constraints>
 
