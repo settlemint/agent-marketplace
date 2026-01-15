@@ -18,24 +18,9 @@ Provide systematic approaches for analyzing codebases to identify patterns, pote
 
 <quick_start>
 
-**Step 1: Choose Analysis Type**
-
-- **Structure Analysis**: Directory layout, file organization
-- **Pattern Analysis**: Code patterns, architecture decisions
-- **Quality Analysis**: Code smells, technical debt
-- **Dependency Analysis**: Module dependencies, coupling
-
-**Step 2: Gather Data**
-
-Use appropriate tools:
-
-- `Glob` for file patterns
-- `Grep` for code patterns
-- `Read` for file contents
-
-**Step 3: Synthesize Findings**
-
-Compile findings into actionable insights.
+1. Choose analysis type: Structure, Pattern, Quality, or Dependency
+2. Gather data using Glob, Grep, and Read tools
+3. Synthesize findings into actionable insights
 
 </quick_start>
 
@@ -51,76 +36,19 @@ Compile findings into actionable insights.
 
 ## Structure Analysis
 
-Examine project organization:
-
-```
-Questions to answer:
-- Is the directory structure logical?
-- Are files grouped by feature or type?
-- Is naming consistent?
-- Are there orphaned files?
-```
-
-**Metrics:**
-
-- Directory depth
-- Files per directory
-- Naming pattern adherence
+Directory layout, file organization, naming consistency. Metrics: directory depth, files per directory, naming adherence.
 
 ## Pattern Analysis
 
-Identify code patterns:
-
-```
-Questions to answer:
-- What architectural patterns are used?
-- Are patterns applied consistently?
-- Are there anti-patterns present?
-```
-
-**Look for:**
-
-- Component patterns
-- State management patterns
-- API patterns
-- Error handling patterns
+Architectural patterns, consistency, anti-patterns. Look for: component, state management, API, error handling patterns.
 
 ## Quality Analysis
 
-Evaluate code quality:
-
-```
-Questions to answer:
-- Is there code duplication?
-- Are functions appropriately sized?
-- Is complexity manageable?
-- Are there code smells?
-```
-
-**Metrics:**
-
-- Cyclomatic complexity
-- Function length
-- Duplication percentage
-- Test coverage
+Code duplication, function size, complexity, smells. Metrics: cyclomatic complexity, function length, duplication, test coverage.
 
 ## Dependency Analysis
 
-Map dependencies:
-
-```
-Questions to answer:
-- What are the module boundaries?
-- Is there circular dependency?
-- Is coupling appropriate?
-- Are external dependencies up to date?
-```
-
-**Outputs:**
-
-- Dependency graph
-- Coupling metrics
-- Version status
+Module boundaries, circular dependencies, coupling, external dependency status. Outputs: dependency graph, coupling metrics, version status.
 
 </analysis_types>
 
@@ -145,10 +73,7 @@ Skill({ skill: "flow:guides:optimization" }); // Apply optimizations
 
 <success_criteria>
 
-- [ ] Analysis type selected
-- [ ] Data gathered systematically
-- [ ] Findings documented
-- [ ] Recommendations actionable
-- [ ] Priority assigned to each finding
+- [ ] Analysis completed with prioritized findings
+- [ ] Actionable recommendations documented
 
 </success_criteria>

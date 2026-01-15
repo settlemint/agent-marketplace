@@ -18,13 +18,9 @@ Start a new workflow with defined tasks and tracking.
 
 <quick_start>
 
-```javascript
-// Load this skill
-Skill({ skill: "flow:workflow:start" });
-
-// For workflow patterns and templates
-Skill({ skill: "flow:flow-patterns" });
-```
+1. Check for existing workflow in `.claude/flow/state.json`
+2. Define workflow type (feature, bug, refactor, docs, tests, custom)
+3. Create workflow entry and initialize TodoWrite tracking
 
 </quick_start>
 
@@ -32,79 +28,28 @@ Skill({ skill: "flow:flow-patterns" });
 
 ## Phase 1: Check State
 
-1. Load current state from `.claude/flow/state.json`
-2. If not initialized:
-   ```javascript
-   Skill({ skill: "flow:init" });
-   ```
-3. If workflow already in progress, ask whether to:
-   - Pause current and start new
-   - Complete current first
-   - Cancel operation
+Load `.claude/flow/state.json`. If not initialized, suggest `flow:init`. If workflow exists, offer to pause, complete, or cancel.
 
 ## Phase 2: Define Workflow
 
-Ask user for workflow type:
+**Types:** feature, bug, refactor, docs, tests, custom
 
-```
-What type of workflow would you like to start?
+**Gather:** name, description, expected tasks, priority (high/medium/low)
 
-1. Feature Implementation
-2. Bug Fix
-3. Refactoring
-4. Documentation
-5. Testing
-6. Custom (enter name)
-```
+## Phase 3: Create Workflow
 
-## Phase 3: Gather Requirements
+Add to state with: id, name, type, description, status (active), priority, startedAt, tasks, progress counters.
 
-Based on workflow type, gather:
+## Phase 4: Initialize and Confirm
 
-- Workflow name
-- Description
-- Expected tasks (can be refined later)
-- Priority level
-
-## Phase 4: Create Workflow
-
-Add to state:
-
-```json
-{
-  "currentWorkflow": {
-    "id": "uuid",
-    "name": "workflow-name",
-    "type": "feature|bug|refactor|docs|tests|custom",
-    "description": "...",
-    "status": "active",
-    "priority": "high|medium|low",
-    "startedAt": "ISO date",
-    "tasks": [],
-    "completedTasks": 0,
-    "totalTasks": 0
-  }
-}
-```
-
-## Phase 5: Initialize TodoWrite
-
-Create TodoWrite items from workflow tasks for session visibility.
-
-## Phase 6: Confirm
-
-Display:
-
-- Workflow started confirmation
-- Current tasks
-- Next steps
+Create TodoWrite items for session visibility. Display confirmation with current tasks and next steps.
 
 </workflow>
 
 <related_skills>
 
 ```javascript
-Skill({ skill: "flow:flow-patterns" }); // Workflow templates
+Skill({ skill: "flow:guides:patterns" }); // Workflow templates
 Skill({ skill: "flow:workflow:pause" }); // Pause workflow
 Skill({ skill: "flow:workflow:complete" }); // Complete workflow
 Skill({ skill: "flow:status" }); // Check status
@@ -114,11 +59,8 @@ Skill({ skill: "flow:status" }); // Check status
 
 <success_criteria>
 
-- [ ] State checked for conflicts
-- [ ] Workflow type determined
-- [ ] Requirements gathered
-- [ ] State updated
-- [ ] TodoWrite initialized
-- [ ] Confirmation displayed
+- [ ] Workflow created in state.json
+- [ ] TodoWrite initialized with tasks
+- [ ] Confirmation displayed to user
 
 </success_criteria>

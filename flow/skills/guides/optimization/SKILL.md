@@ -18,23 +18,10 @@ Provide systematic approaches for optimizing code, improving performance, and re
 
 <quick_start>
 
-**Step 1: Identify Optimization Target**
-
-- **Performance**: Speed, memory, bundle size
-- **Quality**: Readability, maintainability
-- **Debt**: Accumulated shortcuts, outdated patterns
-
-**Step 2: Measure Current State**
-
-Establish baseline metrics before changes.
-
-**Step 3: Apply Optimization**
-
-Use appropriate workflow from `workflows/`.
-
-**Step 4: Verify Improvement**
-
-Measure again and compare to baseline.
+1. Identify target: Performance, Quality, or Technical Debt
+2. Measure baseline metrics
+3. Apply optimization using workflow from `workflows/`
+4. Verify improvement against baseline
 
 </quick_start>
 
@@ -50,98 +37,25 @@ Measure again and compare to baseline.
 
 ## Performance Optimization
 
-**Targets:**
-
-- Execution speed
-- Memory usage
-- Bundle size
-- Load time
-
-**Approach:**
-
-1. Profile to identify bottlenecks
-2. Focus on biggest impact areas
-3. Make targeted changes
-4. Measure improvement
-
-**Common wins:**
-
-- Lazy loading
-- Memoization
-- Code splitting
-- Caching
+Targets: speed, memory, bundle size, load time. Wins: lazy loading, memoization, code splitting, caching.
 
 ## Code Quality Optimization
 
-**Targets:**
-
-- Readability
-- Maintainability
-- Testability
-- Reusability
-
-**Approach:**
-
-1. Identify code smells
-2. Prioritize by impact
-3. Refactor incrementally
-4. Ensure tests pass
-
-**Common refactors:**
-
-- Extract function
-- Rename for clarity
-- Split large files
-- Remove duplication
+Targets: readability, maintainability, testability, reusability. Refactors: extract function, rename, split files, remove duplication.
 
 ## Technical Debt Reduction
 
-**Targets:**
-
-- Outdated dependencies
-- Legacy patterns
-- Missing tests
-- Documentation gaps
-
-**Approach:**
-
-1. Inventory debt items
-2. Assess risk and effort
-3. Prioritize strategically
-4. Tackle incrementally
-
-**Common debt:**
-
-- TODO/FIXME comments
-- Deprecated API usage
-- Inconsistent patterns
-- Missing error handling
+Targets: outdated deps, legacy patterns, missing tests, doc gaps. Common debt: TODO/FIXME, deprecated APIs, inconsistent patterns.
 
 </optimization_types>
 
 <principles>
 
-## The Optimization Mindset
-
-### 1. Measure First
-
-Never optimize without metrics. "It feels slow" is not a measurement.
-
-### 2. Focus on Bottlenecks
-
-The 80/20 rule applies: 80% of problems come from 20% of code.
-
-### 3. Preserve Behavior
-
-Refactoring should not change functionality. Tests are your safety net.
-
-### 4. Small Steps
-
-Make small, verifiable changes. Large refactors are risky.
-
-### 5. Document Decisions
-
-Future you (or someone else) will want to know why.
+1. **Measure First**: No metrics = no optimization
+2. **Focus on Bottlenecks**: 80/20 rule - 80% of problems from 20% of code
+3. **Preserve Behavior**: Tests are your safety net
+4. **Small Steps**: Large refactors are risky
+5. **Document Decisions**: Future you will want to know why
 
 </principles>
 
@@ -168,11 +82,7 @@ Skill({ skill: "flow:guides:analysis" }); // Analysis patterns
 
 <success_criteria>
 
-- [ ] Target identified and scoped
-- [ ] Baseline measured
-- [ ] Changes made incrementally
-- [ ] Tests passing throughout
-- [ ] Improvement verified
-- [ ] Documentation updated
+- [ ] Baseline measured and optimization applied
+- [ ] Improvement verified against baseline
 
 </success_criteria>

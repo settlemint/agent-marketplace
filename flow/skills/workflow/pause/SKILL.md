@@ -17,10 +17,9 @@ Pause the current active workflow while preserving state for later resumption.
 
 <quick_start>
 
-```javascript
-// Load this skill
-Skill({ skill: "flow:workflow:pause" });
-```
+1. Load active workflow from `.claude/flow/state.json`
+2. Capture current progress and context
+3. Update status to paused with resume notes
 
 </quick_start>
 
@@ -28,48 +27,15 @@ Skill({ skill: "flow:workflow:pause" });
 
 ## Phase 1: Load State
 
-1. Read `.claude/flow/state.json`
-2. Check if there's an active workflow
-3. If no active workflow, inform user
+Read `.claude/flow/state.json`. If no active workflow, inform user.
 
-## Phase 2: Capture Progress
+## Phase 2: Capture and Update
 
-Document current progress:
+Document progress (completed/in-progress tasks, context notes). Update status to paused with pausedAt, pauseReason, resumeContext.
 
-- Completed tasks
-- In-progress tasks
-- Any notes or context
+## Phase 3: Finalize
 
-## Phase 3: Update State
-
-Update workflow status:
-
-```json
-{
-  "currentWorkflow": {
-    "...existing",
-    "status": "paused",
-    "pausedAt": "ISO date",
-    "pauseReason": "user requested",
-    "resumeContext": "notes about where to resume"
-  }
-}
-```
-
-## Phase 4: Update TodoWrite
-
-Mark current tasks as pending (not in_progress) to reflect paused state.
-
-## Phase 5: Confirm
-
-Display:
-
-- Workflow paused confirmation
-- Progress summary
-- How to resume:
-  ```javascript
-  Skill({ skill: "flow:workflow:start" }); // Will offer to resume
-  ```
+Mark TodoWrite tasks as pending. Display confirmation with progress summary and how to resume.
 
 </workflow>
 
@@ -85,10 +51,7 @@ Skill({ skill: "flow:status" }); // Check status
 
 <success_criteria>
 
-- [ ] State loaded
-- [ ] Progress captured
-- [ ] State updated to paused
-- [ ] TodoWrite updated
-- [ ] Confirmation displayed with Skill() references
+- [ ] Workflow paused with context preserved
+- [ ] Confirmation displayed with resume instructions
 
 </success_criteria>

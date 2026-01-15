@@ -16,13 +16,9 @@ Based on previous analysis, suggest specific improvements for the codebase.
 
 <quick_start>
 
-```javascript
-// Load this skill
-Skill({ skill: "flow:suggest" });
-
-// Requires prior analysis - if none exists:
-Skill({ skill: "flow:analyze" });
-```
+1. Load most recent analysis from `.claude/flow/analysis-*.json`
+2. Filter and prioritize suggestions by impact and effort
+3. Present actionable recommendations with next steps
 
 </quick_start>
 
@@ -30,64 +26,21 @@ Skill({ skill: "flow:analyze" });
 
 ## Phase 1: Load Analysis
 
-1. Find most recent analysis in `.claude/flow/analysis-*.json`
-2. If no analysis exists, suggest:
-   ```javascript
-   Skill({ skill: "flow:analyze" });
-   ```
+Find most recent analysis in `.claude/flow/analysis-*.json`. If none exists, suggest `flow:analyze`.
 
-## Phase 2: Filter by Category
+## Phase 2: Filter and Prioritize
 
-Categories:
+**Categories:** all, code, tests, docs, perf
 
-- `all` (default): All suggestions
-- `code`: Code quality improvements
-- `tests`: Testing improvements
-- `docs`: Documentation improvements
-- `perf`: Performance optimizations
+**Priority by:** Impact (high/medium/low) x Effort (high/medium/low). Highlight quick wins.
 
-## Phase 3: Prioritize Suggestions
+## Phase 3: Present Suggestions
 
-Rank suggestions by:
+Group by priority tier: Quick Wins, Medium Priority, Long-term. Show impact, effort, affected files.
 
-1. Impact (high/medium/low)
-2. Effort (high/medium/low)
-3. Quick wins (high impact, low effort)
+## Phase 4: Offer Action Plan
 
-## Phase 4: Present Suggestions
-
-Display categorized suggestions:
-
-```
-Improvement Suggestions
-=======================
-
-Quick Wins (High Impact, Low Effort):
-1. [Suggestion] - {description}
-   Impact: High | Effort: Low
-   Files: {affected files}
-
-Medium Priority:
-2. [Suggestion] - {description}
-   ...
-
-Long-term Improvements:
-3. [Suggestion] - {description}
-   ...
-```
-
-## Phase 5: Create Action Plan
-
-Offer to create a workflow from selected suggestions:
-
-```
-Would you like to:
-1. Create a workflow from these suggestions
-   → Skill({ skill: "flow:workflow:start" })
-2. Focus on quick wins only
-3. Export suggestions to a file
-4. Dismiss
-```
+Options: Create workflow from suggestions, focus on quick wins, export to file, dismiss.
 
 </workflow>
 
@@ -102,10 +55,7 @@ Skill({ skill: "flow:workflow:start" }); // Start improvement workflow
 
 <success_criteria>
 
-- [ ] Analysis loaded
-- [ ] Suggestions filtered by category
-- [ ] Suggestions prioritized
-- [ ] Clear presentation provided
-- [ ] Action options offered with Skill() format
+- [ ] Analysis loaded and suggestions prioritized
+- [ ] Clear presentation with actionable next steps
 
 </success_criteria>

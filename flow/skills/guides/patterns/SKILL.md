@@ -18,25 +18,9 @@ Provide core workflow patterns and templates for structured, repeatable processe
 
 <quick_start>
 
-**Step 1: Identify Workflow Type**
-
-Determine which pattern fits your need:
-
-- **Linear**: Sequential tasks, each depending on previous
-- **Parallel**: Independent tasks that can run concurrently
-- **Iterative**: Repeating cycles until condition met
-- **Hybrid**: Combination of above patterns
-
-**Step 2: Apply Template**
-
-Load the appropriate template from `templates/`:
-
-- `workflow-template.md` - General workflow structure
-- `checklist-template.md` - Task checklist format
-
-**Step 3: Customize for Context**
-
-Adapt the template to your specific requirements.
+1. Identify workflow type: Linear, Parallel, Iterative, or Hybrid
+2. Apply appropriate template from `templates/`
+3. Customize for your specific context
 
 </quick_start>
 
@@ -57,38 +41,25 @@ Adapt the template to your specific requirements.
 
 ## Linear Workflow
 
-```
-START → Task A → Task B → Task C → END
-```
+`START → Task A → Task B → Task C → END`
 
 Best for: Sequential processes, approval chains, build pipelines
 
 ## Parallel Workflow
 
-```
-START → ┬→ Task A ─┬→ END
-        ├→ Task B ─┤
-        └→ Task C ─┘
-```
+Tasks A, B, C run concurrently, all must complete before END.
 
 Best for: Independent research, parallel testing, concurrent processing
 
 ## Iterative Workflow
 
-```
-START → ┌→ Task A → Task B → Check ─┐
-        └────────── (repeat) ───────┘
-                        ↓
-                       END
-```
+Repeat tasks until check passes.
 
 Best for: Refinement, quality assurance, optimization cycles
 
 ## Checkpoint Pattern
 
-```
-Task → Checkpoint → Decision → Continue/Rollback
-```
+`Task → Checkpoint → Decision → Continue/Rollback`
 
 Best for: Risky operations, staged deployments, review gates
 
@@ -115,10 +86,7 @@ Skill({ skill: "flow:guides:optimization" }); // Optimize workflow efficiency
 
 <success_criteria>
 
-- [ ] Workflow type identified
-- [ ] Appropriate template selected
-- [ ] Tasks have clear success criteria
-- [ ] Dependencies documented
-- [ ] Checkpoints included for long workflows
+- [ ] Workflow type identified and template applied
+- [ ] Tasks have clear success criteria and dependencies
 
 </success_criteria>

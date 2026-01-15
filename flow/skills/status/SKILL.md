@@ -16,12 +16,9 @@ Display the current workflow status including active workflow, progress, and rec
 
 <quick_start>
 
-```javascript
-// Load this skill
-Skill({ skill: "flow:status" });
-```
-
-Then read the state file and display formatted status.
+1. Read `.claude/flow/state.json` and `config.json`
+2. Display current workflow, progress, and recent activity
+3. Suggest relevant next actions based on state
 
 </quick_start>
 
@@ -29,53 +26,33 @@ Then read the state file and display formatted status.
 
 ## Phase 1: Load State
 
-1. Read `.claude/flow/state.json`
-2. Read `.claude/flow/config.json`
-3. If not initialized, suggest:
-   ```javascript
-   Skill({ skill: "flow:init" });
-   ```
+Read `.claude/flow/state.json` and `config.json`. If not initialized, suggest `flow:init`.
 
 ## Phase 2: Display Status
 
-Show formatted status:
-
-```
-Flow Status
-===========
-
-Project: {projectName}
-Initialized: {date}
-
-Current Workflow: {name or "None"}
-Status: {status}
-Progress: {completed}/{total} tasks
-
-Recent Activity:
-- {activity 1}
-- {activity 2}
-- {activity 3}
-
-Available Skills:
-- Skill({ skill: "flow:workflow:start" }) - Start a new workflow
-- Skill({ skill: "flow:analyze" }) - Analyze codebase
-- Skill({ skill: "flow:suggest" }) - Get improvement suggestions
-```
+Show: project name, current workflow (name, status, progress), recent activity.
 
 ## Phase 3: Recommendations
 
-Based on current state, suggest next actions:
-
-- If no workflow: suggest `Skill({ skill: "flow:workflow:start" })`
-- If workflow in progress: show current task
-- If workflow paused: suggest resuming
+- No workflow: suggest `flow:workflow:start`
+- In progress: show current task
+- Paused: suggest resuming
 
 </workflow>
 
+<related_skills>
+
+```javascript
+Skill({ skill: "flow:init" }); // Initialize flow
+Skill({ skill: "flow:workflow:start" }); // Start workflow
+Skill({ skill: "flow:analyze" }); // Analyze codebase
+```
+
+</related_skills>
+
 <success_criteria>
 
-- [ ] State loaded successfully
-- [ ] Status displayed in readable format
-- [ ] Recommendations provided with Skill() format
+- [ ] State loaded and status displayed
+- [ ] Context-aware recommendations provided
 
 </success_criteria>

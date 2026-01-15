@@ -18,12 +18,9 @@ Initialize the flow plugin in the current project. Creates necessary state files
 
 <quick_start>
 
-```javascript
-// Load this skill
-Skill({ skill: "flow:init" });
-```
-
-Then follow the workflow to initialize flow in your project.
+1. Check if `.claude/flow/` already exists
+2. Create directory structure: `config.json`, `state.json`, `history/`
+3. Confirm initialization to user
 
 </quick_start>
 
@@ -31,62 +28,25 @@ Then follow the workflow to initialize flow in your project.
 
 ## Phase 1: Check Existing State
 
-1. Check if `.claude/flow/` directory exists
-2. If exists, ask user whether to reset or continue
+Check if `.claude/flow/` exists. If so, ask user whether to reset or continue.
 
 ## Phase 2: Create Structure
 
-Create the flow directory structure:
+Create `.claude/flow/` with: `config.json`, `state.json`, `history/`
 
-```
-.claude/flow/
-├── config.json       # Flow configuration
-├── state.json        # Current workflow state
-└── history/          # Workflow history
-```
+## Phase 3: Initialize Files
 
-## Phase 3: Initialize Configuration
+**config.json**: Project name, version, settings (autoTrack, saveHistory, suggestSkills)
 
-Create `config.json` with project settings:
+**state.json**: currentWorkflow (null), workflows ([]), lastActivity (null)
 
-```json
-{
-  "projectName": "directory name",
-  "initialized": "ISO date",
-  "version": "1.0.0",
-  "settings": {
-    "autoTrack": true,
-    "saveHistory": true,
-    "suggestSkills": true
-  }
-}
-```
+## Phase 4: Confirm
 
-## Phase 4: Initialize State
-
-Create `state.json` with empty state:
-
-```json
-{
-  "currentWorkflow": null,
-  "workflows": [],
-  "lastActivity": null
-}
-```
-
-## Phase 5: Confirm
-
-Display confirmation message with:
-
-- Configuration location
-- Available skills
-- Next steps
+Display configuration location, available skills, and next steps.
 
 </workflow>
 
 <related_skills>
-
-After initialization, you can use:
 
 ```javascript
 Skill({ skill: "flow:status" }); // Check status
@@ -98,9 +58,7 @@ Skill({ skill: "flow:analyze" }); // Analyze codebase
 
 <success_criteria>
 
-- [ ] `.claude/flow/config.json` created
-- [ ] `.claude/flow/state.json` created
-- [ ] `.claude/flow/history/` directory created
+- [ ] Flow directory structure created
 - [ ] Confirmation displayed to user
 
 </success_criteria>

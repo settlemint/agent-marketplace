@@ -18,10 +18,9 @@ Complete the current workflow, archive it, and generate a summary.
 
 <quick_start>
 
-```javascript
-// Load this skill
-Skill({ skill: "flow:workflow:complete" });
-```
+1. Review task completion status
+2. Generate summary and archive to `.claude/flow/history/`
+3. Clear current workflow and update TodoWrite
 
 </quick_start>
 
@@ -29,70 +28,19 @@ Skill({ skill: "flow:workflow:complete" });
 
 ## Phase 1: Load State
 
-1. Read `.claude/flow/state.json`
-2. Check if there's an active/paused workflow
-3. If no workflow, inform user
+Read `.claude/flow/state.json`. If no active/paused workflow, inform user.
 
 ## Phase 2: Review Completion
 
-Check task completion status:
+If tasks incomplete, offer options: mark all complete, complete anyway, or cancel.
 
-- If all tasks completed: proceed to completion
-- If tasks incomplete, ask user:
+## Phase 3: Archive
 
-```
-Some tasks are not marked complete:
-- [ ] Task A
-- [ ] Task B
+Generate summary (id, name, type, duration, task stats, completion rate). Save to `.claude/flow/history/{id}.json`. Clear current workflow from state.
 
-Would you like to:
-1. Mark all as complete
-2. Complete workflow anyway (tasks remain incomplete)
-3. Cancel and continue working
-```
+## Phase 4: Finalize
 
-## Phase 3: Generate Summary
-
-Create workflow summary:
-
-```json
-{
-  "id": "uuid",
-  "name": "workflow-name",
-  "type": "feature|bug|refactor|docs|tests|custom",
-  "description": "...",
-  "startedAt": "ISO date",
-  "completedAt": "ISO date",
-  "duration": "human readable",
-  "tasks": [...],
-  "completedTasks": N,
-  "totalTasks": N,
-  "completionRate": "N%"
-}
-```
-
-## Phase 4: Archive Workflow
-
-1. Save summary to `.claude/flow/history/{id}.json`
-2. Clear current workflow from state
-3. Update last activity
-
-## Phase 5: Update TodoWrite
-
-Clear workflow-related todos, mark as completed.
-
-## Phase 6: Present Summary
-
-Display:
-
-- Completion confirmation
-- Summary statistics
-- What was accomplished
-- Next steps:
-  ```javascript
-  Skill({ skill: "flow:workflow:start" }); // Start new workflow
-  Skill({ skill: "flow:status" }); // Check status
-  ```
+Mark TodoWrite items completed. Display summary with accomplishments and next steps.
 
 </workflow>
 
@@ -108,11 +56,7 @@ Skill({ skill: "flow:analyze" }); // Analyze results
 
 <success_criteria>
 
-- [ ] State loaded
-- [ ] Task completion verified or acknowledged
-- [ ] Summary generated
-- [ ] Workflow archived
-- [ ] State cleared
-- [ ] Summary presented with Skill() recommendations
+- [ ] Workflow archived to history
+- [ ] Summary presented with statistics
 
 </success_criteria>
