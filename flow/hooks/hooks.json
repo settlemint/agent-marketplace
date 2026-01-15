@@ -2,15 +2,6 @@
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "startup|compact|resume",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start/initialize-flow.sh"
-          }
-        ]
-      },
-      {
         "matcher": "startup",
         "hooks": [
           {
@@ -74,10 +65,6 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/stop/session-retrospective.sh"
-          },
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/stop/cleanup.sh"
           }
         ]
       }
