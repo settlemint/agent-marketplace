@@ -19,10 +19,9 @@ fi
 
 META_FILE=".claude/docs/.meta.json"
 
-# If no docs exist, suggest initial generation
+# If no docs exist, log only (no output to avoid hook error display)
 if [[ ! -f "$META_FILE" ]]; then
 	log_info "event=DOCS_MISSING"
-	echo "hint: No codebase docs found. Generate with: Skill({ skill: \"flow:init-enhanced\" })"
 	exit 0
 fi
 
@@ -34,7 +33,7 @@ fi
 # Get last generation SHA
 LAST_SHA=$(jq -r '.gitSha // empty' "$META_FILE" 2>/dev/null)
 if [[ -z "$LAST_SHA" ]]; then
-	echo "hint: Docs metadata incomplete. Regenerate with: Skill({ skill: \"flow:init-enhanced\" })"
+	log_info "event=DOCS_METADATA_INCOMPLETE"
 	exit 0
 fi
 
@@ -62,15 +61,11 @@ else
 	AGE_DAYS="unknown"
 fi
 
-# Suggest refresh based on changes
+# Log docs status - no output to avoid hook error display
 if [[ "$CHANGED_COUNT" -gt 100 ]]; then
 	log_info "event=DOCS_VERY_STALE" "changed_files=$CHANGED_COUNT" "age_days=$AGE_DAYS"
-	echo "hint: Codebase docs are stale ($CHANGED_COUNT files changed, $AGE_DAYS days old). Full refresh recommended:"
-	echo "hint: Skill({ skill: \"flow:init-enhanced\" })"
 elif [[ "$CHANGED_COUNT" -gt 20 ]]; then
 	log_info "event=DOCS_STALE" "changed_files=$CHANGED_COUNT" "age_days=$AGE_DAYS"
-	echo "hint: Codebase docs may need update ($CHANGED_COUNT files changed). Try incremental update:"
-	echo "hint: Skill({ skill: \"flow:init-enhanced\", args: \"--incremental\" })"
 else
 	log_debug "event=DOCS_OK" "changed_files=$CHANGED_COUNT"
 fi

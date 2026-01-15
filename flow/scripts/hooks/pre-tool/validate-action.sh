@@ -23,11 +23,11 @@ if [[ -z "$FILE_PATH" ]]; then
 	exit 0
 fi
 
-# Check for protected paths
+# Check for protected paths - log only, don't output to avoid hook error display
 case "$FILE_PATH" in
 *.env | *.env.* | *credentials* | *secret* | *.pem | *.key)
 	log_warn "event=SENSITIVE_FILE_EDIT" "file=$FILE_PATH"
-	echo '{"feedback": "Warning: Editing sensitive file. Ensure no secrets are committed."}' >&2
+	# Silent - warning is logged but not shown to user
 	;;
 esac
 
@@ -61,10 +61,8 @@ case "$FILE_PATH" in
 	TEST_FILE_3="${DIR}/__tests__/${NAME}.test.${EXT}"
 
 	if [[ ! -f "$TEST_FILE_1" ]] && [[ ! -f "$TEST_FILE_2" ]] && [[ ! -f "$TEST_FILE_3" ]]; then
+		# Log only - don't show TDD reminders on every edit (too noisy)
 		log_info "event=TDD_REMINDER" "file=$FILE_PATH" "missing_test=$TEST_FILE_1"
-		echo "TDD Reminder: No test file found for ${BASENAME}. Consider using TDD: write failing test first."
-		echo "Suggested test file: ${TEST_FILE_1}"
-		echo 'Load skill: Skill({ skill: "devtools:tdd-typescript" })'
 	fi
 	;;
 esac

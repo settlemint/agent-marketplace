@@ -244,8 +244,8 @@ rm -f "$ENTRIES_FILE" "$DEDUP_FILE"
 mv "$CACHE_FILE.tmp" "$CACHE_FILE"
 chmod +x "$CACHE_FILE"
 
-# Count skills in cache
-SKILL_COUNT=$(grep -c '^\[' "$CACHE_FILE" 2>/dev/null || echo "0")
+# Count skills in cache (entries start with spaces then [")
+SKILL_COUNT=$(grep -c '\["' "$CACHE_FILE" 2>/dev/null || echo "0")
 log_info "event=CACHE_BUILT" "skills=$SKILL_COUNT" "file=$CACHE_FILE"
 
 echo "$CACHE_FILE"
