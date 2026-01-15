@@ -3,6 +3,7 @@ name: push
 description: Push commits to remote with smart QA check. Use when asked to "push changes", "push to remote", or "upload commits".
 license: MIT
 user_invocable: true
+command: /push
 argument-hint: "[optional: --force-with-lease for rebased branches]"
 triggers:
   - "push"
@@ -12,45 +13,27 @@ triggers:
 ---
 
 <objective>
-Push commits to remote. Check QA freshness first, run CI if stale.
+Push commits to remote. Consider running tests/linting first based on change scope.
 </objective>
 
 <quick_start>
 
-1. **Check QA freshness:** Was `bun run ci` run in last 5 minutes?
-2. **Run QA if stale:** `bun run ci` and update timestamp
+1. **Assess changes:** Review what's being pushed
+2. **Run QA if needed:** Based on change scope (see guidelines below)
 3. **Push:** `git push -u origin $(git branch --show-current)`
 
 </quick_start>
 
 <workflow>
 
-**Step 1: Check QA freshness**
+**Step 1: Review what's being pushed**
 
 ```bash
-QA_FILE=".claude/state/qa-timestamp"
-if [[ -f "$QA_FILE" ]]; then
-    AGE=$(($(date +%s) - $(cat "$QA_FILE")))
-    if [[ $AGE -lt 300 ]]; then
-        echo "QA fresh (${AGE}s ago) - safe to push"
-    else
-        echo "QA stale - run CI first"
-    fi
-else
-    echo "No QA timestamp - run CI first"
-fi
+git log origin/$(git branch --show-current)..HEAD --oneline
+git diff --stat origin/$(git branch --show-current)..HEAD
 ```
 
-**Step 2: Run QA if needed**
-
-```bash
-# Only update timestamp if CI passes
-if bun run ci; then
-    mkdir -p .claude/state && date +%s > .claude/state/qa-timestamp
-fi
-```
-
-**Step 3: Push**
+**Step 2: Push**
 
 ```bash
 # Normal push
@@ -62,35 +45,30 @@ git push --force-with-lease
 
 </workflow>
 
-<smart_qa>
+<qa_guidelines>
 
-| Scenario | Action |
-| -------- | ------ |
-| QA fresh (< 5 min) | Skip, proceed with push |
-| QA stale (> 5 min) | Run `bun run ci` first |
-| Typo fix only | Skip QA (common sense) |
-| Substantial changes | Always run QA |
-| After rebase | Run QA, use `--force-with-lease` |
+Use judgment to decide if QA is needed before push:
 
-</smart_qa>
+| Change Type | Run QA? |
+|-------------|---------|
+| Typo fix, docs only | No |
+| Config tweaks | No |
+| Code logic changes | Yes |
+| New features | Yes |
+| Bug fixes | Yes |
+| After rebase | Yes |
+
+If uncertain, run QA. Better safe than sorry.
+
+</qa_guidelines>
 
 <multi_agent_safety>
 
 In multi-Claude environments:
 
-```bash
-# Check for other agents' uncommitted work
-git status
-
-# Check for active sessions
-ls -la .claude/branches/
-
-# Use force-with-lease (never force)
-git push --force-with-lease  # Fails if remote changed
-```
-
-**Never use:**
-- `git push --force` (overwrites remote, blocks others)
+- Check `git status` for uncommitted work from other agents
+- Use `--force-with-lease` instead of `--force` (fails if remote changed)
+- Never use `git push --force` without explicit user confirmation
 
 </multi_agent_safety>
 
@@ -99,18 +77,16 @@ git push --force-with-lease  # Fails if remote changed
 **Banned:**
 - `git push --force` without explicit user confirmation
 - Pushing to main/master directly
-- Pushing without QA check (unless trivial change)
 
 **Required:**
-- Check QA freshness before push
 - Use `--force-with-lease` for rebased branches
-- Track upstream with `-u` flag
+- Track upstream with `-u` flag for new branches
 
 </constraints>
 
 <success_criteria>
 
-1. [ ] QA passed (or verified fresh)
+1. [ ] QA passed (if applicable based on change scope)
 2. [ ] Not pushing to protected branch
 3. [ ] Using `-u` flag for new branches
 4. [ ] Using `--force-with-lease` (not `--force`) if rebased
