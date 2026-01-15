@@ -1,6 +1,6 @@
 ---
 name: react
-description: React 19 components with Tailwind CSS v4, shadcn/ui, forms, tables, routing, data fetching, and i18n. Triggers on .tsx files, component, tailwind, tanstack, form, table, router.
+description: React 19 components with Tailwind CSS v4. Use when asked to "create component", "build form", or "add data table". Covers shadcn/ui, forms, tables, routing, and data fetching.
 license: MIT
 triggers: [
     # File extensions and imports
@@ -277,12 +277,12 @@ Load LSP skill for detailed patterns: `Skill({ skill: "devtools:typescript-lsp" 
 
 <success_criteria>
 
-- [ ] Context7 docs fetched before implementation
-- [ ] Component under 150 lines, max 5 props
-- [ ] Uses Tailwind (no inline styles)
-- [ ] Exports prop types
-- [ ] Uses existing UI primitives where available
-      </success_criteria>
+1. [ ] Context7 docs fetched before implementation
+2. [ ] Component under 150 lines, max 5 props
+3. [ ] Uses Tailwind (no inline styles)
+4. [ ] Exports prop types
+5. [ ] Uses existing UI primitives where available
+</success_criteria>
 
 <evolution>
 **Extension Points:**

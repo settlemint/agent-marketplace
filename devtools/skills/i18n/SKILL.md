@@ -1,6 +1,6 @@
 ---
 name: i18n
-description: Internationalization with i18next and react-i18next. Covers translation setup, namespaces, pluralization, and language detection. Triggers on i18n, i18next, translation, t().
+description: Internationalization with i18next. Use when asked to "add translations", "internationalize app", or "support multiple languages". Covers translation setup, namespaces, pluralization, and language detection.
 license: MIT
 triggers:
   - "i18n"
@@ -68,6 +68,13 @@ mcp__context7__query_docs({
 </mcp_first>
 
 <quick_start>
+**Workflow:**
+1. Install dependencies: `npm install i18next react-i18next`
+2. Create `src/i18n/index.ts` with init config
+3. Add translation files in `src/i18n/locales/{lang}/`
+4. Wrap app with `I18nextProvider`
+5. Use `useTranslation()` hook in components
+
 **i18n configuration:**
 
 ```typescript
@@ -268,12 +275,13 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] Context7 docs fetched for current API
-- [ ] i18n configured with fallback
-- [ ] Translations organized by namespace
-- [ ] Pluralization works correctly
-- [ ] No hardcoded strings in components
-      </success_criteria>
+1. [ ] Context7 docs fetched for current API
+2. [ ] i18n configured with fallback language
+3. [ ] Translations organized by namespace
+4. [ ] Pluralization works correctly
+5. [ ] No hardcoded strings in components
+6. [ ] Language switcher implemented (if needed)
+</success_criteria>
 
 <evolution>
 **Extension Points:**

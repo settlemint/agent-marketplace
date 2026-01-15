@@ -346,15 +346,15 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] No terraform/tofu apply or destroy executed by Claude
-- [ ] All variables have description and type
-- [ ] All outputs have description
-- [ ] Sensitive values marked appropriately
-- [ ] Critical resources have lifecycle rules
-- [ ] Modules use explicit version constraints
-- [ ] No hardcoded secrets
-- [ ] User informed they must run apply/destroy
-      </success_criteria>
+1. [ ] No terraform/tofu apply or destroy executed by Claude
+2. [ ] All variables have description and type
+3. [ ] All outputs have description
+4. [ ] Sensitive values marked appropriately
+5. [ ] Critical resources have lifecycle rules
+6. [ ] Modules use explicit version constraints
+7. [ ] No hardcoded secrets
+8. [ ] User informed they must run apply/destroy
+</success_criteria>
 
 <evolution>
 **Extension Points:**

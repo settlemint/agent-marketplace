@@ -1,6 +1,6 @@
 ---
 name: solidity
-description: Solidity smart contract development with Foundry. Covers writing, testing, security, deployment, and upgrades. Triggers on .sol files, contract, pragma solidity, forge.
+description: Solidity smart contract development with Foundry. Use when asked to "write smart contract", "create token", or "deploy contract". Covers writing, testing, security, deployment, and upgrades.
 license: MIT
 triggers: [
     # File patterns
@@ -80,6 +80,13 @@ mcp__context7__query_docs({
 </mcp_first>
 
 <quick_start>
+**Workflow:**
+1. Create contract with SPDX license and pragma
+2. Import OpenZeppelin contracts for access control
+3. Follow CEI pattern (Checks-Effects-Interactions)
+4. Add NatSpec documentation
+5. Write Forge tests before deployment
+
 **Contract structure:**
 
 ```solidity
@@ -295,12 +302,12 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] OctoCode searched for OpenZeppelin patterns
-- [ ] NatSpec on external functions
-- [ ] CEI pattern followed
-- [ ] Events for state changes
-- [ ] Tests pass with good coverage
-      </success_criteria>
+1. [ ] OctoCode searched for OpenZeppelin patterns
+2. [ ] NatSpec on external functions
+3. [ ] CEI pattern followed
+4. [ ] Events for state changes
+5. [ ] Tests pass with good coverage
+</success_criteria>
 
 <evolution>
 **Extension Points:**

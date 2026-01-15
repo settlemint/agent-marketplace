@@ -1,6 +1,6 @@
 ---
 name: viem
-description: Viem blockchain client patterns for Ethereum interactions, transactions, signing, encoding, and smart contract calls. Triggers on viem, publicClient, walletClient, chain, abi.
+description: Viem blockchain client patterns for Ethereum. Use when asked to "interact with blockchain", "send transaction", or "read smart contract". Covers transactions, signing, encoding, and contract calls.
 license: MIT
 triggers: [
     # Library name and imports
@@ -95,6 +95,13 @@ mcp__context7__query_docs({
 </mcp_first>
 
 <quick_start>
+**Workflow:**
+1. Create PublicClient for reading blockchain data
+2. Create WalletClient with account for transactions
+3. Use readContract for queries, writeContract for mutations
+4. Always wait for transaction receipt
+5. Handle errors (insufficient funds, reverts)
+
 **Create clients:**
 
 ```typescript
@@ -250,12 +257,12 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] Context7 docs fetched for current API
-- [ ] Uses lazy chain resolution
-- [ ] Caches clients by network name
-- [ ] Type-safe ABI interactions
-- [ ] Proper error handling for blockchain ops
-      </success_criteria>
+1. [ ] Context7 docs fetched for current API
+2. [ ] Uses lazy chain resolution
+3. [ ] Caches clients by network name
+4. [ ] Type-safe ABI interactions
+5. [ ] Proper error handling for blockchain ops
+</success_criteria>
 
 <evolution>
 **Extension Points:**

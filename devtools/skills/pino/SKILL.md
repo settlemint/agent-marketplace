@@ -1,6 +1,6 @@
 ---
 name: pino
-description: Pino fast JSON logger for Node.js. Covers log levels, child loggers, transports, and redaction. Triggers on pino, logger, log.info, log.error.
+description: Pino fast JSON logger for Node.js. Use when asked to "add logging", "setup structured logging", or "configure logger". Covers log levels, child loggers, transports, and redaction.
 license: MIT
 triggers:
   [
@@ -293,12 +293,12 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] Logger configured with appropriate level
-- [ ] Structured logging (not string interpolation)
-- [ ] Errors passed as `err` property
-- [ ] Sensitive data redacted
-- [ ] Pretty printing in development only
-      </success_criteria>
+1. [ ] Logger configured with appropriate level
+2. [ ] Structured logging (not string interpolation)
+3. [ ] Errors passed as `err` property
+4. [ ] Sensitive data redacted
+5. [ ] Pretty printing in development only
+</success_criteria>
 
 <evolution>
 **Extension Points:**

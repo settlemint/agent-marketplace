@@ -1,6 +1,6 @@
 ---
 name: api
-description: oRPC API routes with 5-file pattern. Only for projects using oRPC.
+description: oRPC API routes with 5-file pattern. Use when asked to "create API route", "add API endpoint", or "build type-safe API". Only for projects using oRPC.
 license: MIT
 triggers:
   # Library name and typos
@@ -176,12 +176,12 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] All 5 files created (contract, schema, router, impl, spec)
-- [ ] Correct router layer chosen
-- [ ] Route registered in `routes.ts`
-- [ ] Schema uses `.meta({ description })`
-- [ ] Spec has success and error test cases
-      </success_criteria>
+1. [ ] All 5 files created (contract, schema, router, impl, spec)
+2. [ ] Correct router layer chosen
+3. [ ] Route registered in `routes.ts`
+4. [ ] Schema uses `.meta({ description })`
+5. [ ] Spec has success and error test cases
+</success_criteria>
 
 <evolution>
 **Extension Points:**

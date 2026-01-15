@@ -208,13 +208,13 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] shadcn MCP server used for component discovery/installation
-- [ ] Components imported from `@/components/ui/[name]`
-- [ ] `cn()` used for all className composition
-- [ ] CVA used for variant-based components
-- [ ] CSS variables used for theming (no hardcoded colors)
-- [ ] Accessibility attributes included (aria-\*, focus-visible)
-      </success_criteria>
+1. [ ] shadcn MCP server used for component discovery/installation
+2. [ ] Components imported from `@/components/ui/[name]`
+3. [ ] `cn()` used for all className composition
+4. [ ] CVA used for variant-based components
+5. [ ] CSS variables used for theming (no hardcoded colors)
+6. [ ] Accessibility attributes included (aria-*, focus-visible)
+</success_criteria>
 
 <evolution>
 **Extension Points:**

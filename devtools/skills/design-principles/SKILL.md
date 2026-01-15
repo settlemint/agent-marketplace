@@ -153,13 +153,13 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 <success_criteria>
 Every interface should look designed by a team that obsesses over 1-pixel differences.
 
-- [ ] Design direction explicitly chosen (not defaulted)
-- [ ] All spacing on 4px grid (verify with `references/verification-scripts.md`)
-- [ ] Symmetrical padding applied
-- [ ] Single depth strategy used consistently
-- [ ] Typography hierarchy established
-- [ ] Color used for meaning only
-      </success_criteria>
+1. [ ] Design direction explicitly chosen (not defaulted)
+2. [ ] All spacing on 4px grid (verify with `references/verification-scripts.md`)
+3. [ ] Symmetrical padding applied
+4. [ ] Single depth strategy used consistently
+5. [ ] Typography hierarchy established
+6. [ ] Color used for meaning only
+</success_criteria>
 
 <evolution>
 **Extension Points:**

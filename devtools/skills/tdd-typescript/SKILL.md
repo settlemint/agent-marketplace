@@ -1,6 +1,6 @@
 ---
 name: tdd-typescript
-description: Default test workflow. RED-GREEN-REFACTOR cycle for all new TypeScript code.
+description: TDD TypeScript workflow. Use when asked to "write tests first", "test-driven development", or "red-green-refactor". RED-GREEN-REFACTOR cycle for all new TypeScript code.
 license: MIT
 triggers:
   - "tdd"
@@ -231,12 +231,12 @@ Load LSP skill for detailed patterns: `Skill({ skill: "devtools:typescript-lsp" 
 
 <success_criteria>
 
-- [ ] RED test fails before implementation
-- [ ] GREEN minimal code passes
-- [ ] REFACTOR keeps tests green
-- [ ] Coverage targets met (see `test-coverage-patterns.md`)
-- [ ] Naming and data strategy follow references
-      </success_criteria>
+1. [ ] RED test fails before implementation
+2. [ ] GREEN minimal code passes
+3. [ ] REFACTOR keeps tests green
+4. [ ] Coverage targets met (see `test-coverage-patterns.md`)
+5. [ ] Naming and data strategy follow references
+</success_criteria>
 
 <evolution>
 **Extension Points:**

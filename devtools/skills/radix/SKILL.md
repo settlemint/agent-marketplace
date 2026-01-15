@@ -1,6 +1,6 @@
 ---
 name: radix
-description: Radix UI primitives for accessible React components. Covers dialogs, dropdowns, popovers, and form controls. Triggers on radix, Dialog, Popover, DropdownMenu.
+description: Radix UI primitives for accessible React components. Use when asked to "create modal", "add dropdown menu", or "build accessible dialog". Covers dialogs, dropdowns, popovers, and form controls.
 license: MIT
 triggers: [
     # Library name and imports
@@ -87,6 +87,13 @@ mcp__context7__query_docs({
 </mcp_first>
 
 <quick_start>
+**Workflow:**
+1. Import component from `@radix-ui/react-*`
+2. Structure with Root → Trigger → Portal → Content
+3. Use `asChild` for custom trigger elements
+4. Style with Tailwind classes
+5. Test keyboard navigation
+
 **Dialog:**
 
 ```tsx
@@ -205,7 +212,7 @@ const [open, setOpen] = useState(false);
 **asChild pattern:**
 
 ```tsx
-// Radix renders YOUR button, not its own
+// Radix renders the wrapped button element, not its own
 <Dialog.Trigger asChild>
   <Button variant="primary">Open</Button>
 </Dialog.Trigger>
@@ -314,12 +321,12 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] Context7 docs fetched for current API
-- [ ] Uses `asChild` for custom triggers
-- [ ] Portal used for floating content
-- [ ] Accessible labels provided
-- [ ] Styled with Tailwind (not inline)
-      </success_criteria>
+1. [ ] Context7 docs fetched for current API
+2. [ ] Uses `asChild` for custom triggers
+3. [ ] Portal used for floating content
+4. [ ] Accessible labels provided
+5. [ ] Styled with Tailwind (not inline)
+</success_criteria>
 
 <evolution>
 **Extension Points:**

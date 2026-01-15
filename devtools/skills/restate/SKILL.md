@@ -1,6 +1,6 @@
 ---
 name: restate
-description: Restate durable execution for fault-tolerant services and workflows. Triggers on restate, durable, ctx.run, ctx.sleep, awakeable.
+description: Restate durable execution for fault-tolerant services. Use when asked to "build durable workflow", "create fault-tolerant service", or "implement saga pattern". Covers ctx.run, ctx.sleep, and awakeables.
 license: MIT
 triggers: [
     # Library name and imports
@@ -82,6 +82,13 @@ mcp__octocode__githubSearchCode({
 </mcp_first>
 
 <quick_start>
+**Workflow:**
+1. Define service with `restate.service()` or `restate.workflow()`
+2. Wrap external calls in `ctx.run()` for durability
+3. Use `ctx.sleep()` for durable delays
+4. Bind service to endpoint and listen
+5. Register with Restate server
+
 **Service definition:**
 
 ```typescript
@@ -255,12 +262,12 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] MCP docs fetched for current API
-- [ ] External calls wrapped in `ctx.run()`
-- [ ] Using `ctx.sleep()` not `setTimeout`
-- [ ] Service registered with Restate
-- [ ] Handlers are idempotent
-      </success_criteria>
+1. [ ] MCP docs fetched for current API
+2. [ ] External calls wrapped in `ctx.run()`
+3. [ ] Using `ctx.sleep()` not `setTimeout`
+4. [ ] Service registered with Restate
+5. [ ] Handlers are idempotent
+</success_criteria>
 
 <evolution>
 **Extension Points:**

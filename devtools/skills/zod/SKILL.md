@@ -1,6 +1,6 @@
 ---
 name: zod
-description: Zod v4 schema patterns. For projects using Zod validation library.
+description: Zod v4 schema patterns. Use when asked to "validate input", "add form validation", or "create schema". For projects using Zod validation library.
 license: MIT
 triggers:
   # Library name
@@ -311,13 +311,13 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] Context7 docs fetched for current v4 API
-- [ ] Uses `.meta({ description, examples })` (not `.describe()`)
-- [ ] Exports inferred types with `z.infer<>`
-- [ ] Base and refined schemas split for composition
-- [ ] Uses v4.3+ features: `z.xor()`, `.exactOptional()`, `.apply()`
-- [ ] Has unit tests for valid/invalid cases
-      </success_criteria>
+1. [ ] Context7 docs fetched for current v4 API
+2. [ ] Uses `.meta({ description, examples })` (not `.describe()`)
+3. [ ] Exports inferred types with `z.infer<>`
+4. [ ] Base and refined schemas split for composition
+5. [ ] Uses v4.3+ features when appropriate: `z.xor()`, `.exactOptional()`, `.apply()`
+6. [ ] Has unit tests for valid/invalid cases
+</success_criteria>
 
 <evolution>
 **Extension Points:**

@@ -1,6 +1,6 @@
 ---
 name: helm
-description: Kubernetes Helm chart development with values.yaml, templates, and subchart patterns. Triggers on helm, chart, kubernetes, values.yaml.
+description: Kubernetes Helm chart development. Use when asked to "create helm chart", "configure kubernetes deployment", or "add helm template". Covers values.yaml, templates, and subchart patterns.
 license: MIT
 triggers:
   [
@@ -57,6 +57,13 @@ mcp__octocode__githubGetFileContent({
 </mcp_first>
 
 <quick_start>
+**Workflow:**
+1. Create `Chart.yaml` with metadata
+2. Define `values.yaml` with annotated defaults
+3. Create `templates/_helpers.tpl` for shared logic
+4. Build resource templates (deployment, service, etc.)
+5. Run `helm lint` to validate
+
 **Chart structure:**
 
 ```
@@ -210,13 +217,13 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <success_criteria>
 
-- [ ] All values have `# -- (type)` annotations
-- [ ] Uses `.Values` references (no hardcoding)
-- [ ] Standard Kubernetes labels
-- [ ] `existingSecret` pattern for secrets
-- [ ] `helm lint` passes with 0 warnings
-- [ ] External charts researched before workarounds
-      </success_criteria>
+1. [ ] All values have `# -- (type)` annotations
+2. [ ] Uses `.Values` references (no hardcoding)
+3. [ ] Standard Kubernetes labels applied
+4. [ ] `existingSecret` pattern for secrets
+5. [ ] `helm lint` passes with 0 warnings
+6. [ ] External charts researched before workarounds
+</success_criteria>
 
 <evolution>
 **Extension Points:**

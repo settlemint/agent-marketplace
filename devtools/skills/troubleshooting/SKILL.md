@@ -1,6 +1,6 @@
 ---
 name: troubleshooting
-description: Structured debugging workflow. Only when user explicitly asks for help debugging.
+description: Structured debugging workflow. Use when asked to "help debug", "fix this error", or "troubleshoot issue". Systematic approach for identifying root causes.
 license: MIT
 triggers:
   - "help.*debug"
@@ -468,14 +468,14 @@ Load LSP skill for detailed patterns: `Skill({ skill: "devtools:typescript-lsp" 
 
 <success_criteria>
 
-- [ ] Observed actual output before editing code
-- [ ] Issue reproduced consistently
-- [ ] Root cause identified
-- [ ] Fix applied (simplest change possible)
-- [ ] Quality gate passed (`bun run ci`)
-- [ ] Issue verified resolved
-- [ ] No regressions introduced
-      </success_criteria>
+1. [ ] Observed actual output before editing code
+2. [ ] Issue reproduced consistently
+3. [ ] Root cause identified
+4. [ ] Fix applied (simplest change possible)
+5. [ ] Quality gate passed (`bun run ci`)
+6. [ ] Issue verified resolved
+7. [ ] No regressions introduced
+</success_criteria>
 
 <evolution>
 **Extension Points:**
