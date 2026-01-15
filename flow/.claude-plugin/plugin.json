@@ -1,0 +1,11 @@
+{
+  "name": "flow",
+  "description": "Workflow orchestration, state management, and productivity automation for Claude Code. Provides /flow:init, /flow:status, /flow:analyze, /flow:suggest commands with comprehensive hook lifecycle management.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Roderik van der Veer",
+    "email": "roderik@settlemint.com"
+  },
+  "repository": "https://github.com/settlemint/agent-marketplace",
+  "license": "MIT"
+}

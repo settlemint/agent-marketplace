@@ -1,0 +1,106 @@
+{
+  "$schema": "./flow-rules.schema.json",
+  "version": "1.0",
+  "description": "Flow plugin pattern matching rules for skill suggestions and workflow triggers",
+  "config": {
+    "minConfidenceScore": 3,
+    "showMatchReasons": true,
+    "maxSkillsToShow": 3
+  },
+  "scoring": {
+    "keyword": 2,
+    "keywordPattern": 3,
+    "pathPattern": 4,
+    "directoryMatch": 5,
+    "intentPattern": 4,
+    "contentPattern": 3,
+    "contextPattern": 2
+  },
+  "skills": {
+    "flow-patterns": {
+      "description": "Workflow patterns and templates",
+      "priority": 8,
+      "triggers": {
+        "keywords": [
+          "workflow",
+          "process",
+          "pipeline",
+          "template",
+          "checklist"
+        ],
+        "keywordPatterns": [
+          "\\bworkflow\\b",
+          "\\bprocess\\b",
+          "\\bpipeline\\b"
+        ],
+        "intentPatterns": [
+          "(?:create|start|begin|design).*(?:workflow|process)",
+          "(?:workflow|process).*(?:template|pattern)"
+        ]
+      }
+    },
+    "flow-analysis": {
+      "description": "Codebase analysis patterns",
+      "priority": 7,
+      "triggers": {
+        "keywords": [
+          "analyze",
+          "analysis",
+          "audit",
+          "review",
+          "evaluate",
+          "assess"
+        ],
+        "keywordPatterns": [
+          "\\banalyz(?:e|ing)\\b",
+          "\\baudit\\b",
+          "\\breview\\b"
+        ],
+        "intentPatterns": [
+          "(?:analyze|audit|review).*(?:code|codebase|project)",
+          "(?:find|identify).*(?:pattern|issue|problem)"
+        ]
+      }
+    },
+    "flow-optimization": {
+      "description": "Optimization strategies",
+      "priority": 7,
+      "triggers": {
+        "keywords": [
+          "optimize",
+          "optimization",
+          "improve",
+          "refactor",
+          "performance",
+          "speed"
+        ],
+        "keywordPatterns": [
+          "\\boptimiz(?:e|ing|ation)\\b",
+          "\\brefactor\\b",
+          "\\bimprove\\b"
+        ],
+        "intentPatterns": [
+          "(?:optimize|improve|speed up).*(?:code|performance)",
+          "(?:refactor|clean up).*(?:code|module)"
+        ]
+      }
+    }
+  },
+  "workflows": {
+    "feature-implementation": {
+      "description": "Standard feature implementation workflow",
+      "trigger": "(?:implement|add|create|build).*(?:feature|functionality)",
+      "template": "standard-workflow"
+    },
+    "bug-fix": {
+      "description": "Bug fix workflow",
+      "trigger": "(?:fix|debug|resolve).*(?:bug|issue|error)",
+      "template": "fast-track-workflow"
+    },
+    "refactoring": {
+      "description": "Code refactoring workflow",
+      "trigger": "(?:refactor|restructure|reorganize).*(?:code|module|component)",
+      "template": "standard-workflow"
+    }
+  }
+}
