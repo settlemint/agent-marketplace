@@ -1,5 +1,5 @@
 ---
-name: flow-optimization
+name: flow:guides:optimization
 description: Optimization strategies and patterns. Use when improving performance, refactoring code, or reducing technical debt.
 triggers:
   - "optimize"
@@ -161,7 +161,7 @@ Future you (or someone else) will want to know why.
 Skill({ skill: "flow:analyze" }); // Analyze before optimizing
 Skill({ skill: "flow:suggest" }); // Get improvement suggestions
 Skill({ skill: "flow:workflow:start" }); // Start an optimization workflow
-Skill({ skill: "flow:flow-analysis" }); // Analysis patterns
+Skill({ skill: "flow:guides:analysis" }); // Analysis patterns
 ```
 
 </related_skills>

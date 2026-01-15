@@ -17,7 +17,7 @@
     "contextPattern": 2
   },
   "skills": {
-    "flow-patterns": {
+    "guides:patterns": {
       "description": "Workflow patterns and templates",
       "priority": 8,
       "triggers": {
@@ -39,7 +39,7 @@
         ]
       }
     },
-    "flow-analysis": {
+    "guides:analysis": {
       "description": "Codebase analysis patterns",
       "priority": 7,
       "triggers": {
@@ -62,7 +62,7 @@
         ]
       }
     },
-    "flow-optimization": {
+    "guides:optimization": {
       "description": "Optimization strategies",
       "priority": 7,
       "triggers": {

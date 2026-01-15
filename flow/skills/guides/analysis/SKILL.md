@@ -1,5 +1,5 @@
 ---
-name: flow-analysis
+name: flow:guides:analysis
 description: Codebase analysis patterns. Use when analyzing project structure, identifying patterns, or evaluating code quality.
 triggers:
   - "analyze"
@@ -138,7 +138,7 @@ Questions to answer:
 ```javascript
 Skill({ skill: "flow:analyze" }); // Run a full codebase analysis
 Skill({ skill: "flow:suggest" }); // Get improvement suggestions
-Skill({ skill: "flow:flow-optimization" }); // Apply optimizations
+Skill({ skill: "flow:guides:optimization" }); // Apply optimizations
 ```
 
 </related_skills>

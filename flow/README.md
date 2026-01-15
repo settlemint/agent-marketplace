@@ -30,11 +30,11 @@ Workflow orchestration, state management, and productivity automation for Claude
 
 ### Pattern & Knowledge Skills
 
-| Skill                    | Usage                                        | Description                          |
-| ------------------------ | -------------------------------------------- | ------------------------------------ |
-| `flow:flow-patterns`     | `Skill({ skill: "flow:flow-patterns" })`     | Core workflow patterns and templates |
-| `flow:flow-analysis`     | `Skill({ skill: "flow:flow-analysis" })`     | Codebase analysis patterns           |
-| `flow:flow-optimization` | `Skill({ skill: "flow:flow-optimization" })` | Optimization strategies              |
+| Skill                      | Usage                                          | Description                          |
+| -------------------------- | ---------------------------------------------- | ------------------------------------ |
+| `flow:guides:patterns`     | `Skill({ skill: "flow:guides:patterns" })`     | Core workflow patterns and templates |
+| `flow:guides:analysis`     | `Skill({ skill: "flow:guides:analysis" })`     | Codebase analysis patterns           |
+| `flow:guides:optimization` | `Skill({ skill: "flow:guides:optimization" })` | Optimization strategies              |
 
 ## Quick Start
 
@@ -96,9 +96,10 @@ flow/
 │   │   ├── start/                # Start workflow
 │   │   ├── pause/                # Pause workflow
 │   │   └── complete/             # Complete workflow
-│   ├── flow-patterns/            # Workflow patterns
-│   ├── flow-analysis/            # Analysis patterns
-│   └── flow-optimization/        # Optimization patterns
+│   ├── guides/                   # Knowledge & pattern skills (namespaced)
+│   │   ├── patterns/             # Workflow patterns
+│   │   ├── analysis/             # Analysis patterns
+│   │   └── optimization/         # Optimization patterns
 ├── scripts/                      # Hook and utility scripts
 ├── agents/                       # Agent definitions
 └── rules/                        # Pattern matching rules

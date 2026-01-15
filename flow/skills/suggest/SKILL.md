@@ -94,7 +94,7 @@ Would you like to:
 <related_skills>
 
 ```javascript
-Skill({ skill: "flow:flow-optimization" }); // Apply optimizations
+Skill({ skill: "flow:guides:optimization" }); // Apply optimizations
 Skill({ skill: "flow:workflow:start" }); // Start improvement workflow
 ```
 

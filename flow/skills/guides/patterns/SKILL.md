@@ -1,5 +1,5 @@
 ---
-name: flow-patterns
+name: flow:guides:patterns
 description: Core workflow patterns and templates. Use when designing workflows, creating structured processes, or implementing productivity patterns.
 triggers:
   - "workflow"
@@ -107,8 +107,8 @@ Best for: Risky operations, staged deployments, review gates
 
 ```javascript
 Skill({ skill: "flow:workflow:start" }); // Start a workflow using these patterns
-Skill({ skill: "flow:flow-analysis" }); // Analyze existing workflows
-Skill({ skill: "flow:flow-optimization" }); // Optimize workflow efficiency
+Skill({ skill: "flow:guides:analysis" }); // Analyze existing workflows
+Skill({ skill: "flow:guides:optimization" }); // Optimize workflow efficiency
 ```
 
 </related_skills>
