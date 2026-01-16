@@ -4,15 +4,19 @@ argument-hint: [PR number, defaults to current branch PR]
 allowed-tools: Bash(git:*), Bash(gh:*), Read, Edit, Glob, Grep
 ---
 
-Fix all unresolved PR review comments and CI failures following the fix-pr-reviews skill guidelines.
+Fix all unresolved PR review comments and CI failures.
 
 ## Current State
 - Branch: !`git branch --show-current`
 - Status: !`git status --short`
-- PR: !`gh pr view --json number,url,title 2>/dev/null | jq -r '"\(.number): \(.title)"' || echo "No PR found"`
+
+## PR Info
+!`gh pr view --json number,url,title,state 2>/dev/null || echo "No PR found"`
 
 ## Instructions
 
-Load Skill({ skill: "flow:fix-pr-reviews" })
+Load Skill({ skill: "devtools:git" })
 
-PR number: $ARGUMENTS
+Then read and follow `workflows/pr-fix-reviews.md`.
+
+User message: $ARGUMENTS
