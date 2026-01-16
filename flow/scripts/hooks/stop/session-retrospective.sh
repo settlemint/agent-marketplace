@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Session retrospective - prompts Claude to analyze the session for learnings
+# Session retrospective - auto-extracts learnings from corrections log
 # This runs at Stop to capture insights before session ends
+# No longer relies on Claude to write the file - does it automatically
 
 set +e
 
@@ -16,83 +17,154 @@ EVENT_DATA=$(cat)
 # Skip for subagents
 AGENT_TYPE=$(echo "$EVENT_DATA" | jq -r '.agent_type // "main"' 2>/dev/null || echo "main")
 if [[ "$AGENT_TYPE" != "main" ]]; then
-	exit 0
+  exit 0
 fi
 
-# Check for hook errors in this session's logs
+# --- Paths ---
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
-LOGS_DIR="$PROJECT_DIR/.claude/logs/flow"
 LEARNINGS_DIR="$PROJECT_DIR/.claude/flow/learnings"
+CORRECTIONS_LOG="$PROJECT_DIR/.claude/flow/corrections.jsonl"
+SKILL_LOG="$PROJECT_DIR/.claude/flow/skill-activations.jsonl"
+LOGS_DIR="$PROJECT_DIR/.claude/flow/logs"
 
-# Collect any hook errors from today's logs
+# Get current session ID
+SESSION_ID=$(get_session_id)
+
+# --- Collect corrections for this session ---
+SESSION_CORRECTIONS=""
+CORRECTION_COUNT=0
+if [[ -f "$CORRECTIONS_LOG" ]]; then
+  SESSION_CORRECTIONS=$(grep "\"session_id\":\"$SESSION_ID\"" "$CORRECTIONS_LOG" 2>/dev/null || true)
+  if [[ -n "$SESSION_CORRECTIONS" ]]; then
+    CORRECTION_COUNT=$(echo "$SESSION_CORRECTIONS" | wc -l | tr -d ' ')
+  fi
+fi
+
+# --- Collect skill activations for this session ---
+SESSION_SKILLS=""
+SKILL_COUNT=0
+if [[ -f "$SKILL_LOG" ]]; then
+  SESSION_SKILLS=$(grep "\"session_id\":\"$SESSION_ID\"" "$SKILL_LOG" 2>/dev/null || true)
+  if [[ -n "$SESSION_SKILLS" ]]; then
+    SKILL_COUNT=$(echo "$SESSION_SKILLS" | wc -l | tr -d ' ')
+  fi
+fi
+
+# --- Collect errors from today's logs ---
+TODAY=$(date +%Y-%m-%d)
 HOOK_ERRORS=""
 if [[ -d "$LOGS_DIR" ]]; then
-	TODAY=$(date +%Y-%m-%d)
-	HOOK_ERRORS=$(grep -h "level=ERROR" "$LOGS_DIR"/*.log 2>/dev/null | grep "$TODAY" | head -10 || true)
+  HOOK_ERRORS=$(grep -h "ERROR" "$LOGS_DIR"/*.log 2>/dev/null | grep "$TODAY" | head -5 || true)
+fi
+ERROR_COUNT=0
+if [[ -n "$HOOK_ERRORS" ]]; then
+  ERROR_COUNT=$(echo "$HOOK_ERRORS" | wc -l | tr -d ' ')
 fi
 
-# Collect skill activation data for pattern analysis
-SKILL_LOG="$PROJECT_DIR/.claude/flow/skill-activations.jsonl"
-SKILL_STATS=""
-if [[ -f "$SKILL_LOG" ]]; then
-	# Get today's activations
-	TODAY=$(date +%Y-%m-%d)
-	SKILL_STATS=$(grep "$TODAY" "$SKILL_LOG" 2>/dev/null | jq -s '
-    group_by(.skill) |
-    map({skill: .[0].skill, count: length, triggers: [.[].trigger_pattern] | unique}) |
-    sort_by(-.count)
-  ' 2>/dev/null || echo "[]")
+# --- Decide if learnings file should be created ---
+# Skip trivial sessions: no corrections, no errors, < 3 skill activations
+if [[ "$CORRECTION_COUNT" -eq 0 && "$ERROR_COUNT" -eq 0 && "$SKILL_COUNT" -lt 3 ]]; then
+  log_info "event=RETROSPECTIVE_SKIPPED" "reason=trivial_session" "corrections=0" "errors=0" "skills=$SKILL_COUNT"
+  exit 0
 fi
 
-# Create learnings directory
-mkdir -p "$LEARNINGS_DIR"
+# --- Generate learnings file ---
+mkdir -p "$LEARNINGS_DIR" 2>/dev/null || true
 
-# Generate timestamp for learnings file
 TIMESTAMP=$(date +%Y-%m-%d-%H%M)
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
 SAFE_BRANCH="${BRANCH//\//-}"
 LEARNINGS_FILE="$LEARNINGS_DIR/${TIMESTAMP}-${SAFE_BRANCH}.md"
 
-# Output retrospective prompt
-cat <<EOF
+{
+  echo "# Session Learnings - $TIMESTAMP (auto-generated)"
+  echo ""
+  echo "**Branch:** $BRANCH"
+  echo "**Session:** $SESSION_ID"
+  echo ""
 
-<flow-session-retrospective>
-Before ending this session, please review what happened and capture learnings.
+  # --- Direction Changes Section ---
+  if [[ "$CORRECTION_COUNT" -gt 0 ]]; then
+    echo "## Direction Changes Detected"
+    echo ""
+    echo "| Time | Pattern | User Said |"
+    echo "|------|---------|-----------|"
+    echo "$SESSION_CORRECTIONS" | while IFS= read -r line; do
+      ts=$(echo "$line" | jq -r '.timestamp // ""' 2>/dev/null)
+      pattern=$(echo "$line" | jq -r '.correction_pattern // ""' 2>/dev/null)
+      prompt=$(echo "$line" | jq -r '.prompt_excerpt // ""' 2>/dev/null | head -c 80)
+      # Format timestamp to just time
+      time_only="${ts#*T}"
+      time_only="${time_only%Z}"
+      echo "| $time_only | \`$pattern\` | ${prompt}... |"
+    done
+    echo ""
+  fi
 
-**Review for:**
-1. **Tool errors** - Commands that failed, files not found, permission issues
-2. **Hook failures** - Any hook errors reported during the session
-3. **Inefficient patterns** - Tasks that took multiple attempts when one should suffice
-4. **Skill gaps** - Situations where loading a skill earlier would have helped
+  # --- Errors Section ---
+  if [[ "$ERROR_COUNT" -gt 0 ]]; then
+    echo "## Errors Encountered"
+    echo ""
+    echo '```'
+    echo "$HOOK_ERRORS"
+    echo '```'
+    echo ""
+  fi
 
-**Hook errors detected:**
-$(if [[ -n "$HOOK_ERRORS" ]]; then echo "$HOOK_ERRORS"; else echo "None detected"; fi)
+  # --- Skills Section ---
+  if [[ "$SKILL_COUNT" -gt 0 ]]; then
+    echo "## Skills Loaded"
+    echo ""
+    echo "$SESSION_SKILLS" | jq -r '.skill' 2>/dev/null | sort | uniq -c | sort -rn | while read -r count skill; do
+      echo "- **$skill**: $count activation(s)"
+    done
+    echo ""
+  fi
 
-**Skill activations today:**
-$(if [[ -n "$SKILL_STATS" && "$SKILL_STATS" != "[]" ]]; then echo "$SKILL_STATS" | jq -r '.[] | "- \(.skill): \(.count) activations"' 2>/dev/null; else echo "No activations logged"; fi)
+  # --- Session Stats ---
+  echo "## Session Stats"
+  echo ""
+  echo "- Corrections detected: $CORRECTION_COUNT"
+  echo "- Errors encountered: $ERROR_COUNT"
+  echo "- Skills activated: $SKILL_COUNT"
+  echo ""
 
-**Write findings to:** $LEARNINGS_FILE
+  # --- Actionable Insights ---
+  if [[ "$CORRECTION_COUNT" -gt 0 ]]; then
+    echo "## Potential Improvements"
+    echo ""
+    echo "Based on detected corrections, consider:"
+    echo ""
+    echo "$SESSION_CORRECTIONS" | jq -r '.correction_pattern' 2>/dev/null | sort | uniq -c | sort -rn | head -3 | while read -r count pattern; do
+      case "$pattern" in
+        *"actually"* | *"instead"*)
+          echo "- **Alternative approach preferred**: User redirected to a different solution"
+          ;;
+        *"wrong"* | *"^no"* | *"not what"* | *"not like"* | *"not correct"*)
+          echo "- **Initial approach rejected**: Consider asking for clarification earlier"
+          ;;
+        *"scratch"* | *"forget"* | *"cancel"*)
+          echo "- **Task abandoned**: May indicate misunderstanding of requirements"
+          ;;
+        *)
+          echo "- **Correction detected**: Pattern \`$pattern\` ($count occurrences)"
+          ;;
+      esac
+    done
+    echo ""
+  fi
 
-**Format:**
-\`\`\`markdown
-# Session Learnings - $TIMESTAMP
+} >"$LEARNINGS_FILE"
 
-## Errors Encountered
-- [error]: [root cause] → [fix needed]
+log_info "event=LEARNINGS_GENERATED" "file=$LEARNINGS_FILE" "corrections=$CORRECTION_COUNT" "errors=$ERROR_COUNT" "skills=$SKILL_COUNT"
 
-## Inefficient Patterns
-- [what happened]: [why it was inefficient] → [how to prevent]
+# Output a brief summary to stdout (shown to user)
+echo ""
+echo "<flow-session-summary>"
+echo "Session learnings saved to: $LEARNINGS_FILE"
+echo "- $CORRECTION_COUNT direction change(s) captured"
+echo "- $ERROR_COUNT error(s) logged"
+echo "- $SKILL_COUNT skill activation(s)"
+echo "</flow-session-summary>"
 
-## Skill Improvements
-- [skill name]: [what should be added/changed]
-
-## Notes
-- Any other observations
-\`\`\`
-
-Skip this review if the session was trivial (single question, no errors).
-</flow-session-retrospective>
-EOF
-
-log_info "event=RETROSPECTIVE_PROMPTED" "learnings_file=$LEARNINGS_FILE"
 exit 0
