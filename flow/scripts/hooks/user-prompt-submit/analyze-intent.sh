@@ -20,7 +20,6 @@ set +e
 
 # --- Logging setup ---
 SCRIPT_DIR=$(dirname "$0")
-SCRIPT_NAME="analyze-intent"
 # shellcheck source=../lib/common.sh
 source "$SCRIPT_DIR/../lib/common.sh"
 log_init
@@ -28,6 +27,7 @@ log_init
 # Read input
 INPUT=$(cat)
 PROMPT=$(echo "$INPUT" | jq -r '.prompt // ""' 2>/dev/null)
+PERMISSION_MODE=$(echo "$INPUT" | jq -r '.permission_mode // ""' 2>/dev/null)
 
 # --- Skip conditions (exit early for token efficiency) ---
 
@@ -45,17 +45,17 @@ MSG_LOWER=$(echo "$PROMPT" | tr '[:upper:]' '[:lower:]')
 
 # Question detection - let Claude answer naturally
 if [[ "$MSG_LOWER" =~ ^(what|how|why|where|when|which|explain|show|describe|tell[[:space:]]me|can[[:space:]]you[[:space:]]explain|could[[:space:]]you[[:space:]]explain|is[[:space:]]there) ]]; then
-	exit 0
+  exit 0
 fi
 
 # Steering/feedback detection
 if [[ "$MSG_LOWER" =~ ^(yes|no|ok|okay|sure|good|great|thanks|perfect|correct|right|wrong|try|use|do|looks[[:space:]]good|lgtm|approved|go|proceed|continue)[[:space:]]*$ ]]; then
-	exit 0
+  exit 0
 fi
 
 # Code blocks or file paths only
 if [[ "$PROMPT" =~ ^[[:space:]]*\`\`\` ]] || [[ "$PROMPT" =~ ^[a-zA-Z0-9_/-]+\.(ts|js|py|sh|md|json|yaml|yml)$ ]]; then
-	exit 0
+  exit 0
 fi
 
 # --- Session deduplication (show hint only once per session) ---
@@ -65,7 +65,7 @@ MARKER_DIR="$PROJECT_DIR/.claude/flow/hooks"
 MARKER="$MARKER_DIR/.prompt-hint-${SESSION_ID}"
 
 if [[ -f "$MARKER" ]]; then
-	exit 0
+  exit 0
 fi
 
 # --- Setup paths ---
@@ -83,10 +83,27 @@ SUGGESTED_SKILLS=""
 # Match skills from triggers (with activation logging for evaluation)
 SUGGESTED_SKILLS=$(match_skills_from_triggers "$MSG_LOWER" "$LIB_DIR" "log" "analyze-intent")
 
+# --- Mode-based skill injection ---
+# If in plan mode, always include enhance:plan
+if [[ "$PERMISSION_MODE" == "plan" ]]; then
+  if [[ -z "$SUGGESTED_SKILLS" ]]; then
+    SUGGESTED_SKILLS="flow:enhance:plan"
+  elif [[ ! "$SUGGESTED_SKILLS" =~ flow:enhance:plan ]]; then
+    SUGGESTED_SKILLS="flow:enhance:plan $SUGGESTED_SKILLS"
+  fi
+  log_info "event=PLAN_MODE_DETECTED" "injected=flow:enhance:plan"
+fi
+
+# If troubleshooting matched, also include enhance:plan for structured debugging
+if [[ "$SUGGESTED_SKILLS" =~ devtools:troubleshooting ]] && [[ ! "$SUGGESTED_SKILLS" =~ flow:enhance:plan ]]; then
+  SUGGESTED_SKILLS="flow:enhance:plan $SUGGESTED_SKILLS"
+  log_info "event=TROUBLESHOOT_PLAN_INJECTION" "injected=flow:enhance:plan"
+fi
+
 # TRIVIAL indicators - no hint needed (but not if skills matched)
 TRIVIAL_PATTERN='(typo|comment|rename[[:space:]]|move[[:space:]]|copy[[:space:]]|delete[[:space:]]line|remove[[:space:]]line|add[[:space:]]line|fix[[:space:]]indent|add[[:space:]]comment)'
 if [[ -z "$SUGGESTED_SKILLS" ]] && [[ "$MSG_LOWER" =~ $TRIVIAL_PATTERN ]] && [[ ${#PROMPT} -lt 80 ]]; then
-	exit 0
+  exit 0
 fi
 
 # COMPLEX domain detection
@@ -95,18 +112,18 @@ AMBIGUOUS_SCOPE='(something|somehow|properly|correctly|better[[:space:]]way|impr
 
 IS_AMBIGUOUS=false
 if [[ "$MSG_LOWER" =~ $AMBIGUOUS_SCOPE ]]; then
-	IS_AMBIGUOUS=true
-	CLASSIFICATION="COMPLEX"
+  IS_AMBIGUOUS=true
+  CLASSIFICATION="COMPLEX"
 elif [[ "$MSG_LOWER" =~ $COMPLEX_DOMAIN ]]; then
-	CLASSIFICATION="COMPLEX"
+  CLASSIFICATION="COMPLEX"
 fi
 
 # MULTI_STEP detection (if not already COMPLEX)
 MULTI_STEP_PATTERN='([[:space:]]and[[:space:]].*[[:space:]]and[[:space:]]|,.*,|then[[:space:]].*then|first[[:space:]].*second|implement.*test|create.*add|build.*test|add.*update)'
 if [[ "$CLASSIFICATION" != "COMPLEX" ]]; then
-	if [[ "$MSG_LOWER" =~ $MULTI_STEP_PATTERN ]] || [[ ${#PROMPT} -gt 150 ]]; then
-		CLASSIFICATION="MULTI_STEP"
-	fi
+  if [[ "$MSG_LOWER" =~ $MULTI_STEP_PATTERN ]] || [[ ${#PROMPT} -gt 150 ]]; then
+    CLASSIFICATION="MULTI_STEP"
+  fi
 fi
 
 # Skip if still classified as SKIP and no skills suggested
@@ -119,44 +136,33 @@ touch "$MARKER" 2>/dev/null
 # Log the classification result
 log_info "event=INTENT_ANALYZED" "classification=$CLASSIFICATION" "skills=$SUGGESTED_SKILLS" "ambiguous=$IS_AMBIGUOUS"
 
-# --- Output skill suggestions first (if any) ---
+# --- Output skill loading directives (if any) ---
 if [[ -n "$SUGGESTED_SKILLS" ]]; then
-	# Count skills
-	skill_count=$(echo "$SUGGESTED_SKILLS" | wc -w | tr -d ' ')
-
-	if [[ "$skill_count" -eq 1 ]]; then
-		cat <<EOF
-
-<flow-hint>
-Skill match detected. Load:
-Skill({ skill: "$SUGGESTED_SKILLS" })
-</flow-hint>
-EOF
-	else
-		echo ""
-		echo "<flow-hint>"
-		echo "Skills matched. Load:"
-		for skill in $SUGGESTED_SKILLS; do
-			echo "Skill({ skill: \"$skill\" })"
-		done
-		echo "</flow-hint>"
-	fi
+  echo ""
+  echo "<skill-load required=\"true\">"
+  echo "REQUIRED: Load these skills BEFORE responding to the user."
+  echo "Call each Skill() tool NOW, then proceed with the task."
+  echo ""
+  for skill in $SUGGESTED_SKILLS; do
+    echo "Skill({ skill: \"$skill\" })"
+  done
+  echo "</skill-load>"
 fi
 
 # --- Output based on classification ---
 case "$CLASSIFICATION" in
-"MULTI_STEP")
-	cat <<'EOF'
+  "MULTI_STEP")
+    cat <<'EOF'
 
 <flow-hint>
 Multi-step task. Use TodoWrite for visibility:
 TodoWrite({ todos: [{ content: "...", status: "in_progress", activeForm: "..." }] })
 </flow-hint>
 EOF
-	;;
-"COMPLEX")
-	if [[ "$IS_AMBIGUOUS" == true ]]; then
-		cat <<'EOF'
+    ;;
+  "COMPLEX")
+    if [[ "$IS_AMBIGUOUS" == true ]]; then
+      cat <<'EOF'
 
 <flow-hint>
 Ambiguous scope. Use AskUserQuestion FIRST:
@@ -164,8 +170,8 @@ AskUserQuestion({ questions: [{ question: "...", options: [...] }] })
 Then spawn Task({ run_in_background: true }) for parallel work.
 </flow-hint>
 EOF
-	else
-		cat <<'EOF'
+    else
+      cat <<'EOF'
 
 <flow-hint>
 Complex task. Consider:
@@ -174,8 +180,8 @@ Complex task. Consider:
 3. TodoWrite for progress tracking
 </flow-hint>
 EOF
-	fi
-	;;
+    fi
+    ;;
 esac
 
 exit 0
