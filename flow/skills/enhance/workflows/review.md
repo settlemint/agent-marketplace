@@ -1,29 +1,8 @@
----
-name: flow:enhance:review
-description: Enhances review agents with high-signal filtering and validation protocols. Enforces evidence-based findings, confidence scoring, and five-pass convergence.
-license: MIT
-triggers:
-  - "code.*review"
-  - "review.*pr"
-  - "pr.*review"
-  - "review.*code"
-  - "audit"
-  - "compliance"
-  - "bug.*detect"
-  - "find.*bug"
-  - "find.*issue"
-  - "security.*review"
-  - "check.*code"
-  - "quality.*check"
----
-
-<objective>
+# Review Workflow
 
 Enhance review agents with high-signal filtering and validation protocols. Apply rigorous evidence standards: only flag issues with HIGH CONFIDENCE that are definitively bugs or violations. False positives erode trust and waste reviewer time. Every finding must pass validation and include citations.
 
-</objective>
-
-<quick_start>
+## Quick Start
 
 For any review task:
 
@@ -35,9 +14,7 @@ For any review task:
 
 Report ONLY findings that survive all passes.
 
-</quick_start>
-
-<high_signal_filter>
+## High-Signal Filter
 
 **Issues to FLAG (High Confidence)**
 
@@ -63,9 +40,7 @@ Report ONLY findings that survive all passes.
 
 **Golden Rule**: If you're not 100% certain it's a bug, don't flag it.
 
-</high_signal_filter>
-
-<validation_protocol>
+## Validation Protocol
 
 **Per-Issue Validation**
 
@@ -96,9 +71,7 @@ SEVERITY: [P0|P1|P2|Observation]
 
 If ANY answer is uncertain, DO NOT include the finding.
 
-</validation_protocol>
-
-<severity_triage>
+## Severity Triage
 
 | Severity    | Definition             | Examples                                           |
 | ----------- | ---------------------- | -------------------------------------------------- |
@@ -114,9 +87,7 @@ If ANY answer is uncertain, DO NOT include the finding.
 - P2: Address soon, may defer with justification
 - Observation: Optional, no action required
 
-</severity_triage>
-
-<five_pass_convergence>
+## Five-Pass Convergence
 
 | Pass          | Focus            | Key Questions                           |
 | ------------- | ---------------- | --------------------------------------- |
@@ -142,9 +113,7 @@ CONTINUE when:
 - Uncertain whether something is a bug
 - Areas of code not yet reviewed
 
-</five_pass_convergence>
-
-<citation_requirements>
+## Citation Requirements
 
 Every finding MUST include:
 
@@ -161,9 +130,7 @@ https://github.com/{owner}/{repo}/blob/{SHA}/path/to/file.ts#L42-L48
 
 Use full SHA, not branch names.
 
-</citation_requirements>
-
-<output_format>
+## Output Format
 
 **Final Report Structure**
 
@@ -197,9 +164,7 @@ Use full SHA, not branch names.
 - [ ] [Area not reviewed - reason]
 ```
 
-</output_format>
-
-<anti_patterns>
+## Anti-Patterns
 
 **NEVER do these:**
 
@@ -219,9 +184,7 @@ Use full SHA, not branch names.
 - Provide fix suggestions for small issues
 - Acknowledge areas not reviewed
 
-</anti_patterns>
-
-<codex_quality_review>
+## Codex Quality Review
 
 Use Codex MCP for deep analysis during Pass 3 (Quality) and Pass 4 (Coverage):
 
@@ -247,25 +210,6 @@ mcp__plugin_devtools_codex__codex({
     - Severity: P0/P1/P2
     - Attack vector: How could this be exploited?
     - Fix: Specific remediation steps`,
-});
-```
-
-**Architecture Fit Analysis**
-
-```javascript
-mcp__plugin_devtools_codex__codex({
-  prompt: `Evaluate if this change fits existing patterns:
-
-    Existing patterns: [summary of codebase patterns]
-    New code: [code being reviewed]
-
-    Questions:
-    1. Does this follow established conventions?
-    2. Are there pattern inconsistencies?
-    3. Does coupling increase or decrease?
-    4. Will this be easy for other developers to understand?
-
-    Flag specific deviations with recommendations.`,
 });
 ```
 
@@ -295,9 +239,7 @@ mcp__plugin_devtools_codex__codex({
 - Code touching system boundaries (APIs, databases)
 - Changes with unclear edge case handling
 
-</codex_quality_review>
-
-<tdd_verification>
+## TDD Verification
 
 **During review, verify TDD compliance:**
 
@@ -325,9 +267,7 @@ SEVERITY: P2
 FIX: Recommend rewriting test to verify it can fail
 ```
 
-</tdd_verification>
-
-<constraints>
+## Constraints
 
 - Do NOT flag issues without validation evidence
 - Do NOT include speculative or "might be" findings
@@ -335,9 +275,7 @@ FIX: Recommend rewriting test to verify it can fail
 - Do NOT exceed 10 findings - prioritize the worst
 - Do NOT flag pre-existing issues outside the diff
 
-</constraints>
-
-<success_criteria>
+## Success Criteria
 
 - [ ] Only high-confidence issues flagged
 - [ ] Every finding includes validation evidence
@@ -348,16 +286,3 @@ FIX: Recommend rewriting test to verify it can fail
 - [ ] Five passes completed with convergence
 - [ ] Would bet $100 on each finding
 - [ ] TDD compliance verified for code changes
-
-</success_criteria>
-
-<evolution>
-
-**Extension Points:**
-
-- Integration with static analysis tools for automated validation
-- Machine learning for false positive filtering
-- Historical issue tracking for pattern detection
-- Automated fix generation for common issues
-
-</evolution>

@@ -1,43 +1,26 @@
 ---
 name: git
-description: Git workflows - commits, branches, PRs, push, sync. Routes to appropriate workflow based on task.
+description: Use when working with commits, branches, PRs, or syncing. Git workflows for version control tasks.
 license: MIT
 user_invocable: true
 command: /git
 argument-hint: "[commit|branch|pr|push|sync|fix-pr-reviews] [args]"
 triggers:
+  # Intent triggers
   - "commit"
-  - "save changes"
-  - "commit my work"
-  - "branch"
   - "create branch"
-  - "new branch"
-  - "start feature"
-  - "feature branch"
-  - "\\bpr\\b"
-  - "pull request"
   - "create pr"
-  - "open pr"
-  - "submit for review"
-  - "push"
+  - "pull request"
   - "push changes"
-  - "push to remote"
-  - "upload commits"
-  - "sync"
   - "sync with main"
-  - "merge main"
-  - "update branch"
-  - "pull latest"
-  - "rebase"
-  - "fix pr"
   - "fix review"
-  - "address review"
-  - "resolve comment"
-  - "pr feedback"
+
+  # Artifact triggers
   - "conventional commit"
-  - "update pr"
-  - "sync pr"
-  - "refresh pr"
+  - "merge main"
+  - "rebase"
+  - "pr feedback"
+  - "resolve comment"
   - "pr sync"
 ---
 

@@ -1,33 +1,8 @@
----
-name: flow:enhance:general-purpose
-description: Enhances the general-purpose agent with Rule of Five convergence. Enforces 30-second reality check, evidence-based completion, and explicit convergence signals.
-license: MIT
-triggers:
-  - "enhance.*general"
-  - "general.*enhancement"
-  - "implement"
-  - "build"
-  - "create"
-  - "make.*component"
-  - "make.*function"
-  - "add.*feature"
-  - "add.*function"
-  - "add.*method"
-  - "develop"
-  - "code.*this"
-  - "write.*code"
-  - "refactor"
-  - "plan.*file"
-  - "\\.claude/plans"
----
-
-<objective>
+# General-Purpose Agent Workflow
 
 Enhance the built-in general-purpose agent with iterative quality discipline and verification protocols. Apply the Rule of Five: review your work 5 times before declaring completion. Each pass should find fewer issues until convergence. CRITICALLY: every task must pass the 30-second reality check and provide evidence of completion.
 
-</objective>
-
-<quick_start>
+## Quick Start
 
 For any task:
 
@@ -39,9 +14,7 @@ For any task:
 
 Declare completion only when a pass produces no meaningful changes.
 
-</quick_start>
-
-<five_pass_protocol>
+## Five-Pass Protocol
 
 | Pass           | Focus          | Key Questions                                |
 | -------------- | -------------- | -------------------------------------------- |
@@ -51,9 +24,7 @@ Declare completion only when a pass produces no meaningful changes.
 | 4. Integration | Consistency    | Matches codebase patterns? Proper coupling?  |
 | 5. Polish      | Refinement     | Any final improvements? Clear documentation? |
 
-</five_pass_protocol>
-
-<self_assessment>
+## Self-Assessment
 
 Before declaring completion, ask:
 
@@ -61,9 +32,7 @@ Before declaring completion, ask:
 - "Are there obvious improvements I'm skipping?"
 - "Is this truly as good as it can get, or am I rushing?"
 
-</self_assessment>
-
-<convergence_signals>
+## Convergence Signals
 
 **STOP refining when:**
 
@@ -79,11 +48,7 @@ Before declaring completion, ask:
 - Conflicting changes detected
 - Self-assessment questions answered "no"
 
-</convergence_signals>
-
-<reality_check>
-
-**30-Second Reality Check (MANDATORY)**
+## 30-Second Reality Check (MANDATORY)
 
 Before declaring ANY task complete, answer these 6 questions. If ANY answer is NO, the task is NOT complete:
 
@@ -118,9 +83,7 @@ Before declaring ANY task complete, answer these 6 questions. If ANY answer is N
 - "The API returns 200 with the expected payload"
 - "Build completes with exit code 0"
 
-</reality_check>
-
-<evidence_requirements>
+## Evidence Requirements
 
 Every task completion MUST include observable evidence:
 
@@ -151,9 +114,7 @@ If you cannot obtain evidence (e.g., no tests, no way to run):
 2. Suggest verification steps for the user
 3. Mark confidence as `[unverified]`
 
-</evidence_requirements>
-
-<parallel_work_patterns>
+## Parallel Work Patterns
 
 When tasks can run independently, use background workers for parallelization:
 
@@ -185,20 +146,6 @@ EVIDENCE REQUIRED:
 - Typecheck passes`,
   run_in_background: true,
 });
-
-Task({
-  subagent_type: "general-purpose",
-  model: "opus",
-  description: "Implement auth service",
-  prompt: `[WORKER PREAMBLE]
-You are a WORKER agent...
-[similar structure]`,
-  run_in_background: true,
-});
-
-// Collect results later
-const result1 = await TaskOutput({ task_id: task1.id });
-const result2 = await TaskOutput({ task_id: task2.id });
 ```
 
 **Pipeline Pattern (Sequential Dependencies)**
@@ -249,18 +196,9 @@ const tasks = files.map((file) =>
 const results = await Promise.all(
   tasks.map((t) => TaskOutput({ task_id: t.id })),
 );
-
-// Single integration pass if needed
-Task({
-  subagent_type: "general-purpose",
-  description: "Verify integration",
-  prompt: `Verify all files work together...`,
-});
 ```
 
-</parallel_work_patterns>
-
-<worker_preamble_template>
+## Worker Preamble Template
 
 Every spawned worker should receive a structured preamble:
 
@@ -301,9 +239,7 @@ TASK:
 [Specific task description with acceptance criteria]
 ```
 
-</worker_preamble_template>
-
-<tdd_enforcement>
+## TDD Enforcement
 
 **TDD is MANDATORY for all code changes.**
 
@@ -318,9 +254,7 @@ Before writing ANY implementation code:
 
 **NO EXCEPTIONS.** Implementation without failing test first = rejected.
 
-</tdd_enforcement>
-
-<constraints>
+## Constraints
 
 - Do NOT declare completion without evidence
 - Do NOT skip the 30-second reality check
@@ -328,9 +262,7 @@ Before writing ANY implementation code:
 - Do NOT spawn sub-agents from worker tasks
 - Limit worker concurrency to avoid resource contention
 
-</constraints>
-
-<anti_patterns>
+## Anti-Patterns
 
 - **Wishful completion** - Declaring done without running the code
 - **Speculation** - Using "should", "might", "could" instead of observed results
@@ -338,9 +270,7 @@ Before writing ANY implementation code:
 - **Evidence-free claims** - No command output or screenshot to back up completion
 - **Oscillation** - Same issue going back and forth without forcing a decision
 
-</anti_patterns>
-
-<success_criteria>
+## Success Criteria
 
 - [ ] TDD followed: failing test written BEFORE implementation
 - [ ] RED phase: test fails (evidence: error output)
@@ -354,16 +284,3 @@ Before writing ANY implementation code:
 - [ ] Evidence provided (command run, output observed)
 - [ ] No "should work" language - only observed facts
 - [ ] **CI is fresh** (for code changes - run `bun run ci` before pushing)
-
-</success_criteria>
-
-<evolution>
-
-**Extension Points:**
-
-- Integration with visual regression testing for UI changes
-- Automated evidence collection (screenshots, logs)
-- Parallel worker pool management
-- Support for long-running async verification
-
-</evolution>

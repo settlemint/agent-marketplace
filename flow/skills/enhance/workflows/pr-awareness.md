@@ -1,23 +1,8 @@
----
-name: flow:enhance:pr-awareness
-description: Adds PR context awareness during regular work. Shows unresolved comments, guides resolution after fixes.
-license: MIT
-triggers:
-  - "pr.*open"
-  - "review.*comment"
-  - "address.*feedback"
-  - "fix.*comment"
-  - "resolve.*thread"
-  - "pr.*feedback"
----
-
-<objective>
+# PR Awareness Workflow
 
 During regular work on a branch with an open PR, maintain awareness of unresolved review comments and CI status. When making changes that address feedback, resolve the corresponding threads.
 
-</objective>
-
-<quick_start>
+## Quick Start
 
 1. **Check for PR** - Run `gh pr view` at session start
 2. **Note unresolved threads** - Use `pr-threads.sh` to see pending feedback
@@ -25,9 +10,7 @@ During regular work on a branch with an open PR, maintain awareness of unresolve
 4. **Resolve opportunistically** - When your change addresses feedback, resolve that thread
 5. **Run QA if stale** - Check timestamp before push
 
-</quick_start>
-
-<pr_context>
+## PR Context
 
 **Check PR status at the start of work:**
 
@@ -54,9 +37,7 @@ gh pr checks 2>/dev/null | head -20
 - `pr-threads.sh` - Unresolved review threads with THREAD_IDs
 - `pr-checks.sh` - CI check status
 
-</pr_context>
-
-<awareness_protocol>
+## Awareness Protocol
 
 **During Regular Work**
 
@@ -74,9 +55,7 @@ gh pr checks 2>/dev/null | head -20
 - Only resolve threads when you're naturally making related changes
 - The user can explicitly request `/devtools:git:pr:fix-reviews` for dedicated fixing
 
-</awareness_protocol>
-
-<thread_resolution>
+## Thread Resolution
 
 **When Your Change Addresses Feedback**
 
@@ -108,9 +87,7 @@ mutation($threadId: ID!) {
 devtools/skills/git/scripts/pr-resolve.sh "PRRT_xxx" "Fixed: description"
 ```
 
-</thread_resolution>
-
-<common_sense_qa>
+## Common-Sense QA
 
 **Smart QA Before Push**
 
@@ -131,55 +108,34 @@ Before pushing (especially if addressing feedback):
    mkdir -p .claude/state && date +%s > .claude/state/qa-timestamp
    ```
 
-</common_sense_qa>
+## Integration
 
-<integration>
-
-This skill works with:
+This workflow works with:
 
 - `devtools:git` - For git operations, scripts, and workflows
-- `flow:enhance:review` - For dedicated code review tasks
+- `flow:enhance` review workflow - For dedicated code review tasks
 - `/devtools:git:pr:fix-reviews` - For bulk fixing all comments (manual trigger)
 
-The pr-awareness skill is for **passive context** during regular work.
+The pr-awareness workflow is for **passive context** during regular work.
 Use `/devtools:git:pr:fix-reviews` when you want to **actively fix all comments**.
 
-</integration>
-
-<constraints>
+## Constraints
 
 - Do NOT interrupt flow to address comments unless explicitly asked
 - Do NOT refetch PR data if already loaded in context
 - Do NOT resolve threads without pushing the fix first
 - Limit to 3 CI iterations max before escalating
 
-</constraints>
-
-<anti_patterns>
+## Anti-Patterns
 
 - **Interrupt-driven work** - Stopping current task to fix every comment immediately
 - **Redundant fetches** - Re-running gh commands when data is already in context
 - **Silent failures** - Resolving threads without actually fixing the issue
 - **QA spam** - Running CI after every tiny change
 
-</anti_patterns>
-
-<success_criteria>
+## Success Criteria
 
 - [ ] Aware of open PR and unresolved comments
 - [ ] Changes that address feedback get threads resolved
 - [ ] QA run when appropriate (not redundantly)
 - [ ] Flow of regular work not interrupted
-
-</success_criteria>
-
-<evolution>
-
-**Extension Points:**
-
-- Add webhook integration for real-time PR updates
-- Support for multi-PR awareness (stacked PRs)
-- Integration with IDE for inline comment display
-- Automated conflict detection with base branch
-
-</evolution>

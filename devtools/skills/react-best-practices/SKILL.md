@@ -1,53 +1,27 @@
 ---
 name: react-best-practices
-description: React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refactoring React/Next.js code to ensure optimal performance patterns. Triggers on tasks involving React components, Next.js pages, data fetching, bundle optimization, or performance improvements.
+description: Use when optimizing React/Next.js performance, reducing bundle size, or eliminating render waterfalls. Covers Vercel Engineering patterns for data fetching and Core Web Vitals.
 license: MIT
-triggers: [
-    # Performance keywords
-    "\\b(performance|perf|optimize|optimization|optimise)\\b",
-    "\\b(slow|fast|speed|latency|lag)\\b",
-    "\\b(improve|reduce|minimize|boost)\\s+(performance|speed|load\\s+time)\\b",
+triggers:
+  # Intent triggers
+  - "optimize react performance"
+  - "reduce bundle size"
+  - "fix render waterfall"
+  - "improve core web vitals"
+  - "why is my app slow"
+  - "react best practices"
 
-    # Bundle and loading
-    "\\b(bundle|chunk|split|tree.?shak)\\b",
-    "\\b(lazy\\s+load|code\\s+split|dynamic\\s+import)\\b",
-    "\\b(bundle\\s+size|import\\s+cost|barrel\\s+file)\\b",
-    "\\bnext/dynamic\\b",
-
-    # Data fetching patterns
-    "\\b(waterfall|parallel|sequential)\\s+(fetch|request|load)\\b",
-    "\\b(data\\s+fetch|fetching\\s+pattern|fetch\\s+strategy)\\b",
-    "\\bPromise\\.all\\b",
-    "\\b(swr|react.?query|cache|dedup)\\b",
-
-    # Re-render optimization
-    "\\b(re.?render|rerender|render\\s+cycle)\\b",
-    "\\b(memo|useMemo|useCallback|React\\.memo)\\b",
-    "\\b(unnecessary\\s+render|wasted\\s+render|render\\s+optimization)\\b",
-
-    # React/Next.js specific
-    "\\b(react|next\\.?js|nextjs)\\s+(best\\s+practice|pattern|guideline)\\b",
-    "\\b(server\\s+component|client\\s+component|rsc|ssr|ssg|isr)\\b",
-    "\\b(suspense|streaming|transition|startTransition)\\b",
-    "\\bReact\\.cache\\b",
-
-    # Code review context
-    "\\b(review|audit|check)\\s+(performance|code|component)\\b",
-    "\\b(refactor|improve|clean\\s*up)\\s+(react|component|code)\\b",
-
-    # Vercel/Next.js ecosystem
-    "\\bvercel\\s+(guideline|pattern|engineering)\\b",
-    "\\b(app\\s+router|pages\\s+router|middleware)\\b",
-
-    # Common performance issues
-    "\\b(memory\\s+leak|infinite\\s+loop|blocking)\\b",
-    "\\b(hydration|mismatch|flash)\\b",
-    "\\b(core\\s+web\\s+vitals|lcp|fid|cls|inp)\\b",
-
-    # Intent-based
-    "why\\s+is\\s+(my|the|this)\\s+(app|page|component)\\s+slow",
-    "how\\s+to\\s+(speed\\s+up|optimize|improve)\\s+(react|next|my\\s+app)",
-  ]
+  # Artifact triggers
+  - "useMemo"
+  - "useCallback"
+  - "React\\.memo"
+  - "next/dynamic"
+  - "Promise\\.all"
+  - "React\\.cache"
+  - "server component"
+  - "client component"
+  - "barrel file"
+  - "code split"
 ---
 
 <objective>

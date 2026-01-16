@@ -1,33 +1,26 @@
 ---
 name: terraform
-description: Terraform/OpenTofu infrastructure as code patterns. READ-ONLY - Claude NEVER executes terraform commands.
+description: Use when writing Terraform/OpenTofu infrastructure code. READ-ONLY - Claude NEVER executes apply/destroy. Covers modules, providers, state, and HCL patterns.
 license: MIT
 triggers:
-  [
-    "terraform",
-    "opentofu",
-    "tofu",
-    "terrafrom",
-    "terrform",
-    "\\.tf$",
-    "tfvars",
-    "tfstate",
-    "provider\\s*[\"\\{]",
-    "resource\\s*\"",
-    "module\\s*\"",
-    "data\\s*\"\\w+\"",
-    "infrastructure.*(code|as)",
-    "iac\\b",
-    "hcl\\b",
-    "aws_|azurerm_|google_",
-    "hashicorp",
-    "state\\s*(file|backend|lock)",
-    "backend\\s*\"s3\"",
-    "plan\\s+output",
-    "apply\\s+change",
-    "provision.*infra",
-    "cloud\\s*resource",
-  ]
+  # Intent triggers
+  - "create terraform module"
+  - "write infrastructure code"
+  - "configure terraform provider"
+  - "setup terraform backend"
+  - "provision cloud resources"
+
+  # Artifact triggers
+  - "terraform"
+  - "opentofu"
+  - "\\.tf$"
+  - "tfvars"
+  - "tfstate"
+  - "resource\\s*\""
+  - "module\\s*\""
+  - "aws_"
+  - "azurerm_"
+  - "google_"
 ---
 
 <objective>

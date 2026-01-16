@@ -1,25 +1,23 @@
 ---
 name: agent-browser
-description: Headless browser automation CLI for AI agents using ref-based element selection. Routes between agent-browser, Playwright MCP, and Claude Chrome integration.
+description: Use when automating browser interactions, filling forms, or scraping pages. Covers agent-browser refs, Playwright MCP, and Claude Chrome integration.
 license: MIT
 triggers:
-  - "\\bagent[- ]?browser\\b"
-  - "\\bbrowse\\s+website\\b"
-  - "\\bfill\\s+form\\b"
-  - "\\bclick\\s+button\\b"
-  - "\\btake\\s+screenshot\\b"
-  - "\\bscrape\\s+page\\b"
-  - "\\bweb\\s+automation\\b"
-  - "\\bheadless\\s+browser\\b"
+  # Intent triggers
+  - "browse website"
+  - "fill form"
+  - "click button"
+  - "take screenshot"
+  - "scrape page"
+  - "automate browser"
+  - "extract data from page"
+
+  # Artifact triggers
+  - "agent-browser"
   - "@e[0-9]+"
-  - "\\bsnapshot\\b"
-  - "\\bweb\\s+scraping\\b"
-  - "\\bautomate\\s+browser\\b"
-  - "\\bbrowser\\s+automation\\b"
-  - "\\bnavigate\\s+to\\b"
-  - "\\bextract\\s+data\\b"
-  - "\\bweb\\s+crawl\\b"
-  - "\\bvercel[- ]?labs\\b"
+  - "snapshot"
+  - "headless browser"
+  - "web automation"
 ---
 
 <objective>

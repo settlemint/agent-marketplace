@@ -1,49 +1,25 @@
 ---
 name: restate
-description: Restate durable execution for fault-tolerant services. Use when asked to "build durable workflow", "create fault-tolerant service", or "implement saga pattern". Covers ctx.run, ctx.sleep, and awakeables.
+description: Use when building durable workflows, creating fault-tolerant services, or implementing saga patterns. Covers Restate ctx.run, ctx.sleep, awakeables, and exactly-once execution.
 license: MIT
-triggers: [
-    # Library name and imports
-    "\\brestate\\b",
-    "@restatedev",
-    "restate-sdk",
+triggers:
+  # Intent triggers
+  - "build durable workflow"
+  - "create fault-tolerant service"
+  - "implement saga pattern"
+  - "exactly-once execution"
+  - "survive restart"
+  - "orchestrate services"
 
-    # Context methods
-    "\\bctx\\.(run|sleep|awakeable|set|get)\\b",
-    "\\bctx\\.(serviceClient|objectClient|workflowClient)\\b",
-
-    # Service types
-    "\\brestate\\.(service|object|workflow)\\b",
-    "\\b(Service|Object|Workflow)Context\\b",
-    "\\bVirtual\\s*Object\\b",
-
-    # Durable concepts
-    "\\bdurable\\s*(execution|function|step|sleep)\\b",
-    "\\bexactly.?once\\b",
-    "\\bfault.?tolerant\\b",
-    "\\bidempoten(t|cy)\\b",
-
-    # Workflow patterns
-    "\\b(saga|compensation|rollback)\\s*pattern\\b",
-    "\\blong.?running.*workflow\\b",
-    "\\bhuman.?in.?the.?loop\\b",
-    "\\bawait.*approval\\b",
-
-    # Orchestration intents
-    "(orchestrat|coordinat).*(service|microservice|workflow)",
-    "(durable|reliable|fault).*(workflow|execution|processing)",
-    "(retry|recover|resume).*(failure|crash|restart)",
-    "state.*persist",
-    "surviv.*(restart|failure|crash)",
-
-    # CLI and deployment
-    "\\brestate\\s+(deployments|services|sql)\\b",
-    "restate.*register",
-
-    # Comparisons (when users ask about alternatives)
-    "(temporal|durable\\s*task|step\\s*function).*alternative",
-    "replac.*(temporal|celery|bull)",
-  ]
+  # Artifact triggers
+  - "restate"
+  - "@restatedev"
+  - "ctx\\.run"
+  - "ctx\\.sleep"
+  - "awakeable"
+  - "Virtual Object"
+  - "durable execution"
+  - "idempotent"
 ---
 
 <objective>

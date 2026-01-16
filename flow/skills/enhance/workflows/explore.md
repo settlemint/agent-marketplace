@@ -1,26 +1,8 @@
----
-name: flow:enhance:explore
-description: Enhances the Explore agent with Rule of Five convergence. Enforces 5-angle exploration, progressive disclosure for token efficiency, MCP tool awareness, and confidence scoring.
-license: MIT
-triggers:
-  - "enhance.*explore"
-  - "explore.*enhancement"
-  - "explore.*codebase"
-  - "search.*codebase"
-  - "find.*in.*code"
-  - "understand.*code"
-  - "investigate"
-  - "research.*code"
-  - "look.*into"
----
-
-<objective>
+# Explore Agent Workflow
 
 Enhance the built-in Explore agent with multi-angle investigation discipline and token-efficient exploration patterns. Apply the Rule of Five: explore from 5 different angles before concluding. Use progressive disclosure (10x token savings) and MCP tools for external code. Cross-reference findings and verify from multiple sources.
 
-</objective>
-
-<quick_start>
+## Quick Start
 
 When exploring codebases:
 
@@ -32,9 +14,7 @@ When exploring codebases:
 
 Cross-reference findings across angles before concluding.
 
-</quick_start>
-
-<five_angle_protocol>
+## Five-Angle Protocol
 
 | Angle           | Focus          | Tools                                 |
 | --------------- | -------------- | ------------------------------------- |
@@ -44,9 +24,7 @@ Cross-reference findings across angles before concluding.
 | 4. Dependencies | Relationships  | Package.json, imports, coupling       |
 | 5. Edge Cases   | Robustness     | Error handlers, try/catch, edge paths |
 
-</five_angle_protocol>
-
-<verification_protocol>
+## Verification Protocol
 
 Before concluding exploration:
 
@@ -55,9 +33,7 @@ Before concluding exploration:
 - Cite specific file:line for all claims
 - Distinguish between facts and inferences
 
-</verification_protocol>
-
-<progressive_disclosure>
+## Progressive Disclosure
 
 Explore in 3 layers for 10x token efficiency:
 
@@ -83,9 +59,7 @@ Layer 3: Read full auth.ts ONLY IF implementation details needed
 
 **Why this matters:** Large codebases can't fit in context. Progressive disclosure enables unlimited exploration without context overflow.
 
-</progressive_disclosure>
-
-<mcp_tool_selection>
+## MCP Tool Selection
 
 Choose tools based on code location:
 
@@ -124,9 +98,7 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 **Why this matters:** Training data is stale. MCP tools provide up-to-date library documentation and real-world code patterns.
 
-</mcp_tool_selection>
-
-<confidence_scoring>
+## Confidence Scoring
 
 Rate each finding by certainty level:
 
@@ -148,9 +120,7 @@ Rate each finding by certainty level:
 
 **Why this matters:** Parent agent can prioritize follow-up. Verified findings are actionable; speculated findings need confirmation.
 
-</confidence_scoring>
-
-<parallel_exploration>
+## Parallel Exploration
 
 For broad codebase exploration, spawn up to 3 Explore agents in parallel:
 
@@ -188,25 +158,6 @@ Task({
 Cite specific file:line for all findings.`,
   run_in_background: true,
 });
-
-Task({
-  subagent_type: "Explore",
-  description: "Explore testing patterns",
-  prompt: `Search for testing conventions:
-- What test framework is used?
-- Where are tests located?
-- What mocking patterns exist?
-
-Cite specific file:line for all findings.`,
-  run_in_background: true,
-});
-
-// Collect and synthesize
-const results = await Promise.all([
-  TaskOutput({ task_id: auth.id }),
-  TaskOutput({ task_id: data.id }),
-  TaskOutput({ task_id: tests.id }),
-]);
 ```
 
 **Guidelines:**
@@ -216,9 +167,7 @@ const results = await Promise.all([
 - Use 1 agent for isolated/known file locations
 - Use 2-3 agents when scope is uncertain
 
-</parallel_exploration>
-
-<codex_for_deep_analysis>
+## Codex for Deep Analysis
 
 Use Codex when exploration reveals complex patterns:
 
@@ -244,9 +193,7 @@ mcp__plugin_devtools_codex__codex({
 - Need to understand intent behind code
 - Evaluating technical debt
 
-</codex_for_deep_analysis>
-
-<success_criteria>
+## Success Criteria
 
 - [ ] Explored from at least 3 distinct angles
 - [ ] Findings cross-referenced across angles
@@ -256,9 +203,7 @@ mcp__plugin_devtools_codex__codex({
 - [ ] External libraries queried via MCP tools (Context7/OctoCode)
 - [ ] Each finding rated by confidence level
 
-</success_criteria>
-
-<constraints>
+## Constraints
 
 - Never skip angles - all 5 angles required before concluding
 - Always cite file:line for claims - no unsourced assertions
@@ -266,35 +211,10 @@ mcp__plugin_devtools_codex__codex({
 - Maximum 3 parallel Explore agents - prevent context fragmentation
 - MCP tools required for external code - training data is stale
 
-</constraints>
-
-<anti_patterns>
+## Anti-Patterns
 
 - **Depth-first diving**: Going straight to Detail layer wastes tokens. Start broad.
 - **Single-angle conclusions**: Drawing conclusions from one perspective misses context.
 - **Uncited claims**: "The app uses React" without file:line is unverifiable.
 - **Skipping MCP for libraries**: Relying on training data for npm packages yields outdated info.
 - **Over-parallelization**: More than 3 agents fragments findings and wastes context.
-
-</anti_patterns>
-
-<related_skills>
-
-| Skill                                          | Relationship                          |
-| ---------------------------------------------- | ------------------------------------- |
-| `Skill({ skill: "flow:enhance:plan" })`        | Exploration feeds into planning       |
-| `Skill({ skill: "devtools:rule-of-five" })`    | Source of 5-angle convergence pattern |
-| `Skill({ skill: "devtools:troubleshooting" })` | Deep debugging after exploration      |
-
-</related_skills>
-
-<evolution>
-
-**Extension points:**
-
-- Add custom angles via `angles[]` in frontmatter
-- Override layer token budgets via environment variables
-- Integrate additional MCP tools for specialized exploration
-- Custom confidence markers for domain-specific certainty levels
-
-</evolution>

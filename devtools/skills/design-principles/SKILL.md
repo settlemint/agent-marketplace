@@ -1,45 +1,26 @@
 ---
 name: design-principles
-description: Enforce a precise, minimal design system inspired by Linear, Notion, and Stripe. Use when building dashboards, admin interfaces, or any UI that needs Jony Ive-level precision - clean, modern, minimalist with taste. Every pixel matters.
+description: Use when building dashboards, admin interfaces, or polished UI. Covers Linear/Notion/Stripe-inspired design with 4px grid, typography, and depth strategies.
 license: MIT
 triggers:
-  - "dashboard"
-  - "admin"
-  - "admin.?panel"
-  - "ui.?design"
-  - "design.?system"
-  - "spacing"
-  - "typography"
+  # Intent triggers
+  - "build dashboard"
+  - "create admin interface"
+  - "design system"
+  - "make UI polished"
+  - "pixel perfect design"
+  - "clean modern UI"
+
+  # Artifact triggers
+  - "4px grid"
+  - "design direction"
+  - "Linear style"
+  - "Notion style"
+  - "Stripe style"
+  - "typography hierarchy"
+  - "border radius"
+  - "dark mode"
   - "elevation"
-  - "shadow"
-  - "card"
-  - "layout"
-  - "Linear.?style"
-  - "Notion.?style"
-  - "Stripe.?style"
-  - "Vercel.?style"
-  - "clean.?ui"
-  - "minimal.?design"
-  - "minimalist"
-  - "pixel.?perfect"
-  - "polish"
-  - "polished"
-  - "crafted"
-  - "SaaS"
-  - "enterprise.?ui"
-  - "professional.?ui"
-  - "4px.?grid"
-  - "border.?radius"
-  - "design.?direction"
-  - "color.?palette"
-  - "dark.?mode"
-  - "light.?mode"
-  - "navigation"
-  - "sidebar"
-  - "monospace.?for.?data"
-  - "data.?table"
-  - "Jony.?Ive"
-  - "precision"
 ---
 
 <objective>
