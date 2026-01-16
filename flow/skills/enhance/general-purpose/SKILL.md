@@ -73,13 +73,14 @@ Before declaring completion, ask:
 
 **30-Second Reality Check (MANDATORY)**
 
-Before declaring ANY task complete, answer these 5 questions. If ANY answer is NO, the task is NOT complete:
+Before declaring ANY task complete, answer these 6 questions. If ANY answer is NO, the task is NOT complete:
 
 - [ ] Did I run/build the code?
 - [ ] Did I trigger the exact feature I changed?
 - [ ] Did I see the expected result with my own observation?
 - [ ] Did I check for error messages or warnings?
 - [ ] Would I bet $100 this works?
+- [ ] **Is CI fresh?** (for code changes, run `bun run ci` if stale)
 
 **Verification by task type:**
 
@@ -337,9 +338,10 @@ Before writing ANY implementation code:
 - [ ] Each pass documented its findings
 - [ ] Final output shows improvement from initial
 - [ ] Convergence explicitly declared
-- [ ] 30-second reality check passed (all 5 questions = YES)
+- [ ] 30-second reality check passed (all 6 questions = YES)
 - [ ] Evidence provided (command run, output observed)
 - [ ] No "should work" language - only observed facts
+- [ ] **CI is fresh** (for code changes - run `bun run ci` before pushing)
 
 </success_criteria>
 
