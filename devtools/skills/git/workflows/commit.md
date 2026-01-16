@@ -1,27 +1,24 @@
 ---
 name: commit
-description: Create a conventional commit. Use when asked to "commit changes" or "save my work".
-license: MIT
-user_invocable: true
-command: /commit
-argument-hint: "[optional commit message]"
-triggers:
-  - "commit"
-  - "save changes"
-  - "commit my work"
+description: Create conventional commit with selective staging
 ---
 
+<context>
+!`${SKILL_ROOT}/scripts/context.sh commit`
+</context>
+
 <objective>
-Create a conventional commit with proper format: `type(scope): description`. Stage files selectively, run QA if needed.
+Create a conventional commit: `type(scope): description`. Stage files selectively. Never blind `git add .`.
 </objective>
 
-<quick_start>
+<workflow>
 
-1. **Check status:** `git status` to see what changed
-2. **Stage files:** `git add <specific-files>` (never blind `git add .`)
-3. **Commit:** `git commit -m "type(scope): description"`
+1. **Review changes:** Parse context above for staged/unstaged files
+2. **Stage selectively:** Add only relevant files (never `git add .`)
+3. **Check for secrets:** Ensure no .env, .pem, .key, credentials staged
+4. **Commit:** Use conventional format with multi-line body for non-trivial changes
 
-</quick_start>
+</workflow>
 
 <commit_types>
 
@@ -38,28 +35,20 @@ Create a conventional commit with proper format: `type(scope): description`. Sta
 
 </commit_types>
 
-<workflow>
-
-**Step 1: Review changes**
+<commands>
 
 ```bash
-git status
+# Review what changed
+git status --short
 git diff --stat
-```
 
-**Step 2: Stage relevant files**
-
-```bash
-# Stage specific files
+# Stage specific files (preferred)
 git add src/feature.ts src/feature.test.ts
 
-# Interactive staging (optional)
+# Stage with patch mode (for partial files)
 git add -p
-```
 
-**Step 3: Create commit**
-
-```bash
+# Commit with conventional format
 git commit -m "$(cat <<'EOF'
 feat(auth): add login endpoint
 
@@ -68,19 +57,23 @@ feat(auth): add login endpoint
 - Added unit tests for authentication flow
 EOF
 )"
+
+# Single-line for trivial changes
+git commit -m "fix(typo): correct spelling in README"
 ```
 
-</workflow>
+</commands>
 
 <constraints>
 
 **Banned:**
 - `git add .` without reviewing changes
-- Committing secrets, credentials, or API keys
+- `git add -A` without reviewing changes
+- Committing secrets, credentials, API keys, .env files
 - Amending commits that have been pushed
 
 **Required:**
-- Conventional commit format
+- Conventional commit format: `type(scope): description`
 - Selective file staging
 - Multi-line commit body for non-trivial changes
 
@@ -88,8 +81,9 @@ EOF
 
 <success_criteria>
 
-1. [ ] Commit uses `type(scope): description` format
-2. [ ] Only relevant files staged
-3. [ ] No secrets committed
+- [ ] Commit uses `type(scope): description` format
+- [ ] Only relevant files staged
+- [ ] No secrets or sensitive files committed
+- [ ] Multi-line body for complex changes
 
 </success_criteria>

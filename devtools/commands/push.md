@@ -4,14 +4,17 @@ argument-hint: [--force-with-lease for rebased branches]
 allowed-tools: Bash(git:*)
 ---
 
-Push commits to remote following the push skill guidelines.
+Push commits to remote with smart QA check.
 
 ## Current State
 - Branch: !`git branch --show-current`
+- Status: !`git status --short`
 - Unpushed: !`git log @{u}..HEAD --oneline 2>/dev/null || echo "No upstream"`
 
 ## Instructions
 
-Load Skill({ skill: "devtools:push" })
+Load Skill({ skill: "devtools:git" })
+
+Then read and follow `workflows/push.md`.
 
 User message: $ARGUMENTS

@@ -4,7 +4,7 @@ argument-hint: [base branch, defaults to main]
 allowed-tools: Bash(git:*), Read, Edit
 ---
 
-Sync branch with main following the sync skill guidelines.
+Sync branch with main and resolve conflicts.
 
 ## Current State
 - Branch: !`git branch --show-current`
@@ -12,6 +12,8 @@ Sync branch with main following the sync skill guidelines.
 
 ## Instructions
 
-Load Skill({ skill: "devtools:sync" })
+Load Skill({ skill: "devtools:git" })
+
+Then read and follow `workflows/sync.md`.
 
 Base branch: $ARGUMENTS
