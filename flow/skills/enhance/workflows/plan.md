@@ -106,9 +106,20 @@ Each plan step MUST define completion evidence. No step is complete without obse
 
 **Why this matters:** Prevents "should work" thinking. Orchestrator can verify completion objectively.
 
-## Codex Integration
+## Codex Integration (Strongly Recommended)
 
-Use Codex MCP for deep reasoning during planning:
+**Use Codex MCP for deep reasoning on complex plans.**
+
+Codex helps catch issues humans miss. Load it for plans that:
+- Touch more than 5 files (architectural review)
+- Make architectural decisions (trade-off analysis)
+- Involve security-sensitive features (threat modeling)
+- Require complex trade-off analysis (multi-option evaluation)
+
+```javascript
+// Load Codex skill for patterns
+Skill({ skill: "devtools:codex-patterns" })
+```
 
 **1. Architecture Decision Analysis**
 
@@ -166,12 +177,17 @@ mcp__plugin_devtools_codex__codex({
 });
 ```
 
-**When to use Codex:**
+**When to use Codex (quality investment):**
 
-- Architectural decisions with multiple viable options
-- Security-sensitive features (auth, payments, data handling)
-- Complex refactoring with unclear best approach
-- Plans touching >10 files
+- Plans touching >5 files → architecture review catches coupling issues
+- Security-sensitive features → threat modeling prevents vulnerabilities
+- Multiple viable approaches → trade-off analysis clarifies choice
+- Complex refactoring → complexity assessment identifies risks
+
+**Codex adds value by:**
+- [ ] Analyzing architecture trade-offs you might miss
+- [ ] Reviewing security implications systematically
+- [ ] Assessing complexity for better estimates
 
 ## TDD in Plans
 

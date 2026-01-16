@@ -16,6 +16,28 @@ All routing decisions flow through this skill.
 
 </objective>
 
+<philosophy>
+
+**Trust with Discovery**
+
+This skill system is built on trust, not enforcement:
+
+- **Knowledge, not commands** - Skills inform and guide, they don't dictate
+- **Discovery, not injection** - Patterns surface contextually when relevant
+- **Safety nets, not fences** - Prevent catastrophic errors, allow creative solutions
+- **Quality through understanding** - Excellence comes from understanding why, not being told what
+
+**When to deviate from patterns:**
+
+Patterns serve quality. If following a pattern hurts quality, question it:
+- Document your reasoning
+- Verify with evidence
+- Trust your judgment
+
+**Freedom enables quality.** Rigid enforcement creates adversarial dynamics and burns tokens on repeated warnings. Well-informed Claude does quality work naturally.
+
+</philosophy>
+
 <load_first>
 
 **REQUIRED: Load Rule of Five immediately.**
@@ -198,15 +220,19 @@ Detailed patterns for each agent type:
 
 </workflow_files>
 
-<constraints>
+<guidelines>
 
-- Rule of Five is MANDATORY - no shortcuts
-- Evidence is REQUIRED - no assertions without proof
-- TDD is REQUIRED for code changes
-- Domain skills must be loaded BEFORE work begins
-- Sub-agents MUST include enhance load instruction
+**Quality foundations (why these matter):**
 
-</constraints>
+- **Rule of Five** - Multiple passes catch issues single-pass misses
+- **Evidence** - "Should work" is the enemy of "does work"
+- **TDD for code** - Tests prevent regressions and document behavior
+- **Domain skills first** - Patterns prevent reinventing wheels
+- **Sub-agent skill loading** - Agents need context to do quality work
+
+These aren't arbitrary rules - they're patterns that consistently produce better outcomes. Apply judgment; deviate when you have good reason.
+
+</guidelines>
 
 <success_criteria>
 
