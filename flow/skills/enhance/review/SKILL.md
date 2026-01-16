@@ -2,8 +2,6 @@
 name: flow:enhance:review
 description: Enhances review agents with high-signal filtering and validation protocols. Enforces evidence-based findings, confidence scoring, and five-pass convergence.
 license: MIT
-# NOTE: This skill exceeds 300 lines. Consider extracting codex_quality_review
-# and tdd_verification to references/ subdirectory for leaner core.
 triggers:
   - "code.*review"
   - "review.*pr"
@@ -16,6 +14,7 @@ triggers:
   - "find.*issue"
   - "security.*review"
   - "check.*code"
+  - "quality.*check"
 ---
 
 <objective>

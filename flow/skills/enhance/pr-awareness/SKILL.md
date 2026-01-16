@@ -7,6 +7,8 @@ triggers:
   - "review.*comment"
   - "address.*feedback"
   - "fix.*comment"
+  - "resolve.*thread"
+  - "pr.*feedback"
 ---
 
 <objective>

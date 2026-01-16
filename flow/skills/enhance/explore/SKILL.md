@@ -5,6 +5,13 @@ license: MIT
 triggers:
   - "enhance.*explore"
   - "explore.*enhancement"
+  - "explore.*codebase"
+  - "search.*codebase"
+  - "find.*in.*code"
+  - "understand.*code"
+  - "investigate"
+  - "research.*code"
+  - "look.*into"
 ---
 
 <objective>
