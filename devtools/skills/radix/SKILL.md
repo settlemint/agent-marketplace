@@ -4,51 +4,51 @@ description: Radix UI primitives for accessible React components. Use when asked
 license: MIT
 triggers: [
     # Library name and imports
-    "(?i)\\bradix\\b",
+    "\\bradix\\b",
     "@radix-ui",
     'from [''"]@radix-ui',
 
     # Core components (case-insensitive for user queries)
-    "(?i)\\b(Dialog|Modal|AlertDialog)\\b",
-    "(?i)\\b(Popover|Tooltip|HoverCard)\\b",
-    "(?i)\\b(DropdownMenu|ContextMenu|MenuBar)\\b",
-    "(?i)\\bSelect\\b",
-    "(?i)\\b(Tabs|TabsList|TabsContent)\\b",
-    "(?i)\\b(Accordion|Collapsible)\\b",
-    "(?i)\\b(Checkbox|RadioGroup|Switch|Toggle)\\b",
-    "(?i)\\b(Slider|ScrollArea|Progress)\\b",
-    "(?i)\\b(Avatar|AspectRatio|Separator)\\b",
-    "(?i)\\b(NavigationMenu|Toolbar)\\b",
-    "(?i)\\bToast\\b",
+    "\\b(Dialog|Modal|AlertDialog)\\b",
+    "\\b(Popover|Tooltip|HoverCard)\\b",
+    "\\b(DropdownMenu|ContextMenu|MenuBar)\\b",
+    "\\bSelect\\b",
+    "\\b(Tabs|TabsList|TabsContent)\\b",
+    "\\b(Accordion|Collapsible)\\b",
+    "\\b(Checkbox|RadioGroup|Switch|Toggle)\\b",
+    "\\b(Slider|ScrollArea|Progress)\\b",
+    "\\b(Avatar|AspectRatio|Separator)\\b",
+    "\\b(NavigationMenu|Toolbar)\\b",
+    "\\bToast\\b",
 
     # Radix patterns and APIs
-    "(?i)\\basChild\\b",
-    "(?i)\\b\\.Root\\b",
-    "(?i)\\b\\.Trigger\\b",
-    "(?i)\\b\\.Content\\b",
-    "(?i)\\b\\.Portal\\b",
-    "(?i)\\bonOpenChange\\b",
+    "\\basChild\\b",
+    "\\b\\.Root\\b",
+    "\\b\\.Trigger\\b",
+    "\\b\\.Content\\b",
+    "\\b\\.Portal\\b",
+    "\\bonOpenChange\\b",
 
     # Accessibility intent
-    "(?i)\\b(accessible|a11y|accessibility)\\s+(component|ui|dialog|modal|menu)\\b",
-    "(?i)\\b(keyboard|focus|screen\\s*reader)\\s+(navigation|support|friendly)\\b",
-    "(?i)\\b(aria|role|focus\\s+trap|focus\\s+management)\\b",
-    "(?i)\\bwcag\\b",
+    "\\b(accessible|a11y|accessibility)\\s+(component|ui|dialog|modal|menu)\\b",
+    "\\b(keyboard|focus|screen\\s*reader)\\s+(navigation|support|friendly)\\b",
+    "\\b(aria|role|focus\\s+trap|focus\\s+management)\\b",
+    "\\bwcag\\b",
 
     # Intent-based patterns
-    "(?i)\\b(unstyled|headless)\\s+(component|ui|primitive)\\b",
-    "(?i)\\b(build|create|add)\\s+(a\\s+)?(modal|dialog|dropdown|popover|tooltip|menu)\\b",
-    "(?i)\\b(primitive|composable)\\s+component\\b",
+    "\\b(unstyled|headless)\\s+(component|ui|primitive)\\b",
+    "\\b(build|create|add)\\s+(a\\s+)?(modal|dialog|dropdown|popover|tooltip|menu)\\b",
+    "\\b(primitive|composable)\\s+component\\b",
 
     # Common use cases
-    "(?i)\\b(confirmation|alert)\\s+(dialog|modal)\\b",
-    "(?i)\\b(action|context|right.?click)\\s+menu\\b",
-    "(?i)\\b(toggle|boolean|switch)\\s+(input|control)\\b",
-    "(?i)\\b(collapsible|expandable|accordion)\\s+(section|panel|content)\\b",
+    "\\b(confirmation|alert)\\s+(dialog|modal)\\b",
+    "\\b(action|context|right.?click)\\s+menu\\b",
+    "\\b(toggle|boolean|switch)\\s+(input|control)\\b",
+    "\\b(collapsible|expandable|accordion)\\s+(section|panel|content)\\b",
 
     # Common typos
-    "(?i)\\bradiks\\b",
-    "(?i)\\bradiux\\b",
+    "\\bradiks\\b",
+    "\\bradiux\\b",
   ]
 ---
 

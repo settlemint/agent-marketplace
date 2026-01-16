@@ -50,17 +50,17 @@ triggers:
   - "\\.partial\\("
   - "\\.required\\("
   # User intent - validation
-  - "(?i)validate.*input"
-  - "(?i)form.*validation"
-  - "(?i)schema.*validation"
-  - "(?i)type.*safe.*validation"
-  - "(?i)input.*validation"
-  - "(?i)api.*validation"
-  - "(?i)request.*validation"
-  - "(?i)runtime.*type.*check"
-  - "(?i)parse.*json"
-  - "(?i)validate.*data"
-  - "(?i)zod.*schema"
+  - "validate.*input"
+  - "form.*validation"
+  - "schema.*validation"
+  - "type.*safe.*validation"
+  - "input.*validation"
+  - "api.*validation"
+  - "request.*validation"
+  - "runtime.*type.*check"
+  - "parse.*json"
+  - "validate.*data"
+  - "zod.*schema"
 ---
 
 <objective>

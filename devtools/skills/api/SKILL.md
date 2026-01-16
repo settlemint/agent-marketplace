@@ -22,15 +22,15 @@ triggers:
   - "onboardedRouter"
   - "tokenRouter"
   # User intent - creating APIs
-  - "(?i)create.*api.*route"
-  - "(?i)add.*api.*endpoint"
-  - "(?i)build.*api"
-  - "(?i)new.*route"
-  - "(?i)type.*safe.*api"
-  - "(?i)rpc.*endpoint"
-  - "(?i)api.*handler"
-  - "(?i)5.*file.*pattern"
-  - "(?i)five.*file.*pattern"
+  - "create.*api.*route"
+  - "add.*api.*endpoint"
+  - "build.*api"
+  - "new.*route"
+  - "type.*safe.*api"
+  - "rpc.*endpoint"
+  - "api.*handler"
+  - "5.*file.*pattern"
+  - "five.*file.*pattern"
 ---
 
 <objective>
