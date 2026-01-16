@@ -13,6 +13,7 @@ triggers:
   - "headless component"
 
   # Artifact triggers
+  - "radix"
   - "@radix-ui"
   - "Dialog\\.Root"
   - "DropdownMenu"

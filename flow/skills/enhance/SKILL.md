@@ -201,7 +201,7 @@ Detailed patterns for each agent type:
 
 <success_criteria>
 
-- [ ] Rule of Five applied (minimum 3 passes)
+- [ ] Rule of Five applied (minimum 5 passes, or converged earlier with evidence)
 - [ ] Correct domain skills loaded
 - [ ] Relevant coding rules read
 - [ ] Sub-agents properly configured

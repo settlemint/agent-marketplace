@@ -232,6 +232,28 @@ mcp__plugin_devtools_codex__codex({
 });
 ```
 
+**Architecture Fit Analysis**
+
+```javascript
+mcp__plugin_devtools_codex__codex({
+  prompt: `Analyze how this change fits the existing architecture:
+
+    [code diff]
+
+    Existing patterns observed:
+    - [pattern 1 from exploration]
+    - [pattern 2 from exploration]
+
+    Questions:
+    1. Does this follow established patterns?
+    2. Does it introduce new patterns? If so, are they justified?
+    3. Are there coupling concerns with other modules?
+    4. Does the abstraction level match surrounding code?
+
+    Flag deviations as P1 if they break consistency, P2 if minor.`,
+});
+```
+
 **When to use Codex in reviews:**
 
 - Security-sensitive code (auth, payments, user data)

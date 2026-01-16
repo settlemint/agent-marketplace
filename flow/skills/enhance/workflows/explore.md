@@ -158,6 +158,25 @@ Task({
 Cite specific file:line for all findings.`,
   run_in_background: true,
 });
+
+Task({
+  subagent_type: "Explore",
+  description: "Explore testing patterns",
+  prompt: `Search for testing patterns:
+- What testing framework is used?
+- How are tests organized?
+- What mocking strategies are employed?
+
+Cite specific file:line for all findings.`,
+  run_in_background: true,
+});
+
+// Wait for all results and synthesize findings
+const results = await Promise.all([
+  TaskOutput({ task_id: authTask.id }),
+  TaskOutput({ task_id: dataTask.id }),
+  TaskOutput({ task_id: testTask.id }),
+]);
 ```
 
 **Guidelines:**

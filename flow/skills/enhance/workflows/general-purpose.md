@@ -146,6 +146,52 @@ EVIDENCE REQUIRED:
 - Typecheck passes`,
   run_in_background: true,
 });
+
+Task({
+  subagent_type: "general-purpose",
+  model: "opus",
+  description: "Implement auth service",
+  prompt: `[WORKER PREAMBLE]
+You are a WORKER agent. Use tools directly, do not spawn sub-agents.
+
+SKILLS TO LOAD:
+Skill({ skill: "devtools:better-auth" })
+Skill({ skill: "devtools:tdd-typescript" })
+
+TASK: Create auth service in src/services/auth.ts
+- Implement login, logout, verify functions
+- Use better-auth library patterns
+- Write failing test first (TDD required)
+
+EVIDENCE REQUIRED:
+- Test file exists and fails initially
+- Implementation makes test pass
+- Typecheck passes`,
+  run_in_background: true,
+});
+
+Task({
+  subagent_type: "general-purpose",
+  model: "opus",
+  description: "Implement API routes",
+  prompt: `[WORKER PREAMBLE]
+You are a WORKER agent. Use tools directly, do not spawn sub-agents.
+
+SKILLS TO LOAD:
+Skill({ skill: "devtools:api" })
+Skill({ skill: "devtools:tdd-typescript" })
+
+TASK: Create API routes in src/routes/
+- Create user CRUD endpoints
+- Add authentication middleware
+- Write failing test first (TDD required)
+
+EVIDENCE REQUIRED:
+- Test file exists and fails initially
+- Implementation makes test pass
+- Typecheck passes`,
+  run_in_background: true,
+});
 ```
 
 **Pipeline Pattern (Sequential Dependencies)**

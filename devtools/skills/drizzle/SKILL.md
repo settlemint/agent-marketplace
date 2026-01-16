@@ -15,7 +15,7 @@ triggers:
   - "drizzle-orm"
   - "pgTable|mysqlTable|sqliteTable"
   - "db\\.select|db\\.insert|db\\.update"
-  - "db:migrate|db:push|db:studio"
+  - "db:generate|db:migrate|db:push|db:studio"
   - "\\$inferInsert|\\$inferSelect"
   - "drizzle\\.config"
   - "relations\\("
