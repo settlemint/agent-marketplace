@@ -1,35 +1,24 @@
 ---
 name: shadcn
-description: shadcn/ui component library with MCP server integration. Use when adding UI components, building forms, or working with shadcn primitives. Triggers on shadcn, @/components/ui, cn(), radix, cva, component variants.
+description: Use when adding UI components, building forms, or working with shadcn primitives. Covers shadcn/ui installation, cn() utility, CVA variants, and theming.
 license: MIT
 triggers:
-  [
-    "\\bshadcn\\b",
-    "\\bshadcn[/-]?ui\\b",
-    "@/components/ui",
-    'from [''"]@/components/ui',
-    "\\bcn\\s*\\(",
-    "\\bclsx\\b",
-    "\\btwMerge\\b",
-    "@/lib/utils",
-    "\\bcva\\b",
-    "class.?variance.?authority",
-    "\\bVariantProps\\b",
-    "\\b(button|badge|alert)Variants\\b",
-    "\\b(Button|Card|Dialog|Alert|Badge|Input|Label|Textarea)\\b",
-    "\\b(Select|Checkbox|RadioGroup|Switch|Slider)\\b",
-    "\\b(Tabs|Accordion|Sheet|Drawer|Popover|Tooltip)\\b",
-    "\\b(DropdownMenu|ContextMenu|Command|Combobox)\\b",
-    "\\b(Table|DataTable|Calendar|DatePicker)\\b",
-    "\\b(Toast|Toaster|Sonner)\\b",
-    "\\b(Avatar|Skeleton|Progress|Spinner)\\b",
-    "\\b(Form|FormField|FormItem|FormLabel|FormMessage)\\b",
-    "\\b(add|install|use)\\s+shadcn\\b",
-    "\\bnpx\\s+shadcn\\b",
-    "\\bshadcn\\s+add\\b",
-    "\\blucide\\b",
-    "\\bdata-slot\\b",
-  ]
+  # Intent triggers
+  - "add shadcn component"
+  - "install shadcn"
+  - "build form with shadcn"
+  - "create button variant"
+  - "add ui component"
+
+  # Artifact triggers
+  - "shadcn"
+  - "@/components/ui"
+  - "cn\\("
+  - "cva"
+  - "VariantProps"
+  - "lucide"
+  - "npx shadcn"
+  - "data-slot"
 ---
 
 <objective>

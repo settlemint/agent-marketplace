@@ -1,52 +1,30 @@
 ---
 name: react
-description: React 19 components with Tailwind CSS v4. Use when asked to "create component", "build form", or "add data table". Covers shadcn/ui, forms, tables, routing, and data fetching.
+description: Use when building React components, forms, tables, or UI. React 19 with Tailwind CSS v4, TanStack libraries, and shadcn/ui.
 license: MIT
-triggers: [
-    # File extensions and imports
-    "\\.tsx$",
-    "\\.jsx$",
-    'from [''"]react[''"]',
-    "import.*React",
+triggers:
+  # Intent triggers
+  - "create component"
+  - "build form"
+  - "add data table"
+  - "build UI"
+  - "frontend"
 
-    # React core concepts
-    "react\\s*(19|component|hook|state|prop|context)",
-    "\\b(useState|useEffect|useRef|useMemo|useCallback|useContext|useReducer)\\b",
-    "\\b(use\\s+hook|custom\\s+hook|create\\s+hook)\\b",
-    "\\b(jsx|tsx|functional\\s+component|class\\s+component)\\b",
-    "\\b(server\\s+component|client\\s+component|rsc)\\b",
-    "\\b(suspense|lazy|concurrent)\\b",
-
-    # TanStack libraries
-    "tanstack",
-    "@tanstack/(router|query|form|table)",
-    "\\b(useQuery|useMutation|queryClient)\\b",
-    "\\b(useForm|form\\s+validation|field\\s+validation)\\b",
-    "\\b(useReactTable|columnDef|data\\s+table)\\b",
-    "\\b(createFileRoute|useNavigate|file.?based\\s+routing)\\b",
-
-    # Tailwind CSS
-    "tailwind(css)?",
-    "\\bcn\\s*\\(",
-    "class.?name.*=",
-    "\\b(utility\\s+classes|responsive\\s+design)\\b",
-
-    # Component patterns
-    "\\b(build|create|make|add|write)\\s+(a\\s+)?component\\b",
-    "\\b(button|card|modal|dialog|dropdown|menu|nav|header|footer|sidebar)\\s+component\\b",
-    "\\b(form|input|select|checkbox|radio|textarea)\\s+(component|field)\\b",
-    "\\b(list|grid|layout|container)\\s+component\\b",
-
-    # UI/Frontend general
-    "\\b(ui|frontend|front.?end|user\\s+interface)\\b",
-    "\\b(render|display|show)\\s+(data|content|list|table)\\b",
-    "\\b(styled?|styling|css.?in.?js)\\b",
-
-    # Common typos
-    "\\breact[0-9]*\\b",
-    "\\btailwnd\\b",
-    "\\btanstak\\b",
-  ]
+  # Artifact triggers
+  - "\\.tsx$"
+  - "\\.jsx$"
+  - "from ['\"]react['\"]"
+  - "useState|useEffect|useRef|useMemo"
+  - "tanstack"
+  - "@tanstack/(router|query|form|table)"
+  - "useQuery|useMutation"
+  - "useForm"
+  - "useReactTable"
+  - "tailwind"
+  - "cn\\("
+  - "server component|client component"
+  - "shadcn"
+  - "radix"
 ---
 
 <objective>

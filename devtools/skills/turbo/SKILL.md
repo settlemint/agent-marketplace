@@ -1,30 +1,23 @@
 ---
 name: turbo
-description: Turborepo monorepo build system. Use when asked to "setup monorepo", "configure build pipeline", or "add turbo caching". Covers task pipelines, caching, and package management.
+description: Use when configuring monorepo builds, task pipelines, or caching. Turborepo for efficient multi-package development.
 license: MIT
 triggers:
-  [
-    "turbo",
-    "turborepo",
-    "turbo\\.json",
-    "monorepo",
-    "mono-repo",
-    "mono\\s*repo",
-    "workspace",
-    "pnpm-workspace",
-    "dependsOn.*\\^",
-    "\\^build",
-    "task\\s*pipeline",
-    "remote\\s*cach",
-    "vercel.*turbo",
-    "turbo\\s+(build|run|prune)",
-    "turbo.*filter",
-    "--filter=",
-    "package.*workspace",
-    "lerna",
-    "nx\\s+monorepo",
-    "build\\s*system.*mono",
-  ]
+  # Intent triggers
+  - "setup monorepo"
+  - "configure build"
+  - "task pipeline"
+  - "add caching"
+
+  # Artifact triggers
+  - "turbo"
+  - "turborepo"
+  - "turbo\\.json"
+  - "monorepo"
+  - "pnpm-workspace"
+  - "dependsOn"
+  - "\\^build"
+  - "--filter="
 ---
 
 <objective>

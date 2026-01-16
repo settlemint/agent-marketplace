@@ -1,63 +1,25 @@
 ---
 name: drizzle
-description: Drizzle ORM patterns for PostgreSQL schemas, queries, migrations, and Zod integration. Triggers on drizzle, pgTable, db.select, db.insert, migration.
+description: Use when working with database schemas, queries, or migrations. Drizzle ORM patterns for PostgreSQL with Zod integration.
 license: MIT
 triggers:
-  # Library name and variations
-  - "\\bdrizzle\\b"
+  # Intent triggers
+  - "create table"
+  - "database schema"
+  - "run migration"
+  - "add column"
+  - "database query"
+
+  # Artifact triggers
+  - "drizzle"
   - "drizzle-orm"
-  - "drizzle-kit"
-  - "drizzle-zod"
-  - "drizzle/pg-core"
-  # Schema definitions
-  - "pgTable"
-  - "mysqlTable"
-  - "sqliteTable"
-  - "\\$inferInsert"
-  - "\\$inferSelect"
-  # Column types
-  - "text\\([\"']"
-  - "varchar\\([\"']"
-  - "boolean\\([\"']"
-  - "timestamp\\([\"']"
-  - "integer\\([\"']"
-  - "serial\\([\"']"
-  # Query operations
-  - "db\\.select"
-  - "db\\.insert"
-  - "db\\.update"
-  - "db\\.delete"
-  - "db\\.query"
-  - "db\\.transaction"
-  # Query helpers
-  - "\\beq\\("
-  - "\\band\\("
-  - "\\bor\\("
-  - "\\bdesc\\("
-  - "\\basc\\("
-  - "\\blike\\("
-  - "\\bilike\\("
-  # Migration and commands
-  - "db:generate"
-  - "db:migrate"
-  - "db:push"
-  - "db:studio"
+  - "pgTable|mysqlTable|sqliteTable"
+  - "db\\.select|db\\.insert|db\\.update"
+  - "db:generate|db:migrate|db:push|db:studio"
+  - "\\$inferInsert|\\$inferSelect"
   - "drizzle\\.config"
-  # Relationships
-  - "\\.references\\("
-  - "onDelete.*cascade"
   - "relations\\("
-  # User intent - database work
-  - "create.*table"
-  - "database.*schema"
-  - "add.*column"
-  - "run.*migration"
-  - "generate.*migration"
-  - "postgres.*query"
-  - "sql.*query"
-  - "foreign.*key"
-  - "database.*index"
-  - "orm.*query"
+  - "eq\\(|and\\(|or\\("
 ---
 
 <objective>

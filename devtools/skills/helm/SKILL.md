@@ -1,33 +1,27 @@
 ---
 name: helm
-description: Kubernetes Helm chart development. Use when asked to "create helm chart", "configure kubernetes deployment", or "add helm template". Covers values.yaml, templates, and subchart patterns.
+description: Use when creating Helm charts, configuring Kubernetes deployments, or adding Helm templates. Covers values.yaml, templates, and subchart patterns.
 license: MIT
 triggers:
-  [
-    "helm",
-    "helms",
-    "heml",
-    "chart\\.yaml",
-    "values\\.yaml",
-    "\\.tpl$",
-    "_helpers\\.tpl",
-    "kubernetes",
-    "k8s",
-    "kube",
-    "deploy.*kubernetes",
-    "kubernetes.*deploy",
-    "subchart",
-    "helm\\s+(install|upgrade|template|lint|package)",
-    "\\{\\{-?\\s*(define|include|template)",
-    "\\.Values\\.",
-    "\\.Release\\.",
-    "\\.Chart\\.",
-    "bitnami",
-    "artifacthub",
-    "chart\\s*dependenc",
-    "helm\\s*repo",
-    "helmfile",
-  ]
+  # Intent triggers
+  - "create helm chart"
+  - "configure kubernetes deployment"
+  - "add helm template"
+  - "deploy to kubernetes"
+  - "helm install"
+  - "helm upgrade"
+
+  # Artifact triggers
+  - "helm"
+  - "Chart\\.yaml"
+  - "values\\.yaml"
+  - "_helpers\\.tpl"
+  - "kubernetes"
+  - "k8s"
+  - "\\.Values\\."
+  - "\\.Release\\."
+  - "bitnami"
+  - "helmfile"
 ---
 
 <objective>

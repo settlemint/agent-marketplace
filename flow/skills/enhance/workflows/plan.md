@@ -1,31 +1,8 @@
----
-name: flow:enhance:plan
-description: Enhances the Plan agent with Rule of Five convergence. Enforces 5-pass refinement, parallelization mapping, merge wall detection, and evidence-based completion criteria.
-license: MIT
-triggers:
-  - "enhance.*plan"
-  - "plan.*enhancement"
-  - "planning"
-  - "create.*plan"
-  - "make.*plan"
-  - "write.*plan"
-  - "design.*plan"
-  - "implementation.*plan"
-  - "plan.*implementation"
-  - "plan.*approach"
-  - "step.*by.*step"
-  - "plan mode"
-  - "plan.*file"
-  - "\\.claude/plans"
----
-
-<objective>
+# Plan Agent Workflow
 
 Enhance the built-in Plan agent with iterative refinement discipline and execution efficiency patterns. Apply the Rule of Five: 5 passes before declaring a plan complete. Each pass broadens scope from tactical to strategic concerns. Additionally, plans must include parallelization mapping, merge wall detection, and evidence-based completion criteria.
 
-</objective>
-
-<quick_start>
+## Quick Start
 
 When creating implementation plans:
 
@@ -37,17 +14,13 @@ When creating implementation plans:
 
 Declare completion only when pass produces no significant changes.
 
-</quick_start>
-
-<plan_format>
+## Plan Format
 
 Concision above grammar. Every word earns its place.
 
 End each plan with unresolved questions list (if any exist).
 
-</plan_format>
-
-<five_pass_protocol>
+## Five-Pass Protocol
 
 | Pass            | Focus        | Key Questions                                |
 | --------------- | ------------ | -------------------------------------------- |
@@ -57,9 +30,7 @@ End each plan with unresolved questions list (if any exist).
 | 4. Architecture | Patterns     | Right abstractions? Coupling concerns?       |
 | 5. Strategic    | Alignment    | Right problem? Right approach? Future-proof? |
 
-</five_pass_protocol>
-
-<convergence_signals>
+## Convergence Signals
 
 Stop iterating when:
 
@@ -67,9 +38,7 @@ Stop iterating when:
 - No structural changes in last 2 passes
 - You can honestly say "this is as good as it can get"
 
-</convergence_signals>
-
-<parallelization_mapping>
+## Parallelization Mapping
 
 For each plan step, mark execution mode:
 
@@ -91,9 +60,7 @@ Example plan structure:
 
 Parallelization enables 2-5x faster execution via orchestrator fan-out.
 
-</parallelization_mapping>
-
-<merge_wall_detection>
+## Merge Wall Detection
 
 Flag steps that create **merge walls** - points where parallel work MUST serialize:
 
@@ -114,9 +81,7 @@ Flag steps that create **merge walls** - points where parallel work MUST seriali
 
 **Strategy:** Front-load merge walls early in the plan, then parallelize remaining work.
 
-</merge_wall_detection>
-
-<evidence_definition>
+## Evidence Definition
 
 Each plan step MUST define completion evidence. No step is complete without observable proof.
 
@@ -141,9 +106,7 @@ Each plan step MUST define completion evidence. No step is complete without obse
 
 **Why this matters:** Prevents "should work" thinking. Orchestrator can verify completion objectively.
 
-</evidence_definition>
-
-<codex_integration>
+## Codex Integration
 
 Use Codex MCP for deep reasoning during planning:
 
@@ -210,9 +173,7 @@ mcp__plugin_devtools_codex__codex({
 - Complex refactoring with unclear best approach
 - Plans touching >10 files
 
-</codex_integration>
-
-<tdd_in_plans>
+## TDD in Plans
 
 **Every implementation step MUST include TDD.**
 
@@ -241,9 +202,7 @@ Load: Skill({ skill: "devtools:tdd-typescript" })
 TDD REQUIRED: Write failing test FIRST
 ```
 
-</tdd_in_plans>
-
-<success_criteria>
+## Success Criteria
 
 - [ ] Plan underwent at least 3 review passes
 - [ ] Each pass documented its focus and findings
@@ -255,9 +214,7 @@ TDD REQUIRED: Write failing test FIRST
 - [ ] Each implementation step includes TDD requirement
 - [ ] Worker preambles include TDD skill loading
 
-</success_criteria>
-
-<constraints>
+## Constraints
 
 - Minimum 3 passes required - no single-pass plans
 - Every step needs `[parallel]` or `[serial]` marker - no ambiguity
@@ -265,35 +222,10 @@ TDD REQUIRED: Write failing test FIRST
 - Evidence required for each step - no "should work" acceptance
 - TDD mandatory for all implementation steps - tests before code
 
-</constraints>
-
-<anti_patterns>
+## Anti-Patterns
 
 - **Single-pass planning**: Shipping first draft misses tactical and strategic issues.
 - **Implicit dependencies**: Steps without `[serial]`/`[parallel]` markers cause race conditions.
 - **Buried merge walls**: Late restructuring blocks all parallel work.
 - **Vague completion**: "Implement auth" without evidence criteria is unverifiable.
 - **TDD-optional steps**: Skipping test-first leads to untested code paths.
-
-</anti_patterns>
-
-<related_skills>
-
-| Skill                                         | Relationship                         |
-| --------------------------------------------- | ------------------------------------ |
-| `Skill({ skill: "flow:enhance:explore" })`    | Exploration precedes planning        |
-| `Skill({ skill: "devtools:tdd-typescript" })` | TDD enforcement for implementation   |
-| `Skill({ skill: "devtools:rule-of-five" })`   | Source of 5-pass convergence pattern |
-
-</related_skills>
-
-<evolution>
-
-**Extension points:**
-
-- Custom pass types via `passes[]` in frontmatter
-- Team-specific evidence validators
-- Integration with project management tools for task sync
-- Custom merge wall detection rules per codebase
-
-</evolution>

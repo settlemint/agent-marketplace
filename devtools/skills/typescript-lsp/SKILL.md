@@ -1,28 +1,23 @@
 ---
 name: typescript-lsp
-description: Language Server Protocol tools for code navigation, type analysis, and semantic code understanding
+description: Use when navigating code semantically, finding references, or tracing call hierarchies. Covers LSP tools for type-aware code analysis.
 license: MIT
 triggers:
+  # Intent triggers
   - "go to definition"
-  - "goto definition"
   - "find references"
-  - "find usages"
-  - "find all references"
-  - "call hierarchy"
-  - "who calls"
-  - "what calls"
-  - "where is .* defined"
-  - "jump to"
-  - "navigate to"
+  - "find all usages"
+  - "who calls this"
+  - "where is this defined"
+  - "trace call hierarchy"
+
+  # Artifact triggers
   - "lsp"
-  - "language server"
   - "lspGotoDefinition"
   - "lspFindReferences"
   - "lspCallHierarchy"
   - "lineHint"
-  - "symbol lookup"
-  - "type definition"
-  - "hover information"
+  - "language server"
 ---
 
 <objective>

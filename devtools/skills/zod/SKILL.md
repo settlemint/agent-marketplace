@@ -1,66 +1,20 @@
 ---
 name: zod
-description: Zod v4 schema patterns. Use when asked to "validate input", "add form validation", or "create schema". For projects using Zod validation library.
+description: Use when validating input, creating schemas, or type-safe parsing. Zod v4 schema patterns for runtime validation.
 license: MIT
 triggers:
-  # Library name
-  - "\\bzod\\b"
-  - 'from ["'']zod["'']'
-  # Basic types
-  - "z\\.object"
-  - "z\\.string"
-  - "z\\.number"
-  - "z\\.boolean"
-  - "z\\.array"
-  - "z\\.enum"
-  - "z\\.literal"
-  - "z\\.union"
-  - "z\\.tuple"
-  - "z\\.record"
-  - "z\\.map"
-  - "z\\.set"
-  - "z\\.date"
-  - "z\\.bigint"
-  # Type inference
+  # Intent triggers
+  - "validate input"
+  - "form validation"
+  - "create schema"
+  - "type safe validation"
+
+  # Artifact triggers
+  - "zod"
+  - "z\\.object|z\\.string|z\\.number"
   - "z\\.infer"
-  - "z\\.input"
-  - "z\\.output"
-  # Validation methods
-  - "\\.parse\\("
-  - "\\.safeParse\\("
-  - "\\.parseAsync\\("
-  # Schema modifiers
-  - "\\.optional\\("
-  - "\\.nullable\\("
-  - "\\.transform\\("
-  - "\\.refine\\("
-  - "\\.superRefine\\("
-  - "\\.meta\\("
-  - "\\.describe\\("
-  # Zod v4 specific
-  - "z\\.xor"
-  - "\\.exactOptional"
-  - "\\.apply\\("
-  - "z\\.looseRecord"
-  # Composition
-  - "\\.pick\\("
-  - "\\.omit\\("
-  - "\\.extend\\("
-  - "\\.merge\\("
-  - "\\.partial\\("
-  - "\\.required\\("
-  # User intent - validation
-  - "validate.*input"
-  - "form.*validation"
-  - "schema.*validation"
-  - "type.*safe.*validation"
-  - "input.*validation"
-  - "api.*validation"
-  - "request.*validation"
-  - "runtime.*type.*check"
-  - "parse.*json"
-  - "validate.*data"
-  - "zod.*schema"
+  - "\\.parse\\(|\\.safeParse\\("
+  - "\\.refine\\(|\\.transform\\("
 ---
 
 <objective>

@@ -1,33 +1,24 @@
 ---
 name: pino
-description: Pino fast JSON logger for Node.js. Use when asked to "add logging", "setup structured logging", or "configure logger". Covers log levels, child loggers, transports, and redaction.
+description: Use when adding logging, setting up structured logging, or configuring a logger. Covers Pino log levels, child loggers, transports, and redaction.
 license: MIT
 triggers:
-  [
-    "pino",
-    "pino-pretty",
-    "pino-http",
-    "pinojs",
-    "logger\\.info",
-    "logger\\.error",
-    "logger\\.warn",
-    "logger\\.debug",
-    "logger\\.fatal",
-    "logger\\.trace",
-    "log\\.info",
-    "log\\.error",
-    "log\\.warn",
-    "log\\.debug",
-    "child\\s*logger",
-    "structured\\s*log",
-    "json\\s*log",
-    "log.*transport",
-    "log.*redact",
-    "request.*log",
-    "node.*logger",
-    "fast.*logger",
-    "log\\s*level",
-  ]
+  # Intent triggers
+  - "add logging"
+  - "setup structured logging"
+  - "configure logger"
+  - "add request logging"
+  - "setup json logging"
+
+  # Artifact triggers
+  - "pino"
+  - "pino-pretty"
+  - "pino-http"
+  - "logger\\.info"
+  - "logger\\.error"
+  - "child\\s*logger"
+  - "log.*transport"
+  - "log.*redact"
 ---
 
 <objective>

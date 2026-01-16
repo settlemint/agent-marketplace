@@ -1,55 +1,27 @@
 ---
 name: radix
-description: Radix UI primitives for accessible React components. Use when asked to "create modal", "add dropdown menu", or "build accessible dialog". Covers dialogs, dropdowns, popovers, and form controls.
+description: Use when creating modals, adding dropdown menus, or building accessible dialogs. Covers Radix UI primitives for dialogs, dropdowns, popovers, and form controls.
 license: MIT
-triggers: [
-    # Library name and imports
-    "\\bradix\\b",
-    "@radix-ui",
-    'from [''"]@radix-ui',
+triggers:
+  # Intent triggers
+  - "create modal"
+  - "add dropdown menu"
+  - "build accessible dialog"
+  - "create popover"
+  - "add tooltip"
+  - "accessible component"
+  - "headless component"
 
-    # Core components (case-insensitive for user queries)
-    "\\b(Dialog|Modal|AlertDialog)\\b",
-    "\\b(Popover|Tooltip|HoverCard)\\b",
-    "\\b(DropdownMenu|ContextMenu|MenuBar)\\b",
-    "\\bSelect\\b",
-    "\\b(Tabs|TabsList|TabsContent)\\b",
-    "\\b(Accordion|Collapsible)\\b",
-    "\\b(Checkbox|RadioGroup|Switch|Toggle)\\b",
-    "\\b(Slider|ScrollArea|Progress)\\b",
-    "\\b(Avatar|AspectRatio|Separator)\\b",
-    "\\b(NavigationMenu|Toolbar)\\b",
-    "\\bToast\\b",
-
-    # Radix patterns and APIs
-    "\\basChild\\b",
-    "\\b\\.Root\\b",
-    "\\b\\.Trigger\\b",
-    "\\b\\.Content\\b",
-    "\\b\\.Portal\\b",
-    "\\bonOpenChange\\b",
-
-    # Accessibility intent
-    "\\b(accessible|a11y|accessibility)\\s+(component|ui|dialog|modal|menu)\\b",
-    "\\b(keyboard|focus|screen\\s*reader)\\s+(navigation|support|friendly)\\b",
-    "\\b(aria|role|focus\\s+trap|focus\\s+management)\\b",
-    "\\bwcag\\b",
-
-    # Intent-based patterns
-    "\\b(unstyled|headless)\\s+(component|ui|primitive)\\b",
-    "\\b(build|create|add)\\s+(a\\s+)?(modal|dialog|dropdown|popover|tooltip|menu)\\b",
-    "\\b(primitive|composable)\\s+component\\b",
-
-    # Common use cases
-    "\\b(confirmation|alert)\\s+(dialog|modal)\\b",
-    "\\b(action|context|right.?click)\\s+menu\\b",
-    "\\b(toggle|boolean|switch)\\s+(input|control)\\b",
-    "\\b(collapsible|expandable|accordion)\\s+(section|panel|content)\\b",
-
-    # Common typos
-    "\\bradiks\\b",
-    "\\bradiux\\b",
-  ]
+  # Artifact triggers
+  - "radix"
+  - "@radix-ui"
+  - "Dialog\\.Root"
+  - "DropdownMenu"
+  - "Popover"
+  - "Tooltip"
+  - "asChild"
+  - "onOpenChange"
+  - "focus trap"
 ---
 
 <objective>

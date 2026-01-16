@@ -1,48 +1,26 @@
 ---
 name: solidity
-description: Solidity smart contract development with Foundry. Use when asked to "write smart contract", "create token", or "deploy contract". Covers writing, testing, security, deployment, and upgrades.
+description: Use when writing smart contracts, tokens, or deploying to blockchain. Solidity development with Foundry, security patterns, and OpenZeppelin.
 license: MIT
-triggers: [
-    # File patterns
-    "\\.sol$",
-    "\\bcontract\\s+\\w+",
-    "pragma\\s+solidity",
+triggers:
+  # Intent triggers
+  - "write smart contract"
+  - "create token"
+  - "deploy contract"
+  - "audit contract"
+  - "gas optimization"
 
-    # Tools and frameworks
-    "\\b(forge|foundry|hardhat|anvil|cast)\\b",
-    "\\b(truffle|brownie|remix)\\b",
-
-    # Language keywords
-    "\\bsolidity\\b",
-    "\\b(modifier|require|revert|emit)\\b",
-    "\\bmsg\\.(sender|value|data)\\b",
-    "\\b(payable|view|pure|external|internal)\\b",
-    "\\b(mapping|struct|enum)\\s*\\(",
-
-    # Standards and patterns
-    "\\bERC-?(20|721|1155|4337|4626)\\b",
-    "\\b(erc20|erc721|nft|token)\\b",
-    "\\bopenzeppelin\\b",
-    "\\b(ownable|pausable|accesscontrol)\\b",
-    "\\b(reentrancy|cei pattern)\\b",
-
-    # Development intents
-    "smart\\s*contract",
-    "deploy.*(contract|mainnet|testnet)",
-    "(write|create|build).*(contract|token)",
-    "gas\\s*(optimi|efficien|cost)",
-    "upgrade.*proxy",
-    "(uups|transparent).*proxy",
-
-    # Testing
-    "\\bforge\\s+(test|coverage|fuzz)",
-    "invariant\\s+test",
-
-    # Security
-    "(audit|secur|vulnerab).*contract",
-    "\\bslither\\b",
-    "\\bmythril\\b",
-  ]
+  # Artifact triggers
+  - "\\.sol$"
+  - "pragma solidity"
+  - "forge|foundry|hardhat"
+  - "ERC-?(20|721|1155)"
+  - "openzeppelin"
+  - "msg\\.sender"
+  - "require|revert|emit"
+  - "payable|external|internal"
+  - "reentrancy|CEI pattern"
+  - "slither|mythril"
 ---
 
 <objective>

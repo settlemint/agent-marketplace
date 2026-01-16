@@ -1,21 +1,23 @@
 ---
 name: code-health
-description: Systematic code health audit for YAGNI, dead code, duplication, and technical debt
+description: Use when auditing code quality, finding dead code, or identifying technical debt. Covers YAGNI violations, duplication, code smells, and cleanup recommendations.
 license: MIT
 triggers:
-  - health
-  - audit
-  - code smell
-  - dead code
-  - YAGNI
-  - duplication
-  - tech debt
-  - technical debt
-  - cleanup
-  - refactor.*opportunit
-  - find.*issues
-  - what.*wrong.*codebase
-  - quality.*check
+  # Intent triggers
+  - "code health audit"
+  - "find dead code"
+  - "technical debt review"
+  - "code quality check"
+  - "find code smells"
+  - "cleanup opportunities"
+  - "refactor opportunities"
+  - "what's wrong with codebase"
+
+  # Artifact triggers
+  - "YAGNI"
+  - "duplication"
+  - "unused code"
+  - "tech debt"
 ---
 
 <objective>

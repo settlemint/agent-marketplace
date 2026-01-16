@@ -1,48 +1,26 @@
 ---
 name: vercel-design-guidelines
-description: Check web interfaces against Vercel's design guidelines. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", "check my site against best practices", or "apply Vercel design guidelines".
+description: Use when reviewing UI, checking accessibility, or auditing design against best practices. Covers Vercel's guidelines for interactions, animations, forms, and a11y.
 license: MIT
 triggers:
-  # Explicit mentions
-  - "vercel.*design"
-  - "vercel.*guidelines?"
-  - "vercel.*best practices"
-  # UI review intent
-  - "review (my |the )?ui"
-  - "review (my |the )?ux"
-  - "audit (my |the )?(ui|ux|design)"
-  - "check (my |the )?(ui|ux|design)"
-  - "critique (my |the )?(ui|ux|design)"
-  - "feedback.*(ui|ux|design)"
-  # Accessibility review
+  # Intent triggers
+  - "review my UI"
   - "check accessibility"
-  - "accessibility audit"
-  - "a11y (check|review|audit)"
-  - "wcag (compliance|check|review)"
-  - "aria.*review"
-  - "keyboard (accessibility|navigation)"
-  - "focus (management|trap|ring)"
-  - "screen reader"
-  # Design system checks
-  - "design (system )?review"
-  - "design guidelines"
-  - "ui (best )?practices"
-  - "ux (best )?practices"
-  - "interface.*review"
-  # Specific guideline categories
-  - "animation.*guidelines?"
-  - "reduced[- ]?motion"
-  - "loading state"
-  - "form (validation|ux)"
-  - "error (message|handling).*ux"
+  - "audit design"
+  - "review UX"
+  - "check against best practices"
+  - "improve UI"
+
+  # Artifact triggers
+  - "vercel design"
+  - "vercel guidelines"
+  - "a11y audit"
+  - "wcag"
+  - "keyboard navigation"
+  - "focus management"
   - "hit target"
   - "color contrast"
-  - "apca"
-  # Intent patterns
-  - "(is|are) (my |the )?(ui|design|interface).*good"
-  - "improve (my |the )?(ui|ux|design)"
-  - "polish (my |the )?(ui|ux|design)"
-  - "what('s| is) wrong.*(ui|ux|design)"
+  - "reduced motion"
 ---
 
 <objective>

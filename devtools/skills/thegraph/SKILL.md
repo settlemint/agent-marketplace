@@ -1,53 +1,25 @@
 ---
 name: thegraph
-description: TheGraph subgraph development with AssemblyScript. Use when asked to "index blockchain events", "create subgraph", or "query on-chain data". Covers schema definitions, handlers, and Matchstick testing.
+description: Use when indexing blockchain events, creating subgraphs, or querying on-chain data. Covers TheGraph schema definitions, AssemblyScript handlers, and Matchstick testing.
 license: MIT
-triggers: [
-    # Library and tool names
-    "\\bthe\\s*graph\\b",
-    "\\bsubgraph\\b",
-    "\\bgraph-?(ts|cli|node)\\b",
-    "\\b@graphprotocol\\b",
-    "\\bmatchstick\\b",
+triggers:
+  # Intent triggers
+  - "index blockchain events"
+  - "create subgraph"
+  - "query on-chain data"
+  - "build blockchain indexer"
+  - "handle transfer events"
 
-    # File patterns
-    "mapping\\.ts",
-    "schema\\.graphql",
-    "subgraph\\.(yaml|yml)",
-    "\\bgenerated/schema\\b",
-
-    # CLI commands
-    "\\bgraph\\s+(init|codegen|build|deploy|test)\\b",
-
-    # AssemblyScript patterns
-    "\\bAssemblyScript\\b",
-    "\\b\\.save\\(\\)\\b",
-    "\\b(BigInt|BigDecimal|Bytes|Address)\\.from",
-    "\\bentity\\.(load|save)\\b",
-    "\\bevent\\.params\\b",
-    "\\bevent\\.(block|transaction)\\b",
-
-    # Schema patterns
-    "@entity",
-    "\\btype\\s+\\w+\\s+@entity",
-
-    # Testing
-    "\\b(createMockedFunction|newMockEvent|assert\\.fieldEquals)\\b",
-
-    # Indexing intents
-    "(index|query).*(blockchain|events|chain)",
-    "(build|create|deploy).*subgraph",
-    "blockchain.*indexer",
-    "(listen|handle).*(events|transfers|swaps)",
-
-    # Common entity types
-    "\\b(Transfer|Swap|Deposit|Withdrawal)\\s+@entity",
-
-    # Data source patterns
-    "\\bdataSource\\b",
-    "\\beventHandlers\\b",
-    "\\bcallHandlers\\b",
-  ]
+  # Artifact triggers
+  - "the graph"
+  - "subgraph"
+  - "@graphprotocol"
+  - "matchstick"
+  - "schema\\.graphql"
+  - "@entity"
+  - "\\.save\\(\\)"
+  - "graph codegen"
+  - "AssemblyScript"
 ---
 
 <objective>

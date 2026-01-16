@@ -240,8 +240,11 @@ parse_skill_frontmatter() {
   [[ ${#triggers[@]} -eq 0 ]] && return
 
   # Build full skill name (plugin:skill format)
+  # Only prepend plugin name if skill doesn't already have it as prefix
   local full_name="$skill_name"
-  [[ -n "$plugin_name" ]] && full_name="$plugin_name:$skill_name"
+  if [[ -n "$plugin_name" ]] && [[ "$skill_name" != "$plugin_name:"* ]]; then
+    full_name="$plugin_name:$skill_name"
+  fi
 
   # Join triggers with | to form a single regex pattern
   local pattern

@@ -1,56 +1,22 @@
 ---
 name: viem
-description: Viem blockchain client patterns for Ethereum. Use when asked to "interact with blockchain", "send transaction", or "read smart contract". Covers transactions, signing, encoding, and contract calls.
+description: Use when interacting with Ethereum, sending transactions, or reading contracts. Viem blockchain client patterns.
 license: MIT
-triggers: [
-    # Library name and imports
-    "\\bviem\\b",
-    "\\b(from|import)\\s+['\"]viem",
-    "viem/(chains|accounts|actions)",
+triggers:
+  # Intent triggers
+  - "interact with blockchain"
+  - "send transaction"
+  - "read contract"
+  - "sign message"
 
-    # Client patterns
-    "\\b(public|wallet|test)Client\\b",
-    "\\bcreate(Public|Wallet|Test)Client\\b",
-    "\\b(http|webSocket)\\(\\)",
-
-    # Core functions
-    "\\b(read|write|simulate)Contract\\b",
-    "\\b(send|sign)Transaction\\b",
-    "\\bsign(Message|TypedData)\\b",
-    "\\bwaitForTransactionReceipt\\b",
-
-    # Encoding/decoding
-    "\\b(encode|decode)(FunctionData|FunctionResult|AbiParameters|EventLog)\\b",
-    "\\b(parse|format)(Ether|Units|Gwei)\\b",
-
-    # Account utilities
-    "\\bprivateKeyToAccount\\b",
-    "\\bmnemonicToAccount\\b",
-    "\\bgetAddress\\b",
-    "\\bisAddress\\b",
-
-    # Chain utilities
-    "\\bdefineChain\\b",
-    "\\b(mainnet|sepolia|polygon|arbitrum|optimism)\\b",
-
-    # Standards
-    "\\bEIP-?712\\b",
-    "\\btyped\\s*data\\b",
-    "\\bERC-?4337\\b",
-    "\\buser\\s*operation\\b",
-
-    # Migration intents
-    "(migrate|switch|replace).*(ethers|web3)",
-    "ethers.*alternative",
-    "\\bethers\\.?js\\b.*viem",
-
-    # Development intents
-    "(connect|interact).*(blockchain|ethereum|chain)",
-    "(send|sign).*(transaction|message)",
-    "(read|call|query).*(contract|blockchain)",
-    "\\babi\\b.*typescript",
-    "type.?safe.*contract",
-  ]
+  # Artifact triggers
+  - "viem"
+  - "publicClient|walletClient"
+  - "readContract|writeContract"
+  - "sendTransaction|signTransaction"
+  - "parseEther|formatEther"
+  - "privateKeyToAccount"
+  - "EIP-?712"
 ---
 
 <objective>

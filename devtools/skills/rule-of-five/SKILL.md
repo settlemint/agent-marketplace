@@ -1,46 +1,23 @@
 ---
 name: rule-of-five
-description: Multi-pass convergence pattern for designs, plans, implementations, and reviews. 5 iterations until quality converges.
+description: Use when iterating on designs, plans, or implementations until quality converges. Covers the 5-pass multi-review pattern from code to architecture.
 license: MIT
 triggers:
-  # Explicit mentions
+  # Intent triggers
   - "rule of five"
-  - "rule of 5"
-  - "5[- ]?pass"
-  - "five[- ]?pass"
-  - "multi[- ]?pass"
-  # Convergence patterns
-  - "convergence"
-  - "converge"
-  - "iterate.*until"
-  - "iterative (review|refinement|improvement)"
-  # Review intent
-  - "review.*again"
-  - "review.*(multiple|several|few) times?"
-  - "keep review"
-  - "another (pass|review|iteration)"
-  - "one more (pass|review|look)"
+  - "multi-pass review"
+  - "iterate until good"
+  - "review again"
   - "deeper review"
   - "thorough review"
-  # Quality improvement intent
-  - "make (it |this )?better"
-  - "improve.*quality"
-  - "not good enough"
-  - "can (we |you )?do better"
-  - "polish.*until"
-  - "refine.*until"
-  # Specific use cases
-  - "review (my |this )?(design|plan|code|implementation)"
-  - "check (my |this )?work"
-  - "self[- ]?review"
-  - "as good as (it |we )?can"
-  - "highest quality"
-  # Escalating review
-  - "escalat(e|ing) review"
+  - "make it better"
+  - "improve quality"
+
+  # Artifact triggers
+  - "convergence"
+  - "iterative refinement"
   - "architecture review"
-  - "existential review"
-  - "strategic review"
-  - "deep dive"
+  - "self-review"
 ---
 
 <objective>

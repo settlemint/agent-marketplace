@@ -1,19 +1,21 @@
 ---
 name: codex-patterns
-description: Patterns for using Codex MCP for deep code reasoning, security analysis, and architecture review
+description: Use when performing deep code analysis, security review, or architecture decisions. Covers Codex MCP patterns for reasoning, OWASP, and threat modeling.
 license: MIT
 triggers:
-  - codex
-  - deep analysis
-  - security review
-  - architecture review
-  - owasp
-  - vulnerability
-  - threat model
-  - code reasoning
-  - explain.*code
-  - analyze.*code
-  - review.*security
+  # Intent triggers
+  - "deep code analysis"
+  - "security review"
+  - "architecture review"
+  - "explain this code"
+  - "analyze code"
+  - "threat model"
+
+  # Artifact triggers
+  - "codex"
+  - "owasp"
+  - "vulnerability"
+  - "code reasoning"
 ---
 
 <objective>
