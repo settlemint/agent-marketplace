@@ -22,8 +22,8 @@ if [[ -z "$PROMPT" ]]; then
   exit 0
 fi
 
-# Convert to lowercase for pattern matching
-PROMPT_LOWER="${PROMPT,,}"
+# Convert to lowercase for pattern matching (POSIX-compatible)
+PROMPT_LOWER=$(echo "$PROMPT" | tr '[:upper:]' '[:lower:]')
 
 # Correction patterns - signals user is redirecting Claude
 # These indicate a change in direction that should be captured as a learning
