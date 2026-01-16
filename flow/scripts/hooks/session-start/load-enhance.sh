@@ -15,8 +15,10 @@ set +e
 EVENT_DATA=$(cat)
 
 # Skip for subagents - they should load skills via prompt instructions
+# Use tr for lowercase conversion (bash 3.2 compatible, avoids ${var,,} syntax)
 AGENT_TYPE=$(echo "$EVENT_DATA" | jq -r '.agent_type // "main"' 2>/dev/null || echo "main")
-if [[ "${AGENT_TYPE,,}" != "main" ]]; then
+AGENT_TYPE_LOWER=$(echo "$AGENT_TYPE" | tr '[:upper:]' '[:lower:]')
+if [[ "$AGENT_TYPE_LOWER" != "main" ]]; then
   exit 0
 fi
 

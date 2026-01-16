@@ -134,7 +134,7 @@ For broad codebase exploration, spawn up to 3 Explore agents in parallel:
 
 ```javascript
 // Spawn exploration agents in a SINGLE message (parallel)
-Task({
+const authTask = Task({
   subagent_type: "Explore",
   description: "Explore auth patterns",
   prompt: `Search for authentication patterns:
@@ -147,7 +147,7 @@ Rate findings by confidence level.`,
   run_in_background: true,
 });
 
-Task({
+const dataTask = Task({
   subagent_type: "Explore",
   description: "Explore data layer",
   prompt: `Search for data access patterns:
@@ -159,7 +159,7 @@ Cite specific file:line for all findings.`,
   run_in_background: true,
 });
 
-Task({
+const testTask = Task({
   subagent_type: "Explore",
   description: "Explore testing patterns",
   prompt: `Search for testing patterns:

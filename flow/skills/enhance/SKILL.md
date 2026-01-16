@@ -31,6 +31,15 @@ Rule of Five is MANDATORY for ALL work. The skill provides:
 
 </load_first>
 
+<quick_start>
+
+1. **Load Rule of Five**: `Skill({ skill: "devtools:rule-of-five" })`
+2. **Identify domain** → load appropriate domain skill from routing table
+3. **Read coding rules** → check relevant rules before writing code
+4. **Apply 5-pass pattern** → iterate until convergence with evidence
+
+</quick_start>
+
 <agent_routing>
 
 When spawning Task agents, read the appropriate workflow:
