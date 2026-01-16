@@ -8,19 +8,13 @@
 # - General-purpose agent -> workflows/general-purpose.md
 # - Review tasks -> workflows/review.md
 # - Open PR context -> workflows/pr-awareness.md
+#
+# NOTE: This hook fires for all sessions. Subagents receive the skill-load tag
+# but should already have skill loading instructions in their prompts (per the
+# sub_agent_setup pattern in SKILL.md). The tag is harmless for subagents since
+# they either already loaded the skill or will follow their prompt instructions.
 
 set +e
-
-# Read event data from stdin
-EVENT_DATA=$(cat)
-
-# Skip for subagents - they should load skills via prompt instructions
-# Use tr for lowercase conversion (bash 3.2 compatible, avoids ${var,,} syntax)
-AGENT_TYPE=$(echo "$EVENT_DATA" | jq -r '.agent_type // "main"' 2>/dev/null || echo "main")
-AGENT_TYPE_LOWER=$(echo "$AGENT_TYPE" | tr '[:upper:]' '[:lower:]')
-if [[ "$AGENT_TYPE_LOWER" != "main" ]]; then
-  exit 0
-fi
 
 echo '<skill-load required="true">'
 echo 'REQUIRED: Load the enhance skill for Rule of Five convergence patterns.'
