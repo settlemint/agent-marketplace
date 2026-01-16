@@ -87,9 +87,9 @@ find_skill_files() {
   # Project plugins
   [[ -d "$PROJECT_DIR/.claude/plugins" ]] && dirs+=("$PROJECT_DIR/.claude/plugins")
 
-  # Scan for SKILL.md files (excluding enhance/ skills which are agent enhancers)
+  # Scan for SKILL.md files (including enhance/ skills for trigger matching)
   for dir in "${dirs[@]}"; do
-    find "$dir" -path "*/skills/*/SKILL.md" -type f 2>/dev/null | grep -v "/enhance/"
+    find "$dir" -path "*/skills/*/SKILL.md" -type f 2>/dev/null
   done | sort -u
 }
 
@@ -148,29 +148,67 @@ parse_skill_frontmatter() {
       continue
     fi
 
-    # Detect triggers section start
+    # Detect triggers section start (YAML list format: "triggers:")
     if [[ "$line" =~ ^triggers:[[:space:]]*$ ]]; then
       in_triggers=true
       continue
     fi
 
-    # End triggers section on new top-level key
+    # Detect triggers with JSON array format: "triggers: [" or "triggers:["
+    if [[ "$line" =~ ^triggers:[[:space:]]*\[(.*)$ ]]; then
+      in_triggers=true
+      # Handle inline items on same line: triggers: ["a", "b"]
+      local inline="${BASH_REMATCH[1]}"
+      # Extract all quoted strings from the inline content
+      while [[ "$inline" =~ [\"\']([^\"\']+)[\"\'] ]]; do
+        local matched_trigger="${BASH_REMATCH[1]}"
+        local trigger
+        trigger=$(sanitize_pattern "$matched_trigger")
+        triggers+=("$trigger")
+        # Remove matched portion by cutting after the matched string
+        inline="${inline#*\""$matched_trigger"\"}"
+        inline="${inline#*\'"$matched_trigger"\'}"
+      done
+      # Check if array closes on same line
+      if [[ "$inline" =~ \] ]]; then
+        in_triggers=false
+      fi
+      continue
+    fi
+
+    # End triggers section on new top-level key (for YAML list format)
     if [[ "$in_triggers" == "true" ]] && [[ "$line" =~ ^[a-z] ]]; then
       in_triggers=false
       continue
     fi
 
-    # Extract trigger items (  - "pattern" or  - 'pattern')
+    # Handle triggers content (both YAML list and JSON array formats)
     if [[ "$in_triggers" == "true" ]]; then
       local trigger=""
+
+      # Skip comments and empty lines in JSON arrays
+      [[ "$line" =~ ^[[:space:]]*# ]] && continue
+      [[ "$line" =~ ^[[:space:]]*$ ]] && continue
+
+      # End JSON array on closing bracket
+      if [[ "$line" =~ ^[[:space:]]*\] ]]; then
+        in_triggers=false
+        continue
+      fi
+
+      # YAML list format: "  - "pattern"" or "  - 'pattern'"
       if [[ "$line" =~ ^[[:space:]]+-[[:space:]]+[\"\'](.+)[\"\'][[:space:]]*$ ]]; then
         trigger="${BASH_REMATCH[1]}"
+      # YAML list format: "  - pattern" (unquoted)
       elif [[ "$line" =~ ^[[:space:]]+-[[:space:]]+(.+)[[:space:]]*$ ]]; then
-        # Unquoted trigger
         trigger="${BASH_REMATCH[1]}"
         trigger="${trigger#\"}"
         trigger="${trigger%\"}"
+      # JSON array format: "  "pattern"," or '  "pattern"'
+      elif [[ "$line" =~ ^[[:space:]]*[\"\']([^\"\']+)[\"\'][,]?[[:space:]]*$ ]]; then
+        trigger="${BASH_REMATCH[1]}"
       fi
+
       if [[ -n "$trigger" ]]; then
         # Sanitize the pattern for bash ERE compatibility
         trigger=$(sanitize_pattern "$trigger")

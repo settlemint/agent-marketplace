@@ -2,11 +2,23 @@
 name: flow:enhance:general-purpose
 description: Enhances the general-purpose agent with Rule of Five convergence. Enforces 30-second reality check, evidence-based completion, and explicit convergence signals.
 license: MIT
-# NOTE: This skill exceeds 300 lines. Consider extracting parallel_work_patterns
-# and worker_preamble_template to references/ subdirectory for leaner core.
 triggers:
   - "enhance.*general"
   - "general.*enhancement"
+  - "implement"
+  - "build"
+  - "create"
+  - "make.*component"
+  - "make.*function"
+  - "add.*feature"
+  - "add.*function"
+  - "add.*method"
+  - "develop"
+  - "code.*this"
+  - "write.*code"
+  - "refactor"
+  - "plan.*file"
+  - "\\.claude/plans"
 ---
 
 <objective>

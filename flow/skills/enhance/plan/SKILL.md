@@ -5,6 +5,18 @@ license: MIT
 triggers:
   - "enhance.*plan"
   - "plan.*enhancement"
+  - "planning"
+  - "create.*plan"
+  - "make.*plan"
+  - "write.*plan"
+  - "design.*plan"
+  - "implementation.*plan"
+  - "plan.*implementation"
+  - "plan.*approach"
+  - "step.*by.*step"
+  - "plan mode"
+  - "plan.*file"
+  - "\\.claude/plans"
 ---
 
 <objective>
