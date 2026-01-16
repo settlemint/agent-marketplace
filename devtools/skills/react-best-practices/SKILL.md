@@ -4,49 +4,49 @@ description: React and Next.js performance optimization guidelines from Vercel E
 license: MIT
 triggers: [
     # Performance keywords
-    "(?i)\\b(performance|perf|optimize|optimization|optimise)\\b",
-    "(?i)\\b(slow|fast|speed|latency|lag)\\b",
-    "(?i)\\b(improve|reduce|minimize|boost)\\s+(performance|speed|load\\s+time)\\b",
+    "\\b(performance|perf|optimize|optimization|optimise)\\b",
+    "\\b(slow|fast|speed|latency|lag)\\b",
+    "\\b(improve|reduce|minimize|boost)\\s+(performance|speed|load\\s+time)\\b",
 
     # Bundle and loading
-    "(?i)\\b(bundle|chunk|split|tree.?shak)\\b",
-    "(?i)\\b(lazy\\s+load|code\\s+split|dynamic\\s+import)\\b",
-    "(?i)\\b(bundle\\s+size|import\\s+cost|barrel\\s+file)\\b",
-    "(?i)\\bnext/dynamic\\b",
+    "\\b(bundle|chunk|split|tree.?shak)\\b",
+    "\\b(lazy\\s+load|code\\s+split|dynamic\\s+import)\\b",
+    "\\b(bundle\\s+size|import\\s+cost|barrel\\s+file)\\b",
+    "\\bnext/dynamic\\b",
 
     # Data fetching patterns
-    "(?i)\\b(waterfall|parallel|sequential)\\s+(fetch|request|load)\\b",
-    "(?i)\\b(data\\s+fetch|fetching\\s+pattern|fetch\\s+strategy)\\b",
-    "(?i)\\bPromise\\.all\\b",
-    "(?i)\\b(swr|react.?query|cache|dedup)\\b",
+    "\\b(waterfall|parallel|sequential)\\s+(fetch|request|load)\\b",
+    "\\b(data\\s+fetch|fetching\\s+pattern|fetch\\s+strategy)\\b",
+    "\\bPromise\\.all\\b",
+    "\\b(swr|react.?query|cache|dedup)\\b",
 
     # Re-render optimization
-    "(?i)\\b(re.?render|rerender|render\\s+cycle)\\b",
-    "(?i)\\b(memo|useMemo|useCallback|React\\.memo)\\b",
-    "(?i)\\b(unnecessary\\s+render|wasted\\s+render|render\\s+optimization)\\b",
+    "\\b(re.?render|rerender|render\\s+cycle)\\b",
+    "\\b(memo|useMemo|useCallback|React\\.memo)\\b",
+    "\\b(unnecessary\\s+render|wasted\\s+render|render\\s+optimization)\\b",
 
     # React/Next.js specific
-    "(?i)\\b(react|next\\.?js|nextjs)\\s+(best\\s+practice|pattern|guideline)\\b",
-    "(?i)\\b(server\\s+component|client\\s+component|rsc|ssr|ssg|isr)\\b",
-    "(?i)\\b(suspense|streaming|transition|startTransition)\\b",
-    "(?i)\\bReact\\.cache\\b",
+    "\\b(react|next\\.?js|nextjs)\\s+(best\\s+practice|pattern|guideline)\\b",
+    "\\b(server\\s+component|client\\s+component|rsc|ssr|ssg|isr)\\b",
+    "\\b(suspense|streaming|transition|startTransition)\\b",
+    "\\bReact\\.cache\\b",
 
     # Code review context
-    "(?i)\\b(review|audit|check)\\s+(performance|code|component)\\b",
-    "(?i)\\b(refactor|improve|clean\\s*up)\\s+(react|component|code)\\b",
+    "\\b(review|audit|check)\\s+(performance|code|component)\\b",
+    "\\b(refactor|improve|clean\\s*up)\\s+(react|component|code)\\b",
 
     # Vercel/Next.js ecosystem
-    "(?i)\\bvercel\\s+(guideline|pattern|engineering)\\b",
-    "(?i)\\b(app\\s+router|pages\\s+router|middleware)\\b",
+    "\\bvercel\\s+(guideline|pattern|engineering)\\b",
+    "\\b(app\\s+router|pages\\s+router|middleware)\\b",
 
     # Common performance issues
-    "(?i)\\b(memory\\s+leak|infinite\\s+loop|blocking)\\b",
-    "(?i)\\b(hydration|mismatch|flash)\\b",
-    "(?i)\\b(core\\s+web\\s+vitals|lcp|fid|cls|inp)\\b",
+    "\\b(memory\\s+leak|infinite\\s+loop|blocking)\\b",
+    "\\b(hydration|mismatch|flash)\\b",
+    "\\b(core\\s+web\\s+vitals|lcp|fid|cls|inp)\\b",
 
     # Intent-based
-    "(?i)why\\s+is\\s+(my|the|this)\\s+(app|page|component)\\s+slow",
-    "(?i)how\\s+to\\s+(speed\\s+up|optimize|improve)\\s+(react|next|my\\s+app)",
+    "why\\s+is\\s+(my|the|this)\\s+(app|page|component)\\s+slow",
+    "how\\s+to\\s+(speed\\s+up|optimize|improve)\\s+(react|next|my\\s+app)",
   ]
 ---
 

@@ -3,9 +3,9 @@ name: flow:init-enhanced
 description: Deep codebase analysis with progressive disclosure docs in .claude/docs/
 license: MIT
 triggers:
-  - "(?i)init.*enhanced"
-  - "(?i)bootstrap.*docs"
-  - "(?i)generate.*codebase.*docs"
+  - "init.*enhanced"
+  - "bootstrap.*docs"
+  - "generate.*codebase.*docs"
 ---
 
 <objective>

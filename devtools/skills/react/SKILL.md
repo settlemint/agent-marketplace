@@ -10,42 +10,42 @@ triggers: [
     "import.*React",
 
     # React core concepts
-    "(?i)react\\s*(19|component|hook|state|prop|context)",
-    "(?i)\\b(useState|useEffect|useRef|useMemo|useCallback|useContext|useReducer)\\b",
-    "(?i)\\b(use\\s+hook|custom\\s+hook|create\\s+hook)\\b",
-    "(?i)\\b(jsx|tsx|functional\\s+component|class\\s+component)\\b",
-    "(?i)\\b(server\\s+component|client\\s+component|rsc)\\b",
-    "(?i)\\b(suspense|lazy|concurrent)\\b",
+    "react\\s*(19|component|hook|state|prop|context)",
+    "\\b(useState|useEffect|useRef|useMemo|useCallback|useContext|useReducer)\\b",
+    "\\b(use\\s+hook|custom\\s+hook|create\\s+hook)\\b",
+    "\\b(jsx|tsx|functional\\s+component|class\\s+component)\\b",
+    "\\b(server\\s+component|client\\s+component|rsc)\\b",
+    "\\b(suspense|lazy|concurrent)\\b",
 
     # TanStack libraries
-    "(?i)tanstack",
-    "(?i)@tanstack/(router|query|form|table)",
-    "(?i)\\b(useQuery|useMutation|queryClient)\\b",
-    "(?i)\\b(useForm|form\\s+validation|field\\s+validation)\\b",
-    "(?i)\\b(useReactTable|columnDef|data\\s+table)\\b",
-    "(?i)\\b(createFileRoute|useNavigate|file.?based\\s+routing)\\b",
+    "tanstack",
+    "@tanstack/(router|query|form|table)",
+    "\\b(useQuery|useMutation|queryClient)\\b",
+    "\\b(useForm|form\\s+validation|field\\s+validation)\\b",
+    "\\b(useReactTable|columnDef|data\\s+table)\\b",
+    "\\b(createFileRoute|useNavigate|file.?based\\s+routing)\\b",
 
     # Tailwind CSS
-    "(?i)tailwind(css)?",
-    "(?i)\\bcn\\s*\\(",
-    "(?i)class.?name.*=",
-    "(?i)\\b(utility\\s+classes|responsive\\s+design)\\b",
+    "tailwind(css)?",
+    "\\bcn\\s*\\(",
+    "class.?name.*=",
+    "\\b(utility\\s+classes|responsive\\s+design)\\b",
 
     # Component patterns
-    "(?i)\\b(build|create|make|add|write)\\s+(a\\s+)?component\\b",
-    "(?i)\\b(button|card|modal|dialog|dropdown|menu|nav|header|footer|sidebar)\\s+component\\b",
-    "(?i)\\b(form|input|select|checkbox|radio|textarea)\\s+(component|field)\\b",
-    "(?i)\\b(list|grid|layout|container)\\s+component\\b",
+    "\\b(build|create|make|add|write)\\s+(a\\s+)?component\\b",
+    "\\b(button|card|modal|dialog|dropdown|menu|nav|header|footer|sidebar)\\s+component\\b",
+    "\\b(form|input|select|checkbox|radio|textarea)\\s+(component|field)\\b",
+    "\\b(list|grid|layout|container)\\s+component\\b",
 
     # UI/Frontend general
-    "(?i)\\b(ui|frontend|front.?end|user\\s+interface)\\b",
-    "(?i)\\b(render|display|show)\\s+(data|content|list|table)\\b",
-    "(?i)\\b(styled?|styling|css.?in.?js)\\b",
+    "\\b(ui|frontend|front.?end|user\\s+interface)\\b",
+    "\\b(render|display|show)\\s+(data|content|list|table)\\b",
+    "\\b(styled?|styling|css.?in.?js)\\b",
 
     # Common typos
-    "(?i)\\breact[0-9]*\\b",
-    "(?i)\\btailwnd\\b",
-    "(?i)\\btanstak\\b",
+    "\\breact[0-9]*\\b",
+    "\\btailwnd\\b",
+    "\\btanstak\\b",
   ]
 ---
 

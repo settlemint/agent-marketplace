@@ -48,16 +48,16 @@ triggers:
   - "onDelete.*cascade"
   - "relations\\("
   # User intent - database work
-  - "(?i)create.*table"
-  - "(?i)database.*schema"
-  - "(?i)add.*column"
-  - "(?i)run.*migration"
-  - "(?i)generate.*migration"
-  - "(?i)postgres.*query"
-  - "(?i)sql.*query"
-  - "(?i)foreign.*key"
-  - "(?i)database.*index"
-  - "(?i)orm.*query"
+  - "create.*table"
+  - "database.*schema"
+  - "add.*column"
+  - "run.*migration"
+  - "generate.*migration"
+  - "postgres.*query"
+  - "sql.*query"
+  - "foreign.*key"
+  - "database.*index"
+  - "orm.*query"
 ---
 
 <objective>
