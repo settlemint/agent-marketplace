@@ -1,7 +1,7 @@
 {
   "name": "flow",
   "description": "Hook-based agent enhancement and workflow automation for Claude Code. Enhances native Explore, Plan, and General-purpose agents with Rule of Five convergence patterns.",
-  "version": "1.21.0",
+  "version": "1.22.0",
   "author": {
     "name": "Roderik van der Veer",
     "email": "roderik@settlemint.com"
