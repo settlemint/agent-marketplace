@@ -35,6 +35,10 @@ triggers:
   - "resolve comment"
   - "pr feedback"
   - "conventional commit"
+  - "update pr"
+  - "sync pr"
+  - "refresh pr"
+  - "pr sync"
 ---
 
 <objective>
@@ -56,6 +60,7 @@ Route git tasks to the appropriate workflow. Handles commits, branches, PRs, pus
 | Create commit | `workflows/commit.md` | `/commit` |
 | Create branch | `workflows/branch-create.md` | `/branch` |
 | Create PR | `workflows/pr-create.md` | `/pr` |
+| Update PR | `workflows/pr-update.md` | `/pr-update` |
 | Push to remote | `workflows/push.md` | `/push` |
 | Sync with main | `workflows/sync.md` | `/sync` |
 | Fix PR reviews | `workflows/pr-fix-reviews.md` | `/fix-pr-reviews` |
@@ -69,6 +74,7 @@ Route git tasks to the appropriate workflow. Handles commits, branches, PRs, pus
 - "commit changes" / "save work" → Read `workflows/commit.md`
 - "create branch" / "new feature" → Read `workflows/branch-create.md`
 - "create PR" / "submit for review" → Read `workflows/pr-create.md`
+- "update pr" / "sync pr" / "refresh pr" → Read `workflows/pr-update.md`
 - "push" / "upload commits" → Read `workflows/push.md`
 - "sync" / "merge main" / "rebase" → Read `workflows/sync.md`
 - "fix pr" / "address review" / "resolve comments" → Read `workflows/pr-fix-reviews.md`
