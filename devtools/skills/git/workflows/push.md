@@ -81,11 +81,29 @@ In multi-Claude environments:
 
 </constraints>
 
+<pr_update>
+
+## Step 5: Update PR (if exists)
+
+After successful push, check if a PR exists and update it:
+
+```bash
+# Check if PR exists for current branch
+PR_NUM=$(gh pr view --json number -q '.number' 2>/dev/null)
+```
+
+If PR exists → read and follow `workflows/pr-update.md` to sync title/body with commits.
+
+If no PR → skip (user can create one with `/pr`).
+
+</pr_update>
+
 <success_criteria>
 
 - [ ] QA passed (if context showed "Stale")
 - [ ] Not pushing to protected branch
 - [ ] Using `-u` flag for new branches
 - [ ] Using `--force-with-lease` (not `--force`) if rebased
+- [ ] PR updated (if exists)
 
 </success_criteria>
