@@ -32,7 +32,7 @@ if [[ "$COMMAND" != *"git commit"* ]]; then
   exit 0
 fi
 
-log_info "event=COMMIT_DETECTED" "command_preview=${COMMAND:0:50}..."
+log_info "event=COMMIT_DETECTED"
 
 # No transcript - skip check
 if [[ -z "$TRANSCRIPT_PATH" || ! -f "$TRANSCRIPT_PATH" ]]; then
@@ -51,8 +51,8 @@ FILE_COUNT=$(jq -s '
 
 log_info "event=CHANGE_ANALYSIS" "file_count=$FILE_COUNT"
 
-# Only check for significant changes (>3 files)
-SIGNIFICANCE_THRESHOLD=3
+# Only check for significant changes (>=4 files, i.e., more than 3)
+SIGNIFICANCE_THRESHOLD=4
 if [[ "$FILE_COUNT" -lt "$SIGNIFICANCE_THRESHOLD" ]]; then
   log_info "event=SKIP_SMALL_CHANGE" "file_count=$FILE_COUNT" "threshold=$SIGNIFICANCE_THRESHOLD"
   exit 0

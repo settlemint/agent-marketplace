@@ -31,10 +31,20 @@ fi
 BASE_BRANCH="main"
 if [[ "$COMMAND" =~ --base[[:space:]]+([^[:space:]]+) ]]; then
   BASE_BRANCH="${BASH_REMATCH[1]}"
+elif [[ "$COMMAND" =~ --base=([^[:space:]]+) ]]; then
+  BASE_BRANCH="${BASH_REMATCH[1]}"
 fi
 
-# Calculate additions from diff against base
-ADDITIONS=$(git diff --stat "${BASE_BRANCH}...HEAD" 2>/dev/null | tail -1 | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+' || echo "0")
+# Get the head branch (default to HEAD)
+HEAD_REF="HEAD"
+if [[ "$COMMAND" =~ --head[[:space:]]+([^[:space:]]+) ]]; then
+  HEAD_REF="${BASH_REMATCH[1]}"
+elif [[ "$COMMAND" =~ --head=([^[:space:]]+) ]]; then
+  HEAD_REF="${BASH_REMATCH[1]}"
+fi
+
+# Calculate additions using numstat for reliable machine-parseable output
+ADDITIONS=$(git diff --numstat "${BASE_BRANCH}...${HEAD_REF}" 2>/dev/null | awk '{s+=$1} END {print s+0}')
 
 # Threshold for warning
 SIZE_THRESHOLD=500

@@ -195,9 +195,11 @@ Specs must NEVER contain these terms without definition:
 
 **Evidence scoring (used by commit gate):**
 
-- Pass mention alone: 1 point
-- Pass with evidence markers: 2 points
-- Minimum 6 points required (equivalent to 3 passes with evidence)
+- Pass with evidence: 2 points
+- Pass without evidence: 0 points (doesn't count)
+- Minimum: 3 passes, 3 evidence markers, 6 points total
+
+Note: Passes without evidence markers don't count toward the score.
 
 **Required for all work:**
 

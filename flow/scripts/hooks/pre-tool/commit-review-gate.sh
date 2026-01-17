@@ -9,9 +9,9 @@
 # - Blocks if score < 6 (3 passes with evidence)
 #
 # Scoring:
-# - Pass mention: 2 points
-# - Evidence marker: 0.5 points bonus (up to pass count)
-# - Minimum score: 6 (3 passes with some evidence)
+# - Pass with evidence: 2 points (pass without evidence: 0 points)
+# - Minimum: 3 passes, 3 evidence markers, 6 points total
+# - Evidence required: passes without evidence don't count
 #
 # Based on: https://addyosmani.com/blog/code-review-ai/
 # "The bottleneck moved from writing code to proving it works."
@@ -41,7 +41,7 @@ if [[ "$COMMAND" != *"git commit"* ]]; then
   exit 0
 fi
 
-log_info "event=COMMIT_DETECTED" "command_preview=${COMMAND:0:50}..."
+log_info "event=COMMIT_DETECTED"
 
 # Check for bypass flag in commit message
 if [[ "$COMMAND" == *"--skip-review"* ]]; then
@@ -80,35 +80,48 @@ PASS_COUNT=$(jq -s '
 
 # --- Check for evidence markers (proof over vibes) ---
 # Evidence includes: test output, code citations, FIXED markers, tool output
+# Match both singular and plural forms (test/tests, failure/failures, finding/findings)
 EVIDENCE_COUNT=$(jq -s '
   [.[] | .message.content[]? |
    select(.type == "text") | .text // ""] |
   join(" ") |
-  [match("(?i)(EVIDENCE:|✓ tests? pass|[0-9]+ tests?,? [0-9]+ fail|FIXED|Fixed in|\\w+\\.(ts|js|tsx|jsx|py|go|rs):[0-9]+|Codex found|security (scan|review)|No (new )?findings|converged)"; "g")] |
+  [match("(?i)(EVIDENCE:|✓ tests? pass|[0-9]+ tests?,? [0-9]+ (fail(ure)?s?|passed)|FIXED|Fixed in|\\w+\\.(ts|js|tsx|jsx|py|go|rs):[0-9]+|Codex found|security (scan|review)|No (new )?findings?|converged)"; "g")] |
   length
 ' "$TRANSCRIPT_PATH" 2>/dev/null || echo "0")
 
-# --- Calculate score: passes + evidence bonus ---
-# Pass mention: 1 point, evidence marker: 0.5 point bonus (up to matching pass count)
-EVIDENCE_BONUS=$((EVIDENCE_COUNT > PASS_COUNT ? PASS_COUNT : EVIDENCE_COUNT))
-TOTAL_SCORE=$((PASS_COUNT * 2 + EVIDENCE_BONUS))
+# --- Calculate score: passes with evidence required ---
+# Each pass contributes 2 points ONLY if there's corresponding evidence
+# This ensures passes without evidence don't count toward the minimum
+MIN_EVIDENCE_PER_PASS=1
+if [[ "$EVIDENCE_COUNT" -ge "$PASS_COUNT" ]]; then
+  # Enough evidence: each pass gets full 2 points
+  TOTAL_SCORE=$((PASS_COUNT * 2))
+else
+  # Not enough evidence: passes without evidence get 0 points
+  # Only count passes that have evidence (1 evidence = 1 pass counted)
+  TOTAL_SCORE=$((EVIDENCE_COUNT * 2))
+fi
 
 log_info "event=REVIEW_CHECK" "pass_count=$PASS_COUNT" "evidence_count=$EVIDENCE_COUNT" "total_score=$TOTAL_SCORE" "code_changes=$CODE_CHANGE_COUNT"
 
 # --- Block if insufficient score ---
-# Minimum 6 points = 3 passes with some evidence, or more passes with less evidence
+# Minimum 6 points = 3 passes, each with at least 1 evidence marker
+# Without evidence, passes don't count toward the score
 MIN_SCORE=6
 MIN_PASSES=3
+MIN_EVIDENCE=3
 
-if [[ "$PASS_COUNT" -lt "$MIN_PASSES" || "$TOTAL_SCORE" -lt "$MIN_SCORE" ]]; then
+if [[ "$PASS_COUNT" -lt "$MIN_PASSES" || "$EVIDENCE_COUNT" -lt "$MIN_EVIDENCE" || "$TOTAL_SCORE" -lt "$MIN_SCORE" ]]; then
   log_warn "event=COMMIT_BLOCKED" "pass_count=$PASS_COUNT" "evidence_count=$EVIDENCE_COUNT" "total_score=$TOTAL_SCORE" "required_score=$MIN_SCORE"
 
   REASON="Commit blocked: Rule of Five requires documented review passes WITH EVIDENCE.
 
 Code changes detected: $CODE_CHANGE_COUNT file(s)
 Review passes found: $PASS_COUNT (minimum $MIN_PASSES required)
-Evidence markers found: $EVIDENCE_COUNT
+Evidence markers found: $EVIDENCE_COUNT (minimum $MIN_EVIDENCE required)
 Total score: $TOTAL_SCORE (minimum $MIN_SCORE required)
+
+Note: Passes without evidence markers don't count toward the score.
 
 Before committing, document your review with evidence:
   1. Pass 1: Standard review - bugs, edge cases, test coverage
