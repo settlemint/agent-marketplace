@@ -87,6 +87,7 @@ Load domain skills based on task context:
 
 | Domain | Skill | Load When |
 |--------|-------|-----------|
+| Spec Writing | `Skill({ skill: "devtools:spec-writing" })` | Requirements, specs, project briefs, planning |
 | React/UI | `Skill({ skill: "devtools:react" })` | Components, tsx, hooks, tailwind |
 | Solidity | `Skill({ skill: "devtools:solidity" })` | Smart contracts, foundry, forge |
 | Database | `Skill({ skill: "devtools:drizzle" })` | Schemas, migrations, queries |
@@ -117,6 +118,7 @@ Load domain skills based on task context:
 - Load domain skill BEFORE starting work in that area
 - Multiple skills can be loaded for cross-cutting tasks
 - Skills provide patterns, MCP guidance, and constraints
+- **Load spec-writing when**: entering plan mode, writing requirements, creating project briefs, defining features
 
 </domain_routing>
 
@@ -126,6 +128,7 @@ Read relevant rules BEFORE writing code:
 
 | Rule | Summary | Path |
 |------|---------|------|
+| spec-writing | Six Core Areas, Boundaries, Goal Framing | `devtools/rules/spec-writing.md` |
 | architecture | Functional Core, Imperative Shell | `devtools/rules/architecture.md` |
 | srp | Single Responsibility Principle | `devtools/rules/srp.md` |
 | testing | TDD, coverage requirements | `devtools/rules/testing.md` |
@@ -137,6 +140,7 @@ Read relevant rules BEFORE writing code:
 | simplicity | KISS, avoid over-engineering | `devtools/rules/simplicity.md` |
 
 **When to read:**
+- `spec-writing` - Plan mode, requirements, specs, project briefs
 - `architecture` + `srp` - System design, new features
 - `testing` - Any code changes (TDD required)
 - `typescript` + `imports` - All TypeScript work

@@ -50,6 +50,7 @@ Achieve higher quality through iterative refinement. Have agents review their ow
 | Standard features | 3 |
 | Complex features, unfamiliar stack | 4-5 |
 | Critical systems, security-sensitive | 5+ |
+| **Specs and requirements** | 3-5 |
 </when_to_apply>
 
 <five_pass_phases>
@@ -61,6 +62,47 @@ Achieve higher quality through iterative refinement. Have agents review their ow
 | 4. Architecture Review | System-level concerns | Patterns? Dependencies? YAGNI violations? |
 | 5. Existential Review | Strategic alignment | Right problem? Right approach? Future-proof? |
 </five_pass_phases>
+
+<spec_convergence>
+
+## Spec-Specific Review Passes
+
+Apply Rule of Five to specifications with these focus areas:
+
+| Pass | Focus | Key Questions |
+|------|-------|---------------|
+| 1. Completeness | Coverage | All six core areas? Goal-oriented framing? |
+| 2. Clarity | Precision | Can agent implement with zero questions? |
+| 3. Testability | Verification | All success criteria measurable? |
+| 4. Boundaries | Safety | Always/Ask/Never defined? No vague language? |
+| 5. Strategic | Alignment | Right problem? Right scope? |
+
+## Spec Convergence Signals
+
+**STOP iterating when:**
+- All six core areas have specific, actionable content
+- An agent could implement without clarifying questions
+- Boundaries cover known risks and decisions
+- Success criteria are all testable
+
+**CONTINUE iterating when:**
+- Any core area is vague or missing
+- Success criteria contain subjective language ("works well", "is fast")
+- Boundaries don't cover obvious risk areas
+- You find yourself saying "they'll figure it out"
+
+## Banned Vague Language
+
+Specs must NEVER contain these terms without definition:
+- "appropriate" → specify exact criteria
+- "best practices" → name the practice or link standard
+- "as needed" → define trigger condition
+- "properly" → list specific validations
+- "handle errors" → specify: catch X, log Y, return Z
+
+**Load spec-writing skill for detailed guidance:** `Skill({ skill: "devtools:spec-writing" })`
+
+</spec_convergence>
 
 <workflow_index>
 | Workflow | Purpose |
@@ -75,6 +117,7 @@ Achieve higher quality through iterative refinement. Have agents review their ow
 |-----------|---------|
 | review-prompts.md | Escalating prompts for each pass level |
 | convergence-signals.md | How to detect when work has converged |
+| spec-review-prompts.md | Spec-specific review prompts for each pass |
 </reference_index>
 
 <constraints>

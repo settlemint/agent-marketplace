@@ -23,6 +23,29 @@ codex_verified: false
 
 <1-2 sentence description of what this plan accomplishes>
 
+## Goal-Oriented Framing
+
+| Question | Answer |
+|----------|--------|
+| **Who is the user?** | <target user/persona> |
+| **What do they need?** | <core requirement> |
+| **Why does this matter?** | <value proposition> |
+| **What does success look like?** | <measurable outcome> |
+
+## Boundaries
+
+### Always Do (without asking)
+- <specific action>
+- <specific action>
+
+### Ask First (high-impact decisions)
+- <decision needing approval>
+- <decision needing approval>
+
+### Never Do (categorically off-limits)
+- <prohibited action>
+- <prohibited action>
+
 ## User Stories
 
 - As a <user type>, I want <goal>, so that <benefit>
@@ -89,12 +112,35 @@ mcp__plugin_devtools_codex__codex({
 
 <Paste Codex security review output here>
 
+## Commands
+
+| Command | Purpose | When to Run |
+|---------|---------|-------------|
+| `bun run test` | Run test suite | Before every commit |
+| `bun run typecheck` | Check TypeScript types | Before commit |
+| `bun run lint` | Run linter | Before commit |
+
 ## Verification
 
 1. Run tests: `bun run test`
 2. Run typecheck: `bun run typecheck`
 3. Run lint: `bun run lint`
 4. Verify evidence for each step
+
+## Self-Verification Checklist
+
+Before finalizing plan:
+- [ ] Goal-oriented framing complete (Who/What/Why/Success)
+- [ ] Boundaries defined (Always/Ask/Never)
+- [ ] No vague language ("appropriate", "best practices", "as needed")
+- [ ] Success criteria are measurable
+- [ ] All steps have evidence criteria
+- [ ] TDD requirement included for code changes
+
+After implementation, audit:
+- [ ] All plan requirements addressed
+- [ ] All boundaries respected
+- [ ] All success criteria verified
 
 ## Open Questions
 
@@ -135,3 +181,29 @@ Plans MUST use Codex when:
 - Making architectural decisions
 - Involving security-sensitive features
 - Requiring complex trade-off analysis
+
+### Goal-Oriented Framing
+
+| Question | Purpose |
+|----------|---------|
+| Who is the user? | Target audience |
+| What do they need? | Core requirement |
+| Why does this matter? | Value proposition |
+| What does success look like? | Measurable criteria |
+
+### Three-Tier Boundary System
+
+| Tier | Symbol | Examples |
+|------|--------|----------|
+| Always | ✅ | Run tests, follow style guide |
+| Ask First | ⚠️ | New deps, schema changes |
+| Never | 🚫 | Commit secrets, edit vendor |
+
+### Banned Vague Language
+
+Never use without specific definition:
+- "appropriate"
+- "best practices"
+- "as needed"
+- "properly"
+- "handle errors"

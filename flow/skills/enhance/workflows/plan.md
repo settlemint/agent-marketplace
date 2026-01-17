@@ -6,6 +6,7 @@ Enhance the built-in Plan agent with iterative refinement discipline and executi
 
 When creating implementation plans:
 
+0. **Phase 0 - Specification**: Answer goal-oriented framing questions, define boundaries
 1. **Pass 1 - Generation**: Create initial plan structure
 2. **Pass 2 - Tactical Review**: Check completeness, missing steps, dependencies
 3. **Pass 3 - Quality Review**: Evaluate clarity, actionability, edge cases
@@ -14,16 +15,68 @@ When creating implementation plans:
 
 Declare completion only when pass produces no significant changes.
 
+## Phase 0: Specification (Before Planning)
+
+Before creating an implementation plan, complete the specification phase:
+
+### Goal-Oriented Framing
+
+Answer these questions first:
+
+| Question | Purpose |
+|----------|---------|
+| **Who is the user?** | Identifies target audience |
+| **What do they need?** | Defines core requirement |
+| **Why does this matter?** | Establishes value proposition |
+| **What does success look like?** | Creates measurable criteria |
+
+### Six Core Areas Checklist
+
+Ensure the plan will address:
+
+- [ ] **Commands** - What commands will be used/created?
+- [ ] **Testing** - What testing strategy applies?
+- [ ] **Project Structure** - What directories/files affected?
+- [ ] **Code Style** - What patterns to follow?
+- [ ] **Git Workflow** - Branch, commit format?
+- [ ] **Boundaries** - What should always/ask/never do?
+
+### Three-Tier Boundary Definition
+
+Define boundaries for the implementation:
+
+```
+✅ Always Do (without asking):
+- [list specific actions]
+
+⚠️ Ask First (high-impact decisions):
+- [list decisions needing approval]
+
+🚫 Never Do (categorically off-limits):
+- [list prohibited actions]
+```
+
+### Specification Complete When
+
+- [ ] Goal-oriented framing answered
+- [ ] Six core areas addressed
+- [ ] Boundaries defined (Always/Ask/Never)
+- [ ] Success criteria are measurable
+- [ ] No vague language ("appropriate", "best practices")
+
+**Load spec-writing skill:** `Skill({ skill: "devtools:spec-writing" })`
+
 ## Plan Format
 
 Concision above grammar. Every word earns its place.
 
 End each plan with unresolved questions list (if any exist).
 
-## Five-Pass Protocol
+## Specification + Five-Pass Protocol
 
-| Pass            | Focus        | Key Questions                                |
+| Phase/Pass      | Focus        | Key Questions                                |
 | --------------- | ------------ | -------------------------------------------- |
+| 0. Specification| Goal clarity | Who/What/Why/Success? Boundaries defined?    |
 | 1. Generate     | Initial plan | Does it cover the requirements?              |
 | 2. Tactical     | Completeness | Missing steps? Dependencies clear?           |
 | 3. Quality      | Clarity      | Is each step actionable? Edge cases?         |
@@ -220,6 +273,7 @@ TDD REQUIRED: Write failing test FIRST
 
 ## Success Criteria
 
+- [ ] **Specification phase complete** (goal-oriented framing, boundaries defined)
 - [ ] Plan underwent at least 3 review passes
 - [ ] Each pass documented its focus and findings
 - [ ] Final pass produced minimal or no changes
@@ -229,19 +283,38 @@ TDD REQUIRED: Write failing test FIRST
 - [ ] Each step has defined completion evidence
 - [ ] Each implementation step includes TDD requirement
 - [ ] Worker preambles include TDD skill loading
+- [ ] **No vague language** ("appropriate", "best practices", "as needed")
+
+## Self-Verification
+
+After completing plan, run this audit:
+
+```
+Post-Plan Self-Audit:
+1. Can an agent implement this with zero clarifying questions?
+2. Are all boundaries specific and actionable?
+3. Is every success criterion measurable?
+4. Have I loaded spec-writing skill for complex plans?
+```
+
+Compare plan against spec (if exists) and confirm all requirements addressed.
 
 ## Constraints
 
+- **Specification phase required** - complete goal-oriented framing before Pass 1
 - Minimum 3 passes required - no single-pass plans
 - Every step needs `[parallel]` or `[serial]` marker - no ambiguity
 - Merge walls must be front-loaded - parallelize after serialization points
 - Evidence required for each step - no "should work" acceptance
 - TDD mandatory for all implementation steps - tests before code
+- **No vague language** - banned: "appropriate", "best practices", "as needed"
 
 ## Anti-Patterns
 
+- **Skipping specification**: Jumping to Pass 1 without goal-oriented framing produces misaligned plans.
 - **Single-pass planning**: Shipping first draft misses tactical and strategic issues.
 - **Implicit dependencies**: Steps without `[serial]`/`[parallel]` markers cause race conditions.
 - **Buried merge walls**: Late restructuring blocks all parallel work.
 - **Vague completion**: "Implement auth" without evidence criteria is unverifiable.
 - **TDD-optional steps**: Skipping test-first leads to untested code paths.
+- **Vague language**: Using "appropriate", "best practices" without definition.
