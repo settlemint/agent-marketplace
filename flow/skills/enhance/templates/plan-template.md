@@ -57,6 +57,19 @@ codex_verified: false
 - Given <context>, when <action>, then <expected outcome>
 - Given <context>, when <action>, then <expected outcome>
 
+## Kill Criteria
+
+Define conditions that should halt work immediately:
+
+- [ ] Scope expands beyond original brief
+- [ ] Blocked by missing dependency for >10 minutes
+- [ ] Approach requires architectural changes not in brief
+- [ ] Security concern discovered that needs human judgment
+- [ ] Tests reveal fundamental design flaw
+- [ ] <Add project-specific criteria>
+
+**If any kill criterion triggers:** Stop work, report findings, and request guidance before continuing.
+
 ## Implementation Steps
 
 ### Phase 1: <Phase Name>
