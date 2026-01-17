@@ -59,7 +59,7 @@ codex_verified: false
 
 ## Kill Criteria
 
-Define conditions that should halt work immediately:
+Define conditions that should halt work immediately. These are **self-enforced guidance** for agents (aligned with "Trust with Discovery" philosophy), not programmatic gates:
 
 - [ ] Scope expands beyond original brief
 - [ ] Blocked by missing dependency for >10 minutes
@@ -68,7 +68,12 @@ Define conditions that should halt work immediately:
 - [ ] Tests reveal fundamental design flaw
 - [ ] <Add project-specific criteria>
 
-**If any kill criterion triggers:** Stop work, report findings, and request guidance before continuing.
+**Agent responsibility:** When any criterion triggers, the agent should:
+1. Stop current work
+2. Report which criterion triggered and why
+3. Request guidance before continuing
+
+This relies on agent judgment, not automated enforcement.
 
 ## Implementation Steps
 

@@ -50,7 +50,13 @@ const implementation = await TaskOutput({ task_id: implementTask.id });
 const reviewTask = await Task({
   subagent_type: "general-purpose",
   description: "Review feature X implementation",
-  prompt: `[REVIEWER PREAMBLE]
+  prompt: `REQUIRED: Load skills first.
+Skill({ skill: "flow:enhance" })
+Skill({ skill: "devtools:rule-of-five" })
+
+Read your workflow from workflows/review.md
+
+[REVIEWER PREAMBLE]
 You are a REVIEWER agent. The implementation is complete. Your job is to:
 
 1. CORRECTNESS: Does it actually work? Run the code, verify behavior.

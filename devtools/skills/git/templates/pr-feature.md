@@ -35,6 +35,17 @@ Use for `feat` commits - new features or significant enhancements.
 
 <!-- From plan's test criteria or generate from changes. -->
 
+## Risk assessment
+
+| Category | Risk Level | Notes |
+|----------|------------|-------|
+| Breaking changes | {{BREAKING_RISK}} | <!-- API changes, schema migrations --> |
+| Security | {{SECURITY_RISK}} | <!-- Auth, data exposure, injection --> |
+| Performance | {{PERF_RISK}} | <!-- N+1 queries, memory, latency --> |
+| Data integrity | {{DATA_RISK}} | <!-- Migrations, data loss potential --> |
+
+<!-- Remove categories that don't apply. For High risk, explain mitigation. -->
+
 ## Checklist
 
 - [ ] Self-reviewed the diff
@@ -52,3 +63,4 @@ Use for `feat` commits - new features or significant enhancements.
 | DESIGN_DECISIONS | Extract from plan's approach/considerations |
 | CHANGES | `git diff --stat origin/main` + commit bodies |
 | TEST_PLAN | From plan's test criteria or infer from changes |
+| BREAKING_RISK, SECURITY_RISK, PERF_RISK, DATA_RISK | Assess based on changes (None/Low/Medium/High) |
