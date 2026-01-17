@@ -35,11 +35,29 @@ Use for `refactor`, `docs`, `chore`, `test` commits - changes without new featur
 
 <!-- How to verify nothing broke. -->
 
+## AI Assistance
+
+<!-- Mark which parts used AI assistance -->
+- [ ] No AI assistance used
+- [ ] AI assisted with: {{AI_AREAS}}
+
+## Proof of No Regression
+
+<!-- Evidence that existing behavior unchanged -->
+- Tests: {{TEST_STATUS}}
+- Build: {{BUILD_STATUS}}
+
+<!-- Example:
+- Tests: All 156 tests pass, no changes to test files
+- Build: Clean build, bundle size unchanged (+0.1kb)
+-->
+
 ## Checklist
 
 - [ ] No unintended behavior changes
 - [ ] Self-reviewed the diff
 - [ ] Ran `bun run ci` locally
+- [ ] Completed AI disclosure section
 ```
 
 ## Filling Guidelines
@@ -51,3 +69,6 @@ Use for `refactor`, `docs`, `chore`, `test` commits - changes without new featur
 | CHANGES | `git diff --stat origin/main` + commit bodies |
 | IMPACT | List affected systems/components |
 | VERIFICATION | Run tests, verify build, manual check |
+| AI_AREAS | Note which parts had AI assistance (refactoring, review) |
+| TEST_STATUS | Test results (e.g., "156 tests pass, 0 fail") |
+| BUILD_STATUS | Build outcome (e.g., "Clean build, no warnings") |

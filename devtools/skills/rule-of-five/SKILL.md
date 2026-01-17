@@ -63,6 +63,68 @@ Achieve higher quality through iterative refinement. Have agents review their ow
 | 5. Existential Review | Strategic alignment | Right problem? Right approach? Future-proof? |
 </five_pass_phases>
 
+<evidence_based_passes>
+
+## Evidence-Based Review (Proof Over Vibes)
+
+Each pass MUST include **evidence**, not just claims. The bottleneck has shifted from writing code to **proving it works**.
+
+Source: https://addyosmani.com/blog/code-review-ai/
+
+| Pass | Required Evidence |
+|------|-------------------|
+| Pass 1: Generation | Compilation output, basic test run |
+| Pass 2: Standard | Test output (X tests, Y failures), edge case identification |
+| Pass 3: Deep | Code trace showing error paths handled |
+| Pass 4: Architecture | Comparison with existing patterns, security tool output |
+| Pass 5: Convergence | Summary of all findings addressed, final test results |
+
+### Evidence Markers
+
+When documenting passes, include these evidence markers:
+
+```markdown
+## Pass 2: Standard Review - EVIDENCE
+- ✓ Tests pass: `24 tests, 0 failures`
+- ✓ Edge case: Empty input handled at line 42
+- Finding: Missing null check at line 67 - FIXED
+- Citation: `src/auth.ts:67` - added `if (!user) throw`
+
+## Pass 3: Deep Review - EVIDENCE
+- ✓ Error path traced: validateInput() → throws → caught at line 89
+- ✓ Code trace: login → validateToken → [success: return user, failure: redirect]
+- No new findings - converged
+```
+
+### What Counts as Evidence
+
+**Good evidence:**
+- Test output with counts: "24 tests, 0 failures"
+- Code citations with line numbers: `auth.ts:45-52`
+- Execution traces: "A calls B which validates C"
+- Tool output: "Codex found no security issues"
+- Screenshots of UI behavior
+- CI run links
+
+**Not evidence (just claims):**
+- "Tests pass" (without output)
+- "I reviewed the code" (without findings)
+- "Looks good" (without specifics)
+- "No issues found" (without what was checked)
+
+### AI-First Review Integration
+
+For code with AI assistance or security-sensitive areas, use the AI-First Review workflow:
+
+```
+Skill({ skill: "flow:enhance" })
+# Then navigate to workflows/ai-first-review.md
+```
+
+This workflow structures AI tools as a first pass, with human verification and accountability.
+
+</evidence_based_passes>
+
 <spec_convergence>
 
 ## Spec-Specific Review Passes
@@ -126,14 +188,22 @@ Specs must NEVER contain these terms without definition:
 **Required for code changes (ENFORCED):**
 
 - Minimum 3 documented passes before committing
+- Each pass must include **evidence** (not just claims)
 - Each pass must broaden scope (code → architecture → existential)
-- Document findings from each pass (even if "No findings")
-- Commits will be BLOCKED without documented review passes
+- Document findings from each pass with citations (even if "No findings")
+- Commits will be BLOCKED without documented review passes with evidence
+
+**Evidence scoring (used by commit gate):**
+
+- Pass mention alone: 1 point
+- Pass with evidence markers: 2 points
+- Minimum 6 points required (equivalent to 3 passes with evidence)
 
 **Required for all work:**
 
 - Each pass must broaden scope (code → architecture → existential)
 - Declare convergence only when new findings approach zero
+- Include proof of testing, not just "tests pass"
 - Exploration tasks are exempt from commit gates
   </constraints>
 

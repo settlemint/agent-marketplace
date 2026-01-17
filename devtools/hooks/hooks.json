@@ -26,6 +26,10 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/ci-gate.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/pr-size-gate.sh"
           }
         ]
       }
