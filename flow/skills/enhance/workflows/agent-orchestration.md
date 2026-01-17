@@ -85,8 +85,8 @@ Before parallelizing, map task dependencies:
 
 | Task | Depends On | Can Parallel With | Touches Files |
 |------|------------|-------------------|---------------|
-| Add auth service | None | B, C | src/auth/* |
-| Add payment service | None | A, C | src/payments/* |
+| Add auth service | None | B | src/auth/* |
+| Add payment service | None | A | src/payments/* |
 | Add dashboard UI | A, B | None | src/components/* |
 | Write integration tests | A, B, C | None | tests/* |
 

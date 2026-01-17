@@ -135,7 +135,7 @@ AI knowledge has cutoff dates. Before implementing:
 2. **Fetch current docs when outdated:**
    ```javascript
    // Use Context7 MCP for up-to-date documentation
-   MCPSearch({ query: "select:mcp__plugin_devtools_context7__resolve-library-id" });
+   MCPSearch({ query: "select:mcp__plugin_devtools_context7__resolve_library_id" });
    mcp__plugin_devtools_context7__resolve_library_id({ libraryName: "react" });
    mcp__plugin_devtools_context7__query_docs({ libraryId: "/vercel/next.js", query: "app router" });
    ```

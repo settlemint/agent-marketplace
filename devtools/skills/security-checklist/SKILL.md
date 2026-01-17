@@ -361,7 +361,7 @@ await db.update(users).set({ name, email }).where(eq(users.id, id));
 const securityHeaders = {
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
-  'X-XSS-Protection': '1; mode=block',
+  // Note: X-XSS-Protection is deprecated - use Content-Security-Policy instead
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',

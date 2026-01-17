@@ -293,8 +293,11 @@ import { z } from "zod";
 
 // Base schema for composition
 export const PasswordFormBaseSchema = z.object({
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string(),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .meta({ description: "User password" }),
+  confirmPassword: z.string().meta({ description: "Password confirmation" }),
 });
 
 // Refined schema with password match validation
@@ -339,20 +342,20 @@ const BankPaymentSchema = z.object({
   routingNumber: z.string().length(9, "Routing number must be 9 digits"),
 });
 
-// Use z.xor for exclusive union (exactly one must match)
-export const PaymentMethodSchema = z.xor([CardPaymentSchema, BankPaymentSchema]).meta({
-  description: "Payment method - either card or bank transfer",
-});
-
-// For discriminated union with z.discriminatedUnion (better error messages)
-export const PaymentMethodDiscriminated = z
+// Prefer z.discriminatedUnion when you have a discriminator field (better error messages)
+export const PaymentMethodSchema = z
   .discriminatedUnion("type", [CardPaymentSchema, BankPaymentSchema])
   .meta({ description: "Payment method discriminated by type field" });
+
+// Alternative: z.xor for exclusive union when no common discriminator exists
+export const PaymentMethodXor = z.xor([CardPaymentSchema, BankPaymentSchema]).meta({
+  description: "Payment method - exactly one must match (use discriminatedUnion when possible)",
+});
 
 export type PaymentMethod = z.infer<typeof PaymentMethodSchema>;
 ```
 </output>
-<reasoning>Shows both z.xor() for exclusive unions and z.discriminatedUnion() for better error messages. Uses literal types for discrimination and comprehensive field validation.</reasoning>
+<reasoning>Prioritizes z.discriminatedUnion() for better error messages when a discriminator field exists. Shows z.xor() as alternative for cases without common discriminator. Uses literal types and comprehensive field validation.</reasoning>
 </example>
 </few_shot_examples>
 

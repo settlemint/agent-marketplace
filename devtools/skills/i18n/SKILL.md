@@ -431,7 +431,7 @@ function UserProfile({ user }: { user: User }) {
 }
 ```
 </output>
-<reasoning>Shows pluralization with _zero, _one, _other suffixes (ICU standard). Demonstrates context for gender-specific text. German example shows that some languages have same plural form but different greetings.</reasoning>
+<reasoning>Shows pluralization with _zero, _one, _other suffixes (i18next pluralization categories). Demonstrates context for gender-specific text. German example shows that some languages have same plural form but different greetings.</reasoning>
 </example>
 </few_shot_examples>
 

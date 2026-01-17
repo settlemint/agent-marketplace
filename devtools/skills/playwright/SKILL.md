@@ -258,7 +258,7 @@ export class TodoPage extends BasePage {
   // Locators - using getByRole/getByLabel priority
   private readonly newTodoInput = () => this.page.getByLabel("New todo");
   private readonly todoList = () => this.page.getByRole("list", { name: "Todo items" });
-  private readonly todoItems = () => this.page.getByRole("listitem");
+  private readonly todoItems = () => this.todoList().getByRole("listitem");
   private readonly filterAll = () => this.page.getByRole("link", { name: "All" });
   private readonly filterActive = () => this.page.getByRole("link", { name: "Active" });
   private readonly filterCompleted = () => this.page.getByRole("link", { name: "Completed" });
