@@ -41,12 +41,33 @@ Use for `fix` commits - bug fixes and corrections.
 
 <!-- Low/Medium/High and why -->
 
+## AI Assistance
+
+<!-- Mark which parts used AI assistance -->
+- [ ] No AI assistance used
+- [ ] AI assisted with: {{AI_AREAS}}
+
+## Proof of Function
+
+<!-- Evidence the fix works -->
+- Before: {{BEFORE_EVIDENCE}}
+- After: {{AFTER_EVIDENCE}}
+- Regression test: {{REGRESSION_TEST}}
+
+<!-- Example:
+- Before: Error "undefined is not a function" on login
+- After: Login completes successfully, token stored
+- Regression test: Added test in auth.test.ts:45 that covers this case
+-->
+
 ## Checklist
 
 - [ ] Identified root cause (not just symptoms)
 - [ ] Added test to prevent regression
 - [ ] Ran `bun run ci` locally
 - [ ] Checked for similar bugs elsewhere
+- [ ] Completed AI disclosure section
+- [ ] Filled proof of function with before/after evidence
 ```
 
 ## Filling Guidelines
@@ -59,3 +80,7 @@ Use for `fix` commits - bug fixes and corrections.
 | REPRODUCTION_STEPS | From issue or manual testing |
 | VERIFICATION_STEPS | Inverse of reproduction steps |
 | RISK_LEVEL | Assess based on code area affected |
+| AI_AREAS | Note which parts had AI assistance (debugging, fix, tests) |
+| BEFORE_EVIDENCE | How bug manifested (error message, screenshot, log) |
+| AFTER_EVIDENCE | Proof fix works (output, screenshot, passing test) |
+| REGRESSION_TEST | Test file:line that prevents recurrence |
