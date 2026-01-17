@@ -54,10 +54,10 @@ Systematically debug and resolve development issues across the stack. Use struct
 **Fix comment pattern:**
 
 ```typescript
-// Fixed: [what changed] to [prevent/fix] [specific issue]
-// Why: [root cause explanation]
+// Fixed: [summary of what changed]
+// Why: [root cause explanation of the issue]
 ```
-  </constraints>
+</constraints>
 
 <anti_patterns>
 

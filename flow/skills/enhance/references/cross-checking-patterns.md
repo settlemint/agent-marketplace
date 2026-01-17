@@ -144,7 +144,7 @@ WRONG: "Codex found an issue but I think it's fine"
 RIGHT: "[verified] Codex flagged SQL injection risk. Checked implementation:
         parameterized query used at db.ts:45. False positive - using $1 placeholders."
 
-RIGHT: "[confirmed] Codex found missing input validation. Added zod schema at
+RIGHT: "[verified] Codex found missing input validation. Added zod schema at
         handler.ts:23. Re-verified with Codex - now passes."
 ```
 

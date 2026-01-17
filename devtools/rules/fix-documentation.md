@@ -18,8 +18,8 @@ Code shows what changed. Comments explain why.
 When fixing bugs, add a comment explaining:
 
 ```typescript
-// Fixed: [what changed] to [prevent/fix] [specific issue]
-// Why: [root cause explanation]
+// Fixed: [summary of what changed]
+// Why: [root cause explanation of the issue]
 ```
 
 ## Examples
