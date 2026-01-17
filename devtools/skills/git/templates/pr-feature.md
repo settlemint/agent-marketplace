@@ -43,16 +43,18 @@ Use for `feat` commits - new features or significant enhancements.
 
 ## Risk Assessment
 
-<!-- Rate complexity and identify areas needing careful review -->
-- Complexity: {{COMPLEXITY}}
-- Security-sensitive: {{SECURITY_AREAS}}
-- Review focus: {{REVIEW_FOCUS}}
+| Category | Risk Level | Notes |
+|----------|------------|-------|
+| Complexity | {{COMPLEXITY}} | <!-- Low/Medium/High based on change scope --> |
+| Breaking changes | {{BREAKING_RISK}} | <!-- API changes, schema migrations --> |
+| Security | {{SECURITY_RISK}} | <!-- Auth, payments, secrets, user input --> |
+| Performance | {{PERF_RISK}} | <!-- N+1 queries, memory, latency --> |
+| Data integrity | {{DATA_RISK}} | <!-- Migrations, data loss potential --> |
 
-<!-- Example:
-- Complexity: Medium
-- Security-sensitive: Auth (new session handling)
-- Review focus: Token expiry logic in auth.ts:45-80
--->
+<!-- Remove categories that don't apply. For High risk, explain mitigation. -->
+
+**Review focus:** {{REVIEW_FOCUS}}
+<!-- 1-2 specific areas reviewer should examine carefully -->
 
 ## Proof of Function
 
@@ -64,7 +66,6 @@ Use for `feat` commits - new features or significant enhancements.
 - Test output: 24 tests passed, 0 failed (see CI run #123)
 - Manual verification: Tested login flow in browser, verified token refresh
 -->
-
 ## Checklist
 
 - [ ] Self-reviewed the diff
@@ -86,7 +87,7 @@ Use for `feat` commits - new features or significant enhancements.
 | TEST_PLAN | From plan's test criteria or infer from changes |
 | AI_AREAS | Note which parts had AI assistance (code gen, review, tests) |
 | COMPLEXITY | Low / Medium / High based on change scope |
-| SECURITY_AREAS | Auth / Payments / Secrets / User input / None |
+| BREAKING_RISK, SECURITY_RISK, PERF_RISK, DATA_RISK | Assess based on changes (None/Low/Medium/High) |
 | REVIEW_FOCUS | 1-2 specific areas reviewer should examine carefully |
 | TEST_OUTPUT | CI run link or paste key test results |
 | MANUAL_VERIFICATION | What manual testing was done to verify behavior |

@@ -57,6 +57,24 @@ codex_verified: false
 - Given <context>, when <action>, then <expected outcome>
 - Given <context>, when <action>, then <expected outcome>
 
+## Kill Criteria
+
+Define conditions that should halt work immediately. These are **self-enforced guidance** for agents (aligned with "Trust with Discovery" philosophy), not programmatic gates:
+
+- [ ] Scope expands beyond original brief
+- [ ] Blocked by missing dependency for >10 minutes
+- [ ] Approach requires architectural changes not in brief
+- [ ] Security concern discovered that needs human judgment
+- [ ] Tests reveal fundamental design flaw
+- [ ] <Add project-specific criteria>
+
+**Agent responsibility:** When any criterion triggers, the agent should:
+1. Stop current work
+2. Report which criterion triggered and why
+3. Request guidance before continuing
+
+This relies on agent judgment, not automated enforcement.
+
 ## Implementation Steps
 
 ### Phase 1: <Phase Name>

@@ -41,6 +41,15 @@ Use for `refactor`, `docs`, `chore`, `test` commits - changes without new featur
 - [ ] No AI assistance used
 - [ ] AI assisted with: {{AI_AREAS}}
 
+## Risk Assessment
+
+| Category | Risk Level | Notes |
+|----------|------------|-------|
+| Breaking changes | {{BREAKING_RISK}} | <!-- API changes, import paths --> |
+| Performance | {{PERF_RISK}} | <!-- Algorithm changes, caching --> |
+
+<!-- Remove categories that don't apply. Refactors should typically be None/Low. -->
+
 ## Proof of No Regression
 
 <!-- Evidence that existing behavior unchanged -->
@@ -51,7 +60,6 @@ Use for `refactor`, `docs`, `chore`, `test` commits - changes without new featur
 - Tests: All 156 tests pass, no changes to test files
 - Build: Clean build, bundle size unchanged (+0.1kb)
 -->
-
 ## Checklist
 
 - [ ] No unintended behavior changes
@@ -70,5 +78,6 @@ Use for `refactor`, `docs`, `chore`, `test` commits - changes without new featur
 | IMPACT | List affected systems/components |
 | VERIFICATION | Run tests, verify build, manual check |
 | AI_AREAS | Note which parts had AI assistance (refactoring, review) |
+| BREAKING_RISK, PERF_RISK | Assess based on changes (None/Low/Medium/High) |
 | TEST_STATUS | Test results (e.g., "156 tests pass, 0 fail") |
 | BUILD_STATUS | Build outcome (e.g., "Clean build, no warnings") |

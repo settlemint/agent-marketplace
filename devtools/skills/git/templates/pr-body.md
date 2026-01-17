@@ -27,6 +27,19 @@ Fill sections based on commit type. Remove unused sections.
 
 <!-- Steps to verify. From plan or infer from changes. -->
 
+## Risk assessment
+
+<!-- Evaluate potential risks. Remove categories that don't apply. -->
+
+| Category | Risk Level | Notes |
+|----------|------------|-------|
+| Breaking changes | None/Low/Medium/High | <!-- API changes, schema migrations --> |
+| Security | None/Low/Medium/High | <!-- Auth, data exposure, injection --> |
+| Performance | None/Low/Medium/High | <!-- N+1 queries, memory, latency --> |
+| Data integrity | None/Low/Medium/High | <!-- Migrations, data loss potential --> |
+
+<!-- For High risk items, explain mitigation strategy -->
+
 ## Checklist
 
 - [ ] Ran `bun run ci` locally
@@ -38,9 +51,9 @@ Fill sections based on commit type. Remove unused sections.
 
 | Commit Type | Include Sections                              |
 | ----------- | --------------------------------------------- |
-| feat        | Summary, Why, Design decisions, Changed, Test |
-| fix         | Summary, Root cause, Changed, Test            |
-| refactor    | Summary, Why, Changed, Test                   |
+| feat        | Summary, Why, Design decisions, Changed, Test, Risk |
+| fix         | Summary, Root cause, Changed, Test, Risk      |
+| refactor    | Summary, Why, Changed, Test, Risk             |
 | chore/docs  | Summary, Changed                              |
 
 ## Context Sources
