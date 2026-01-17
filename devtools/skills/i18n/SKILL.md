@@ -259,6 +259,182 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 - React usage: `keywordsToSearch: ["useTranslation", "Trans", "react-i18next"]`
   </research>
 
+<few_shot_examples>
+<example name="namespace-setup">
+<input>Set up i18n with separate namespaces for common UI elements and dashboard-specific text</input>
+<output>
+**src/i18n/index.ts:**
+```typescript
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
+
+// Import translation files
+import enCommon from "./locales/en/common.json";
+import enDashboard from "./locales/en/dashboard.json";
+import deCommon from "./locales/de/common.json";
+import deDashboard from "./locales/de/dashboard.json";
+
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources: {
+      en: {
+        common: enCommon,
+        dashboard: enDashboard,
+      },
+      de: {
+        common: deCommon,
+        dashboard: deDashboard,
+      },
+    },
+    defaultNS: "common",
+    fallbackLng: "en",
+    interpolation: {
+      escapeValue: false, // React handles escaping
+    },
+    detection: {
+      order: ["localStorage", "navigator"],
+      caches: ["localStorage"],
+    },
+  });
+
+export default i18n;
+```
+
+**src/i18n/locales/en/common.json:**
+```json
+{
+  "button": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email"
+  },
+  "navigation": {
+    "home": "Home",
+    "settings": "Settings",
+    "logout": "Log out"
+  }
+}
+```
+
+**src/i18n/locales/en/dashboard.json:**
+```json
+{
+  "title": "Dashboard",
+  "welcome": "Welcome back, {{name}}!",
+  "stats": {
+    "users": "Total Users",
+    "revenue": "Revenue",
+    "orders": "Orders"
+  },
+  "recent_activity": "Recent Activity",
+  "no_data": "No data available"
+}
+```
+
+**Usage in component:**
+```tsx
+import { useTranslation } from "react-i18next";
+
+function Dashboard({ userName }: { userName: string }) {
+  const { t } = useTranslation("dashboard");
+  const { t: tCommon } = useTranslation("common");
+
+  return (
+    <div>
+      <h1>{t("title")}</h1>
+      <p>{t("welcome", { name: userName })}</p>
+      <button>{tCommon("button.save")}</button>
+    </div>
+  );
+}
+```
+</output>
+<reasoning>Separates common UI text (buttons, validation) from feature-specific text (dashboard). Uses browser language detection with localStorage persistence. Demonstrates namespace-scoped hooks.</reasoning>
+</example>
+
+<example name="pluralization-and-context">
+<input>Add translations for items count with pluralization and gendered greetings</input>
+<output>
+**src/i18n/locales/en/common.json:**
+```json
+{
+  "item_zero": "No items",
+  "item_one": "{{count}} item",
+  "item_other": "{{count}} items",
+
+  "message_zero": "You have no messages",
+  "message_one": "You have {{count}} new message",
+  "message_other": "You have {{count}} new messages",
+
+  "greeting_male": "Welcome back, Mr. {{name}}",
+  "greeting_female": "Welcome back, Ms. {{name}}",
+  "greeting_other": "Welcome back, {{name}}",
+
+  "last_seen_male": "He was last seen {{time}}",
+  "last_seen_female": "She was last seen {{time}}",
+  "last_seen_other": "They were last seen {{time}}"
+}
+```
+
+**Usage in component:**
+```tsx
+import { useTranslation } from "react-i18next";
+
+interface User {
+  name: string;
+  gender: "male" | "female" | "other";
+  messageCount: number;
+  lastSeen: string;
+}
+
+function UserProfile({ user }: { user: User }) {
+  const { t } = useTranslation();
+
+  return (
+    <div>
+      {/* Gender context */}
+      <h1>{t("greeting", { context: user.gender, name: user.name })}</h1>
+
+      {/* Pluralization */}
+      <p>{t("message", { count: user.messageCount })}</p>
+
+      {/* Combined: gender + variable */}
+      <p>{t("last_seen", { context: user.gender, time: user.lastSeen })}</p>
+
+      {/* Zero handling */}
+      <p>{t("item", { count: 0 })}</p>  {/* "No items" */}
+      <p>{t("item", { count: 1 })}</p>  {/* "1 item" */}
+      <p>{t("item", { count: 5 })}</p>  {/* "5 items" */}
+    </div>
+  );
+}
+```
+
+**German translations (different plural rules):**
+```json
+{
+  "item_zero": "Keine Artikel",
+  "item_one": "{{count}} Artikel",
+  "item_other": "{{count}} Artikel",
+
+  "greeting_male": "Willkommen zurück, Herr {{name}}",
+  "greeting_female": "Willkommen zurück, Frau {{name}}",
+  "greeting_other": "Willkommen zurück, {{name}}"
+}
+```
+</output>
+<reasoning>Shows pluralization with _zero, _one, _other suffixes (i18next pluralization categories). Demonstrates context for gender-specific text. German example shows that some languages have same plural form but different greetings.</reasoning>
+</example>
+</few_shot_examples>
+
 <related_skills>
 
 **React components:** Load via `Skill({ skill: "devtools:react" })` when:

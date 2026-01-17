@@ -135,6 +135,42 @@ Load domain skills based on task context:
 
 </domain_routing>
 
+<knowledge_verification>
+
+**Verify knowledge currency before implementing with frameworks/libraries.**
+
+AI knowledge has cutoff dates. Before implementing:
+
+1. **Check version awareness:**
+   - "Which version of [React/Next.js/Tailwind/etc.] are you familiar with?"
+   - Compare against project's package.json versions
+
+2. **Fetch current docs when outdated:**
+   ```javascript
+   // Use Context7 MCP for up-to-date documentation
+   MCPSearch({ query: "select:mcp__plugin_devtools_context7__resolve_library_id" });
+   mcp__plugin_devtools_context7__resolve_library_id({ libraryName: "react" });
+   mcp__plugin_devtools_context7__query_docs({ libraryId: "/vercel/next.js", query: "app router" });
+   ```
+
+3. **State assumptions explicitly:**
+   - "I'm assuming React 19 patterns (use hooks, RSC support)"
+   - "Using Tailwind v4 syntax (CSS-first config)"
+   - User can correct before implementation begins
+
+**Common version-sensitive areas:**
+| Library | Check For |
+|---------|-----------|
+| React | Server Components, use() hook, Actions |
+| Next.js | App Router vs Pages, Server Actions |
+| Tailwind | v4 CSS config vs v3 JS config |
+| TypeScript | satisfies, const assertions, decorators |
+| Node.js | fetch built-in, test runner, ESM |
+
+**When in doubt, fetch docs.** Context7 provides current documentation for major libraries.
+
+</knowledge_verification>
+
 <coding_rules>
 
 Read relevant rules BEFORE writing code:
@@ -244,6 +280,7 @@ Detailed patterns for each agent type:
 | General-purpose | `workflows/general-purpose.md` | 30-second reality check, TDD |
 | Review | `workflows/review.md` | High-signal filtering, $100 bet test |
 | PR Awareness | `workflows/pr-awareness.md` | Thread tracking, opportunistic resolution |
+| Agent Orchestration | `workflows/agent-orchestration.md` | Git worktrees, parallel agents, dependency mapping |
 | Orchestration | `workflows/orchestration.md` | Two-agent review, delegation tiers, kill criteria |
 
 </workflow_files>

@@ -196,6 +196,191 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 - Dependencies: `keywordsToSearch: ["Chart.yaml", "dependencies", "subchart"]`
   </research>
 
+<few_shot_examples>
+<example name="basic-deployment-chart">
+<input>Create a Helm chart for a Node.js API service with configurable replicas and image</input>
+<output>
+**Chart.yaml:**
+```yaml
+apiVersion: v2
+name: node-api
+description: A Helm chart for Node.js API service
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+```
+
+**values.yaml:**
+```yaml
+# -- (int) Number of replicas
+replicaCount: 2
+
+image:
+  # -- (string) Image registry
+  registry: docker.io
+  # -- (string) Image repository
+  repository: myorg/node-api
+  # -- (string) Image tag (defaults to chart appVersion)
+  tag: ""
+  # -- (string) Image pull policy
+  pullPolicy: IfNotPresent
+
+# -- (list) Image pull secrets
+imagePullSecrets: []
+
+service:
+  # -- (string) Service type
+  type: ClusterIP
+  # -- (int) Service port
+  port: 3000
+
+resources:
+  # -- (object) Resource limits
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  # -- (object) Resource requests
+  requests:
+    cpu: 100m
+    memory: 128Mi
+```
+
+**templates/_helpers.tpl:**
+```yaml
+{{/* Chart name */}}
+{{- define "node-api.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/* Full name */}}
+{{- define "node-api.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+
+{{/* Labels */}}
+{{- define "node-api.labels" -}}
+helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" }}
+{{ include "node-api.selectorLabels" . }}
+app.kubernetes.io/version: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/* Selector labels */}}
+{{- define "node-api.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "node-api.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/* Image */}}
+{{- define "node-api.image" -}}
+{{ printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+{{- end }}
+```
+
+**templates/deployment.yaml:**
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "node-api.fullname" . }}
+  labels:
+    {{- include "node-api.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "node-api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "node-api.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "node-api.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+```
+</output>
+<reasoning>Uses standard Kubernetes labels, template helpers for DRY, annotated values for documentation, and configurable resources. Selector labels are stable (don't include version).</reasoning>
+</example>
+
+<example name="secret-with-existing-pattern">
+<input>Add database connection configuration that supports both inline values and existing secret</input>
+<output>
+**values.yaml addition:**
+```yaml
+database:
+  # -- (string) Database host
+  host: localhost
+  # -- (int) Database port
+  port: 5432
+  # -- (string) Database name
+  name: myapp
+  # -- (string) Database user (ignored if existingSecret is set)
+  user: postgres
+  # -- (string) Database password (ignored if existingSecret is set)
+  password: ""
+  # -- (string) Name of existing secret containing database credentials
+  # Keys expected: DB_USER, DB_PASSWORD
+  existingSecret: ""
+```
+
+**templates/secret.yaml:**
+```yaml
+{{- if not .Values.database.existingSecret }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "node-api.fullname" . }}-db
+  labels:
+    {{- include "node-api.labels" . | nindent 4 }}
+type: Opaque
+stringData:
+  DB_USER: {{ .Values.database.user | quote }}
+  DB_PASSWORD: {{ .Values.database.password | quote }}
+{{- end }}
+```
+
+**templates/deployment.yaml env addition:**
+```yaml
+env:
+  - name: DB_HOST
+    value: {{ .Values.database.host | quote }}
+  - name: DB_PORT
+    value: {{ .Values.database.port | quote }}
+  - name: DB_NAME
+    value: {{ .Values.database.name | quote }}
+  - name: DB_USER
+    valueFrom:
+      secretKeyRef:
+        name: {{ .Values.database.existingSecret | default (printf "%s-db" (include "node-api.fullname" .)) }}
+        key: DB_USER
+  - name: DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: {{ .Values.database.existingSecret | default (printf "%s-db" (include "node-api.fullname" .)) }}
+        key: DB_PASSWORD
+```
+</output>
+<reasoning>Supports both inline secrets (for dev) and existingSecret (for prod). Conditional secret creation prevents duplicate secrets. Standardizes key names for consistency.</reasoning>
+</example>
+</few_shot_examples>
+
 <related_skills>
 
 **Infrastructure provisioning:** Load via `Skill({ skill: "devtools:terraform" })` when:
