@@ -1,6 +1,8 @@
 ---
 name: pr-create
 description: Create pull request with smart defaults and user options
+user_invocable: true
+command: /pr
 ---
 
 <context>

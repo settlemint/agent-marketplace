@@ -1,6 +1,8 @@
 ---
 name: branch-create
 description: Create feature branch with naming convention
+user_invocable: true
+command: /branch
 ---
 
 <objective>

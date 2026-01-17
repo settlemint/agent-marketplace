@@ -1,6 +1,8 @@
 ---
 name: pr-fix-reviews
 description: Fix PR review comments and CI failures with educational feedback
+user_invocable: true
+command: /fix-pr-reviews
 ---
 
 <context>
