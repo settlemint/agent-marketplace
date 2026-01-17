@@ -67,6 +67,27 @@ Every spec must define three tiers:
 
 **Key finding:** "Never commit secrets" was most helpful constraint in GitHub's 2,500+ agent file study.
 
+## Delegation Strategy
+
+Classify tasks by delegation tier before briefing agents:
+
+| Tier | Delegate To | Examples |
+|------|-------------|----------|
+| **Fully Delegate** | Agent runs autonomously | Mechanical implementation with clear specs, boilerplate refactors, test generation, documentation, low-risk maintenance |
+| **Delegate with Checkpoints** | Agent pauses at decision points | Shared interfaces, potential merge conflicts, product edge cases, multiple valid approaches |
+| **Retain Ownership** | Human decides, agent assists | System architecture, cross-cutting refactors, product decisions, security-sensitive design, API contracts |
+
+**Choosing the right tier:**
+- If success criteria are binary (pass/fail), use **Fully Delegate**
+- If reasonable people could disagree on approach, use **Checkpoints**
+- If the decision affects system boundaries or user-facing behavior, **Retain Ownership**
+
+Include delegation tier in spec header:
+```markdown
+delegation_tier: fully_delegate | checkpoint | retain_ownership
+checkpoint_triggers: [optional - when to pause for approval]
+```
+
 ## Code Examples Required
 
 Style sections must include real code:

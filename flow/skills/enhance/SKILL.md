@@ -78,6 +78,19 @@ When spawning Task agents, read the appropriate workflow:
 |---------|-----------|----------|
 | Code review | "review", "audit", "find bugs" | `workflows/review.md` |
 | Open PR | Working on branch with PR | `workflows/pr-awareness.md` |
+| Multi-agent orchestration | Complex task, >3 files, quality-critical | `workflows/orchestration.md` |
+
+**Orchestration guidance:**
+
+For non-trivial implementations, consider the two-agent pattern:
+1. Implementer agent completes the work
+2. Reviewer agent validates independently
+
+Read `workflows/orchestration.md` for:
+- Delegation tier classification (fully delegate / checkpoint / retain ownership)
+- Two-agent review pattern with examples
+- Kill criteria and progress reporting
+- Review bandwidth management
 
 </agent_routing>
 
@@ -174,6 +187,8 @@ Read relevant rules BEFORE writing code:
 | module-design | Module/package design | `devtools/rules/module-design.md` |
 | imports | NO RE-EXPORTS EVER | `devtools/rules/imports.md` |
 | simplicity | KISS, avoid over-engineering | `devtools/rules/simplicity.md` |
+| truthfulness | Verify claims, prevent hallucination | `devtools/rules/truthfulness.md` |
+| fix-documentation | Document bug fixes with explanatory comments | `devtools/rules/fix-documentation.md` |
 
 **When to read:**
 - `spec-writing` - Plan mode, requirements, specs, project briefs
@@ -182,6 +197,8 @@ Read relevant rules BEFORE writing code:
 - `typescript` + `imports` - All TypeScript work
 - `react` - Any React/UI work
 - `simplicity` - Before adding abstractions
+- `truthfulness` - Always (auto-applied)
+- `fix-documentation` - When fixing bugs
 
 </coding_rules>
 
@@ -264,6 +281,7 @@ Detailed patterns for each agent type:
 | Review | `workflows/review.md` | High-signal filtering, $100 bet test |
 | PR Awareness | `workflows/pr-awareness.md` | Thread tracking, opportunistic resolution |
 | Agent Orchestration | `workflows/agent-orchestration.md` | Git worktrees, parallel agents, dependency mapping |
+| Orchestration | `workflows/orchestration.md` | Two-agent review, delegation tiers, kill criteria |
 
 </workflow_files>
 

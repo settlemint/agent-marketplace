@@ -35,6 +35,15 @@ Use for `refactor`, `docs`, `chore`, `test` commits - changes without new featur
 
 <!-- How to verify nothing broke. -->
 
+## Risk assessment
+
+| Category | Risk Level | Notes |
+|----------|------------|-------|
+| Breaking changes | {{BREAKING_RISK}} | <!-- API changes, import paths --> |
+| Performance | {{PERF_RISK}} | <!-- Algorithm changes, caching --> |
+
+<!-- Remove categories that don't apply. Refactors should typically be None/Low. -->
+
 ## Checklist
 
 - [ ] No unintended behavior changes
@@ -51,3 +60,4 @@ Use for `refactor`, `docs`, `chore`, `test` commits - changes without new featur
 | CHANGES | `git diff --stat origin/main` + commit bodies |
 | IMPACT | List affected systems/components |
 | VERIFICATION | Run tests, verify build, manual check |
+| BREAKING_RISK, PERF_RISK | Assess based on changes (None/Low/Medium/High) |

@@ -48,6 +48,35 @@ Before declaring completion, ask:
 - Conflicting changes detected
 - Self-assessment questions answered "no"
 
+## Progress Reporting
+
+**When to report blockers:**
+
+If no significant progress in 15 minutes, STOP and report:
+1. What you attempted
+2. What's blocking you
+3. What you need to proceed
+
+**Status check-in format:**
+
+```
+STATUS UPDATE:
+- What changed: [completed actions]
+- What's next: [immediate next steps]
+- Risks/blockers: [anything impeding progress]
+- Need from orchestrator: [decisions, resources, clarification]
+```
+
+**Do NOT:**
+- Spin on the same problem without reporting
+- Make assumptions about blocked dependencies
+- Continue past kill criteria hoping it resolves
+
+**Do:**
+- Report blockers early (before 15 min threshold)
+- Be specific about what's needed
+- Suggest alternatives if original approach is blocked
+
 ## 30-Second Reality Check (MANDATORY)
 
 Before declaring ANY task complete, answer these 6 questions. If ANY answer is NO, the task is NOT complete:
