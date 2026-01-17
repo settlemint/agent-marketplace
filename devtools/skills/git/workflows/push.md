@@ -1,6 +1,8 @@
 ---
 name: push
 description: Push commits to remote with QA awareness
+user_invocable: true
+command: /push
 ---
 
 <context>

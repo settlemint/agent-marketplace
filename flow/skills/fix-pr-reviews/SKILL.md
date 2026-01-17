@@ -2,8 +2,6 @@
 name: fix-pr-reviews
 description: Fix all unresolved PR review comments and CI failures. Resolves threads after pushing fixes.
 license: MIT
-user_invocable: true
-command: /fix-pr-reviews
 argument-hint: "[PR number, defaults to current branch PR]"
 triggers:
   - "fix pr"

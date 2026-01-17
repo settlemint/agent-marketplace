@@ -1,6 +1,8 @@
 ---
 name: commit
 description: Create conventional commit with selective staging
+user_invocable: true
+command: /commit
 ---
 
 <context>

@@ -1,6 +1,8 @@
 ---
 name: pr-update
 description: Update PR title and body from commits
+user_invocable: true
+command: /pr-update
 ---
 
 <context>

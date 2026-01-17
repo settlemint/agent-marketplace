@@ -1,6 +1,8 @@
 ---
 name: sync
 description: Sync branch with main via merge or rebase
+user_invocable: true
+command: /sync
 ---
 
 <context>
