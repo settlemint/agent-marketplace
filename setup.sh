@@ -27,6 +27,9 @@ WARN="${YELLOW}⚠${NC}"
 # Track errors
 ERRORS=()
 
+# Track execution mode (direct vs hook)
+IS_DIRECT_EXECUTION=true
+
 info() { echo -e "${ARROW} $1"; }
 success() { echo -e "${CHECK} $1"; }
 warn() { echo -e "${WARN} $1"; }
@@ -40,6 +43,7 @@ error() {
 # This avoids consuming stdin when run via "curl ... | bash"
 if [[ -n "${CLAUDE_HOOK:-}" ]] && [[ ! -t 0 ]]; then
   # Running as Claude hook with piped input
+  IS_DIRECT_EXECUTION=false
   INPUT=$(cat)
   EVENT_TYPE=$(echo "$INPUT" | jq -r '.type // "unknown"' 2>/dev/null || echo "direct")
 
@@ -285,6 +289,157 @@ cleanup_plugins() {
   done
 }
 
+# ============================================
+# Codex Sync Functions
+# ============================================
+
+# Check if Codex is available
+check_codex_available() {
+  [[ -d "$HOME/.codex" ]]
+}
+
+# Get the install path for a plugin from installed_plugins.json
+get_plugin_install_path() {
+  local plugin_id="$1"
+  local installed_file="$HOME/.claude/plugins/installed_plugins.json"
+
+  [[ -f "$installed_file" ]] || return 1
+
+  # Get the install path (handle both array and object formats)
+  jq -r --arg pid "$plugin_id" \
+    '.plugins[$pid] | if type == "array" then .[0].installPath else .installPath end // empty' \
+    "$installed_file" 2>/dev/null
+}
+
+# Sync a single skill directory to Codex
+sync_skill_to_codex() {
+  local source_dir="$1"
+  local skill_name="$2"
+  local target_dir="$HOME/.codex/skills/$skill_name"
+
+  mkdir -p "$target_dir"
+  rsync -a --delete "$source_dir/" "$target_dir/" 2>/dev/null
+}
+
+# Sync a single command file to Codex
+sync_command_to_codex() {
+  local source_file="$1"
+  local target_dir="$HOME/.codex/commands"
+
+  mkdir -p "$target_dir"
+  cp "$source_file" "$target_dir/" 2>/dev/null
+}
+
+# Check if a word is in a space-separated string (Bash 3.2 compatible)
+string_contains() {
+  local needle="$1"
+  local haystack="$2"
+  [[ " $haystack " == *" $needle "* ]]
+}
+
+# Clean up orphaned skills and commands in Codex (Bash 3.2 compatible)
+cleanup_codex_orphans_compat() {
+  local expected_skills="$1"
+  local expected_commands="$2"
+
+  local codex_skills="$HOME/.codex/skills"
+  local codex_commands="$HOME/.codex/commands"
+
+  # Cleanup orphaned skills directories
+  if [[ -d "$codex_skills" ]]; then
+    for dir in "$codex_skills"/*/; do
+      [[ -d "$dir" ]] || continue
+      local dirname
+      dirname=$(basename "$dir")
+
+      # Skip .system directory (Codex system skills)
+      [[ "$dirname" == ".system" ]] && continue
+
+      if ! string_contains "$dirname" "$expected_skills"; then
+        info "Removing orphaned Codex skill: $dirname"
+        rm -rf "$dir"
+      fi
+    done
+  fi
+
+  # Cleanup orphaned command files
+  if [[ -d "$codex_commands" ]]; then
+    for file in "$codex_commands"/*; do
+      [[ -f "$file" ]] || continue
+      local filename
+      filename=$(basename "$file")
+
+      if ! string_contains "$filename" "$expected_commands"; then
+        info "Removing orphaned Codex command: $filename"
+        rm -f "$file"
+      fi
+    done
+  fi
+}
+
+# Main function to sync all plugins to Codex
+sync_all_to_codex() {
+  if ! check_codex_available; then
+    info "Codex not installed (~/.codex not found), skipping sync"
+    return 0
+  fi
+
+  # Create base directories
+  mkdir -p "$HOME/.codex/skills"
+  mkdir -p "$HOME/.codex/commands"
+
+  # Build lists of expected skills and commands (Bash 3.2 compatible)
+  local expected_skills=""
+  local expected_commands=""
+  local skill_count=0
+  local cmd_count=0
+
+  # First pass: sync all skills and commands, building expected lists
+  for plugin_id in "${ALLOWED_PLUGINS[@]}"; do
+    local install_path
+    install_path=$(get_plugin_install_path "$plugin_id")
+
+    if [[ -z "$install_path" || ! -d "$install_path" ]]; then
+      continue
+    fi
+
+    # Sync skills from this plugin
+    if [[ -d "$install_path/skills" ]]; then
+      for skill_dir in "$install_path/skills"/*/; do
+        [[ -d "$skill_dir" ]] || continue
+        local skill_name
+        skill_name=$(basename "$skill_dir")
+        expected_skills="$expected_skills $skill_name"
+        if sync_skill_to_codex "$skill_dir" "$skill_name"; then
+          ((skill_count++)) || true
+        fi
+      done
+    fi
+
+    # Sync commands from this plugin
+    if [[ -d "$install_path/commands" ]]; then
+      for cmd_file in "$install_path/commands"/*.md; do
+        [[ -f "$cmd_file" ]] || continue
+        local cmd_name
+        cmd_name=$(basename "$cmd_file")
+        expected_commands="$expected_commands $cmd_name"
+        if sync_command_to_codex "$cmd_file"; then
+          ((cmd_count++)) || true
+        fi
+      done
+    fi
+  done
+
+  # Second pass: cleanup orphaned items
+  cleanup_codex_orphans_compat "$expected_skills" "$expected_commands"
+
+  if [[ $skill_count -gt 0 || $cmd_count -gt 0 ]]; then
+    success "Synced $skill_count skills and $cmd_count commands to Codex"
+  else
+    info "No skills or commands to sync"
+  fi
+}
+
 echo "Step 0: Installing Dependencies"
 echo "--------------------------------"
 echo ""
@@ -362,6 +517,14 @@ force_update_plugin "constant-time-analysis@trailofbits" "constant-time-analysis
 force_update_plugin "spec-to-code-compliance@trailofbits" "spec-to-code-compliance (verification)"
 force_update_plugin "variant-analysis@trailofbits" "variant-analysis (similar vulnerabilities)"
 echo ""
+
+# Step 5: Sync to Codex (only on direct execution, not on SessionStart hook)
+if [[ "$IS_DIRECT_EXECUTION" == "true" ]]; then
+  echo "Step 5: Sync to Codex"
+  echo "---------------------"
+  sync_all_to_codex
+  echo ""
+fi
 
 # Summary
 echo "================================"
