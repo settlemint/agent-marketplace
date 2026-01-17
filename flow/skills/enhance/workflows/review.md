@@ -2,6 +2,10 @@
 
 Enhance review agents with high-signal filtering and validation protocols. Apply rigorous evidence standards: only flag issues with HIGH CONFIDENCE that are definitively bugs or violations. False positives erode trust and waste reviewer time. Every finding must pass validation and include citations.
 
+> **SCOPE**: This workflow applies ONLY when reviewing code written by others (PRs, audits).
+> When YOU are implementing or fixing code, use the general-purpose workflow instead -
+> you must fix ALL errors you encounter, including "pre-existing" ones. See CLAUDE.md "No Bailout Policy".
+
 ## Quick Start
 
 For any review task:
@@ -33,7 +37,7 @@ Report ONLY findings that survive all passes.
 | Code style or quality              | Subjective, not bugs                    |
 | Potential issues (input-dependent) | Speculative, may never trigger          |
 | Subjective improvements            | Preference, not defect                  |
-| Pre-existing issues                | Out of scope for this change            |
+| Pre-existing issues                | Out of scope **for review only** (NOT implementation!) |
 | Pedantic nitpicks                  | Waste of time                           |
 | Linter-catchable issues            | Let tooling handle these                |
 | General code quality               | Unless explicitly required by CLAUDE.md |
@@ -171,7 +175,7 @@ Use full SHA, not branch names.
 - Flag issues without validation evidence
 - Include speculative or "might be a problem" findings
 - Report style issues as bugs
-- Flag pre-existing issues outside the diff
+- Flag pre-existing issues outside the diff (review context only - when implementing, you must fix them)
 - Use confidence language like "might", "could", "possibly"
 - Include more than 10 findings (prioritize the worst)
 - Report duplicate issues
@@ -295,7 +299,7 @@ FIX: Recommend rewriting test to verify it can fail
 - Do NOT include speculative or "might be" findings
 - Do NOT report style issues as bugs
 - Do NOT exceed 10 findings - prioritize the worst
-- Do NOT flag pre-existing issues outside the diff
+- Do NOT flag pre-existing issues outside the diff (applies to review only)
 
 ## Success Criteria
 

@@ -48,6 +48,30 @@ Before declaring completion, ask:
 - Conflicting changes detected
 - Self-assessment questions answered "no"
 
+## Error Ownership
+
+**During implementation, you own ALL errors you encounter.**
+
+When you hit type errors, test failures, or compilation issues:
+
+1. **Do NOT claim they are "pre-existing"** - this is bailout behavior (see CLAUDE.md "No Bailout Policy")
+2. **Do NOT skip them** - they will block CI
+3. **DO fix them** - you touched the code, you own the errors
+4. **DO escalate ONLY if environment is broken** - missing deps, wrong versions, services down
+
+**Environment vs Code Issues:**
+
+| If you see... | It's probably... | Action |
+|--------------|------------------|--------|
+| "Module not found" for installed package | Code (bad import) | Fix the import path |
+| "Module not found" for unknown package | Environment | Run `bun install` |
+| Type errors after your changes | Code | Fix the types |
+| Type errors in untouched files | Could be either | Investigate, then fix |
+| Test timeout | Environment | Check if services running |
+| Test assertion failure | Code | Fix the logic |
+
+**The only valid pause:** If you cannot make progress because the development environment is broken (DB down, missing secrets, CI offline), state the specific setup requirement and ask the user.
+
 ## Progress Reporting
 
 **When to report blockers:**

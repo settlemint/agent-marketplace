@@ -66,6 +66,7 @@ Systematically debug and resolve development issues across the stack. Use struct
 - **Assumption-Driven Fixes:** Fixing what you think is wrong without evidence
 - **Blame Shifting:** Assuming external services are broken before checking your code
 - **Zombie Code:** Commenting out code instead of deleting it; creates confusion
+- **Pre-existing Bailout:** Claiming errors are "pre-existing" to avoid fixing them; during implementation YOU own ALL errors you encounter - fix them or escalate with specific environment requirements
   </anti_patterns>
 
 <observe_before_editing>
