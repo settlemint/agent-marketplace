@@ -24,6 +24,58 @@ Cross-reference findings across angles before concluding.
 | 4. Dependencies | Relationships  | Package.json, imports, coupling       |
 | 5. Edge Cases   | Robustness     | Error handlers, try/catch, edge paths |
 
+## Pattern Discovery (Before Implementation)
+
+**Before implementing anything new, find similar patterns in the codebase.**
+
+This prevents reinventing the wheel and ensures consistency with existing conventions.
+
+**Protocol:**
+
+1. **Search for similar concepts** - Find existing implementations
+2. **Identify the pattern** - Understand how it's done here
+3. **Use as template** - Prime your implementation with 1-2 examples
+4. **Match style** - Follow naming, structure, and error handling conventions
+
+**Example workflow:**
+
+```
+Task: Add a new API endpoint for user preferences
+
+1. Search for similar:
+   Grep({ pattern: "createRoute|router\\.", glob: "**/*.ts" })
+   → Found: auth.ts, users.ts, settings.ts use same pattern
+
+2. Identify pattern:
+   Read users.ts → Uses oRPC with zod validation, returns typed response
+
+3. Use as template:
+   - Copy structure from users.ts
+   - Match naming: [resource]Router, [action]Schema
+   - Follow error handling: throw TRPCError with code
+
+4. Implement with consistency:
+   preferencesRouter following exact same pattern
+```
+
+**Search queries for common patterns:**
+
+| Looking For | Search Pattern |
+|-------------|----------------|
+| API routes | `Grep({ pattern: "createRoute|router" })` |
+| React components | `Grep({ pattern: "export (const|function) [A-Z]" })` |
+| Database queries | `Grep({ pattern: "db\\.|drizzle" })` |
+| Test patterns | `Grep({ pattern: "describe\\(|it\\(" })` |
+| Error handling | `Grep({ pattern: "try \\{|catch \\(|throw" })` |
+| Validation | `Grep({ pattern: "z\\.|zod|schema" })` |
+
+**Why this matters:**
+
+- Avoids inconsistent implementations across codebase
+- Reduces review feedback ("we do it differently here")
+- Speeds up implementation (template is already vetted)
+- Maintains architectural coherence
+
 ## Verification Protocol
 
 Before concluding exploration:
