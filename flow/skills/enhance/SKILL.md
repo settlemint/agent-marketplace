@@ -138,6 +138,8 @@ Read relevant rules BEFORE writing code:
 | module-design | Module/package design | `devtools/rules/module-design.md` |
 | imports | NO RE-EXPORTS EVER | `devtools/rules/imports.md` |
 | simplicity | KISS, avoid over-engineering | `devtools/rules/simplicity.md` |
+| truthfulness | Verify claims, prevent hallucination | `devtools/rules/truthfulness.md` |
+| fix-documentation | Document bug fixes with explanatory comments | `devtools/rules/fix-documentation.md` |
 
 **When to read:**
 - `spec-writing` - Plan mode, requirements, specs, project briefs
@@ -146,6 +148,8 @@ Read relevant rules BEFORE writing code:
 - `typescript` + `imports` - All TypeScript work
 - `react` - Any React/UI work
 - `simplicity` - Before adding abstractions
+- `truthfulness` - Always (auto-applied)
+- `fix-documentation` - When fixing bugs
 
 </coding_rules>
 

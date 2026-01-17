@@ -49,7 +49,15 @@ Systematically debug and resolve development issues across the stack. Use struct
 - Verify issue exists before attempting fix
 - Run quality gate (`bun run ci`) before every commit
 - Create regression test for fixed bugs
-  </constraints>
+- Document fixes with explanatory comments (see `devtools/rules/fix-documentation.md`)
+
+**Fix comment pattern:**
+
+```typescript
+// Fixed: [summary of what changed]
+// Why: [root cause explanation of the issue]
+```
+</constraints>
 
 <anti_patterns>
 
@@ -110,6 +118,69 @@ shfmt -w <file>
 - Leave failing tests for "later"
 - Mark work complete before CI passes
   </quality_gate>
+
+<ci_feedback_loop>
+**When CI fails, feed errors back systematically.**
+
+CI failures are debugging opportunities. Parse output and iterate until green.
+
+**Workflow:**
+
+1. **Capture failure** - Copy specific error messages from CI output
+2. **Feed back** - "CI failed with: [specific error]. Let's debug."
+3. **Reproduce locally** - Run the same command locally
+4. **Fix** - Apply targeted solution (see troubleshooting workflow)
+5. **Verify locally** - Run `bun run ci` before pushing
+6. **Create regression test** - Prevent this failure from recurring
+7. **Re-run CI** - Confirm fix works in CI environment
+
+**Example iteration:**
+
+```
+CI Output:
+  FAIL tests/auth.test.ts
+  TypeError: Cannot read property 'id' of undefined
+    at getUserProfile (auth.ts:45)
+
+Debugging response:
+1. Error: TypeError accessing .id on undefined at auth.ts:45
+2. Reproduce: bun run test tests/auth.test.ts
+3. Investigate: Read auth.ts:45, trace where user comes from
+4. Root cause: [identified]
+5. Fix: [applied]
+6. Verify: bun run ci passes locally
+7. Regression test: Added test for null user case
+```
+
+**Parsing CI output:**
+
+```bash
+# Extract failing tests
+grep -E "FAIL|Error|TypeError|ReferenceError" ci-output.log
+
+# Get specific line numbers
+grep -oE "[a-zA-Z]+\.(ts|tsx|js):[0-9]+" ci-output.log
+
+# Count failures
+grep -c "FAIL" ci-output.log
+```
+
+**Common CI-specific issues:**
+
+| CI Failure | Local Works | Likely Cause |
+|------------|-------------|--------------|
+| Module not found | Works | Missing dependency in package.json |
+| Timeout | Works | CI has slower runners, add timeout |
+| Permission denied | Works | File permissions, secrets not available |
+| Out of memory | Works | CI has limited resources, optimize |
+
+**DON'T:**
+
+- Push hoping CI will pass ("works on my machine")
+- Ignore flaky tests (fix the flakiness)
+- Add retries without understanding root cause
+- Skip local verification before pushing
+</ci_feedback_loop>
 
 <common_issues>
 **Build failures:**
