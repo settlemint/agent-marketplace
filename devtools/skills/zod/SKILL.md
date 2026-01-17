@@ -248,6 +248,114 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 - API validation: `keywordsToSearch: ["z.infer", "safeParse", "parseAsync"]`
   </research>
 
+<few_shot_examples>
+<example name="api-request-schema">
+<input>Create a schema for a user registration endpoint that validates email, password (min 8 chars), and optional phone number</input>
+<output>
+```typescript
+import { z } from "zod";
+
+export const UserRegistrationSchema = z.object({
+  email: z.string().email("Invalid email format").meta({
+    description: "User's email address",
+    examples: ["user@example.com"],
+  }),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain uppercase letter")
+    .regex(/[0-9]/, "Password must contain a number")
+    .meta({
+      description: "User password with complexity requirements",
+    }),
+  phoneNumber: z
+    .string()
+    .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number format")
+    .optional()
+    .meta({
+      description: "Optional phone number in E.164 format",
+      examples: ["+14155551234"],
+    }),
+});
+
+export type UserRegistration = z.infer<typeof UserRegistrationSchema>;
+export type UserRegistrationInput = z.input<typeof UserRegistrationSchema>;
+```
+</output>
+<reasoning>Uses .meta() for OpenAPI compatibility, exports both inferred and input types, includes validation messages, and makes phone optional with proper format validation.</reasoning>
+</example>
+
+<example name="form-with-password-confirmation">
+<input>Create a form schema where password and confirmPassword must match</input>
+<output>
+```typescript
+import { z } from "zod";
+
+// Base schema for composition
+export const PasswordFormBaseSchema = z.object({
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string(),
+});
+
+// Refined schema with password match validation
+export const PasswordFormSchema = PasswordFormBaseSchema.refine(
+  (data) => data.password === data.confirmPassword,
+  {
+    message: "Passwords don't match",
+    path: ["confirmPassword"], // Error appears on confirmPassword field
+  }
+);
+
+// For forms that only need password (no confirmation)
+export const PasswordOnlySchema = PasswordFormBaseSchema.pick({ password: true });
+
+export type PasswordForm = z.infer<typeof PasswordFormSchema>;
+```
+</output>
+<reasoning>Splits base and refined schemas to allow .pick() composition. The refined schema validates password match while base schema enables reuse for single-password forms.</reasoning>
+</example>
+
+<example name="discriminated-union">
+<input>Create a schema for payment methods where card requires cardNumber and bank requires accountNumber</input>
+<output>
+```typescript
+import { z } from "zod";
+
+const CardPaymentSchema = z.object({
+  type: z.literal("card"),
+  cardNumber: z
+    .string()
+    .regex(/^\d{16}$/, "Card number must be 16 digits")
+    .meta({ description: "Credit/debit card number" }),
+  expiryDate: z.string().regex(/^\d{2}\/\d{2}$/, "Format: MM/YY"),
+  cvv: z.string().regex(/^\d{3,4}$/, "CVV must be 3-4 digits"),
+});
+
+const BankPaymentSchema = z.object({
+  type: z.literal("bank"),
+  accountNumber: z.string().min(8).max(17).meta({
+    description: "Bank account number",
+  }),
+  routingNumber: z.string().length(9, "Routing number must be 9 digits"),
+});
+
+// Use z.xor for exclusive union (exactly one must match)
+export const PaymentMethodSchema = z.xor([CardPaymentSchema, BankPaymentSchema]).meta({
+  description: "Payment method - either card or bank transfer",
+});
+
+// For discriminated union with z.discriminatedUnion (better error messages)
+export const PaymentMethodDiscriminated = z
+  .discriminatedUnion("type", [CardPaymentSchema, BankPaymentSchema])
+  .meta({ description: "Payment method discriminated by type field" });
+
+export type PaymentMethod = z.infer<typeof PaymentMethodSchema>;
+```
+</output>
+<reasoning>Shows both z.xor() for exclusive unions and z.discriminatedUnion() for better error messages. Uses literal types for discrimination and comprehensive field validation.</reasoning>
+</example>
+</few_shot_examples>
+
 <related_skills>
 
 **Database schemas:** Load via `Skill({ skill: "devtools:drizzle" })` when:

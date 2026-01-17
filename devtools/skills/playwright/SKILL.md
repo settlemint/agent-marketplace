@@ -232,6 +232,221 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 - Auth: `keywordsToSearch: ["storageState", "playwright", "authentication"]`
   </research>
 
+<few_shot_examples>
+<example name="page-object-pattern">
+<input>Create a Page Object for a todo app with add, complete, and filter functionality</input>
+<output>
+**tests/pages/base.page.ts:**
+```typescript
+import { Page } from "@playwright/test";
+
+export class BasePage {
+  constructor(protected page: Page) {}
+
+  async goto(path: string = "/") {
+    await this.page.goto(path);
+  }
+}
+```
+
+**tests/pages/todo.page.ts:**
+```typescript
+import { expect, Page } from "@playwright/test";
+import { BasePage } from "./base.page";
+
+export class TodoPage extends BasePage {
+  // Locators - using getByRole/getByLabel priority
+  private readonly newTodoInput = () => this.page.getByLabel("New todo");
+  private readonly todoList = () => this.page.getByRole("list", { name: "Todo items" });
+  private readonly todoItems = () => this.page.getByRole("listitem");
+  private readonly filterAll = () => this.page.getByRole("link", { name: "All" });
+  private readonly filterActive = () => this.page.getByRole("link", { name: "Active" });
+  private readonly filterCompleted = () => this.page.getByRole("link", { name: "Completed" });
+  private readonly clearCompleted = () => this.page.getByRole("button", { name: "Clear completed" });
+
+  // Get specific todo item
+  private todoItem(text: string) {
+    return this.todoItems().filter({ hasText: text });
+  }
+
+  // Actions
+  async addTodo(text: string) {
+    await this.newTodoInput().fill(text);
+    await this.newTodoInput().press("Enter");
+  }
+
+  async completeTodo(text: string) {
+    await this.todoItem(text).getByRole("checkbox").check();
+  }
+
+  async deleteTodo(text: string) {
+    // Hover to reveal delete button (common pattern)
+    await this.todoItem(text).hover();
+    await this.todoItem(text).getByRole("button", { name: "Delete" }).click();
+  }
+
+  async filterBy(filter: "all" | "active" | "completed") {
+    const filters = {
+      all: this.filterAll,
+      active: this.filterActive,
+      completed: this.filterCompleted,
+    };
+    await filters[filter]().click();
+  }
+
+  async clearAllCompleted() {
+    await this.clearCompleted().click();
+  }
+
+  // Assertions (keep in page object for reuse)
+  async expectTodoCount(count: number) {
+    await expect(this.todoItems()).toHaveCount(count);
+  }
+
+  async expectTodoVisible(text: string) {
+    await expect(this.todoItem(text)).toBeVisible();
+  }
+
+  async expectTodoNotVisible(text: string) {
+    await expect(this.todoItem(text)).not.toBeVisible();
+  }
+
+  async expectTodoCompleted(text: string) {
+    await expect(this.todoItem(text).getByRole("checkbox")).toBeChecked();
+  }
+}
+```
+
+**tests/pages/pages.ts:**
+```typescript
+import { Page } from "@playwright/test";
+import { TodoPage } from "./todo.page";
+
+export function Pages(page: Page) {
+  return {
+    todoPage: new TodoPage(page),
+    // Add more pages as needed
+  };
+}
+```
+
+**tests/todo.spec.ts:**
+```typescript
+import { test } from "@playwright/test";
+import { Pages } from "./pages/pages";
+
+test.describe.serial("Todo management", () => {
+  let pages: ReturnType<typeof Pages>;
+
+  test.beforeEach(async ({ page }) => {
+    pages = Pages(page);
+    await pages.todoPage.goto("/");
+  });
+
+  test("should add a new todo", async () => {
+    await pages.todoPage.addTodo("Buy groceries");
+    await pages.todoPage.expectTodoVisible("Buy groceries");
+    await pages.todoPage.expectTodoCount(1);
+  });
+
+  test("should complete a todo", async () => {
+    await pages.todoPage.addTodo("Learn Playwright");
+    await pages.todoPage.completeTodo("Learn Playwright");
+    await pages.todoPage.expectTodoCompleted("Learn Playwright");
+  });
+
+  test("should filter completed todos", async () => {
+    await pages.todoPage.addTodo("Task 1");
+    await pages.todoPage.addTodo("Task 2");
+    await pages.todoPage.completeTodo("Task 1");
+
+    await pages.todoPage.filterBy("completed");
+    await pages.todoPage.expectTodoVisible("Task 1");
+    await pages.todoPage.expectTodoNotVisible("Task 2");
+
+    await pages.todoPage.filterBy("active");
+    await pages.todoPage.expectTodoNotVisible("Task 1");
+    await pages.todoPage.expectTodoVisible("Task 2");
+  });
+});
+```
+</output>
+<reasoning>Page Object encapsulates all selectors and actions. Uses getByRole/getByLabel exclusively. Assertions in page object enable reuse. Tests read like user stories with no selectors visible.</reasoning>
+</example>
+
+<example name="authentication-with-storage-state">
+<input>Set up authentication that persists across tests using storage state</input>
+<output>
+**tests/auth.setup.ts:**
+```typescript
+import { test as setup, expect } from "@playwright/test";
+import path from "path";
+
+const authFile = path.join(__dirname, "../.auth/user.json");
+
+setup("authenticate", async ({ page }) => {
+  // Navigate to login
+  await page.goto("/login");
+
+  // Fill credentials
+  await page.getByLabel("Email").fill(process.env.TEST_USER_EMAIL!);
+  await page.getByLabel("Password").fill(process.env.TEST_USER_PASSWORD!);
+  await page.getByRole("button", { name: "Sign in" }).click();
+
+  // Wait for auth to complete
+  await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+
+  // Save authentication state
+  await page.context().storageState({ path: authFile });
+});
+```
+
+**playwright.config.ts:**
+```typescript
+import { defineConfig, devices } from "@playwright/test";
+
+export default defineConfig({
+  projects: [
+    // Setup project runs first
+    { name: "setup", testMatch: /.*\.setup\.ts/ },
+
+    // Tests use authenticated state
+    {
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: ".auth/user.json",
+      },
+      dependencies: ["setup"],
+    },
+  ],
+});
+```
+
+**tests/dashboard.spec.ts:**
+```typescript
+import { test, expect } from "@playwright/test";
+
+// This test runs with authenticated state (no login needed)
+test("authenticated user can access dashboard", async ({ page }) => {
+  await page.goto("/dashboard");
+
+  // Already logged in from setup
+  await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+  await expect(page.getByText("Welcome back")).toBeVisible();
+});
+```
+
+**.gitignore addition:**
+```
+# Playwright auth state
+.auth/
+```
+</output>
+<reasoning>Storage state persists cookies/localStorage between tests, avoiding repeated logins. Setup project runs once before test projects. Auth file excluded from git for security.</reasoning>
+</example>
+</few_shot_examples>
+
 <related_skills>
 
 **Design guidelines:** Load via `Skill({ skill: "devtools:vercel-design-guidelines" })` when:
