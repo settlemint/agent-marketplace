@@ -38,6 +38,43 @@ Skill({ skill: "devtools:tdd-typescript" })
 2. Write ONLY enough test to demonstrate failure
 3. Write ONLY enough code to pass the test
 
+## No Bailout Policy (MANDATORY)
+
+**When implementing or fixing code, ALL encountered errors must be addressed. NO EXCEPTIONS.**
+
+### Banned Phrases During Implementation
+
+These statements are PROHIBITED when implementing or fixing code:
+
+- "These are pre-existing type errors"
+- "This error is not introduced by my changes"
+- "These failures existed before"
+- "This is a pre-existing issue"
+- "Out of scope for this change" (when YOU are making the change)
+
+### The Rule
+
+**If you encounter an error while working, you own it.** Fix it or explicitly escalate with specific environment requirements.
+
+### Exception: Environment Issues
+
+The ONLY valid reason to pause on errors is if the environment itself is broken:
+
+| Environment Issue (OK to flag) | Code Issue (MUST fix) |
+|-------------------------------|----------------------|
+| Missing dependencies (`bun install` needed) | Type errors in code |
+| Wrong runtime version (Node 18 vs 20) | Test failures |
+| Database not running | Compilation errors |
+| Missing environment variables | Logic errors |
+| Network/API unavailable | Import errors |
+
+**If the issue is in the code, fix it. If the issue is in the environment, clearly state what setup step is needed.**
+
+### Context Distinction
+
+- **Review context** (reading someone else's PR): Pre-existing issues ARE noise - ignore them
+- **Implementation context** (writing/fixing code): Pre-existing issues ARE your responsibility - fix them
+
 ## Plugin Structure
 
 ```
