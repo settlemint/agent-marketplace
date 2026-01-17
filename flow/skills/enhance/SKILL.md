@@ -204,6 +204,12 @@ Apply 5-angle investigation. Cite file:line for findings.`
 - [ ] Would bet $100 this is correct
 - [ ] No "should work" language used
 
+**Before committing code changes (ENFORCED):**
+- [ ] Minimum 3 review passes documented (Pass 1, Pass 2, Pass 3)
+- [ ] Findings section present (even if empty: "No findings")
+- [ ] Convergence status stated
+- [ ] Commits will be BLOCKED without documented passes
+
 </quick_reference>
 
 <workflow_files>
@@ -231,6 +237,15 @@ Detailed patterns for each agent type:
 - **Sub-agent skill loading** - Agents need context to do quality work
 
 These aren't arbitrary rules - they're patterns that consistently produce better outcomes. Apply judgment; deviate when you have good reason.
+
+**TDD Reminder (recommended, not enforced):**
+
+When writing implementation code, consider test-driven development:
+- **RED**: Write a failing test first that defines expected behavior
+- **GREEN**: Write minimal code to make the test pass
+- **REFACTOR**: Improve code while keeping tests green
+
+TDD helps catch bugs early and documents intent. Load `devtools:tdd-typescript` for detailed patterns.
 
 </guidelines>
 

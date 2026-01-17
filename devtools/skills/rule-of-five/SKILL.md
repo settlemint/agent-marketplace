@@ -80,12 +80,18 @@ Achieve higher quality through iterative refinement. Have agents review their ow
 <constraints>
 **Banned:** Single-pass outputs for complex work, skipping review phases, declaring convergence before 3 passes
 
-**Required:**
+**Required for code changes (ENFORCED):**
 
-- Minimum 3 passes for non-trivial work
+- Minimum 3 documented passes before committing
 - Each pass must broaden scope (code → architecture → existential)
-- Document findings from each pass
+- Document findings from each pass (even if "No findings")
+- Commits will be BLOCKED without documented review passes
+
+**Required for all work:**
+
+- Each pass must broaden scope (code → architecture → existential)
 - Declare convergence only when new findings approach zero
+- Exploration tasks are exempt from commit gates
   </constraints>
 
 <anti_patterns>
