@@ -137,6 +137,12 @@ mcp__plugin_devtools_octocode__githubSearchCode({
 
 <related_skills>
 
+**Stack review checklists:** Load via `Skill({ skill: "devtools:stack-review" })` when:
+
+- Reviewing code in the full-stack blockchain platform
+- Need domain-specific checklists (contracts, frontend, subgraph, auth)
+- Want access to 353 curated review patterns from top OSS projects
+
 **TDD workflow:** Load via `Skill({ skill: "devtools:tdd-typescript" })` when:
 
 - Applying convergence to test quality
