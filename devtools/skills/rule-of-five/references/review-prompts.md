@@ -2,6 +2,13 @@
 
 Escalating prompts for the 5-pass convergence pattern. Each pass broadens scope from code-level to strategic.
 
+**For domain-specific checklists**, load `Skill({ skill: "devtools:stack-review" })` which provides:
+- Smart contract review (CEI, access control, events, gas)
+- Frontend review (TanStack loaders, a11y, component size)
+- Subgraph review (handlers, AssemblyScript, codegen)
+- Data layer review (Drizzle types, foreign keys, ORPC)
+- 353 curated reviewer patterns from top OSS projects
+
 ## Pass 1: Standard Review
 
 ```
@@ -13,6 +20,7 @@ Review this code for:
 5. Basic error handling gaps
 6. Test coverage for happy path
 
+Apply domain checklist from stack-review skill if loaded.
 List each finding with severity (P1=critical, P2=high, P3=medium).
 ```
 
