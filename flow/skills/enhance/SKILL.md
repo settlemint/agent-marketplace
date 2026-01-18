@@ -94,6 +94,65 @@ Read `workflows/orchestration.md` for:
 
 </agent_routing>
 
+<plan_mode_enforcement>
+
+## Plan Mode Enforcement (MANDATORY)
+
+When plan mode is active, these requirements are **ENFORCED** by the `plan-quality-gate.sh` PreToolUse hook:
+
+| Requirement | Enforcement | How to Satisfy |
+|-------------|-------------|----------------|
+| Codex Review | ExitPlanMode blocked without Codex invocation | `mcp__plugin_devtools_codex__codex({ prompt: "Review plan..." })` |
+| Rule of Five | ExitPlanMode blocked without 3+ passes | Document passes OR spawn Review subagent |
+| TDD | ExitPlanMode blocked if plan has implementation steps without test mentions | Include TDD requirements for each step |
+
+**This is NOT optional.** The hook verifies compliance before allowing plan mode exit.
+
+### Delegation Pattern
+
+Main thread is **ORCHESTRATOR**, not worker:
+
+```
+Phase 1: Spawn Explore agents (research, codebase analysis, test coverage gaps)
+Phase 2: Main thread synthesizes, drafts plan
+Phase 3: Invoke Codex + spawn Review agent (or document passes)
+Phase 4: Finalize plan, ExitPlanMode
+```
+
+### To Comply
+
+1. **Load Codex:**
+   ```javascript
+   MCPSearch({ query: "select:mcp__plugin_devtools_codex__codex" })
+   mcp__plugin_devtools_codex__codex({
+     prompt: "Review this plan for: architecture trade-offs, security, complexity"
+   })
+   ```
+
+2. **Document Rule of Five passes:**
+   ```markdown
+   ## Pass 1: Generation - EVIDENCE
+   ## Pass 2: Tactical Review - EVIDENCE
+   ## Pass 3: Quality Review - EVIDENCE
+   ```
+   OR spawn Review subagent:
+   ```javascript
+   Task({ subagent_type: "Plan", prompt: "Apply Rule of Five: 3 passes..." })
+   ```
+
+3. **Include TDD in plan steps:**
+   ```markdown
+   3. [serial] Implement user service
+      - TDD: Write failing test FIRST
+      - Evidence: Test fails -> passes -> coverage >=80%
+   ```
+
+**Emergency bypass:** Add `[PLAN-BYPASS]` to plan file (audited)
+
+**Full workflow:** Read `workflows/plan.md`
+
+</plan_mode_enforcement>
+
 <domain_routing>
 
 Load domain skills based on task context:
@@ -134,6 +193,156 @@ Load domain skills based on task context:
 - **Load spec-writing when**: entering plan mode, writing requirements, creating project briefs, defining features
 
 </domain_routing>
+
+<feature_workflow>
+
+## Feature Development (7-Phase Workflow)
+
+For new features, follow this systematic workflow (based on Anthropic's feature-dev plugin):
+
+| Phase | Focus | Agents |
+|-------|-------|--------|
+| 1. Discovery | Clarify requirements | User questions |
+| 2. Exploration | Trace similar features, architecture | 2-3 Explore agents (parallel) |
+| 3. Questions | Resolve all ambiguities | User clarification |
+| 4. Design | Architecture blueprints | 2-3 Plan agents with different focuses |
+| 5. Implementation | Build feature | TDD + incremental |
+| 6. Review | Quality validation | 3 code-reviewer agents |
+| 7. Summary | Document and next steps | Main thread |
+
+**Phase 2 Pattern - Parallel Exploration:**
+```javascript
+// Launch simultaneously with different focuses
+Task({ subagent_type: "Explore", prompt: "Trace execution path for similar feature X..." })
+Task({ subagent_type: "Explore", prompt: "Map architecture layers touched by feature..." })
+Task({ subagent_type: "Explore", prompt: "Find integration patterns in similar code..." })
+```
+
+**Phase 4 Pattern - Architecture Options:**
+```javascript
+// Different trade-off focuses
+Task({ subagent_type: "Plan", prompt: "Design minimal approach - fewest changes..." })
+Task({ subagent_type: "Plan", prompt: "Design clean architecture approach - best patterns..." })
+Task({ subagent_type: "Plan", prompt: "Design pragmatic approach - fastest to ship..." })
+```
+
+**Phase 6 Pattern - Parallel Review:**
+```javascript
+// Different quality lenses
+Task({ subagent_type: "general-purpose", prompt: "Review for simplicity and DRY..." })
+Task({ subagent_type: "general-purpose", prompt: "Review for bugs and correctness..." })
+Task({ subagent_type: "general-purpose", prompt: "Review for conventions and CLAUDE.md..." })
+```
+
+**Key Principle:** Each phase returns "essential files to read" → main thread reads all before proceeding.
+
+</feature_workflow>
+
+<pr_review_agents>
+
+## PR Review Agents (6 Specialized Reviewers)
+
+For comprehensive PR review, use aspect-based agent selection (based on Anthropic's pr-review-toolkit):
+
+| Agent | Focus | When to Use |
+|-------|-------|-------------|
+| **code-reviewer** | CLAUDE.md compliance, bugs | Always |
+| **comment-analyzer** | Comment accuracy vs code | Comments added/changed |
+| **pr-test-analyzer** | Behavioral test coverage | Test files changed |
+| **silent-failure-hunter** | Error handling, logging | Any code changes |
+| **type-design-analyzer** | Type encapsulation, invariants | Type definitions changed |
+| **code-simplifier** | Post-implementation refinement | After implementation |
+
+**Agent Selection Logic:**
+```javascript
+// Determine agents based on file types changed
+const changedFiles = await getGitDiff();
+const agents = ['code-reviewer']; // Always include
+
+if (changedFiles.some(f => f.includes('.test.'))) agents.push('pr-test-analyzer');
+if (hasCommentsAdded(changedFiles)) agents.push('comment-analyzer');
+if (hasTypeChanges(changedFiles)) agents.push('type-design-analyzer');
+agents.push('silent-failure-hunter'); // Always check error handling
+```
+
+**Confidence Scoring (0-100):**
+- Only report issues with confidence ≥ 80
+- Filters false positives, focuses on actionable feedback
+- See `<confidence_scoring>` section
+
+**Silent Failure Hunter Rules:**
+- Zero tolerance for errors without logging
+- Every catch block must log or re-throw
+- Error boundaries must report
+
+**Type Design Analyzer Dimensions:**
+| Dimension | Question |
+|-----------|----------|
+| Encapsulation | Are implementation details hidden? |
+| Invariant Expression | Does the type enforce constraints? |
+| Usefulness | Is the type practical to use? |
+| Enforcement | Are invariants enforced at boundaries? |
+
+</pr_review_agents>
+
+<confidence_scoring>
+
+## Confidence Scoring Pattern (0-100)
+
+For review findings, apply confidence scoring to filter false positives:
+
+**Scale:**
+| Score | Meaning | Action |
+|-------|---------|--------|
+| 0-25 | Low confidence - likely false positive | Don't report |
+| 26-50 | Moderate - might be real but minor | Don't report |
+| 51-79 | High confidence but uncertain | Don't report |
+| 80-100 | Very high - definitely real and important | **Report** |
+
+**Threshold: Only report issues scoring ≥ 80**
+
+**What qualifies for 80+:**
+- Explicitly violates CLAUDE.md or project guidelines
+- Directly impacts functionality
+- Introduces security vulnerability
+- Breaks existing behavior
+
+**What scores below 80:**
+- Pre-existing issues not introduced by current changes
+- Style preferences not in guidelines
+- Pedantic nitpicks
+- General "best practices" not project-specific
+- Issues that linter/compiler will catch
+
+**Implementation Pattern:**
+```javascript
+// For each finding, score independently
+for (const issue of issues) {
+  const confidence = await scoreConfidence(issue, {
+    isInChanges: true,
+    isInGuidelines: checkClaudeMd(issue),
+    impactsFunctionality: assessImpact(issue),
+    isPreExisting: checkGitBlame(issue)
+  });
+
+  if (confidence >= 80) {
+    reportIssue(issue, confidence);
+  }
+}
+```
+
+**Multi-Agent Scoring:**
+For highest accuracy, score each issue with independent agent (Haiku for speed):
+```javascript
+// Parallel confidence scoring
+const scores = await Promise.all(
+  issues.map(issue =>
+    Task({ model: "haiku", prompt: `Score confidence 0-100 for: ${issue}` })
+  )
+);
+```
+
+</confidence_scoring>
 
 <knowledge_verification>
 

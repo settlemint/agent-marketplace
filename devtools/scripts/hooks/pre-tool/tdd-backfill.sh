@@ -132,15 +132,14 @@ if find_test_file "$FILE_PATH"; then
 fi
 
 # --- Session deduplication (per-file) ---
+# Use /tmp for markers - auto-cleans on reboot, doesn't clutter project
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
-BRANCH=$(git -C "$PROJECT_DIR" branch --show-current 2>/dev/null || echo '')
-[[ -z $BRANCH ]] && BRANCH=$(git -C "$PROJECT_DIR" rev-parse --short HEAD 2>/dev/null || echo 'unknown')
-SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-')
+PROJECT_HASH=$(echo -n "$PROJECT_DIR" | md5 -q 2>/dev/null || echo -n "$PROJECT_DIR" | md5sum 2>/dev/null | cut -d' ' -f1)
 SESSION_ID="${CLAUDE_SESSION_ID:-$$}"
 
 # Use filename hash for deduplication key
 FILE_HASH=$(echo -n "$FILE_PATH" | md5 -q 2>/dev/null || echo -n "$FILE_PATH" | md5sum 2>/dev/null | cut -d' ' -f1)
-MARKER_DIR="$PROJECT_DIR/.claude/branches/$SAFE_BRANCH/tdd-backfill"
+MARKER_DIR="/tmp/claude-tdd-backfill/${PROJECT_HASH}"
 MARKER="$MARKER_DIR/${SESSION_ID}-${FILE_HASH}"
 
 if [[ -f "$MARKER" ]]; then

@@ -188,6 +188,74 @@ Use full SHA, not branch names.
 - Provide fix suggestions for small issues
 - Acknowledge areas not reviewed
 
+## Specialized Review Agents
+
+For comprehensive reviews, use aspect-based agent selection (based on pr-review-toolkit pattern):
+
+| Agent Focus | Use When | Prompt Focus |
+|-------------|----------|--------------|
+| **Code Review** | Always | CLAUDE.md compliance, obvious bugs |
+| **Comment Analyzer** | Comments added/changed | Comment accuracy vs code behavior |
+| **Test Analyzer** | Test files changed | Behavioral coverage, not just metrics |
+| **Silent Failure Hunter** | Any code changes | Error handling, logging gaps |
+| **Type Design Analyzer** | Type definitions changed | Encapsulation, invariant expression |
+| **Code Simplifier** | After implementation | Post-review refinement |
+
+**Parallel Review Pattern:**
+```javascript
+// Launch specialized reviewers simultaneously
+Task({ subagent_type: "general-purpose", prompt: "Review for CLAUDE.md compliance and bugs..." })
+Task({ subagent_type: "general-purpose", prompt: "Analyze error handling - flag unlogged errors..." })
+Task({ subagent_type: "general-purpose", prompt: "Verify test behavioral coverage..." })
+```
+
+**Silent Failure Rules:**
+- Every catch block must log or re-throw
+- Error boundaries must report
+- Async operations must handle rejection
+- Flag violations as P1
+
+**Type Design Dimensions (rate 1-10 each):**
+| Dimension | Question |
+|-----------|----------|
+| Encapsulation | Are implementation details hidden? |
+| Invariant Expression | Does the type enforce constraints? |
+| Usefulness | Is the type practical to use? |
+| Enforcement | Are invariants enforced at boundaries? |
+
+## Confidence Scoring (0-100)
+
+For each finding, score confidence to filter false positives:
+
+| Score | Meaning | Action |
+|-------|---------|--------|
+| 0-49 | Low/moderate confidence | **Don't report** |
+| 50-79 | High confidence but uncertain | **Don't report** |
+| 80-100 | Very high - definitely real | **Report** |
+
+**Threshold: Only report findings scoring ≥ 80**
+
+**Scoring Factors:**
+- +30: Explicitly violates CLAUDE.md (quote the rule)
+- +25: Directly impacts functionality
+- +20: Introduces security vulnerability
+- +15: Breaks existing behavior
+- -30: Pre-existing issue not in current changes
+- -20: Linter/compiler would catch
+- -15: Style preference not in guidelines
+
+**Parallel Confidence Scoring:**
+```javascript
+// Score each issue independently (reduces bias)
+const scores = await Promise.all(
+  issues.map(issue =>
+    Task({ model: "haiku", prompt: `Score confidence 0-100: ${issue.description}
+      Factors: Is it in the changes? Does it violate explicit rules? Impact?` })
+  )
+);
+const highConfidence = issues.filter((_, i) => scores[i] >= 80);
+```
+
 ## Codex Quality Review
 
 Use Codex MCP for deep analysis during Pass 3 (Quality) and Pass 4 (Coverage):

@@ -190,6 +190,70 @@ After each phase, verify:
 
 </enforcement_patterns>
 
+<plan_mode_integration>
+
+## Plan Mode Integration (ENFORCED)
+
+When creating implementation plans, TDD requirements are **ENFORCED** by the `plan-quality-gate.sh` PreToolUse hook.
+
+### Every Implementation Step Needs TDD
+
+Plans will be blocked from exiting plan mode if implementation steps don't include test requirements:
+
+```markdown
+3. [serial] Implement user service
+   - File: src/services/user.ts
+   - TDD: Write failing test in src/services/user.test.ts FIRST
+   - Evidence: Test fails → implementation passes → coverage ≥80%
+```
+
+### Touching Untested Files?
+
+If modifying files without existing tests, plan MUST include a test baseline step:
+
+```markdown
+0. [serial] Add test coverage for existing code
+   - File: src/services/user.test.ts (NEW)
+   - TDD: Write tests for existing untested functions
+   - Evidence: Coverage baseline established before changes
+```
+
+### Delegation Pattern for TDD Analysis
+
+Spawn a TDD Analyzer agent to identify coverage gaps before planning:
+
+```javascript
+Task({
+  subagent_type: "Explore",
+  prompt: "Find untested files in [paths we'll modify]. Return list with current coverage percentages."
+})
+```
+
+### Plan Validation (Automatic)
+
+The `plan-quality-gate.sh` hook checks:
+- Plan has `[serial]` or `[parallel]` markers (implementation steps)
+- Plan mentions `test`, `TDD`, `coverage`, `vitest`, or `spec`
+- If implementation steps exist without test mentions → **BLOCKED**
+
+### Worker Preambles
+
+When spawning implementation workers from a plan, include:
+
+```
+REQUIRED: Load TDD skill first
+Skill({ skill: "devtools:tdd-typescript" })
+
+TDD REQUIRED: Write failing test FIRST
+- RED: Test exists and FAILS (show error output)
+- GREEN: Minimal code to pass (no more than needed)
+- REFACTOR: Clean while tests pass
+
+Evidence: Test output showing failure → pass → coverage
+```
+
+</plan_mode_integration>
+
 <lsp_for_tdd>
 **Use LSP to link tests with implementations:**
 
