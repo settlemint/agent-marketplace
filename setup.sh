@@ -184,9 +184,13 @@ ALLOWED_MARKETPLACES=(
 )
 
 ALLOWED_PLUGINS=(
-  "frontend-design@claude-plugins-official"
   "typescript-lsp@claude-plugins-official"
+  "frontend-design@claude-plugins-official"
   "code-simplifier@claude-plugins-official"
+  "code-review@claude-plugins-official"
+  "feature-dev@claude-plugins-official"
+  "pr-review-toolkit@claude-plugins-official"
+  "ralph-loop@claude-plugins-official"
   "flow@settlemint"
   "devtools@settlemint"
   # Trail of Bits security plugins (all except culture-index)
@@ -497,6 +501,10 @@ echo "Official plugins (Anthropic):"
 force_update_plugin "frontend-design@claude-plugins-official" "frontend-design (UI generation)"
 force_update_plugin "typescript-lsp@claude-plugins-official" "typescript-lsp (TS/JS language server)"
 force_update_plugin "code-simplifier@claude-plugins-official" "code-simplifier (code refinement)"
+force_update_plugin "code-review@claude-plugins-official" "code-review (code review)"
+force_update_plugin "feature-dev@claude-plugins-official" "feature-dev (feature development)"
+force_update_plugin "pr-review-toolkit@claude-plugins-official" "pr-review-toolkit (pull request review toolkit)"
+force_update_plugin "ralph-loop@claude-plugins-official" "ralph-loop (Ralph Loops)"
 echo ""
 
 echo "Core plugins (SettleMint):"

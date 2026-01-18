@@ -51,6 +51,15 @@
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/security-gate.sh"
           }
         ]
+      },
+      {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-tool/plan-quality-gate.sh"
+          }
+        ]
       }
     ],
     "Stop": [

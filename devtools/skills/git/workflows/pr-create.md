@@ -46,6 +46,32 @@ bun run ci
 mkdir -p .claude/state && date +%s > .claude/state/qa-timestamp
 ```
 
+## Step 3b: Pre-PR Review (Optional)
+
+For comprehensive pre-PR validation, run specialized review agents:
+
+```javascript
+// Aspect-based agent selection - choose based on files changed
+const reviewers = ['code-reviewer']; // Always
+
+// Add specialized reviewers based on changes
+if (hasTestChanges) reviewers.push('test-analyzer');
+if (hasTypeChanges) reviewers.push('type-design-analyzer');
+reviewers.push('silent-failure-hunter'); // Always check error handling
+
+// Launch parallel reviews (optional - for high-quality PRs)
+Task({ subagent_type: "general-purpose", prompt: "Review changes for CLAUDE.md compliance. Only report issues with confidence >= 80." })
+Task({ subagent_type: "general-purpose", prompt: "Audit error handling. Flag: unlogged errors, silent failures, unhandled rejections." })
+```
+
+**Confidence threshold: 80**
+Only fix issues scoring >= 80 confidence before PR creation.
+
+**Skip this step for:**
+- Draft PRs
+- Small fixes (<10 lines changed)
+- Documentation-only changes
+
 ## Step 4: Ask PR Options
 
 ```javascript

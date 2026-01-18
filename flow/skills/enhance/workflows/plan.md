@@ -66,6 +66,64 @@ Define boundaries for the implementation:
 
 **Load spec-writing skill:** `Skill({ skill: "devtools:spec-writing" })`
 
+## Subagent Delegation Pattern (MANDATORY)
+
+**Main thread is ORCHESTRATOR, not worker.** Delegate heavy lifting to subagents.
+
+### Why Delegate?
+
+- Main thread has limited context window for deep research
+- Subagents can run in parallel (2-5x faster overall)
+- Specialized agents produce higher quality results
+- Reduces main thread from 200+ lines to 60-80 (decisions only)
+
+### Delegation Map
+
+| Work Type | Delegate To | Example |
+|-----------|-------------|---------|
+| External research | Explore agent | "Research Fireblocks SDK docs, find auth patterns" |
+| Codebase analysis | Explore agent | "Find existing integration patterns in src/services/" |
+| Test coverage gaps | Explore agent | "Identify untested files in paths we'll modify" |
+| Rule of Five review | Plan agent | "Apply 3 review passes to this plan, return findings" |
+| Architecture review | Codex MCP | "Analyze trade-offs, security implications" |
+
+### Orchestration Timeline
+
+```
+T0: Spawn 2-3 Explore agents (parallel)
+    Task({ subagent_type: "Explore", prompt: "Research external docs..." })
+    Task({ subagent_type: "Explore", prompt: "Analyze codebase patterns..." })
+    Task({ subagent_type: "Explore", prompt: "Find test coverage gaps..." })
+
+T1: Main thread waits or does light coordination
+
+T2: Collect exploration results (TaskOutput or inline)
+
+T3: Main thread drafts plan based on findings
+
+T4: Spawn Review agent OR invoke Codex (parallel)
+    Task({ subagent_type: "Plan", prompt: "Apply Rule of Five..." })
+    mcp__plugin_devtools_codex__codex({ prompt: "Review plan..." })
+
+T5: Collect review findings
+
+T6: Main thread finalizes plan
+
+T7: ExitPlanMode (gate checks pass)
+```
+
+### Enforcement (PreToolUse Hook)
+
+The `plan-quality-gate.sh` hook BLOCKS ExitPlanMode unless:
+
+| Requirement | How to Satisfy |
+|-------------|----------------|
+| Codex Review | Invoke `mcp__plugin_devtools_codex__codex` (required for ALL plans) |
+| Rule of Five | Document 3+ passes OR spawn Review subagent with "rule of five" in prompt |
+| TDD | Plan mentions tests for implementation steps |
+
+**Emergency bypass:** Add `[PLAN-BYPASS]` to plan file (audited)
+
 ## Plan Format
 
 Concision above grammar. Every word earns its place.
@@ -159,15 +217,17 @@ Each plan step MUST define completion evidence. No step is complete without obse
 
 **Why this matters:** Prevents "should work" thinking. Orchestrator can verify completion objectively.
 
-## Codex Integration (Strongly Recommended)
+## Codex Integration (MANDATORY)
 
-**Use Codex MCP for deep reasoning on complex plans.**
+**Use Codex MCP for deep reasoning on ALL plans.**
 
-Codex helps catch issues humans miss. Load it for plans that:
-- Touch more than 5 files (architectural review)
-- Make architectural decisions (trade-off analysis)
-- Involve security-sensitive features (threat modeling)
-- Require complex trade-off analysis (multi-option evaluation)
+Codex is REQUIRED by the `plan-quality-gate.sh` hook. ExitPlanMode will be blocked without Codex invocation.
+
+Codex helps catch issues humans miss:
+- Architecture review catches coupling issues
+- Security review prevents vulnerabilities
+- Complexity assessment identifies risks
+- Trade-off analysis clarifies choices
 
 ```javascript
 // Load Codex skill for patterns

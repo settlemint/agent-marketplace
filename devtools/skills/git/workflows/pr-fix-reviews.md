@@ -43,6 +43,13 @@ Note: Post-fix verification queries (step 5) are allowed.
 
 If CI fails after push: fix and retry (max 3 times), then escalate.
 
+6. **Post-fix validation (optional):** Run targeted review agents to verify fixes:
+   ```javascript
+   // Re-run reviewers that originally flagged issues
+   Task({ subagent_type: "general-purpose", prompt: "Verify error handling fix addresses the review comment. Confidence >= 80 only." })
+   Task({ subagent_type: "general-purpose", prompt: "Verify test coverage addresses the review comment. Behavioral coverage, not metrics." })
+   ```
+
 </workflow>
 
 <thread_resolution>

@@ -44,36 +44,64 @@ if [[ -f "$PLAN_MARKER" ]]; then
   exit 0
 fi
 
-# Output plan workflow guidance
+# Output plan workflow guidance - MANDATORY requirements enforced by PreToolUse hook
 cat <<'EOF'
-<plan-mode-guidance>
-## Planning Discipline
+<plan-mode-requirements>
+## MANDATORY: Plan Mode Compliance (Enforced by PreToolUse hook)
 
-**Load planning skills:**
+ExitPlanMode will be BLOCKED until you complete all requirements.
+
+### Delegation Pattern (Main Thread = Orchestrator)
+
+**Phase 1: Parallel Research** - Spawn 2-3 Explore agents:
 ```javascript
-Skill({ skill: "devtools:rule-of-five" })  // 5-pass convergence
-Skill({ skill: "devtools:tdd-typescript" }) // TDD for implementation steps
+Task({ subagent_type: "Explore", prompt: "Research external docs, SDK patterns..." })
+Task({ subagent_type: "Explore", prompt: "Analyze codebase architecture, existing patterns..." })
+Task({ subagent_type: "Explore", prompt: "Identify test coverage gaps for files we'll touch..." })
 ```
 
-**5-Pass Protocol:** Generate → Tactical → Quality → Architecture → Strategic
-Converge when <3 changes per pass.
+**Phase 2: Draft Plan** - Main thread synthesizes and drafts
 
-**Plan Format:**
-- Each step: `[parallel]` or `[serial]` marker + evidence + TDD requirement
-- User stories: As a <user>, I want <goal>, so that <benefit>
-- Acceptance criteria: Given <context>, when <action>, then <outcome>
-- Template: `flow/skills/enhance/templates/plan-template.md`
-
-**For complex plans (>5 files, architectural decisions):**
+**Phase 3: Review Delegation** - Spawn review agents OR invoke directly:
 ```javascript
-MCPSearch({ query: "select:mcp__plugin_devtools_codex__codex" });
+// Option A: Delegate Rule of Five to subagent
+Task({ subagent_type: "Plan", prompt: "Apply Rule of Five: 3 passes (tactical, quality, architecture). Return findings with evidence." })
+
+// Option B: Invoke Codex directly (REQUIRED for ALL plans)
+MCPSearch({ query: "select:mcp__plugin_devtools_codex__codex" })
 mcp__plugin_devtools_codex__codex({
-  prompt: `Review this plan for: 1) Architecture trade-offs, 2) Security implications, 3) Complexity assessment`
-});
+  prompt: "Review this plan for: architecture trade-offs, security implications, complexity"
+})
 ```
 
-**Full workflow details:** Read `flow/skills/enhance/workflows/plan.md`
-</plan-mode-guidance>
+**Phase 4: Finalize** - Main thread makes final decisions
+
+### Gate Requirements (checked by plan-quality-gate.sh)
+
+| Requirement | How to Satisfy |
+|-------------|----------------|
+| Codex Review | Invoke mcp__plugin_devtools_codex__codex (required for ALL plans) |
+| Rule of Five | Document 3+ passes OR spawn Review subagent |
+| TDD | Plan mentions tests for implementation steps |
+
+### Plan Format
+- Each step: `[parallel]` or `[serial]` marker
+- Each step: Evidence definition for completion
+- Implementation steps: TDD requirement (test file, coverage target)
+- Merge walls: Identified and front-loaded
+
+### TDD in Plans (MANDATORY)
+Every implementation step MUST include test requirement:
+```markdown
+3. [serial] Implement user service
+   - File: src/services/user.ts
+   - TDD: Write failing test in src/services/user.test.ts FIRST
+   - Evidence: Test fails -> passes -> coverage >=80%
+```
+
+**Emergency bypass:** Add `[PLAN-BYPASS]` to plan file (audited)
+**Full workflow:** Read `flow/skills/enhance/workflows/plan.md`
+</plan-mode-requirements>
 EOF
 
 # Mark as shown for this session
