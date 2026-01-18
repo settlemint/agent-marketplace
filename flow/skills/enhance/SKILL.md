@@ -478,6 +478,37 @@ Apply 5-angle investigation. Cite file:line for findings.`
 
 </quick_reference>
 
+<enforcement_hooks>
+
+## Rule of Five Enforcement (AUTOMATED)
+
+These hooks automatically enforce Rule of Five during implementation:
+
+| Hook | When | Action |
+|------|------|--------|
+| `edit-review-checkpoint.sh` | Every 10 Edit/Write calls | BLOCK until review pass documented |
+| `review-enforcer.sh` | Stop (session end) | BLOCK if <3 passes for code changes |
+| `auto-review-spawner.sh` | Stop (session end) | Auto-spawn reviewer agents if no review |
+| `commit-review-gate.sh` | git commit | BLOCK without documented passes |
+
+**Checkpoint behavior:**
+- After 10 code file edits, you must document a review pass before more edits
+- Pass format: `## Pass N: Review - EVIDENCE`
+- Threshold configurable via `CLAUDE_REVIEW_CHECKPOINT` env var
+
+**Auto-spawn behavior:**
+- If >5 code edits AND no passes documented, spawns these agents:
+  - `pr-review-toolkit:code-reviewer` (always)
+  - `pr-review-toolkit:silent-failure-hunter` (always)
+  - `pr-review-toolkit:pr-test-analyzer` (if test files changed)
+  - `pr-review-toolkit:type-design-analyzer` (if type definitions changed)
+
+**Override markers (audited to /tmp/claude-audit/):**
+- `[SKIP-CHECKPOINT]` - Bypass edit checkpoint
+- `[REVIEW-BYPASS]` - Bypass review enforcer at Stop
+
+</enforcement_hooks>
+
 <workflow_files>
 
 Detailed patterns for each agent type:
