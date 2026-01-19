@@ -369,6 +369,80 @@ Before writing ANY implementation code:
 - **Evidence-free claims** - No command output or screenshot to back up completion
 - **Oscillation** - Same issue going back and forth without forcing a decision
 
+## Proactive Rule of Five (STOP CHECK)
+
+**Before declaring ANY implementation complete, run review passes.**
+
+The Stop hook enforces Rule of Five at session end, but proactive review catches issues earlier. Don't wait until you're "done" - review as you go.
+
+### The Pattern
+
+```
+Implement → Self-review → Document passes → Then respond
+```
+
+### STOP CHECK (Before Responding)
+
+When you're about to respond saying "I've completed X", pause and ask:
+
+```
+STOP CHECK:
+- [ ] Have I documented at least 3 review passes?
+- [ ] Each pass has specific findings or "No issues"?
+- [ ] Evidence provided for claims?
+- [ ] Would I bet $100 this is ready?
+```
+
+If ANY answer is NO, run more passes before responding.
+
+### Proactive Review Format
+
+Document review passes IN YOUR RESPONSE, not as an afterthought:
+
+```markdown
+## Implementation Complete
+
+[Brief description of what was done]
+
+## Review Passes
+
+### Pass 1: Correctness Review
+- Checked: [what you verified]
+- Findings: [issues found or "No issues"]
+- Evidence: [test output, file references]
+
+### Pass 2: Quality Review
+- Checked: [naming, patterns, error handling]
+- Findings: [issues found or "No issues"]
+- Evidence: [specific code citations]
+
+### Pass 3: Integration Review
+- Checked: [fits codebase, consistent patterns]
+- Findings: [issues found or "Converged"]
+- Evidence: [pattern comparisons]
+
+## Evidence
+
+- Command: `bun run test`
+- Output: "47 tests pass"
+- Files modified: [list]
+```
+
+### Why Proactive?
+
+| Reactive (Bad) | Proactive (Good) |
+|----------------|------------------|
+| Stop hook blocks you | You catch issues early |
+| Frustrated user | Smooth handoff |
+| Rework needed | Quality on first try |
+| Token waste | Efficient completion |
+
+### Integration with Subagent Workflow
+
+For complex tasks using subagent-driven development (see `workflows/subagent-development.md`), the two-stage review (spec + quality) satisfies Rule of Five. Each stage runs 3 passes.
+
+**Single-agent work still needs proactive review.** Don't rely only on the Stop hook.
+
 ## Success Criteria
 
 - [ ] TDD followed: failing test written BEFORE implementation
