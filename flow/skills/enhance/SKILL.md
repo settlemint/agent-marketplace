@@ -178,8 +178,8 @@ Load domain skills based on task context:
 | Logging | `Skill({ skill: "devtools:pino" })` | Structured logging |
 | Infrastructure | `Skill({ skill: "devtools:helm" })` | Kubernetes, Helm charts |
 | IaC | `Skill({ skill: "devtools:terraform" })` | Terraform, OpenTofu |
-| Debugging | `Skill({ skill: "superpowers:systematic-debugging" })` | Errors, 4-phase root cause workflow |
-| TDD | `Skill({ skill: "superpowers:test-driven-development" })` | RED-GREEN-REFACTOR with rationalization prevention |
+| Debugging | `Skill({ skill: "devtools:troubleshooting" })` | Errors, debugging workflow |
+| TDD | `Skill({ skill: "devtools:tdd-typescript" })` | RED-GREEN-REFACTOR cycle |
 | LSP | `Skill({ skill: "devtools:typescript-lsp" })` | Go to definition, references |
 | Shadcn | `Skill({ skill: "devtools:shadcn" })` | UI components, primitives |
 | Radix | `Skill({ skill: "devtools:radix" })` | Accessible primitives |
@@ -193,35 +193,6 @@ Load domain skills based on task context:
 - **Load spec-writing when**: entering plan mode, writing requirements, creating project briefs, defining features
 
 </domain_routing>
-
-<superpowers_routing>
-
-## Superpowers Skills (Process Workflows)
-
-The superpowers plugin provides process workflows. Load based on task type:
-
-| Task Type | Superpowers Skill | Purpose |
-|-----------|-------------------|---------|
-| New feature design | `Skill({ skill: "superpowers:brainstorming" })` | Collaborative design discovery |
-| Implementation planning | `Skill({ skill: "superpowers:writing-plans" })` | Structured plan creation |
-| Plan execution | `Skill({ skill: "superpowers:executing-plans" })` | Batch execution with checkpoints |
-| TDD workflow | `Skill({ skill: "superpowers:test-driven-development" })` | RED-GREEN-REFACTOR with rationalization prevention |
-| Debugging | `Skill({ skill: "superpowers:systematic-debugging" })` | 4-phase root cause investigation |
-| Before claiming done | `Skill({ skill: "superpowers:verification-before-completion" })` | Evidence before claims |
-| Request code review | `Skill({ skill: "superpowers:requesting-code-review" })` | Dispatch reviewer subagent |
-| Receive code review | `Skill({ skill: "superpowers:receiving-code-review" })` | Evaluate feedback quality |
-| Branch completion | `Skill({ skill: "superpowers:finishing-a-development-branch" })` | Structured completion with options |
-| Isolated work | `Skill({ skill: "superpowers:using-git-worktrees" })` | Create isolated worktrees |
-| Create new skill | `Skill({ skill: "superpowers:writing-skills" })` | TDD applied to documentation |
-| Subagent workflow | `Skill({ skill: "superpowers:subagent-driven-development" })` | Fresh subagent per task + two-stage review |
-
-**Integration with our workflow:**
-- Superpowers provides process patterns (TDD, debugging, planning)
-- Our domain skills provide technical patterns (React, Solidity, APIs)
-- Our hooks provide automated enforcement (review gates, plan quality)
-- Our Rule of Five provides quality scoring with evidence requirements
-
-</superpowers_routing>
 
 <feature_workflow>
 
@@ -269,35 +240,9 @@ Task({ subagent_type: "general-purpose", prompt: "Review for conventions and CLA
 
 <pr_review_agents>
 
-## Code Review (Hybrid 3-Stage Model)
+## PR Review Agents (6 Specialized Reviewers)
 
-Combines superpowers' workflow with our 6 specialized agents:
-
-```
-Stage 1: Spec Compliance (FROM SUPERPOWERS)
-├─ Skill({ skill: "superpowers:requesting-code-review" })
-├─ Does implementation match requirements?
-└─ Are design decisions documented?
-    ↓
-Stage 2: Quality Review (OUR 6 AGENTS)
-├─ pr-review-toolkit:code-reviewer (bugs, CLAUDE.md)
-├─ pr-review-toolkit:silent-failure-hunter (error handling)
-├─ pr-review-toolkit:pr-test-analyzer (if tests changed)
-├─ pr-review-toolkit:type-design-analyzer (if types changed)
-├─ pr-review-toolkit:comment-analyzer (if comments changed)
-└─ pr-review-toolkit:code-simplifier (post-implementation)
-    ↓
-Stage 3: Feedback Receiving (FROM SUPERPOWERS)
-├─ Skill({ skill: "superpowers:receiving-code-review" })
-├─ Evaluate feedback quality before implementing
-└─ Push back on incorrect suggestions with evidence
-```
-
-**Stage 1 gates Stage 2** - Must pass spec compliance before quality review.
-**Stage 2 arbiter** - code-reviewer is tie-breaker for conflicting feedback.
-**Stage 3 timebox** - 5 min max per feedback item.
-
-### Our 6 Specialized Reviewers
+For comprehensive PR review, use aspect-based agent selection (based on Anthropic's pr-review-toolkit):
 
 | Agent | Focus | When to Use |
 |-------|-------|-------------|
@@ -307,6 +252,18 @@ Stage 3: Feedback Receiving (FROM SUPERPOWERS)
 | **silent-failure-hunter** | Error handling, logging | Any code changes |
 | **type-design-analyzer** | Type encapsulation, invariants | Type definitions changed |
 | **code-simplifier** | Post-implementation refinement | After implementation |
+
+**Agent Selection Logic:**
+```javascript
+// Determine agents based on file types changed
+const changedFiles = await getGitDiff();
+const agents = ['code-reviewer']; // Always include
+
+if (changedFiles.some(f => f.includes('.test.'))) agents.push('pr-test-analyzer');
+if (hasCommentsAdded(changedFiles)) agents.push('comment-analyzer');
+if (hasTypeChanges(changedFiles)) agents.push('type-design-analyzer');
+agents.push('silent-failure-hunter'); // Always check error handling
+```
 
 **Confidence Scoring (0-100):**
 - Only report issues with confidence ≥ 80
@@ -587,7 +544,7 @@ When writing implementation code, consider test-driven development:
 - **GREEN**: Write minimal code to make the test pass
 - **REFACTOR**: Improve code while keeping tests green
 
-TDD helps catch bugs early and documents intent. Load `superpowers:test-driven-development` for detailed patterns with rationalization prevention.
+TDD helps catch bugs early and documents intent. Load `devtools:tdd-typescript` for detailed patterns.
 
 </guidelines>
 

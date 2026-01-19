@@ -191,7 +191,6 @@ ALLOWED_PLUGINS=(
   "feature-dev@claude-plugins-official"
   "pr-review-toolkit@claude-plugins-official"
   "ralph-loop@claude-plugins-official"
-  "superpowers@claude-plugins-official"
   "flow@settlemint"
   "devtools@settlemint"
   # Trail of Bits security plugins (all except culture-index)
@@ -506,7 +505,6 @@ force_update_plugin "code-review@claude-plugins-official" "code-review (code rev
 force_update_plugin "feature-dev@claude-plugins-official" "feature-dev (feature development)"
 force_update_plugin "pr-review-toolkit@claude-plugins-official" "pr-review-toolkit (pull request review toolkit)"
 force_update_plugin "ralph-loop@claude-plugins-official" "ralph-loop (Ralph Loops)"
-force_update_plugin "superpowers@claude-plugins-official" "superpowers (enhanced coding abilities)"
 echo ""
 
 echo "Core plugins (SettleMint):"

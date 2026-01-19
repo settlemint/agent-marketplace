@@ -6,26 +6,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Claude Code plugin marketplace repository. It contains the `devtools` and `flow` plugins for development tools and workflow automation. This is NOT a traditional application with build/test pipelines.
 
-## Required Plugins
-
-This repository requires the `superpowers` plugin (v4.0.3):
-
-```bash
-/plugin marketplace add claude-plugins-official
-/plugin install superpowers@4.0.3
-```
-
-The superpowers plugin provides TDD, debugging, planning, and code review workflows that this repository depends on. Session start will warn if superpowers is missing.
-
-## Package Manager & Testing
-
-This project uses **Bun** for package management and **Vitest** for testing:
-
-- Install: `bun install` (not npm install)
-- Run scripts: `bun run <script>` (not npm run)
-- Run tests: `bun run test` or `vitest` (not npm test)
-- CI: `bun run ci`
-
 ## TDD Required (MANDATORY)
 
 **ALL code changes MUST follow Test-Driven Development. NO EXCEPTIONS.**
@@ -33,11 +13,8 @@ This project uses **Bun** for package management and **Vitest** for testing:
 ### Before Writing ANY Implementation Code
 
 ```javascript
-// Load the superpowers TDD skill FIRST
-Skill({ skill: "superpowers:test-driven-development" })
-
-// For TypeScript/Vitest specific patterns
-Skill({ skill: "devtools:vitest" })
+// Load the TDD skill FIRST
+Skill({ skill: "devtools:tdd-typescript" })
 ```
 
 ### RED-GREEN-REFACTOR Cycle
