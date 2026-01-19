@@ -178,6 +178,24 @@ await expect(page).toHaveTitle("Title");
 **Locator Priority:** `getByRole()` → `getByLabel()` → `getByText()` → `getByTestId()` → CSS
 </constraints>
 
+<authentication>
+**SettleMint Local Development:**
+- Email: admin@settlemint.com
+- Password: settlemint
+- Pincode: 111111
+
+*Note: These are local development credentials only. For CI, use environment variables.*
+
+**Example with credentials:**
+```typescript
+await page.getByLabel("Email").fill("admin@settlemint.com");
+await page.getByLabel("Password").fill("settlemint");
+await page.getByRole("button", { name: "Sign in" }).click();
+// If pincode required:
+await page.getByLabel("Pincode").fill("111111");
+```
+</authentication>
+
 <anti_patterns>
 **Common mistakes to avoid:**
 

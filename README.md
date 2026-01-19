@@ -104,7 +104,7 @@ Modern development tools with MCP-first skills. Uses Context7 for up-to-date lib
 | `terraform` | Infrastructure as code | - |
 | `tdd-typescript` | Test-driven development | - |
 | `troubleshooting` | Debug patterns | - |
-| `agent-browser` | Headless browser automation | - |
+| `chrome-testing` | Chrome browser testing | Chrome MCP |
 | `ast-grep` | Mass rename/replace | - |
 | `code-health` | Code health audit | - |
 | `codex-patterns` | Deep code reasoning | Codex MCP |
