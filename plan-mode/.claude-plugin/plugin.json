@@ -1,0 +1,15 @@
+{
+  "name": "plan-mode",
+  "version": "2.3.1",
+  "description": "7-phase planning workflow with structured exploration, clarifying questions, confidence-based validation, and Linear integration",
+  "author": {
+    "name": "Roderik van der Veer"
+  },
+  "keywords": [
+    "planning",
+    "workflow",
+    "rule-of-five",
+    "linear",
+    "task-management"
+  ]
+}

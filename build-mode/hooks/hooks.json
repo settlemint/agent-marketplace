@@ -1,0 +1,53 @@
+{
+  "description": "Build-mode quality gates: TDD reminders, CI validation, and progress preservation",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "TDD Check: Before writing production code, verify a failing test exists for this behavior. If no test exists yet, gently remind to write the test first. If test already exists and fails for the right reason, approve the write. Return 'approve' to proceed or provide a brief reminder about TDD if needed.",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Completion Gate: Before stopping, verify: 1) All tests pass (evidence required), 2) Lint is clean, 3) No TODO items remaining for current task, 4) Self-review checklist completed. If any verification is missing, return 'block' with specific items needed. Otherwise return 'approve'.",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/preserve-progress.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/ci-gate.sh",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}

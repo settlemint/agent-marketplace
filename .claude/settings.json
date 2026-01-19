@@ -19,5 +19,20 @@
     "command": "npx -y @owloops/claude-powerline@latest --style=powerline --theme=tokyo-night",
     "padding": 0
   },
-  "spinnerTipsEnabled": false
+  "spinnerTipsEnabled": false,
+  "extraKnownMarketplaces": {
+    "settlemint": {
+      "source": {
+        "source": "github",
+        "repo": "settlemint/agent-marketplace"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "plugin-dev@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "plan-mode@settlemint": true,
+    "build-mode@settlemint": true,
+    "git@settlemint": true
+  }
 }
