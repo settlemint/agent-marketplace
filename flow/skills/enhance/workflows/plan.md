@@ -130,6 +130,80 @@ Concision above grammar. Every word earns its place.
 
 End each plan with unresolved questions list (if any exist).
 
+## Task Granularity (2-5 Minute Rule)
+
+**Each task should take 2-5 minutes to implement.** If longer, break it down.
+
+### Why This Granularity?
+
+- **Progress visibility** - Frequent completions show movement
+- **Error isolation** - Small tasks = small blast radius
+- **Parallel opportunity** - Fine-grained tasks enable fan-out
+- **Review efficiency** - Easier to review small changes
+
+### Task Definition Requirements
+
+Each task MUST include:
+
+| Element | Purpose | Example |
+|---------|---------|---------|
+| **Exact file path** | No ambiguity | `src/services/auth.ts` |
+| **Specific action** | Clear what to do | "Add login() function" |
+| **Code snippet** | For non-trivial changes | `export async function login(...)` |
+| **Evidence criteria** | How to verify | "Test passes, typecheck clean" |
+
+### Task Format
+
+```markdown
+3. [serial] Add login function to auth service
+   - File: src/services/auth.ts
+   - Action: Create login() that validates credentials and returns JWT
+   - Code:
+     ```typescript
+     export async function login(email: string, password: string): Promise<string> {
+       // Implementation
+     }
+     ```
+   - TDD: Write failing test first
+   - Evidence: `bun run test auth.test.ts` passes
+```
+
+### Breaking Down Large Tasks
+
+**Before (too big, ~30 minutes):**
+```
+1. Implement user authentication
+```
+
+**After (2-5 minutes each):**
+```
+1. [serial] Create User type in src/types/user.ts
+2. [parallel] Create auth service file structure
+3. [parallel] Write failing test for login()
+4. [serial] Implement login() to pass test
+5. [parallel] Write failing test for logout()
+6. [serial] Implement logout() to pass test
+7. [serial] Add auth middleware
+8. [serial] Wire auth routes in app.ts
+```
+
+### TodoWrite Integration
+
+Plans should map to TodoWrite items:
+
+```javascript
+TodoWrite({
+  todos: [
+    { content: "Create User type in src/types/user.ts", status: "pending", activeForm: "Creating User type" },
+    { content: "Create auth service structure", status: "pending", activeForm: "Creating auth structure" },
+    { content: "Write failing test for login()", status: "pending", activeForm: "Writing login test" },
+    // ... one todo per plan task
+  ]
+})
+```
+
+**Rule:** One plan task = one todo item = one atomic commit opportunity.
+
 ## Specification + Five-Pass Protocol
 
 | Phase/Pass      | Focus        | Key Questions                                |
