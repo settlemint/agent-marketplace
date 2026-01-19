@@ -104,7 +104,7 @@ TDD-driven implementation with quality gates:
 | `visual-tester` | UI verification |
 | `completion-validator` | Final gate |
 
-### Git (v1.0.0)
+### Git (v1.1.0)
 
 Git workflow automation:
 
@@ -112,6 +112,7 @@ Git workflow automation:
 | Command | Purpose |
 |---------|---------|
 | `/commit` | Conventional commit with selective staging |
+| `/commit-push` | Commit and push in one step |
 | `/branch` | Create branch: `username/type/slug` |
 | `/pr` | Create PR with template body |
 | `/push` | Safe push with force-with-lease |

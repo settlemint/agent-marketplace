@@ -1,4 +1,4 @@
-# Git Plugin
+# Git Plugin v1.1.0
 
 Git workflow automation with conventional commits, smart branching, PR templates, and safe push/sync operations.
 
@@ -7,6 +7,7 @@ Git workflow automation with conventional commits, smart branching, PR templates
 | Command | Purpose |
 |---------|---------|
 | `/commit` | Create conventional commit with selective staging |
+| `/commit-push` | Commit and push to remote in one step |
 | `/branch` | Create branch with `username/type/slug` naming |
 | `/pr` | Create PR with template-based body, draft/auto-merge options |
 | `/push` | Push with safety checks and force-with-lease |
@@ -77,6 +78,11 @@ Helper scripts in `scripts/`:
 - `context.sh` - Git context (branch, status, changes)
 - `pr-info.sh` - PR metadata
 - `pr-checks.sh` - CI status
+
+## Version History
+
+- **v1.1.0**: Add `/commit-push` command for combined commit and push workflow
+- **v1.0.0**: Initial release with commit, branch, pr, push, sync, clean-gone commands
 
 ## License
 
