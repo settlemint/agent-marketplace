@@ -31,7 +31,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Completion Gate: Before stopping, verify: 1) All tests pass (evidence required), 2) Lint is clean, 3) No TODO items remaining for current task, 4) Self-review checklist completed. If any verification is missing, return 'block' with specific items needed. Otherwise return 'approve'.",
+            "prompt": "Completion Gate: Before stopping, verify: 1) All tests pass (evidence required), 2) Lint is clean, 3) No TODO items remaining for current task, 4) Self-review checklist completed. If any verification is missing, the agent should continue and address those items. If all verifications pass, the agent should stop.",
             "timeout": 15
           }
         ]

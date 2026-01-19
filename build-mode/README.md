@@ -1,4 +1,4 @@
-# Build Mode Plugin
+# Build Mode Plugin v1.0.1
 
 TDD-driven implementation execution with subagent orchestration, systematic debugging, visual testing, and verification before completion.
 
@@ -212,6 +212,11 @@ Every completion claim requires evidence:
 
 - **plan-mode**: Implementation planning and architecture
 - **devtools**: Developer tooling and utilities
+
+## Version History
+
+- **v1.0.1**: Fixed Stop hook JSON validation error by using natural language instructions instead of explicit approve/block format
+- **v1.0.0**: Initial release with TDD workflow, subagent orchestration, visual testing, and quality gates
 
 ## License
 

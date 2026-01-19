@@ -19,7 +19,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Check if this session involved planning (plan mode, feature planning, task breakdown). If YES and a plan was created:\n\n1. Remind to use AskUserQuestion to offer Linear integration:\n   - Option 1: Create new Linear ticket with the plan\n   - Option 2: Update existing Linear ticket (user provides ID)\n   - Option 3: Skip Linear integration\n\n2. If Linear was already offered or this wasn't a planning session, approve stopping.\n\nReturn 'approve' to stop or 'block' with reminder about Linear integration if planning occurred but Linear wasn't offered.",
+            "prompt": "Check if this session involved planning (plan mode, feature planning, task breakdown). If YES and a plan was created:\n\n1. Check if Linear integration was offered via AskUserQuestion with these options:\n   - Option 1: Create new Linear ticket with the plan\n   - Option 2: Update existing Linear ticket (user provides ID)\n   - Option 3: Skip Linear integration\n\n2. If Linear was already offered OR this wasn't a planning session, the agent should stop.\n\n3. If planning occurred but Linear wasn't offered, the agent should continue to offer Linear integration.",
             "timeout": 15
           }
         ]
