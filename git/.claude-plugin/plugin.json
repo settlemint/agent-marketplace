@@ -1,0 +1,11 @@
+{
+  "name": "git",
+  "version": "1.0.0",
+  "description": "Git workflow automation with conventional commits, smart branching, PR templates, and safe push/sync operations",
+  "author": {
+    "name": "Roderik van der Veer",
+    "email": "roderik@settlemint.com"
+  },
+  "repository": "https://github.com/settlemint/agent-marketplace",
+  "license": "MIT"
+}

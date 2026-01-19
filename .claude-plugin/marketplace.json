@@ -1,48 +1,44 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "settlemint",
+  "description": "SettleMint agent orchestration and development tools for structured planning and TDD-driven implementation",
   "owner": {
     "name": "Roderik van der Veer",
     "email": "roderik@settlemint.com"
   },
-  "metadata": {
-    "description": "SettleMint agent orchestration and development tools",
-    "version": "1.0.0"
-  },
   "plugins": [
     {
-      "name": "devtools",
-      "source": "./devtools",
-      "description": "Modern development tools for React, APIs, blockchain, databases, and testing. MCP-first skills with Context7 integration for up-to-date documentation.",
-      "version": "1.0.0",
+      "name": "plan-mode",
+      "description": "7-phase planning workflow with structured exploration, clarifying questions, confidence-based validation, and Linear integration",
       "author": {
-        "name": "Roderik van der Veer"
+        "name": "Roderik van der Veer",
+        "email": "roderik@settlemint.com"
       },
-      "repository": "https://github.com/settlemint/agent-marketplace",
-      "license": "MIT",
-      "keywords": [
-        "react",
-        "api",
-        "blockchain",
-        "database",
-        "testing",
-        "mcp",
-        "context7"
-      ],
-      "category": "development"
+      "source": "./plan-mode",
+      "category": "development",
+      "homepage": "https://github.com/settlemint/agent-marketplace/tree/main/plan-mode"
     },
     {
-      "name": "flow",
-      "source": "./flow",
-      "description": "Workflow orchestration, state management, and productivity automation for Claude Code. Provides /flow:init, /flow:status, /flow:analyze commands with comprehensive hook lifecycle management.",
-      "version": "1.0.0",
+      "name": "build-mode",
+      "description": "TDD-driven implementation execution with subagent orchestration, systematic debugging, visual testing, and verification before completion",
       "author": {
-        "name": "Roderik van der Veer"
+        "name": "Roderik van der Veer",
+        "email": "roderik@settlemint.com"
       },
-      "repository": "https://github.com/settlemint/agent-marketplace",
-      "license": "MIT",
-      "keywords": ["workflow", "state", "automation", "productivity", "hooks"],
-      "category": "productivity"
+      "source": "./build-mode",
+      "category": "development",
+      "homepage": "https://github.com/settlemint/agent-marketplace/tree/main/build-mode"
+    },
+    {
+      "name": "git",
+      "description": "Git workflow automation with conventional commits, smart branching, PR templates with plan verification, and safe push/sync operations",
+      "author": {
+        "name": "Roderik van der Veer",
+        "email": "roderik@settlemint.com"
+      },
+      "source": "./git",
+      "category": "development",
+      "homepage": "https://github.com/settlemint/agent-marketplace/tree/main/git"
     }
   ]
 }
