@@ -1,4 +1,4 @@
-# Build Mode Plugin v1.0.1
+# Build Mode Plugin v1.0.2
 
 TDD-driven implementation execution with subagent orchestration, systematic debugging, visual testing, and verification before completion.
 
@@ -92,7 +92,7 @@ Core TDD and verification methodology:
 
 | Hook | Event | Purpose |
 |------|-------|---------|
-| TDD Reminder | PreToolUse (Write/Edit) | Soft reminder to write test first |
+| TDD Gate | PreToolUse (Write/Edit) | Blocks implementation without test evidence |
 | Completion Gate | Stop | Verify evidence before stopping |
 | Progress Preserver | PreCompact | Preserve state for context recovery |
 | CI Gate | PostToolUse (Bash) | Feedback on test/lint failures |
@@ -215,6 +215,7 @@ Every completion claim requires evidence:
 
 ## Version History
 
+- **v1.0.2**: Changed TDD hook from soft reminders to hard blocking - code edits now require test evidence
 - **v1.0.1**: Fixed Stop hook JSON validation error by using natural language instructions instead of explicit approve/block format
 - **v1.0.0**: Initial release with TDD workflow, subagent orchestration, visual testing, and quality gates
 
