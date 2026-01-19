@@ -456,7 +456,6 @@ echo ""
 
 echo "npm packages:"
 install_or_update_npm_package "@ast-grep/cli" "sg"
-install_or_update_npm_package "agent-browser" "agent-browser"
 echo ""
 
 echo "Python packages:"
