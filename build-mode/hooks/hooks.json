@@ -1,13 +1,25 @@
 {
   "description": "Build-mode quality gates: TDD reminders, CI validation, and progress preservation",
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Analyze the user's message. If it involves implementing code, modifying functionality, fixing bugs, or adding features to code files (*.ts, *.tsx, *.js, *.jsx, *.py, *.go, *.rs, etc.):\n\nReturn JSON with:\n- \"continue\": true\n- \"systemMessage\": \"<tdd-workflow>\\n## TDD Required\\n\\nBefore editing any code file, follow RED-GREEN-REFACTOR:\\n1. Write a failing test first\\n2. Run tests to confirm failure (for the RIGHT reason)\\n3. Write minimal code to pass\\n4. Run tests to confirm pass\\n\\nTest files (*.test.ts, *.spec.ts) can always be edited.\\nConfig/docs (*.json, *.md, *.yaml) skip TDD.\\n</tdd-workflow>\"\n\nIf the message is NOT about implementation (questions, research, planning), return only:\n- \"continue\": true\n\nAlways approve.",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Write|Edit",
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "TDD Check: First check the file path. If it's a non-code file (*.md, *.json, *.yaml, *.yml, *.txt, *.css, *.html, plan files, config files, documentation), return 'approve' immediately - TDD does not apply to these files. For actual code files (*.ts, *.tsx, *.js, *.jsx, *.py, *.go, *.rs, etc.), verify a failing test exists for this behavior. If no test exists yet, gently remind to write the test first. If test already exists and fails for the right reason, approve the write. Return 'approve' to proceed or provide a brief reminder about TDD if needed.",
+            "prompt": "TDD Gate for Write/Edit operations.\n\n## Step 1: Check file type\nIf the file path is a non-code file (*.md, *.json, *.yaml, *.yml, *.txt, *.css, *.html, *.config.*, plan files, documentation), return 'approve' immediately.\n\n## Step 2: Check if it's a TEST file\nIf the file being edited IS a test file (*.test.ts, *.spec.ts, *.test.js, *.test.tsx, *_test.py, *_test.go, etc.), return 'approve' - writing tests is always allowed.\n\n## Step 3: For implementation code files\nLook at the CONVERSATION CONTEXT for evidence of TDD workflow:\n- Was a test file recently written or edited for this feature?\n- Was 'bun test', 'npm test', 'pytest', 'go test' or similar run recently?\n- Did test output show failures related to what's being implemented?\n\nIf YES to any of these: return 'approve' - TDD workflow is being followed.\n\nIf NO evidence of tests in conversation: return with a systemMessage reminder:\n\"<tdd-reminder>No test evidence found in conversation. Remember TDD: write failing test first, then implement.</tdd-reminder>\"\n\nThen return 'approve' to allow the edit. Use soft reminders, not hard blocks.",
             "timeout": 10
           }
         ]
