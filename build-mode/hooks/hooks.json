@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "TDD Check: Before writing production code, verify a failing test exists for this behavior. If no test exists yet, gently remind to write the test first. If test already exists and fails for the right reason, approve the write. Return 'approve' to proceed or provide a brief reminder about TDD if needed.",
+            "prompt": "TDD Check: First check the file path. If it's a non-code file (*.md, *.json, *.yaml, *.yml, *.txt, *.css, *.html, plan files, config files, documentation), return 'approve' immediately - TDD does not apply to these files. For actual code files (*.ts, *.tsx, *.js, *.jsx, *.py, *.go, *.rs, etc.), verify a failing test exists for this behavior. If no test exists yet, gently remind to write the test first. If test already exists and fails for the right reason, approve the write. Return 'approve' to proceed or provide a brief reminder about TDD if needed.",
             "timeout": 10
           }
         ]
