@@ -191,7 +191,9 @@ Apply Rule of Five convergence with self-verification.
 
 See `references/rule-of-five.md` for detailed prompts.
 
-### Phase 7: Documentation & Integration
+### Phase 7: Documentation & Linear Integration (REQUIRED)
+
+**CRITICAL: This phase is MANDATORY. The planning workflow is NOT complete until you ask about Linear.**
 
 Persist plan with frequent commit strategy.
 
@@ -200,11 +202,13 @@ Persist plan with frequent commit strategy.
 - Commit after each 2-5 minute task
 - Enable easy rollback and progress tracking
 
-**Linear Integration:**
-Use AskUserQuestion to offer:
+**Linear Integration (REQUIRED):**
+You MUST use AskUserQuestion to ask about Linear integration before completing the workflow:
 1. Create new Linear ticket with plan
-2. Update existing Linear ticket
-3. Skip Linear integration
+2. Update existing Linear ticket (user provides ID)
+3. Skip Linear integration for now
+
+**Do not skip this step. Always ask the Linear question.**
 
 ## Agent Workflow
 
