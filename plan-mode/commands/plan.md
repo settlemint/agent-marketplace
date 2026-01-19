@@ -66,17 +66,25 @@ Use the plan-validator agent to:
 - Detect vague language (target: 0 occurrences)
 - Determine plan readiness with quality score
 
-## Phase 7: Documentation & Integration
+## Phase 7: Documentation & Linear Integration (REQUIRED)
+
+**CRITICAL: This phase is MANDATORY. The planning workflow is NOT complete until you ask about Linear.**
 
 After validation completes:
-1. Write the plan to the plan file
-2. Use AskUserQuestion to offer Linear integration with these options:
-   - Create new Linear ticket with this plan
-   - Update existing Linear ticket (provide ticket ID)
-   - Skip Linear integration
 
-If user chooses Linear integration, use the Linear MCP tools to create or update the ticket with the plan content.
+1. Write the plan to the plan file
+
+2. **REQUIRED: Use AskUserQuestion to ask about Linear integration.** Present these options:
+   - Create new Linear ticket with this plan
+   - Update existing Linear ticket (user provides ticket ID)
+   - Skip Linear integration for now
+
+3. If user chooses Linear integration, use the Linear MCP tools to create or update the ticket with the plan content.
+
+**You MUST ask the Linear question before considering this workflow complete. Do not skip this step.**
 
 ---
 
 Execute phases sequentially, using the specialized agents. Each agent chains to the next automatically. Provide cumulative output at each phase.
+
+**Reminder: Phase 7 (Linear integration question) is required before completing the workflow.**
