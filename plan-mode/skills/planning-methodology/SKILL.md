@@ -50,6 +50,28 @@ Task({ subagent_type: "Explore", prompt: "Execution Flow: Trace call chains in [
 Task({ subagent_type: "Explore", prompt: "Architecture: Map abstraction layers in [area]..." })
 ```
 
+**Apply Iterative Retrieval Protocol:**
+
+After receiving agent results, apply the iterative-retrieval skill to ensure sufficiency:
+
+1. **Evaluate sufficiency** - Ask: Would I confidently proceed with ONLY this information?
+2. **Identify gaps** - Did agents mention things they didn't detail? Are there ambiguities?
+3. **Resume if needed** - Use `Task({ resume: agentId, prompt: "Follow-up..." })` to get clarification
+4. **Loop until sufficient** - Maximum 3 refinement cycles per agent
+
+```
+// If Explore agent mentions "auth middleware" but doesn't show it
+Task({
+  resume: exploreAgentId,
+  prompt: `You mentioned auth middleware. I need:
+  1. Where is it implemented?
+  2. What does it validate?
+  WHY: Planning requires understanding the full auth chain.`
+})
+```
+
+See `skills/iterative-retrieval/SKILL.md` for the complete protocol.
+
 **Verify knowledge currency:**
 Before implementing with frameworks/libraries, check version awareness against package.json.
 
@@ -298,6 +320,10 @@ Track planning progress visibly:
 - **`references/codex-patterns.md`** - Trade-offs, cross-checking, devil's advocate
 - **`references/task-templates.md`** - INVEST tasks, 2-5 min examples, evidence
 - **`references/spec-patterns.md`** - Six Core Areas, boundaries, vague language
+
+### Related Skills
+
+- **`skills/iterative-retrieval/SKILL.md`** - Context refinement protocol for subagent results
 
 ### Integration
 
