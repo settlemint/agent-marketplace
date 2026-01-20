@@ -13,19 +13,19 @@ if [[ "$FILE_PATH" =~ \.(md|json|yaml|yml|toml|html|svg|css|lock)$ ]] || \
 elif [[ "$FILE_PATH" =~ (test|spec)\.(ts|tsx|js|jsx)$ ]] || \
      [[ "$FILE_PATH" =~ _test\.(py|go|rs)$ ]] || \
      [[ "$FILE_PATH" =~ test_.*\.py$ ]]; then
-  # Test file - encourage with brief message
+  # Test file - encourage with verification reminder
   cat <<EOFMSG
 {
   "decision": "approve",
-  "systemMessage": "Writing test first. Good TDD practice."
+  "systemMessage": "Good: Writing test first. REQUIRED: Verify this test FAILS before writing implementation code."
 }
 EOFMSG
 else
-  # Implementation file - remind about TDD
+  # Implementation file - STRONG TDD enforcement
   cat <<EOFMSG
 {
   "decision": "approve",
-  "systemMessage": "TDD Reminder: This is implementation code. Ensure you wrote a failing test first and watched it fail before writing this code."
+  "systemMessage": "<system-reminder>REQUIRED: TDD COMPLIANCE - This is implementation code. You MUST have written a FAILING test first and watched it fail BEFORE writing this code. If you did not: DELETE this code, write the test, verify RED, then re-implement. No exceptions.</system-reminder>"
 }
 EOFMSG
 fi
