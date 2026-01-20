@@ -7,7 +7,8 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Inspect session metadata/permissions. If build mode is indicated (e.g., mode=build, build-only permissions, or /build invoked), return 'approve' with a systemMessage to follow build-mode workflow and PROACTIVELY use build-mode agents. If not build work, return 'approve' with no systemMessage."
+            "prompt": "Inspect session metadata/permissions. If build mode is indicated (e.g., mode=build, build-only permissions, or /build invoked), return 'approve' with a systemMessage to follow build-mode workflow and PROACTIVELY use build-mode agents. If not build work, return 'approve' with no systemMessage.",
+            "timeout": 3
           }
         ]
       }
@@ -18,7 +19,8 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "If in build mode and this is an implementation file (not a test/spec), return 'approve' with a systemMessage to follow TDD (write a failing test first, then implement, then refactor). Otherwise return 'approve' with no systemMessage."
+            "prompt": "If in build mode and this is an implementation file (not a test/spec), return 'approve' with a systemMessage to follow TDD (write a failing test first, then implement, then refactor). Otherwise return 'approve' with no systemMessage.",
+            "timeout": 10
           }
         ]
       }
