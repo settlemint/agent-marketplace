@@ -14,6 +14,7 @@ This installs:
 - **plan-mode** - 7-phase structured planning with Linear integration
 - **build-mode** - TDD-driven implementation with quality gates
 - **git** - Conventional commits, smart branching, PR templates
+- **Global templates** - `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` with enforced guidelines
 
 ### 2. Copy Settings
 
@@ -174,6 +175,29 @@ claude plugin install build-mode@settlemint
 claude plugin install git@settlemint
 ```
 
+## Global Templates
+
+The setup script installs two global template files that guide all Claude Code sessions:
+
+### ~/.claude/CLAUDE.md
+
+Global guidelines loaded into every Claude Code session:
+- **TDD enforcement** - No production code without failing tests first
+- **Workflow selection** - When to plan vs when to build directly
+- **Agent orchestration** - Use specialized build-mode agents, not generic agents
+- **Evidence requirements** - Verify claims with command output
+- **Quality gates** - CI must pass before completion
+
+### ~/.codex/AGENTS.md
+
+Instructions loaded into Codex subagents (spawned tasks):
+- **Role-specific guidelines** - Different rules for implementers, reviewers, hunters
+- **Output formats** - Structured evidence reporting
+- **Anti-patterns** - Common mistakes to avoid
+- **Self-review checklists** - What to verify before reporting
+
+These templates reduce the need for blocking hooks by embedding best practices directly into agent context.
+
 ## What setup.sh Does
 
 The setup script:
@@ -182,8 +206,9 @@ The setup script:
 3. Force-updates all plugins (uninstall + reinstall for latest versions)
 4. Cleans up unauthorized plugins/marketplaces
 5. Installs official Anthropic plugins (plugin-dev, typescript-lsp)
-6. Syncs plugin skills and commands to Codex (`~/.codex`) when run directly
-7. Syncs plugin MCP servers into Codex config (`~/.codex/config.toml`) when run directly
+6. Installs global templates (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`)
+7. Syncs plugin skills and commands to Codex (`~/.codex`) when run directly
+8. Syncs plugin MCP servers into Codex config (`~/.codex/config.toml`) when run directly
 
 It can run:
 - Directly via curl for initial setup
