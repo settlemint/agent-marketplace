@@ -177,11 +177,26 @@ Task 2 → Implementer₂ → Spec₂ → Quality₂ → ✓
 Task 3 → Implementer₃ → Spec₃ → Quality₃ → ✓
 ```
 
+### MANDATORY: Use Build-Mode Agents
+
+**NEVER use "Explore" or "general-purpose" for implementation tasks.** Always use the specialized build-mode agents:
+
+| Task | Agent | subagent_type |
+|------|-------|---------------|
+| Implementation | task-implementer | `build-mode:task-implementer` |
+| Requirements check | spec-reviewer | `build-mode:spec-reviewer` |
+| Code quality | code-reviewer | `build-mode:code-reviewer` |
+| Quality assessment | quality-reviewer | `build-mode:quality-reviewer` |
+| Security audit | security-reviewer | `build-mode:security-reviewer` |
+| Error handling | silent-failure-hunter | `build-mode:silent-failure-hunter` |
+| UI verification | visual-tester | `build-mode:visual-tester` |
+| Final gate | completion-validator | `build-mode:completion-validator` |
+
 ### Spawning Implementer
 
 ```javascript
 Task({
-  subagent_type: "general-purpose",
+  subagent_type: "build-mode:task-implementer",
   description: "Implement [task name]",
   prompt: `You are a TASK IMPLEMENTER. Follow TDD strictly.
 

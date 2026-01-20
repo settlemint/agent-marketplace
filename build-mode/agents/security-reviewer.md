@@ -1,6 +1,6 @@
 ---
 name: security-reviewer
-description: Use this agent when reviewing code for security vulnerabilities, performing security audits, or checking authentication/authorization patterns. Examples:
+description: PROACTIVELY spawn this agent when code touches auth, payments, user data, or security-sensitive areas. This agent should be used proactively to review security vulnerabilities, perform security audits, and check authentication/authorization patterns. Examples:
 
 <example>
 Context: User asking about security of code

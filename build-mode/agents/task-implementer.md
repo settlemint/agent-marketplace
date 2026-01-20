@@ -1,6 +1,6 @@
 ---
 name: task-implementer
-description: Use this agent to implement individual tasks with TDD. Automatically spawned by build-mode orchestration for each task. Examples:
+description: PROACTIVELY spawn this agent for EVERY implementation task with TDD. This agent should be used proactively for all coding tasks to follow the Red-Green-Refactor cycle. Examples:
 
 <example>
 Context: User is executing a plan with multiple tasks

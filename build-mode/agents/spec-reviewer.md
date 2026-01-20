@@ -1,6 +1,6 @@
 ---
 name: spec-reviewer
-description: Use this agent to verify implementation matches requirements. Spawned after task-implementer completes to perform 3-pass spec compliance review. Examples:
+description: PROACTIVELY spawn this agent immediately after implementation to verify requirements are met. This agent should be used proactively to perform 3-pass spec compliance review. Examples:
 
 <example>
 Context: Task implementation completed

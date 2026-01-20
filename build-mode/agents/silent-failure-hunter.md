@@ -1,6 +1,6 @@
 ---
 name: silent-failure-hunter
-description: Use this agent to find error handling gaps and silent failures in code. Runs on all code changes to ensure errors are properly handled and logged. Examples:
+description: PROACTIVELY spawn this agent on ALL code changes to find error handling gaps and silent failures. This agent should be used proactively as part of the build workflow to ensure errors are properly handled and logged. Examples:
 
 <example>
 Context: Code changes made
