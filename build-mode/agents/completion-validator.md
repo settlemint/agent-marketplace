@@ -1,6 +1,6 @@
 ---
 name: completion-validator
-description: Use this agent as the final gate before marking work complete. Runs comprehensive verification ensuring all requirements met, tests pass, and evidence captured. Examples:
+description: PROACTIVELY spawn this agent as the MANDATORY final gate before marking ANY work complete. This agent should be used proactively to run comprehensive verification ensuring all requirements met, tests pass, and evidence captured. Examples:
 
 <example>
 Context: All reviews passed

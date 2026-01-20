@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Use this agent when reviewing code quality, checking for best practices, or auditing implementation patterns. Examples:
+description: PROACTIVELY spawn this agent after any code changes to review quality, check for best practices, and audit implementation patterns. This agent should be used proactively as part of the build workflow. Examples:
 
 <example>
 Context: User wants code review

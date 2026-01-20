@@ -1,6 +1,6 @@
 ---
 name: quality-reviewer
-description: Use this agent to review code quality after spec compliance passes. Performs 3-pass review on style, patterns, and maintainability. Examples:
+description: PROACTIVELY spawn this agent after spec review passes to assess code quality. This agent should be used proactively to perform 3-pass review on style, patterns, and maintainability. Examples:
 
 <example>
 Context: Spec review passed
