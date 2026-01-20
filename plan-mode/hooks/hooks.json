@@ -1,18 +1,6 @@
 {
   "description": "Advisory planning hints that never block normal operation; detect plan mode via permissions or explicit entry",
   "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "prompt",
-            "prompt": "Inspect session metadata/permissions. If plan mode is indicated (e.g., mode=plan, plan-only permissions, or plan-mode mention), return 'approve' with a systemMessage reminding to follow the 7-phase planning workflow (Context -> Clarifying Questions -> Specification -> Architecture -> Tasks -> Validation -> Documentation & Linear). If not planning, return 'approve' with no systemMessage.",
-            "timeout": 3
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
         "matcher": "EnterPlanMode",

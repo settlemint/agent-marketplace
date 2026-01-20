@@ -1,18 +1,6 @@
 {
   "description": "Advisory build-mode guidance that never blocks normal operation; detect build mode via permissions or explicit entry",
   "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "prompt",
-            "prompt": "Inspect session metadata/permissions. If build mode is indicated (e.g., mode=build, build-only permissions, or /build invoked), return 'approve' with a systemMessage to follow build-mode workflow and PROACTIVELY use build-mode agents. If not build work, return 'approve' with no systemMessage.",
-            "timeout": 3
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
         "matcher": "Write|Edit",

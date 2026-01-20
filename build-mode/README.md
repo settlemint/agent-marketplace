@@ -1,4 +1,4 @@
-# Build Mode Plugin v1.4.1
+# Build Mode Plugin v1.4.2
 
 TDD-driven implementation execution with subagent orchestration, systematic debugging, visual testing, and verification before completion.
 
@@ -94,7 +94,6 @@ Advisory-only hooks that never block normal operations:
 
 | Hook | Event | Purpose |
 |------|-------|---------|
-| Agent Guidance | SessionStart | Suggest build-mode agents when build mode is detected |
 | TDD Reminder | PreToolUse (Write/Edit) | Reminder to follow TDD during implementation |
 
 ## Integration with Plan Mode
@@ -215,6 +214,7 @@ Every completion claim requires evidence:
 
 ## Version History
 
+- **v1.4.2**: Remove SessionStart hook (prompt hooks not supported for SessionStart event)
 - **v1.4.1**: Add missing timeout values to prompt hooks (fixes SessionStart:startup hook error)
 - **v1.4.0**: Make hooks advisory-only (fail-open), remove blocking command hooks, and detect build mode via permissions as a fallback to explicit /build
 - **v1.3.0**: Added proactive agent orchestration - SessionStart hook injects agent guidance, all agent descriptions updated with PROACTIVELY keyword, implementing-code skill now explicitly requires build-mode agents instead of generic Explore/general-purpose agents
