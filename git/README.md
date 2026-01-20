@@ -1,4 +1,4 @@
-# Git Plugin v1.2.0
+# Git Plugin v1.2.1
 
 Git workflow automation with conventional commits, smart branching, PR templates, and safe push/sync operations.
 
@@ -82,6 +82,7 @@ Helper scripts in `scripts/`:
 
 ## Version History
 
+- **v1.2.1**: Add "Ready + auto-squash" option to `/pr` command to skip auto-merge question
 - **v1.2.0**: Add `/update-pr` command to update PR title and body from commits, preserving user description and review agent findings
 - **v1.1.0**: Add `/commit-push` command for combined commit and push workflow
 - **v1.0.0**: Initial release with commit, branch, pr, push, sync, clean-gone commands

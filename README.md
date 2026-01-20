@@ -104,7 +104,7 @@ TDD-driven implementation with quality gates:
 | `visual-tester` | UI verification |
 | `completion-validator` | Final gate |
 
-### Git (v1.2.0)
+### Git (v1.2.1)
 
 Git workflow automation:
 

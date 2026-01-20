@@ -37,7 +37,7 @@ git push -u origin $(git branch --show-current)
 
 ### Step 4: Determine PR Type
 
-Ask user for PR options:
+Ask user for PR type:
 
 ```javascript
 AskUserQuestion({
@@ -47,10 +47,22 @@ AskUserQuestion({
       header: "Type",
       options: [
         { label: "Ready for review", description: "Ready to merge when approved" },
+        { label: "Ready + auto-squash", description: "Ready for review, auto-merge with squash when checks pass" },
         { label: "Draft", description: "Work in progress, not ready for review" }
       ],
       multiSelect: false
-    },
+    }
+  ]
+})
+```
+
+**If "Ready + auto-squash" selected:** Skip to Step 5 (auto-merge will be enabled in Step 8).
+
+**Otherwise**, ask about auto-merge:
+
+```javascript
+AskUserQuestion({
+  questions: [
     {
       question: "Enable auto-merge?",
       header: "Auto-merge",
