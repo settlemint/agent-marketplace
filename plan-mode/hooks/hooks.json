@@ -1,6 +1,30 @@
 {
   "description": "Enhanced planning workflow hooks - orchestrates multi-phase planning with Linear integration",
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "If this session involves planning (plan mode active, user mentions planning/design/spec/breakdown), apply the 7-phase planning methodology from the planning-methodology skill. Phases: Context Gathering → Clarifying Questions → Specification → Architecture → Task Decomposition → Validation → Documentation & Linear. Phase 7 Linear integration question is MANDATORY.",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "(?i)(plan mode|planning|create.*plan|design.*implementation|break.*down|write.*spec|feature.*plan)",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Planning context detected. Execute the 7-phase planning methodology:\n\n1. **Context Gathering** - Use context-researcher agent with 4-phase structured exploration\n2. **Clarifying Questions** - Use AskUserQuestion for edge cases, scope, requirements BEFORE designing\n3. **Specification & Analysis** - Six Core Areas checklist, three-tier boundaries (Always/Ask/Never)\n4. **Architecture Decision** - Use architecture-analyst agent, compare options, ADR format\n5. **Task Decomposition** - Use task-decomposer agent for 2-5 min tasks with parallelization markers\n6. **Validation** - Use plan-validator agent with confidence filtering (≥80%), Rule of Five\n7. **Documentation & Linear** - Persist plan to file, MUST ask about Linear integration\n\n**CRITICAL:** You MUST use AskUserQuestion to ask about Linear integration before completing. This is non-negotiable.",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "EnterPlanMode",

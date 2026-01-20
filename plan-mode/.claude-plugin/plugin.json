@@ -1,6 +1,6 @@
 {
   "name": "plan-mode",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "7-phase planning workflow with structured exploration, clarifying questions, confidence-based validation, and Linear integration",
   "author": {
     "name": "Roderik van der Veer"
