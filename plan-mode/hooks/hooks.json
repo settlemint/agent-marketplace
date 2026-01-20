@@ -1,5 +1,5 @@
 {
-  "description": "Advisory planning guidance with all plan-mode skill hints",
+  "description": "Trigger planning methodology skill on plan mode entry",
   "hooks": {
     "PreToolUse": [
       {
@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"hookSpecificOutput\":{\"permissionDecision\":\"allow\"},\"systemMessage\":\"<system-reminder>\\nPLAN MODE - Load skills as needed:\\n- Skill({ skill: \\\"plan-mode:planning-methodology\\\" }) - 7-phase planning\\n- Skill({ skill: \\\"plan-mode:iterative-retrieval\\\" }) - Context gathering\\n\\nFollow: Context → Questions → Spec → Architecture → Tasks → Validation → Docs\\n</system-reminder>\"}'",
+            "command": "echo '{\"hookSpecificOutput\":{\"permissionDecision\":\"allow\"},\"systemMessage\":\"<system-reminder>Load planning methodology: Skill({ skill: \\\"plan-mode:planning-methodology\\\" })</system-reminder>\"}'",
             "timeout": 5
           }
         ]

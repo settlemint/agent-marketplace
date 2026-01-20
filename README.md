@@ -46,11 +46,13 @@ This marketplace provides three integrated plugins that work together:
 ## Typical Workflow
 
 ```bash
-# 1. Plan your implementation
-/plan "Add user authentication with OAuth"
+# 1. Enter plan mode - skills auto-load
+# Use EnterPlanMode or let Claude suggest planning
+# planning-methodology skill activates automatically
 
-# 2. Build with TDD
-/build continue
+# 2. Implement with TDD - skills auto-load
+# implementing-code skill activates on code changes
+# Spawns specialized agents for each task
 
 # 3. Commit your changes
 /commit
@@ -61,7 +63,7 @@ This marketplace provides three integrated plugins that work together:
 
 ## Plugins
 
-### Plan Mode (v2.5.8)
+### Plan Mode (v2.6.0)
 
 Structured planning with a 7-phase workflow:
 
@@ -73,15 +75,15 @@ Structured planning with a 7-phase workflow:
 6. **Validation** - Confidence-based filtering (≥80% only)
 7. **Documentation** - Linear ticket creation/update
 
-**Commands:**
-- `/plan [description]` - Start enhanced planning session
+**Skills:**
+- `planning-methodology` - Auto-triggered on plan mode entry (runs in Plan agent context)
 
 **MCP Servers:**
 - **Octocode** - Semantic code research, LSP analysis, GitHub search
 - **Context7** - Fetch latest package documentation
 - **Linear** - Ticket management integration
 
-### Build Mode (v1.4.8)
+### Build Mode (v1.5.0)
 
 TDD-driven implementation with quality gates:
 
@@ -91,8 +93,10 @@ TDD-driven implementation with quality gates:
 - **Visual testing** - Chrome MCP + Playwright
 - **Evidence-based completion** - No claims without proof
 
+**Skills:**
+- `implementing-code` - Auto-triggered on implementation tasks (runs in general-purpose agent context)
+
 **Commands:**
-- `/build [task]` - Execute implementation with TDD
 - `/fixup [PR#]` - Fix PR review comments and CI failures
 
 **Agents:**

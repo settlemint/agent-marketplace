@@ -1,12 +1,14 @@
 ---
 name: planning-methodology
-description: This skill should be used when the user asks to "plan a feature", "create a plan", "design an implementation", or enters plan mode. 7-phase methodology: Context, questions, spec, architecture, tasks, validation, Linear.
-version: 2.3.1
+description: This skill should be used when the user asks to "plan a feature", "create a plan", "design an implementation", or enters plan mode. 7-phase methodology with specialized agents.
+version: 2.4.0
+context: fork
+agent: Plan
 ---
 
-# Planning Methodology
+# 7-Phase Planning Workflow
 
-7 phases: Context → Questions → Spec → Architecture → Tasks → Validation → Linear
+Execute phases in order: Context → Questions → Spec → Architecture → Tasks → Validation → Linear
 
 ## Core Principles
 
@@ -17,60 +19,114 @@ version: 2.3.1
 - **YAGNI** ruthlessly
 - **One question at a time**, multiple choice preferred
 
-## Phases
+---
 
-### 1. Context Gathering
+## Phase 1: Context Gathering
 
-4-phase exploration via parallel Explore agents:
-1. Feature Discovery - entry points, boundaries
-2. Execution Flow - call chains, transformations
-3. Architecture - layers, patterns
-4. Deep-Dive - algorithms, error handling
+```javascript
+Task({
+  subagent_type: "plan-mode:context-researcher",
+  description: "Gather context for planning",
+  prompt: "Research the codebase for [FEATURE]"
+})
+```
+
+4-phase exploration:
+1. **Feature Discovery** - Entry points, boundaries, configuration
+2. **Execution Flow** - Call chains, data transformations, state changes
+3. **Architectural Layers** - Presentation → business logic → data
+4. **Deep-Dive** - Algorithms, error handling, performance
 
 Use Octocode MCP (LSP, GitHub) + Context7 MCP (docs).
 
-### 2. Clarifying Questions
+## Phase 2: Clarifying Questions
+
+Use AskUserQuestion to clarify BEFORE designing:
+- Edge cases and boundary conditions
+- Error handling requirements
+- Integration points and dependencies
+- Scope boundaries (what's explicitly out)
+- Design preferences
+- Backward compatibility (external APIs only)
+- Performance requirements
 
 One question at a time, multiple choice with "(Recommended)" suffix.
-Topics: edge cases, errors, integration, scope, preferences.
 
-### 3. Specification
+## Phase 3: Specification
 
-Six Core Areas: Commands, Testing, Structure, Style, Git, Boundaries.
+Apply Six Core Areas checklist:
+1. **Commands** - build/test/lint commands
+2. **Testing** - framework, coverage requirements
+3. **Structure** - where code lives
+4. **Style** - patterns to follow
+5. **Git** - branch naming, commit format
+6. **Boundaries** - Always/Ask/Never tiers
 
-Boundaries format:
-- ✅ Always Do
-- ⚠️ Ask First
-- 🚫 Never Do
+## Phase 4: Architecture Decision
 
-### 4. Architecture
+```javascript
+Task({
+  subagent_type: "plan-mode:architecture-analyst",
+  description: "Analyze architecture options",
+  prompt: "Analyze architecture options for [FEATURE]"
+})
+```
 
-2-3 options, lead with recommendation, ADR format.
-Cross-check security/complex decisions.
+The agent will:
+- Present 2-3 options, lead with recommendation
+- Compare across 6 dimensions
+- Cross-check security/complex decisions
+- Document in ADR format with trade-offs
 
-### 5. Task Decomposition
+## Phase 5: Task Decomposition
 
-2-5 min tasks with `[parallel]`/`[serial]`/`[MERGE-WALL]`.
-Exact paths, code snippets, TDD, evidence.
-Front-load merge walls.
+```javascript
+Task({
+  subagent_type: "plan-mode:task-decomposer",
+  description: "Decompose into tasks",
+  prompt: "Break down the work for [FEATURE]"
+})
+```
 
-### 6. Validation
+The agent will:
+- Break into 2-5 minute tasks
+- Add markers: `[parallel]`, `[serial]`, `[MERGE-WALL]`
+- Front-load merge walls
+- Define evidence criteria
+- Specify TDD requirements
+- Include exact file paths and code snippets
 
-Rule of Five: Standard → Deep → Architecture → Existential
-Self-verify: Zero clarifying questions? Measurable criteria? No vague language?
+## Phase 6: Validation
 
-### 7. Linear Integration (REQUIRED)
+```javascript
+Task({
+  subagent_type: "plan-mode:plan-validator",
+  description: "Validate the plan",
+  prompt: "Validate the plan for [FEATURE]"
+})
+```
 
-Ask about Linear: Create ticket, update existing, or skip.
+The agent will:
+- Apply confidence-based filtering (≥80%)
+- Run self-verification audits
+- Apply Rule of Five convergence
+- Detect vague language (target: 0)
+- Determine readiness with quality score
 
-## Agents
+## Phase 7: Linear Integration (REQUIRED)
 
-| Agent | Phase |
-|-------|-------|
-| context-researcher | 1 |
-| architecture-analyst | 4 |
-| task-decomposer | 5 |
-| plan-validator | 6 |
+**MANDATORY: Do not complete without asking about Linear.**
+
+1. Write the plan to the plan file
+
+2. Use AskUserQuestion:
+   - Create new Linear ticket with this plan
+   - Update existing Linear ticket (user provides ID)
+   - Skip Linear integration for now
+
+3. If user chooses Linear, use Linear MCP tools.
+
+---
 
 ## Quality Standards
 
