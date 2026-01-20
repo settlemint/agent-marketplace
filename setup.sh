@@ -903,15 +903,12 @@ install_global_templates() {
     fi
 
     # AGENTS.md goes to Codex for subagent instructions
-    if [[ -d "$codex_home" ]]; then
-        info "Installing global AGENTS.md template to Codex"
-        if curl -fsSL "$repo_base/AGENTS.template.md" -o "$codex_home/AGENTS.md" 2>/dev/null; then
-            success "AGENTS.md installed to $codex_home/"
-        else
-            warn "Could not download AGENTS.template.md, skipping"
-        fi
+    mkdir -p "$codex_home"
+    info "Installing global AGENTS.md template to Codex"
+    if curl -fsSL "$repo_base/AGENTS.template.md" -o "$codex_home/AGENTS.md" 2>/dev/null; then
+        success "AGENTS.md installed to $codex_home/"
     else
-        info "Codex not installed, skipping AGENTS.md"
+        warn "Could not download AGENTS.template.md, skipping"
     fi
 }
 
