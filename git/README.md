@@ -1,4 +1,4 @@
-# Git Plugin v1.2.0
+# Git Plugin v1.3.0
 
 Git workflow automation with conventional commits, smart branching, PR templates, and safe push/sync operations.
 
@@ -82,6 +82,7 @@ Helper scripts in `scripts/`:
 
 ## Version History
 
+- **v1.3.0**: Add auto-retry with rebase when push is rejected due to remote changes
 - **v1.2.0**: Add `/update-pr` command to update PR title and body from commits, preserving user description and review agent findings
 - **v1.1.0**: Add `/commit-push` command for combined commit and push workflow
 - **v1.0.0**: Initial release with commit, branch, pr, push, sync, clean-gone commands

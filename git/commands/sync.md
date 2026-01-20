@@ -20,6 +20,7 @@ git log --oneline HEAD..origin/main | head -5
 2. **Choose strategy** - Merge (default) or rebase
 3. **Execute sync** - Handle any conflicts
 4. **Push** - Normal for merge, force-with-lease for rebase
+5. **Auto-retry if rejected** - Fetch, rebase, push again
 
 ## Commands
 
@@ -42,6 +43,26 @@ git push
 # Push after rebase
 git push --force-with-lease
 ```
+
+## Auto-Retry on Conflict
+
+If push is rejected because remote has new commits (e.g., another agent pushed), automatically rebase and retry:
+
+```bash
+BRANCH=$(git branch --show-current)
+
+# Attempt push (after merge)
+if ! git push; then
+  git fetch origin "$BRANCH"
+  if [ -n "$(git log HEAD..origin/$BRANCH --oneline 2>/dev/null)" ]; then
+    echo "Remote has new commits. Rebasing..."
+    git rebase "origin/$BRANCH"
+    git push --force-with-lease
+  fi
+fi
+```
+
+**Note:** This handles cases where another agent or collaborator pushed while you were syncing.
 
 ## Merge vs Rebase Decision
 
@@ -136,4 +157,5 @@ git reset --hard ORIG_HEAD
 - [ ] Merged/rebased without unresolved conflicts
 - [ ] No conflict markers in any files
 - [ ] Build/tests pass after sync
+- [ ] Auto-retry with rebase if push rejected
 - [ ] Pushed successfully
