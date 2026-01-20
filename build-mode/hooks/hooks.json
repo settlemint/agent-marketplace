@@ -1,6 +1,17 @@
 {
-  "description": "Build-mode quality gates: fast TDD reminder, CI validation, and progress preservation",
+  "description": "Build-mode quality gates: fast TDD reminder, CI validation, progress preservation, and agent orchestration guidance",
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "## Build Mode Agent Orchestration\n\nWhen implementing code, PROACTIVELY spawn build-mode agents using the Task tool:\n\n| Scenario | Agent | subagent_type |\n|----------|-------|---------------|\n| Implementing any task | task-implementer | build-mode:task-implementer |\n| After implementation | spec-reviewer | build-mode:spec-reviewer |\n| After spec passes | code-reviewer + quality-reviewer | build-mode:code-reviewer, build-mode:quality-reviewer |\n| Auth/payments/security code | security-reviewer | build-mode:security-reviewer |\n| Any code changes | silent-failure-hunter | build-mode:silent-failure-hunter |\n| UI/frontend changes | visual-tester | build-mode:visual-tester |\n| Before marking complete | completion-validator | build-mode:completion-validator |\n\n**IMPORTANT:** Use specialized build-mode agents, NOT generic Explore agents, for implementation tasks."
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Write|Edit",

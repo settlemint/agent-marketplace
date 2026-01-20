@@ -1,6 +1,6 @@
 ---
 name: visual-tester
-description: Use this agent for browser-based visual verification of UI changes. Spawned when implementation involves frontend/UI components. Examples:
+description: PROACTIVELY spawn this agent when implementation involves ANY UI/frontend changes. This agent should be used proactively for browser-based visual verification of UI changes. Examples:
 
 <example>
 Context: Frontend component implemented

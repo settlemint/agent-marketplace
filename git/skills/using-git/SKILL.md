@@ -92,6 +92,16 @@ Templates are in `templates/` directory.
 
 For detailed strategies, see `references/conflict-resolution.md`.
 
+## Push Auto-Retry
+
+When a push is rejected because remote has new commits:
+
+1. **Fetch** latest from remote branch
+2. **Rebase** local commits on top of remote
+3. **Retry push** with `--force-with-lease`
+
+This handles multi-agent scenarios where another Claude instance or collaborator pushed while you were working.
+
 ## Safety Rules
 
 **Banned:**
@@ -106,6 +116,7 @@ For detailed strategies, see `references/conflict-resolution.md`.
 - Branch from origin/main (freshly fetched)
 - Template-based PR descriptions
 - Force-with-lease after rebase
+- Auto-retry with rebase on push rejection
 
 ## Additional Resources
 

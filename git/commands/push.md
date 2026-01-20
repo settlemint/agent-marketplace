@@ -20,6 +20,7 @@ git status --short
 2. **Verify not on protected branch** - Block push to main/master
 3. **Determine push type** - New branch vs existing, rebased vs normal
 4. **Execute push** - With appropriate flags
+5. **Auto-retry if rejected** - Fetch, rebase, push again
 
 ## Commands
 
@@ -42,6 +43,31 @@ git push --force-with-lease
 | Normal commits | `git push` | Standard push |
 | After rebase | `git push --force-with-lease` | Safer than --force |
 | After amend | `git push --force-with-lease` | History rewritten |
+
+## Auto-Retry on Conflict
+
+If push is rejected because remote has new commits, automatically rebase and retry:
+
+```bash
+BRANCH=$(git branch --show-current)
+
+# Attempt push
+if ! git push; then
+  # Fetch latest from remote
+  git fetch origin "$BRANCH"
+
+  # Check if remote has commits we don't have
+  if [ -n "$(git log HEAD..origin/$BRANCH --oneline 2>/dev/null)" ]; then
+    echo "Remote has new commits. Rebasing..."
+    git rebase "origin/$BRANCH"
+
+    # Retry push (use --force-with-lease since we rebased)
+    git push --force-with-lease
+  fi
+fi
+```
+
+**Note:** Retry uses `--force-with-lease` for safety after rebase.
 
 ## Safety Checks
 
@@ -85,4 +111,5 @@ In environments with multiple Claude instances:
 - [ ] Not pushing to protected branch
 - [ ] Using `-u` flag for new branches
 - [ ] Using `--force-with-lease` (not `--force`) if needed
+- [ ] Auto-retry with rebase if push rejected
 - [ ] Push completed successfully

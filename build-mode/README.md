@@ -1,4 +1,4 @@
-# Build Mode Plugin v1.1.1
+# Build Mode Plugin v1.3.0
 
 TDD-driven implementation execution with subagent orchestration, systematic debugging, visual testing, and verification before completion.
 
@@ -215,6 +215,9 @@ Every completion claim requires evidence:
 
 ## Version History
 
+- **v1.3.0**: Added proactive agent orchestration - SessionStart hook injects agent guidance, all agent descriptions updated with PROACTIVELY keyword, implementing-code skill now explicitly requires build-mode agents instead of generic Explore/general-purpose agents
+- **v1.2.1**: Strengthened TDD hook messages with explicit REQUIRED/MANDATORY language and `<system-reminder>` formatting to reduce Claude ignoring reminders
+- **v1.2.0**: Add iterative-retrieval skill for subagent context refinement with automatic integration into debugging and review workflows
 - **v1.1.1**: Fixed Playwright MCP package name from `@anthropic/mcp-playwright` to `@playwright/mcp`
 - **v1.1.0**: Replaced slow LLM-based hooks with fast command-based hooks - TDD enforcement now via emphatic skill instructions (superpowers-style) instead of per-edit LLM validation. Zero LLM calls per edit cycle.
 - **v1.0.3**: Fixed TDD hook test detection - improved prompt to properly recognize test file edits and test runs in conversation history

@@ -60,7 +60,7 @@ This marketplace provides three integrated plugins that work together:
 
 ## Plugins
 
-### Plan Mode (v2.3.3)
+### Plan Mode (v2.4.0)
 
 Structured planning with a 7-phase workflow:
 
@@ -80,7 +80,7 @@ Structured planning with a 7-phase workflow:
 - **Context7** - Fetch latest package documentation
 - **Linear** - Ticket management integration
 
-### Build Mode (v1.1.1)
+### Build Mode (v1.3.0)
 
 TDD-driven implementation with quality gates:
 
@@ -104,7 +104,7 @@ TDD-driven implementation with quality gates:
 | `visual-tester` | UI verification |
 | `completion-validator` | Final gate |
 
-### Git (v1.2.1)
+### Git (v1.3.1)
 
 Git workflow automation:
 
