@@ -1,4 +1,4 @@
-# Plan Mode Plugin v2.3.3
+# Plan Mode Plugin v2.4.0
 
 Enhanced planning workflow for Claude Code with structured exploration, clarifying questions, confidence-based validation, and Linear integration.
 
@@ -198,6 +198,7 @@ Linear integration uses OAuth (SSE transport) - authenticate via browser when pr
 
 ## Version History
 
+- **v2.4.0**: Add iterative-retrieval skill for subagent context refinement with automatic integration into Phase 1 exploration
 - **v2.3.3**: Add SessionStart and UserPromptSubmit hooks for Conductor plan mode compatibility
 - **v2.3.2**: Fixed Stop hook JSON validation error by using natural language instructions instead of explicit approve/block format
 - **v2.3.1**: Fixed skill name format for AgentSkills compliance (lowercase-hyphens), added TOC to reference files

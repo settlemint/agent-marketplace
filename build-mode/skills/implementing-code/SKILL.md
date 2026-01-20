@@ -215,6 +215,35 @@ EVIDENCE REQUIRED:
 | Implementer | Read, Write, Edit, Bash, Grep, Glob | Task (no sub-subagents) |
 | Reviewers | Read, Grep, Glob | Write, Edit, Bash |
 
+### Iterative Context Refinement
+
+When subagents (implementers or reviewers) return results, apply the iterative-retrieval protocol:
+
+1. **Evaluate sufficiency** - Can I proceed confidently with this information?
+2. **Identify gaps** - Did they mention things they didn't detail? Ambiguities?
+3. **Resume if needed** - Use `Task({ resume: agentId, prompt: "..." })` for follow-up
+4. **Max 3 cycles** - Prevent infinite loops
+
+**Example: Reviewer finding needs clarification**
+```javascript
+// Reviewer says: "Potential race condition in state update"
+// But doesn't show the concurrent access patterns
+
+Task({
+  resume: reviewerAgentId,
+  prompt: `You identified a potential race condition at line 45.
+
+  FOLLOW-UP NEEDED:
+  1. What specific concurrent operations could cause this?
+  2. Show the code paths that access this state simultaneously
+  3. Is there existing synchronization I should know about?
+
+  WHY: Need to understand the race condition to implement correct fix.`
+})
+```
+
+See `skills/iterative-retrieval/SKILL.md` for the complete protocol.
+
 ## Two-Stage Review
 
 ### Stage 1: Spec Compliance Review
@@ -263,6 +292,33 @@ When encountering bugs or failures, follow the 4-phase methodology:
 3. Review recent changes
 4. Trace data flow across boundaries
 5. Gather evidence through diagnostics
+
+**Apply Iterative Retrieval for Deep Investigation:**
+
+When dispatching agents to investigate bugs, use the iterative-retrieval protocol:
+
+```javascript
+// Initial investigation
+const bugResult = Task({
+  subagent_type: "general-purpose",
+  description: "Investigate API failure",
+  prompt: `OBJECTIVE: Fix 500 error on /api/users
+
+  QUERIES: What code handles this? What error handling exists?
+  WHY: Need root cause before implementing fix.`
+})
+
+// If response shows symptom but not cause, follow up
+Task({
+  resume: bugResult.agentId,
+  prompt: `You showed the error occurs but not WHY.
+
+  FOLLOW-UP: What triggers this code path to fail?
+  Show me the data flow from request to error.`
+})
+```
+
+See `skills/iterative-retrieval/SKILL.md` for the complete protocol.
 
 ### Phase 2: Pattern Analysis
 
@@ -427,6 +483,10 @@ bun run ci
 - **`references/debugging-workflow.md`** - 4-phase debugging methodology
 - **`references/verification-patterns.md`** - Reviewer prompts, evidence patterns
 - **`references/visual-testing.md`** - Chrome MCP + Playwright integration
+
+### Related Skills
+
+- **`skills/iterative-retrieval/SKILL.md`** - Context refinement protocol for subagent results
 
 ### Templates
 
