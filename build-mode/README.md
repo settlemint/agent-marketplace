@@ -1,4 +1,4 @@
-# Build Mode Plugin v1.4.0
+# Build Mode Plugin v1.4.1
 
 TDD-driven implementation execution with subagent orchestration, systematic debugging, visual testing, and verification before completion.
 
@@ -215,6 +215,7 @@ Every completion claim requires evidence:
 
 ## Version History
 
+- **v1.4.1**: Add missing timeout values to prompt hooks (fixes SessionStart:startup hook error)
 - **v1.4.0**: Make hooks advisory-only (fail-open), remove blocking command hooks, and detect build mode via permissions as a fallback to explicit /build
 - **v1.3.0**: Added proactive agent orchestration - SessionStart hook injects agent guidance, all agent descriptions updated with PROACTIVELY keyword, implementing-code skill now explicitly requires build-mode agents instead of generic Explore/general-purpose agents
 - **v1.2.1**: Strengthened TDD hook messages with explicit REQUIRED/MANDATORY language and `<system-reminder>` formatting to reduce Claude ignoring reminders
