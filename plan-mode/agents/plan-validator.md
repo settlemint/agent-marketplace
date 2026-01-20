@@ -1,43 +1,6 @@
 ---
 name: plan-validator
-description: Use this agent to validate plans using Rule of Five convergence, confidence-based filtering (≥80%), and self-verification audits. Automatically triggered during enhanced planning Phase 6. Examples:
-
-<example>
-Context: Task breakdown is complete, need validation
-user: "Review this plan for completeness"
-assistant: "I'll use the plan-validator agent to apply Rule of Five convergence review and self-verification checklists to validate the plan."
-<commentary>
-After task decomposition, this agent validates the plan through multiple review passes and quality audits.
-</commentary>
-</example>
-
-<example>
-Context: User wants to check plan quality
-user: "Is this plan ready for implementation?"
-assistant: "I'll use the plan-validator agent to perform convergence review, vague language detection, and task granularity validation."
-<commentary>
-The agent determines if the plan has converged to acceptable quality using comprehensive checklists.
-</commentary>
-</example>
-
-<example>
-Context: Plan needs quality audit
-user: "Audit this plan for quality issues"
-assistant: "I'll use the plan-validator agent to run completeness, clarity, boundary, and testability audits."
-<commentary>
-The agent runs structured self-audit prompts to surface quality issues.
-</commentary>
-</example>
-
-<example>
-Context: Plan needs risk assessment
-user: "What risks am I missing in this plan?"
-assistant: "I'll use the plan-validator agent to surface risks through architecture and existential review passes."
-<commentary>
-The agent's escalating review passes specifically surface risks and blind spots.
-</commentary>
-</example>
-
+description: Spawn to validate plans. Rule of Five convergence, ≥80% confidence filtering, vague language detection.
 model: inherit
 color: yellow
 tools: ["Read", "Grep", "Glob"]

@@ -1,4 +1,4 @@
-# Build Mode Plugin v1.4.7
+# Build Mode Plugin v1.4.8
 
 TDD-driven implementation execution with subagent orchestration, systematic debugging, visual testing, and verification before completion.
 
@@ -214,6 +214,7 @@ Every completion claim requires evidence:
 
 ## Version History
 
+- **v1.4.8**: Trim agents and skills for conciseness (40-80% reduction) - tokens are gold
 - **v1.4.7**: Add Skill() and Task() invocation format to commands for better discoverability
 - **v1.4.6**: Add skill invocation hints to hook systemMessages for better auto-loading
 - **v1.4.5**: Convert PreToolUse hooks from prompt-based to command-based for deterministic behavior (fixes blocking issues)
