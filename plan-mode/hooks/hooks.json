@@ -1,5 +1,5 @@
 {
-  "description": "Enhanced planning workflow hooks - orchestrates multi-phase planning with Linear integration",
+  "description": "Advisory planning hints that never block normal operation; detect plan mode via permissions or explicit entry",
   "hooks": {
     "SessionStart": [
       {
@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "If this session involves planning (plan mode active, user mentions planning/design/spec/breakdown), apply the 7-phase planning methodology from the planning-methodology skill. Phases: Context Gathering → Clarifying Questions → Specification → Architecture → Task Decomposition → Validation → Documentation & Linear. Phase 7 Linear integration question is MANDATORY. If this is NOT a planning session (e.g., debugging, troubleshooting, quick fixes, code review, general questions), simply approve and continue without any additional guidance.",
+            "prompt": "Inspect session metadata/permissions. If plan mode is indicated (e.g., mode=plan, plan-only permissions, or plan-mode mention), return 'approve' with a systemMessage reminding to follow the 7-phase planning workflow (Context -> Clarifying Questions -> Specification -> Architecture -> Tasks -> Validation -> Documentation & Linear). If not planning, return 'approve' with no systemMessage.",
             "timeout": 3
           }
         ]
@@ -15,11 +15,11 @@
     ],
     "UserPromptSubmit": [
       {
-        "matcher": "(?i)(plan mode|planning|create.*plan|design.*implementation|break.*down|write.*spec|feature.*plan)",
+        "matcher": "(?i)(\\bplan mode\\b|\\bcreate\\b.*\\bplan\\b|\\bwrite\\b.*\\bspec\\b|\\bbreak\\b.*\\bdown\\b|\\bdesign\\b.*\\bimplementation\\b|\\bfeature\\b.*\\bplan\\b)",
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Evaluate if this is truly a planning task. If this is debugging, troubleshooting, bug fixes, runtime errors, quick questions, or any non-planning work, return 'approve' immediately.\n\nOnly if this IS a genuine planning task, provide guidance to execute the 7-phase planning methodology:\n\n1. **Context Gathering** - Use context-researcher agent with 4-phase structured exploration\n2. **Clarifying Questions** - Use AskUserQuestion for edge cases, scope, requirements BEFORE designing\n3. **Specification & Analysis** - Six Core Areas checklist, three-tier boundaries (Always/Ask/Never)\n4. **Architecture Decision** - Use architecture-analyst agent, compare options, ADR format\n5. **Task Decomposition** - Use task-decomposer agent for 2-5 min tasks with parallelization markers\n6. **Validation** - Use plan-validator agent with confidence filtering (≥80%), Rule of Five\n7. **Documentation & Linear** - Persist plan to file, MUST ask about Linear integration\n\n**CRITICAL:** You MUST use AskUserQuestion to ask about Linear integration before completing. This is non-negotiable.",
+            "prompt": "Determine whether the user is explicitly requesting a plan/spec/design/breakdown. If yes, return 'approve' with a systemMessage to use the 7-phase planning workflow with clarifying questions and documentation. If not, return 'approve' with no systemMessage.",
             "timeout": 5
           }
         ]
@@ -31,20 +31,8 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "The user is entering plan mode. Return 'approve' to continue, with a systemMessage reminding to follow the 7-phase planning process:\n\n1. **Context Gathering** - Use context-researcher agent with structured exploration (4 phases)\n2. **Clarifying Questions** - Ask about edge cases, error handling, scope BEFORE designing\n3. **Specification & Analysis** - Six Core Areas checklist, boundaries\n4. **Architecture Decision** - Use architecture-analyst agent, apply clean implementation principle\n5. **Task Decomposition** - Use task-decomposer agent for 2-5 minute tasks with evidence\n6. **Validation** - Use plan-validator agent with confidence filtering (≥80%)\n7. **Documentation** - Persist plan and offer Linear integration\n\nAlways return 'approve' - never block entering plan mode.",
+            "prompt": "Plan mode detected. Return 'approve' with a systemMessage to follow the 7-phase planning process (Context -> Clarifying Questions -> Specification -> Architecture -> Tasks -> Validation -> Documentation & Linear). Never block.",
             "timeout": 10
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "prompt",
-            "prompt": "Check if this session involved planning (plan mode, feature planning, task breakdown). If this was NOT a planning session, return {\"continue\": false} to allow stopping.\n\nIf YES and a plan was created, check if Linear integration was offered. If Linear was already offered, return {\"continue\": false}. If planning occurred but Linear wasn't offered, return {\"continue\": true, \"systemMessage\": \"Remember to offer Linear integration before completing.\"}",
-            "timeout": 15
           }
         ]
       }
