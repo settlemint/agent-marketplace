@@ -1,10 +1,10 @@
-# Build Mode Plugin v1.3.0
+# Build Mode Plugin v1.4.0
 
 TDD-driven implementation execution with subagent orchestration, systematic debugging, visual testing, and verification before completion.
 
 ## Overview
 
-Build Mode complements Plan Mode by executing implementation plans with rigorous quality gates. It ensures code is **complete and correct before CI** through:
+Build Mode complements Plan Mode by executing implementation plans with rigorous quality gates. It guides you to verify code is **complete and correct before CI** through:
 
 - **TDD Workflow**: Red-Green-Refactor cycle for all changes
 - **Subagent Orchestration**: Fresh context per task prevents pollution
@@ -90,12 +90,12 @@ Core TDD and verification methodology:
 
 ## Hooks
 
+Advisory-only hooks that never block normal operations:
+
 | Hook | Event | Purpose |
 |------|-------|---------|
-| TDD Gate | PreToolUse (Write/Edit) | Blocks implementation without test evidence |
-| Completion Gate | Stop | Verify evidence before stopping |
-| Progress Preserver | PreCompact | Preserve state for context recovery |
-| CI Gate | PostToolUse (Bash) | Feedback on test/lint failures |
+| Agent Guidance | SessionStart | Suggest build-mode agents when build mode is detected |
+| TDD Reminder | PreToolUse (Write/Edit) | Reminder to follow TDD during implementation |
 
 ## Integration with Plan Mode
 
@@ -104,7 +104,7 @@ Build Mode is designed to work with Plan Mode:
 1. **Plan Mode** creates the implementation plan
 2. **Build Mode** executes each task with TDD
 3. Progress is tracked across both plugins
-4. Context compaction preserves plan state
+4. If context is compacted, re-open the plan file to resume
 
 ```bash
 # Typical workflow
@@ -215,6 +215,7 @@ Every completion claim requires evidence:
 
 ## Version History
 
+- **v1.4.0**: Make hooks advisory-only (fail-open), remove blocking command hooks, and detect build mode via permissions as a fallback to explicit /build
 - **v1.3.0**: Added proactive agent orchestration - SessionStart hook injects agent guidance, all agent descriptions updated with PROACTIVELY keyword, implementing-code skill now explicitly requires build-mode agents instead of generic Explore/general-purpose agents
 - **v1.2.1**: Strengthened TDD hook messages with explicit REQUIRED/MANDATORY language and `<system-reminder>` formatting to reduce Claude ignoring reminders
 - **v1.2.0**: Add iterative-retrieval skill for subagent context refinement with automatic integration into debugging and review workflows

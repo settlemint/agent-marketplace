@@ -478,7 +478,7 @@ bun run ci
 # Typically runs: lint, typecheck, test, build
 ```
 
-**Hook behavior:** Stop event blocked until CI passes.
+**Hook behavior:** Advisory only; no blocking. Run CI before completion and cite evidence.
 
 ### Completion Checklist
 

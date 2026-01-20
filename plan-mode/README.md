@@ -1,4 +1,4 @@
-# Plan Mode Plugin v2.4.1
+# Plan Mode Plugin v2.5.0
 
 Enhanced planning workflow for Claude Code with structured exploration, clarifying questions, confidence-based validation, and Linear integration.
 
@@ -45,7 +45,7 @@ Enhanced planning workflow for Claude Code with structured exploration, clarifyi
 
 ### Automatic Enhancement
 
-The plugin automatically enhances plan mode sessions. When you enter plan mode (via `EnterPlanMode`), the 7-phase workflow activates:
+The plugin automatically enhances plan mode sessions. When plan mode is detected (via `EnterPlanMode` or session permissions indicating plan mode), the 7-phase workflow activates:
 
 1. Structured codebase exploration with parallel agents
 2. Clarifying questions to resolve ambiguities
@@ -83,7 +83,7 @@ Core planning knowledge including:
 | `plan-validator` | 6 | Confidence-filtered validation (≥80%) |
 
 ### Hook: `enhance-planning`
-Automatically orchestrates planning phases when plan mode activates.
+Advisory-only guidance that never blocks normal operation; detects plan mode via permissions or explicit plan mode entry.
 
 ### MCP Servers
 
@@ -198,6 +198,7 @@ Linear integration uses OAuth (SSE transport) - authenticate via browser when pr
 
 ## Version History
 
+- **v2.5.0**: Make hooks advisory-only (fail-open), detect plan mode via permissions as a fallback to native EnterPlanMode, remove stop-time blocking
 - **v2.4.1**: Fix prompt hooks to approve non-planning requests instead of blocking, preventing infinite loops
 - **v2.4.0**: Add iterative-retrieval skill for subagent context refinement with automatic integration into Phase 1 exploration
 - **v2.3.3**: Add SessionStart and UserPromptSubmit hooks for Conductor plan mode compatibility
