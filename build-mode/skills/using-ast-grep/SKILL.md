@@ -1,6 +1,6 @@
 ---
 name: using-ast-grep
-description: Performs AST-based code search and refactoring across codebases. Understands syntax structure, ignores strings and comments. Use when renaming functions, replacing patterns, migrating APIs, finding code structures, or doing mass refactors. Better than grep for code changes.
+description: This skill should be used when the user asks to "rename a function", "replace a pattern", "migrate an API", "find code structures", "refactor code", "mass refactor", or when doing AST-based code search. Performs AST-based search and refactoring that understands syntax structure and ignores strings/comments.
 version: 1.0.0
 ---
 

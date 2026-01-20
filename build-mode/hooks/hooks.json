@@ -1,14 +1,14 @@
 {
-  "description": "Advisory build-mode guidance that never blocks normal operation; detect build mode via permissions or explicit entry",
+  "description": "Advisory TDD guidance for Write/Edit operations - deterministic command hook",
   "hooks": {
     "PreToolUse": [
       {
         "matcher": "Write|Edit",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "If in build mode and this is an implementation file (not a test/spec), return 'approve' with a systemMessage to follow TDD (write a failing test first, then implement, then refactor). Otherwise return 'approve' with no systemMessage.",
-            "timeout": 10
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"permissionDecision\":\"allow\"},\"systemMessage\":\"TDD REMINDER: Write a failing test FIRST, then implement, then refactor.\"}'",
+            "timeout": 5
           }
         ]
       }

@@ -1,14 +1,14 @@
 {
-  "description": "Advisory planning hints that never block normal operation; detect plan mode via permissions or explicit entry",
+  "description": "Advisory planning guidance for EnterPlanMode - deterministic command hook",
   "hooks": {
     "PreToolUse": [
       {
         "matcher": "EnterPlanMode",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "Plan mode detected. Return 'approve' with a systemMessage to follow the 7-phase planning process (Context -> Clarifying Questions -> Specification -> Architecture -> Tasks -> Validation -> Documentation & Linear). Never block.",
-            "timeout": 10
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"permissionDecision\":\"allow\"},\"systemMessage\":\"PLANNING: Follow 7-phase workflow - Context, Questions, Spec, Architecture, Tasks, Validation, Documentation.\"}'",
+            "timeout": 5
           }
         ]
       }

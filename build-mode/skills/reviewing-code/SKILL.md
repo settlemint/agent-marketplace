@@ -1,6 +1,6 @@
 ---
 name: reviewing-code
-description: Provides 353 curated code review patterns from top open-source projects. Use when reviewing code, checking for best practices, auditing implementations, or looking for specific review guidance by technology (React, TypeScript, Vite, Playwright, Drizzle, etc.).
+description: This skill should be used when the user asks to "review code", "check best practices", "audit implementation", "review my changes", or when looking for review guidance by technology (React, TypeScript, Vite, Playwright, Drizzle, etc.). Provides 353 curated code review patterns from top open-source projects.
 version: 1.0.0
 ---
 

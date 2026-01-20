@@ -1,4 +1,4 @@
-# Git Plugin v1.3.1
+# Git Plugin v1.3.2
 
 Git workflow automation with conventional commits, smart branching, PR templates, and safe push/sync operations.
 
@@ -82,6 +82,7 @@ Helper scripts in `scripts/`:
 
 ## Version History
 
+- **v1.3.2**: Update skill descriptions to use official third-person trigger format for better auto-triggering
 - **v1.3.1**: Add "Ready + auto-squash" option to `/pr` command to skip auto-merge question
 - **v1.3.0**: Add auto-retry with rebase when push is rejected due to remote changes
 - **v1.2.0**: Add `/update-pr` command to update PR title and body from commits, preserving user description and review agent findings

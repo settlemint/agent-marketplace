@@ -1,6 +1,6 @@
 ---
 name: improving-code-health
-description: Identifies and fixes code health issues during implementation - dead code, debug cruft, YAGNI violations, and duplication. Applies the "leave it better than you found it" principle. Use when auditing code health, finding dead code, reviewing technical debt, or seeking cleanup opportunities.
+description: This skill should be used when the user asks to "audit code health", "find dead code", "review technical debt", "clean up code", "find duplication", or when seeking cleanup opportunities. Identifies and fixes code health issues including dead code, debug cruft, YAGNI violations, and duplication.
 version: 1.0.0
 ---
 

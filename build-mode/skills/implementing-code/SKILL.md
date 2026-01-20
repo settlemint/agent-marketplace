@@ -1,6 +1,6 @@
 ---
 name: implementing-code
-description: Executes implementation plans with TDD-driven development, subagent orchestration, systematic debugging, visual testing, and verification before completion. Use when implementing features, executing plans, building code, fixing bugs, or starting any coding task.
+description: This skill should be used when the user asks to "implement a feature", "build code", "fix a bug", "write tests", "start coding", "execute a plan", or when starting any implementation task. Provides TDD-driven development with subagent orchestration, systematic debugging, visual testing, and verification before completion.
 version: 1.0.0
 ---
 
