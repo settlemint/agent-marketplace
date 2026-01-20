@@ -60,7 +60,7 @@ This marketplace provides three integrated plugins that work together:
 
 ## Plugins
 
-### Plan Mode (v2.5.0)
+### Plan Mode (v2.5.1)
 
 Structured planning with a 7-phase workflow:
 
@@ -182,6 +182,8 @@ The setup script:
 3. Force-updates all plugins (uninstall + reinstall for latest versions)
 4. Cleans up unauthorized plugins/marketplaces
 5. Installs official Anthropic plugins (plugin-dev, typescript-lsp)
+6. Syncs plugin skills and commands to Codex (`~/.codex`) when run directly
+7. Syncs plugin MCP servers into Codex config (`~/.codex/config.toml`) when run directly
 
 It can run:
 - Directly via curl for initial setup

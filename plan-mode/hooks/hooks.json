@@ -13,18 +13,6 @@
         ]
       }
     ],
-    "UserPromptSubmit": [
-      {
-        "matcher": "(?i)(\\bplan mode\\b|\\bcreate\\b.*\\bplan\\b|\\bwrite\\b.*\\bspec\\b|\\bbreak\\b.*\\bdown\\b|\\bdesign\\b.*\\bimplementation\\b|\\bfeature\\b.*\\bplan\\b)",
-        "hooks": [
-          {
-            "type": "prompt",
-            "prompt": "Determine whether the user is explicitly requesting a plan/spec/design/breakdown. If yes, return 'approve' with a systemMessage to use the 7-phase planning workflow with clarifying questions and documentation. If not, return 'approve' with no systemMessage.",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
         "matcher": "EnterPlanMode",
