@@ -1,4 +1,4 @@
-# Build Mode Plugin v1.0.2
+# Build Mode Plugin v1.0.3
 
 TDD-driven implementation execution with subagent orchestration, systematic debugging, visual testing, and verification before completion.
 
@@ -215,6 +215,7 @@ Every completion claim requires evidence:
 
 ## Version History
 
+- **v1.0.3**: Fixed TDD hook test detection - improved prompt to properly recognize test file edits and test runs in conversation history
 - **v1.0.2**: Changed TDD hook from soft reminders to hard blocking - code edits now require test evidence
 - **v1.0.1**: Fixed Stop hook JSON validation error by using natural language instructions instead of explicit approve/block format
 - **v1.0.0**: Initial release with TDD workflow, subagent orchestration, visual testing, and quality gates
