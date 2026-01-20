@@ -1,4 +1,4 @@
-# Plan Mode Plugin v2.5.1
+# Plan Mode Plugin v2.5.2
 
 Enhanced planning workflow for Claude Code with structured exploration, clarifying questions, confidence-based validation, and Linear integration.
 
@@ -198,6 +198,7 @@ Linear integration uses OAuth (SSE transport) - authenticate via browser when pr
 
 ## Version History
 
+- **v2.5.2**: Remove SessionStart hook (prompt hooks not supported for SessionStart event)
 - **v2.5.1**: Remove UserPromptSubmit hook to prevent stop-hook blocks on background task notifications
 - **v2.5.0**: Make hooks advisory-only (fail-open), detect plan mode via permissions as a fallback to native EnterPlanMode, remove stop-time blocking
 - **v2.4.1**: Fix prompt hooks to approve non-planning requests instead of blocking, preventing infinite loops
