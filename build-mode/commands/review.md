@@ -144,7 +144,10 @@ For targeted reviews, spawn only specific agents:
 - [ ] P1 issues acknowledged and planned
 - [ ] Summary report generated
 
-## Related Commands
+## Related Skills
 
-- `/build` - Implement with TDD and quality gates
-- `/fixup` - Fix PR review comments and CI failures
+| Skill | Purpose | Invocation |
+|-------|---------|------------|
+| build | Implement with TDD and quality gates | `Skill({ skill: "build-mode:build" })` |
+| fixup | Fix PR review comments and CI failures | `Skill({ skill: "build-mode:fixup" })` |
+| reviewing-code | Code review patterns | `Skill({ skill: "build-mode:reviewing-code" })` |

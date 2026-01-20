@@ -1,128 +1,49 @@
 ---
 name: reviewing-code
-description: Provides 353 curated code review patterns from top open-source projects. Use when reviewing code, checking for best practices, auditing implementations, or looking for specific review guidance by technology (React, TypeScript, Vite, Playwright, Drizzle, etc.).
+description: This skill should be used when the user asks to "review code", "check best practices", "audit implementation", or when looking for review guidance by technology. 353 patterns from React, Vue, Bun, Node.js, Vite, Playwright.
 version: 1.0.0
 ---
 
-## Overview
+# Code Review Patterns
 
-This skill provides access to 353 code review patterns curated from top open-source repositories including React, Vue, Bun, Node.js, Vite, Playwright, and more. Each pattern includes a description, problem example, and solution example.
+353 patterns from top open-source repos. Source: [awesome-reviewers](https://github.com/baz-scm/awesome-reviewers)
 
-**Source:** [awesome-reviewers](https://github.com/baz-scm/awesome-reviewers) catalog
+## Coverage
 
-## Pattern Coverage by Technology
-
-| Technology | Count | Focus Areas |
-|------------|-------|-------------|
-| GraphQL | 40 | API design, response transformation, polling |
-| TanStack Router | 38 | File routing, loaders, compatibility |
-| Bun | 37 | Async/await, error handling, memory |
-| Node.js | 32 | Streams, event loop, buffers |
-| Playwright | 31 | Test organization, security, flaky tests |
-| Tailwind/Vite | 30 | Build config, hot reload, CSS |
-| Prettier | 28 | Formatting, parser consistency |
-| React | 24 | Component APIs, hooks, testing |
-| TypeScript | 20 | Type safety, inference, config |
-| Better Auth | 15 | Sessions, API consistency, config |
-| Vitest | 13 | Test patterns, mocking, coverage |
-| Drizzle | 8 | Schema design, migrations, types |
+| Technology | Count | Technology | Count |
+|------------|-------|------------|-------|
+| GraphQL | 40 | Prettier | 28 |
+| TanStack Router | 38 | React | 24 |
+| Bun | 37 | TypeScript | 20 |
+| Node.js | 32 | Better Auth | 15 |
+| Playwright | 31 | Vitest | 13 |
+| Tailwind/Vite | 30 | Drizzle | 8 |
 
 ## Usage
 
-### Finding Relevant Patterns
+```bash
+# Browse index
+Read references/reviewers-index.md
 
-1. **Browse the index** to find patterns by technology:
-   ```
-   Read references/reviewers-index.md
-   ```
+# Load pattern
+Read references/reviewers/[pattern-name].md
 
-2. **Load specific pattern** when reviewing related code:
-   ```
-   Read references/reviewers/cache-expensive-calculations.md
-   ```
-
-3. **Search by keyword** for specific concerns:
-   ```bash
-   grep -l "async" references/reviewers/*.md
-   grep -l "test" references/reviewers/*.md
-   grep -l "error" references/reviewers/*.md
-   ```
-
-### Common Review Scenarios
-
-| Reviewing | Load These Patterns |
-|-----------|---------------------|
-| React components | `complete-hook-dependencies.md`, `react-hooks-best-practices.md`, `defensive-handling-of-nullable-react-components.md` |
-| Async code | `always-await-promises.md`, `cancel-aborted-async-operations.md`, `await-all-promises.md` |
-| Tests | `test-behavior-not-calls.md`, `avoid-timing-dependent-tests.md`, `test-edge-cases.md` |
-| API design | `api-backward-compatibility.md`, `api-consistency-patterns.md`, `api-naming-consistency.md` |
-| Error handling | `clean-all-error-paths.md`, `propagate-errors-with-context.md`, `never-swallow-errors.md` |
-| Caching | `cache-expensive-calculations.md`, `cache-invalidation-strategy.md`, `cache-key-serialization.md` |
-| Naming | `descriptive-identifier-names.md`, `consistent-naming-patterns.md`, `choose-semantic-descriptive-names.md` |
-| Database | `database-migration-best-practices.md`, `database-type-consistency.md`, `optimize-database-queries.md` |
-
-## Pattern Format
-
-Each pattern file follows this structure:
-
-```markdown
-# Pattern Name
-
-> **Repository:** source/repo
-> **Dependencies:** related-technology
-
-[Description of the pattern and why it matters]
-
-Example of the problem:
-[Code showing the anti-pattern]
-
-Example of the solution:
-[Code showing the correct approach]
-
-[Additional context and edge cases]
+# Search
+grep -l "async" references/reviewers/*.md
 ```
 
-## Integration with Code Review Agent
+## Common Scenarios
 
-The `code-reviewer` agent automatically has access to these patterns. When performing code reviews:
+| Reviewing | Key Patterns |
+|-----------|--------------|
+| React | `complete-hook-dependencies`, `react-hooks-best-practices` |
+| Async | `always-await-promises`, `cancel-aborted-async-operations` |
+| Tests | `test-behavior-not-calls`, `avoid-timing-dependent-tests` |
+| Errors | `clean-all-error-paths`, `propagate-errors-with-context` |
+| API | `api-backward-compatibility`, `api-consistency-patterns` |
 
-1. Agent identifies domains touched by changes
-2. Agent consults relevant patterns from this skill
-3. Agent applies patterns to specific code issues found
+## References
 
-For manual pattern lookup during review, use the index to find technology-specific guidance.
-
-## Key Pattern Categories
-
-### Code Quality
-- `avoid-code-duplication.md` - Create reusable components
-- `break-down-complex-functions.md` - Decompose for readability
-- `extract-complex-logical-expressions.md` - Named variables for clarity
-
-### Performance
-- `cache-expensive-calculations.md` - Avoid redundant computation
-- `batch-operations-efficiently.md` - Group similar operations
-- `optimize-algorithmic-performance.md` - Algorithmic efficiency
-
-### Testing
-- `test-behavior-not-implementation.md` - Focus on behavior
-- `comprehensive-test-coverage.md` - Cover new functionality
-- `mock-external-dependencies-only.md` - Mock at boundaries
-
-### Documentation
-- `document-non-intuitive-code.md` - Explain complex logic
-- `clear-accurate-documentation.md` - Accuracy and context
-- `code-example-consistency.md` - Syntactically correct examples
-
-### Security
-- `test-security-boundaries.md` - Test success and failure
-- `derive-from-session-context.md` - Never trust client data
-- `validate-network-inputs.md` - Input validation
-
-## Additional Resources
-
-### Reference Files
-
-- **`references/reviewers-index.md`** - Full index of 353 patterns by technology
-- **`references/reviewers/*.md`** - Individual pattern files
-- **`references/smart-contract-checklist.md`** - Blockchain-specific patterns
+- `references/reviewers-index.md` - Full pattern index
+- `references/reviewers/*.md` - Individual patterns
+- `references/smart-contract-checklist.md` - Blockchain patterns

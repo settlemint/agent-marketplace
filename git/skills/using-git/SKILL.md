@@ -1,6 +1,6 @@
 ---
 name: using-git
-description: Provides Git workflow conventions. Use when the user asks to "create a commit", "make a branch", "open a PR", "push changes", "sync with main", "resolve merge conflicts", or when working with git operations, conventional commits, or version control workflows.
+description: This skill should be used when the user asks to "create a commit", "make a branch", "open a PR", "push changes", "sync with main", "resolve merge conflicts", or when working with git operations, conventional commits, or version control workflows. Provides Git workflow conventions.
 version: 1.0.0
 ---
 

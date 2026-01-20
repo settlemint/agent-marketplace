@@ -217,7 +217,11 @@ After each task cycle:
 ### Status: COMPLETE
 ```
 
-## Related Commands
+## Related Skills
 
-- `/fixup` - Fix PR review comments and CI failures
-- `/plan` - Create implementation plan (plan-mode plugin)
+| Skill | Purpose | Invocation |
+|-------|---------|------------|
+| fixup | Fix PR review comments and CI failures | `Skill({ skill: "build-mode:fixup" })` |
+| plan | Create implementation plan | `Skill({ skill: "plan-mode:plan" })` |
+| implementing-code | TDD workflow guidance | `Skill({ skill: "build-mode:implementing-code" })` |
+| reviewing-code | Code review patterns | `Skill({ skill: "build-mode:reviewing-code" })` |

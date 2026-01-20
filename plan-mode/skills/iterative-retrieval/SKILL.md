@@ -1,6 +1,6 @@
 ---
 name: iterative-retrieval
-description: Dispatch subagents with automatic refinement loop until sufficient context is gathered. Use when spawning Explore agents, researching codebases, gathering context for planning, or any task where single-pass results may miss critical details.
+description: This skill should be used when the user asks to "explore the codebase", "research the code", "gather context", or when spawning Explore agents where single-pass results may miss critical details. Dispatches subagents with automatic refinement loops.
 version: 1.0.0
 ---
 

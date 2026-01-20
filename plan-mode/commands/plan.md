@@ -7,11 +7,21 @@ allowed-tools: Read, Grep, Glob, Task, AskUserQuestion
 
 Begin enhanced planning workflow for: $ARGUMENTS
 
-Load the planning-methodology skill and execute the 7-phase planning process:
+**Load planning skill:** `Skill({ skill: "plan-mode:planning-methodology" })`
+
+Execute the 7-phase planning process:
 
 ## Phase 1: Context Gathering (Structured Exploration)
 
-Use the context-researcher agent with the 4-phase exploration method:
+```javascript
+Task({
+  subagent_type: "plan-mode:context-researcher",
+  description: "Gather context for planning",
+  prompt: "Research the codebase for [feature]"
+})
+```
+
+Use the 4-phase exploration method:
 - **Feature Discovery** - Entry points, feature boundaries, configuration
 - **Execution Flow** - Call chains, data transformations, state changes
 - **Architectural Layers** - Presentation → business logic → data
@@ -41,7 +51,15 @@ Based on research and clarified requirements:
 
 ## Phase 4: Architecture Decision
 
-Use the architecture-analyst agent to:
+```javascript
+Task({
+  subagent_type: "plan-mode:architecture-analyst",
+  description: "Analyze architecture options",
+  prompt: "Analyze architecture options for [feature]"
+})
+```
+
+The agent will:
 - Compare options across 6 dimensions
 - Apply cross-checking (devil's advocate, security analysis)
 - Follow Clean Implementation principle (no backwards-compatibility hacks for internal code)
@@ -49,7 +67,15 @@ Use the architecture-analyst agent to:
 
 ## Phase 5: Task Decomposition
 
-Use the task-decomposer agent to:
+```javascript
+Task({
+  subagent_type: "plan-mode:task-decomposer",
+  description: "Decompose into tasks",
+  prompt: "Break down the work for [feature]"
+})
+```
+
+The agent will:
 - Break work into 2-5 minute tasks
 - Add parallelization markers (`[parallel]`, `[serial]`, `[MERGE-WALL]`)
 - Front-load merge walls
@@ -59,7 +85,15 @@ Use the task-decomposer agent to:
 
 ## Phase 6: Validation
 
-Use the plan-validator agent to:
+```javascript
+Task({
+  subagent_type: "plan-mode:plan-validator",
+  description: "Validate the plan",
+  prompt: "Validate the plan for [feature]"
+})
+```
+
+The agent will:
 - Apply confidence-based filtering (only report issues ≥80% confidence)
 - Run self-verification audits (Completeness, Clarity, Boundary, Testability)
 - Apply Rule of Five convergence review
@@ -86,5 +120,13 @@ After validation completes:
 ---
 
 Execute phases sequentially, using the specialized agents. Each agent chains to the next automatically. Provide cumulative output at each phase.
+
+## Related Skills
+
+| Skill | Purpose | Invocation |
+|-------|---------|------------|
+| planning-methodology | 7-phase planning workflow | `Skill({ skill: "plan-mode:planning-methodology" })` |
+| iterative-retrieval | Context gathering loops | `Skill({ skill: "plan-mode:iterative-retrieval" })` |
+| build | Execute plan with TDD | `Skill({ skill: "build-mode:build" })` |
 
 **Reminder: Phase 7 (Linear integration question) is required before completing the workflow.**

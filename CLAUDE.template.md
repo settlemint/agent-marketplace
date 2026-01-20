@@ -12,7 +12,7 @@ Global configuration for Claude Code agents. These rules are enforced across all
 
 ## Workflow Selection
 
-### When to Plan (use /plan or EnterPlanMode)
+### When to Plan
 
 Use planning for tasks that:
 - Add new features or significant functionality
@@ -21,15 +21,19 @@ Use planning for tasks that:
 - Have unclear requirements
 - Need user approval before implementation
 
+**Invoke planning:** `Skill({ skill: "plan-mode:plan" })` or `/plan`
+
 **Planning produces a written specification with 2-5 minute tasks.**
 
-### When to Build Directly (use /build or build-mode agents)
+### When to Build Directly
 
 Build directly when:
 - Plan already exists and is approved
 - Task is a single-file bug fix
 - User explicitly says "just fix it"
 - Requirements are completely clear
+
+**Invoke build:** `Skill({ skill: "build-mode:build" })` or `/build`
 
 ## TDD Workflow (Mandatory)
 
@@ -66,26 +70,27 @@ bun run ci        # Full CI pipeline (if available)
 
 **NEVER use "Explore" or "general-purpose" for implementation tasks.**
 
-| Task | Agent | subagent_type |
-|------|-------|---------------|
-| Implementation | task-implementer | `build-mode:task-implementer` |
-| Requirements check | spec-reviewer | `build-mode:spec-reviewer` |
-| Code quality | quality-reviewer | `build-mode:quality-reviewer` |
-| Security audit | security-reviewer | `build-mode:security-reviewer` |
-| Error handling | silent-failure-hunter | `build-mode:silent-failure-hunter` |
-| UI verification | visual-tester | `build-mode:visual-tester` |
-| Final gate | completion-validator | `build-mode:completion-validator` |
+| Task | Invocation |
+|------|------------|
+| Implementation | `Task({ subagent_type: "build-mode:task-implementer", prompt: "..." })` |
+| Requirements check | `Task({ subagent_type: "build-mode:spec-reviewer", prompt: "..." })` |
+| Code quality | `Task({ subagent_type: "build-mode:quality-reviewer", prompt: "..." })` |
+| Security audit | `Task({ subagent_type: "build-mode:security-reviewer", prompt: "..." })` |
+| Error handling | `Task({ subagent_type: "build-mode:silent-failure-hunter", prompt: "..." })` |
+| UI verification | `Task({ subagent_type: "build-mode:visual-tester", prompt: "..." })` |
+| Final gate | `Task({ subagent_type: "build-mode:completion-validator", prompt: "..." })` |
 
 ### Execution Pattern
 
 ```
 For each task:
   1. Mark task in_progress (TodoWrite)
-  2. Spawn task-implementer (fresh context per task)
-  3. Apply two-stage review: spec-reviewer THEN quality-reviewer
-  4. Spawn silent-failure-hunter
-  5. If UI: spawn visual-tester
-  6. Mark task completed with evidence (TodoWrite)
+  2. Task({ subagent_type: "build-mode:task-implementer", prompt: "..." })
+  3. Task({ subagent_type: "build-mode:spec-reviewer", prompt: "..." })
+  4. Task({ subagent_type: "build-mode:quality-reviewer", prompt: "..." })
+  5. Task({ subagent_type: "build-mode:silent-failure-hunter", prompt: "..." })
+  6. If UI: Task({ subagent_type: "build-mode:visual-tester", prompt: "..." })
+  7. Mark task completed with evidence (TodoWrite)
 ```
 
 ### Fresh Context Per Task
@@ -93,8 +98,8 @@ For each task:
 Context pollution degrades quality. Spawn a NEW agent for each task:
 
 ```
-Task 1 -> Implementer_1 -> Spec_1 -> Quality_1 -> DONE
-Task 2 -> Implementer_2 -> Spec_2 -> Quality_2 -> DONE
+Task 1 -> Task({ subagent_type: "build-mode:task-implementer" }) -> DONE
+Task 2 -> Task({ subagent_type: "build-mode:task-implementer" }) -> DONE
 ```
 
 ### Iterative Retrieval Protocol
@@ -105,7 +110,11 @@ When agent results are incomplete:
 3. Resume if needed: `Task({ resume: agentId, prompt: "Follow-up: ..." })`
 4. Maximum 3 refinement cycles
 
+**Load iterative-retrieval skill:** `Skill({ skill: "build-mode:iterative-retrieval" })`
+
 ## Planning Methodology
+
+**Load planning skill:** `Skill({ skill: "plan-mode:planning-methodology" })`
 
 ### 7-Phase Planning
 
@@ -253,14 +262,14 @@ When agent results are incomplete:
 - [ ] CI green with fresh evidence
 - [ ] Atomic commit made
 
-### Available Slash Commands
+### Available Skills and Commands
 
-| Command | Purpose |
-|---------|---------|
-| /plan | Start 7-phase planning workflow |
-| /build | Execute plan with TDD and agents |
-| /review | Run comprehensive code review |
-| /commit | Create conventional commit |
-| /pr | Create pull request |
-| /push | Push commits safely |
-| /sync | Sync with main branch |
+| Command/Skill | Purpose | Invocation |
+|---------------|---------|------------|
+| /plan | Start 7-phase planning workflow | `Skill({ skill: "plan-mode:plan" })` |
+| /build | Execute plan with TDD and agents | `Skill({ skill: "build-mode:build" })` |
+| /review | Run comprehensive code review | `Skill({ skill: "build-mode:review" })` |
+| /commit | Create conventional commit | `Skill({ skill: "git:commit" })` |
+| /pr | Create pull request | `Skill({ skill: "git:pr" })` |
+| /push | Push commits safely | `Skill({ skill: "git:push" })` |
+| /sync | Sync with main branch | `Skill({ skill: "git:sync" })` |
