@@ -61,7 +61,7 @@ This marketplace provides three integrated plugins that work together:
 
 ## Plugins
 
-### Plan Mode (v2.5.5)
+### Plan Mode (v2.5.6)
 
 Structured planning with a 7-phase workflow:
 
@@ -81,7 +81,7 @@ Structured planning with a 7-phase workflow:
 - **Context7** - Fetch latest package documentation
 - **Linear** - Ticket management integration
 
-### Build Mode (v1.4.5)
+### Build Mode (v1.4.6)
 
 TDD-driven implementation with quality gates:
 

@@ -1,5 +1,5 @@
 {
-  "description": "Advisory TDD guidance for Write/Edit operations - deterministic command hook",
+  "description": "Advisory TDD guidance with skill invocation hints",
   "hooks": {
     "PreToolUse": [
       {
@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"hookSpecificOutput\":{\"permissionDecision\":\"allow\"},\"systemMessage\":\"TDD REMINDER: Write a failing test FIRST, then implement, then refactor.\"}'",
+            "command": "echo '{\"hookSpecificOutput\":{\"permissionDecision\":\"allow\"},\"systemMessage\":\"<system-reminder>\\nTDD REMINDER: Write a failing test FIRST, then implement, then refactor.\\n\\nFor full TDD methodology, invoke: Skill({ skill: \\\"build-mode:implementing-code\\\" })\\n</system-reminder>\"}'",
             "timeout": 5
           }
         ]
