@@ -1,6 +1,6 @@
 {
   "name": "build-mode",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "TDD-driven implementation execution with subagent orchestration, systematic debugging, visual testing, and verification before completion",
   "author": {
     "name": "Roderik van der Veer"
