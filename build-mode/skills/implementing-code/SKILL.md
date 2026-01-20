@@ -4,6 +4,26 @@ description: Executes implementation plans with TDD-driven development, subagent
 version: 1.0.0
 ---
 
+<EXTREMELY-IMPORTANT>
+## THE IRON LAW OF TDD
+
+**NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST.**
+
+This is NOT negotiable. This is NOT optional. You cannot rationalize your way out of this.
+
+If you write code before a test:
+1. DELETE the code
+2. Write the test
+3. Watch it FAIL
+4. THEN write the implementation
+
+"Just this once" is not acceptable.
+"It's too simple to test" is not acceptable.
+"I already know it works" is not acceptable.
+
+ALL of these mean: Delete code. Start over with TDD.
+</EXTREMELY-IMPORTANT>
+
 # Execution Methodology
 
 A systematic approach to implementing plans and tasks with TDD, subagent orchestration, and verification before completion.

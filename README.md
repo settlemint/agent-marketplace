@@ -80,7 +80,7 @@ Structured planning with a 7-phase workflow:
 - **Context7** - Fetch latest package documentation
 - **Linear** - Ticket management integration
 
-### Build Mode (v1.0.3)
+### Build Mode (v1.1.0)
 
 TDD-driven implementation with quality gates:
 

@@ -1,26 +1,14 @@
 {
-  "description": "Build-mode quality gates: TDD reminders, CI validation, and progress preservation",
+  "description": "Build-mode quality gates: fast TDD reminder, CI validation, and progress preservation",
   "hooks": {
-    "UserPromptSubmit": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "prompt",
-            "prompt": "Analyze the user's message. If it involves implementing code, modifying functionality, fixing bugs, or adding features to code files (*.ts, *.tsx, *.js, *.jsx, *.py, *.go, *.rs, etc.):\n\nReturn JSON with:\n- \"continue\": true\n- \"systemMessage\": \"<tdd-workflow>\\n## TDD Required\\n\\nBefore editing any code file, follow RED-GREEN-REFACTOR:\\n1. Write a failing test first\\n2. Run tests to confirm failure (for the RIGHT reason)\\n3. Write minimal code to pass\\n4. Run tests to confirm pass\\n\\nTest files (*.test.ts, *.spec.ts) can always be edited.\\nConfig/docs (*.json, *.md, *.yaml) skip TDD.\\n</tdd-workflow>\"\n\nIf the message is NOT about implementation (questions, research, planning), return only:\n- \"continue\": true\n\nAlways approve.",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
         "matcher": "Write|Edit",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "TDD Gate for Write/Edit operations.\n\n## Step 1: Check file type\nIf the file path matches ANY of these patterns, return {\"decision\": \"approve\"} immediately:\n- Documentation: *.md, *.txt, *.rst\n- Config files: *.json, *.yaml, *.yml, *.toml, *.config.*, .*, package.json, tsconfig.json\n- Styles: *.css, *.scss, *.less\n- Markup: *.html, *.svg\n- Plan files: any path containing .claude/plans/\n- Lock files: *.lock, *-lock.json\n\n## Step 2: Check if it's a TEST file\nIf the file being edited IS a test file (matches any of: *.test.ts, *.spec.ts, *.test.js, *.spec.js, *.test.tsx, *.spec.tsx, *_test.py, *_test.go, *_test.rs, test_*.py, *_spec.rb), return {\"decision\": \"approve\"} - writing tests is always encouraged.\n\n## Step 3: For implementation code files - Check for TDD evidence\nExtract the base filename (e.g., 'deployment-id' from 'deployment-id.ts').\n\nLook in the CONVERSATION HISTORY for ANY of these evidence types:\n\n### Evidence Type A: Corresponding test file was edited\nA file with matching base name + test pattern was edited earlier in this conversation:\n- {basename}.test.ts, {basename}.spec.ts, {basename}.test.js, etc.\n- Example: Editing 'utils/foo.ts' after 'utils/foo.test.ts' was edited = APPROVE\n\n### Evidence Type B: Test command was run\nA bash command containing test-related keywords was executed:\n- 'bun test', 'npm test', 'vitest', 'jest', 'pytest', 'go test', 'cargo test'\n- The output showed test results (pass/fail counts, test names, assertions)\n\n### Evidence Type C: Test failures visible\nTest output in the conversation shows failing tests related to the code being edited.\n\n## Decision Logic\n- If ANY evidence type (A, B, or C) is found: return {\"decision\": \"approve\"}\n- If NO evidence found: return {\"decision\": \"block\", \"reason\": \"TDD Required: No test evidence found for this code. Write a failing test first, run it to see it fail, then implement the code to make it pass.\"}\n\n## Important\n- Be GENEROUS in recognizing evidence - if tests were written and run, approve the edit\n- The test file doesn't need to be for the exact function, just for the same module/file\n- Test runs from earlier in the conversation still count as evidence",
-            "timeout": 10
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/tdd-gate.sh",
+            "timeout": 2
           }
         ]
       }
@@ -30,9 +18,9 @@
         "matcher": "*",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "Completion Gate: Before stopping, verify: 1) All tests pass (evidence required), 2) Lint is clean, 3) No TODO items remaining for current task, 4) Self-review checklist completed. If any verification is missing, the agent should continue and address those items. If all verifications pass, the agent should stop.",
-            "timeout": 15
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/completion-gate.sh",
+            "timeout": 5
           }
         ]
       }
