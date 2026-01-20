@@ -1,4 +1,4 @@
-# Plan Mode Plugin v2.5.6
+# Plan Mode Plugin v2.5.7
 
 Enhanced planning workflow for Claude Code with structured exploration, clarifying questions, confidence-based validation, and Linear integration.
 
@@ -198,6 +198,7 @@ Linear integration uses OAuth (SSE transport) - authenticate via browser when pr
 
 ## Version History
 
+- **v2.5.7**: Add Skill() and Task() invocation format to commands for better discoverability
 - **v2.5.6**: Add skill invocation hints to hook systemMessages for better auto-loading
 - **v2.5.5**: Convert PreToolUse hooks from prompt-based to command-based for deterministic behavior
 - **v2.5.4**: Update skill descriptions to use official third-person trigger format for better auto-triggering

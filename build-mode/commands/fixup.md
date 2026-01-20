@@ -97,6 +97,9 @@ Max 3 CI retry iterations before escalating.
 - [ ] All CI checks passing
 - [ ] No new issues introduced
 
-## Related
+## Related Skills
 
-Use `/build` to implement new features with full TDD workflow.
+| Skill | Purpose | Invocation |
+|-------|---------|------------|
+| build | Implement with TDD workflow | `Skill({ skill: "build-mode:build" })` |
+| implementing-code | TDD guidance | `Skill({ skill: "build-mode:implementing-code" })` |

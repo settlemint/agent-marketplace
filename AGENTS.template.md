@@ -2,6 +2,16 @@
 
 Instructions for Claude Code subagents. These rules ensure consistent, high-quality work across all delegated tasks.
 
+## Agent Invocation
+
+Spawn agents using the Task tool:
+
+```
+Task({ subagent_type: "build-mode:task-implementer", prompt: "Implement feature X" })
+Task({ subagent_type: "build-mode:spec-reviewer", prompt: "Review implementation" })
+Task({ subagent_type: "build-mode:quality-reviewer", prompt: "Check code quality" })
+```
+
 ## Core Rules for All Agents
 
 ### 1. TDD is Mandatory
@@ -48,6 +58,8 @@ Before reporting completion:
 
 Your job is to implement a specific task following TDD.
 
+**Load skill for guidance:** `Skill({ skill: "build-mode:implementing-code" })`
+
 **Workflow:**
 1. Read the task requirements carefully
 2. Write a failing test FIRST
@@ -69,6 +81,8 @@ Your job is to implement a specific task following TDD.
 
 Your job is to verify implementation matches requirements.
 
+**Load skill for guidance:** `Skill({ skill: "build-mode:reviewing-code" })`
+
 **DO NOT trust the implementer's report. Read the actual code.**
 
 **3-Pass Review:**
@@ -86,6 +100,10 @@ Your job is to verify implementation matches requirements.
 ### If You Are: Quality Reviewer
 
 Your job is to assess code quality after spec review passes.
+
+**Load skills for guidance:**
+- `Skill({ skill: "build-mode:reviewing-code" })`
+- `Skill({ skill: "build-mode:improving-code-health" })`
 
 **3-Pass Review:**
 1. **Style**: Clear names? Consistent patterns?
@@ -161,6 +179,8 @@ Your job is the final gate before completion.
 ### If You Are: Explorer/Researcher
 
 Your job is to gather context, not implement.
+
+**Load skill for guidance:** `Skill({ skill: "build-mode:iterative-retrieval" })`
 
 **4-Phase Exploration:**
 1. **Feature Discovery**: Entry points, configuration
