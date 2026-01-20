@@ -1,5 +1,5 @@
 {
-  "description": "Advisory TDD guidance with all build-mode skill hints",
+  "description": "Trigger implementing-code skill on code changes",
   "hooks": {
     "PreToolUse": [
       {
@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"hookSpecificOutput\":{\"permissionDecision\":\"allow\"},\"systemMessage\":\"<system-reminder>\\nBUILD MODE - Load skills as needed:\\n- Skill({ skill: \\\"build-mode:implementing-code\\\" }) - TDD workflow\\n- Skill({ skill: \\\"build-mode:reviewing-code\\\" }) - Code review\\n- Skill({ skill: \\\"build-mode:improving-code-health\\\" }) - Dead code/tech debt\\n- Skill({ skill: \\\"build-mode:using-ast-grep\\\" }) - AST refactoring\\n- Skill({ skill: \\\"build-mode:iterative-retrieval\\\" }) - Context gathering\\n\\nTDD: Write failing test FIRST, then implement, then refactor.\\n</system-reminder>\"}'",
+            "command": "echo '{\"hookSpecificOutput\":{\"permissionDecision\":\"allow\"},\"systemMessage\":\"<system-reminder>For implementation tasks, load: Skill({ skill: \\\"build-mode:implementing-code\\\" })</system-reminder>\"}'",
             "timeout": 5
           }
         ]

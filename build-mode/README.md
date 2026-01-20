@@ -1,4 +1,4 @@
-# Build Mode Plugin v1.4.8
+# Build Mode Plugin v1.5.0
 
 TDD-driven implementation execution with subagent orchestration, systematic debugging, visual testing, and verification before completion.
 
@@ -24,24 +24,6 @@ claude --plugin-dir ~/path/to/build-mode
 ```
 
 ## Commands
-
-### `/build [task]`
-
-Execute implementation with full TDD workflow and quality gates.
-
-```
-/build "Add user authentication with JWT"
-/build continue  # Resume from plan
-```
-
-**Workflow:**
-1. Task setup and test coverage check
-2. TDD implementation (Red → Green → Refactor)
-3. Two-stage review (Spec → Quality)
-4. Error handling verification
-5. Visual testing (if UI)
-6. Final validation gate
-7. Code health cleanup
 
 ### `/fixup [PR number]`
 
@@ -72,13 +54,16 @@ Fix PR review comments and CI failures with educational feedback.
 
 ## Skills
 
-### implementing-code
+### implementing-code (v1.1.0)
+
+Runs in **general-purpose agent context** via `context: fork` + `agent: general-purpose`.
 
 Core TDD and verification methodology:
 - Red-Green-Refactor workflow
 - 5-step gate function
 - Debugging workflow
 - Visual testing patterns
+- Spawns specialized agents for each step
 
 ### improving-code-health
 
@@ -214,6 +199,7 @@ Every completion claim requires evidence:
 
 ## Version History
 
+- **v1.5.0**: Skills now run in built-in agent contexts via `context: fork` + `agent: general-purpose`. Removed `/build` command - implementing-code skill now contains full workflow with Task() spawns. Simplified hooks.
 - **v1.4.8**: Trim agents and skills for conciseness (40-80% reduction) - tokens are gold
 - **v1.4.7**: Add Skill() and Task() invocation format to commands for better discoverability
 - **v1.4.6**: Add skill invocation hints to hook systemMessages for better auto-loading

@@ -1,4 +1,4 @@
-# Plan Mode Plugin v2.5.8
+# Plan Mode Plugin v2.6.0
 
 Enhanced planning workflow for Claude Code with structured exploration, clarifying questions, confidence-based validation, and Linear integration.
 
@@ -55,17 +55,11 @@ The plugin automatically enhances plan mode sessions. When plan mode is detected
 6. Confidence-filtered validation
 7. Documentation and optional Linear sync
 
-### Manual Command
-
-Use `/plan` to start an enhanced planning session manually:
-
-```
-/plan implement user authentication with OAuth
-```
-
 ## Components
 
-### Skill: `planning-methodology` (v2.1)
+### Skill: `planning-methodology` (v2.4.0)
+
+Runs in **Plan agent context** via `context: fork` + `agent: Plan`.
 
 Core planning knowledge including:
 - 7-phase workflow with clarifying questions
@@ -198,6 +192,7 @@ Linear integration uses OAuth (SSE transport) - authenticate via browser when pr
 
 ## Version History
 
+- **v2.6.0**: Skills now run in built-in agent contexts via `context: fork` + `agent: Plan`. Removed `/plan` command - planning-methodology skill now contains full workflow with Task() spawns. Simplified hooks.
 - **v2.5.8**: Trim agents and skills for conciseness (40-80% reduction) - tokens are gold
 - **v2.5.7**: Add Skill() and Task() invocation format to commands for better discoverability
 - **v2.5.6**: Add skill invocation hints to hook systemMessages for better auto-loading
