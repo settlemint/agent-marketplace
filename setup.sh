@@ -884,9 +884,42 @@ force_update_plugin "build-mode@settlemint" "build-mode (TDD implementation)"
 force_update_plugin "git@settlemint" "git (git workflow automation)"
 echo ""
 
-# Step 5: Sync to Codex (only on direct execution, not on SessionStart hook)
+# ============================================
+# Global Template Installation
+# ============================================
+
+install_global_templates() {
+    local claude_home="$HOME/.claude"
+    local codex_home="${CODEX_HOME:-$HOME/.codex}"
+    local repo_base="https://raw.githubusercontent.com/settlemint/agent-marketplace/main"
+
+    mkdir -p "$claude_home"
+
+    info "Installing global CLAUDE.md template"
+    if curl -fsSL "$repo_base/CLAUDE.template.md" -o "$claude_home/CLAUDE.md" 2>/dev/null; then
+        success "CLAUDE.md installed to $claude_home/"
+    else
+        warn "Could not download CLAUDE.template.md, skipping"
+    fi
+
+    # AGENTS.md goes to Codex for subagent instructions
+    mkdir -p "$codex_home"
+    info "Installing global AGENTS.md template to Codex"
+    if curl -fsSL "$repo_base/AGENTS.template.md" -o "$codex_home/AGENTS.md" 2>/dev/null; then
+        success "AGENTS.md installed to $codex_home/"
+    else
+        warn "Could not download AGENTS.template.md, skipping"
+    fi
+}
+
+echo "Step 5: Installing Global Templates"
+echo "------------------------------------"
+install_global_templates
+echo ""
+
+# Step 6: Sync to Codex (only on direct execution, not on SessionStart hook)
 if [[ "$IS_DIRECT_EXECUTION" == "true" ]]; then
-    echo "Step 5: Syncing Codex"
+    echo "Step 6: Syncing Codex"
     echo "---------------------"
     sync_all_to_codex
     sync_codex_mcp_servers
@@ -906,6 +939,10 @@ if [[ ${#ERRORS[@]} -eq 0 ]]; then
     echo "    • plan-mode - 7-phase structured planning"
     echo "    • build-mode - TDD-driven implementation"
     echo "    • git - Git workflow automation"
+    echo ""
+    echo "Global templates:"
+    echo "  • ~/.claude/CLAUDE.md - Global agent guidelines"
+    echo "  • ~/.codex/AGENTS.md - Codex subagent instructions"
     echo "================================"
     exit 0
 else
