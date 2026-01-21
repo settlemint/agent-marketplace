@@ -1,223 +1,253 @@
-# SettleMint Agent Marketplace
+# mpe
 
-Claude Code plugins for disciplined, structured software development workflows. Plan with rigor, build with TDD, commit with conventions.
+Portable agent setup for Claude Code and Codex that works identically in local CLI and cloud environments.
 
-## Quick Start
+**The problem:** Cloud/web versions of these agents can't install skills or plugins on-the-fly. You get a vanilla agent with no workflow enforcement, no specialized skills, and no tooling.
 
-### 1. Install Plugins
+**The solution:** Bundle everything in the repository—skills, workflows, commands, and dependency setup scripts—so the agent behaves the same whether you're running locally or in the cloud.
 
-```bash
-curl -sL https://raw.githubusercontent.com/settlemint/agent-marketplace/main/setup.sh | bash
-```
-
-This installs:
-- **plan-mode** - 7-phase structured planning with Linear integration
-- **build-mode** - TDD-driven implementation with quality gates
-- **git** - Conventional commits, smart branching, PR templates
-- **Global templates** - `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` with enforced guidelines
-
-### 2. Copy Settings
-
-Copy the settings file to your project's `.claude` directory:
+## Quick Install (Local CLI)
 
 ```bash
-mkdir -p .claude
-curl -sL https://raw.githubusercontent.com/settlemint/agent-marketplace/main/.claude/settings.json > .claude/settings.json
+curl -sL https://raw.githubusercontent.com/roderik/mpe/main/setup.sh | bash
 ```
 
-Or manually copy `.claude/settings.json` from this repository to your project.
+This installs into the **current directory** and will download the full `.agents` folder if it’s missing.
 
-## Overview
+Setup flags:
 
-This marketplace provides three integrated plugins that work together:
+- `--lite` - skip post-install system/package setup (fast, minimal)
+- `--skip-postinstall` - same as `--lite`, but explicit
+- `--skip-codex-mcp` - skip updating Codex MCP config in `~/.codex/config.toml`
+- `--docs-only` - only refresh workflow/routing tables in `CLAUDE.md` and `AGENTS.md`
+- `--skip-skills` - skip installing skills (useful for docs-only runs)
 
-| Plugin | Purpose | Key Features |
-|--------|---------|--------------|
-| **plan-mode** | Structured planning | 7-phase workflow, clarifying questions, 2-5 min tasks |
-| **build-mode** | TDD implementation | Red-Green-Refactor, subagent reviewers, quality gates |
-| **git** | Git automation | Conventional commits, branch naming, PR templates |
+## What's Included
 
-## Prerequisites
+**Workflow enforcement** via `CLAUDE.md` / `AGENTS.md`:
+- Task classification (Trivial → Complex) with mandatory phases
+- Gate checks requiring proof before proceeding
+- Skill routing table mapping triggers to capabilities
 
-- **Claude Code CLI** - [Install from claude.ai/code](https://claude.ai/code)
-- **GitHub CLI** - Run `gh auth login` for Octocode MCP features
-- **Linear account** (optional) - For ticket integration during planning
+**37 skills** across domains:
+- Development: TDD, systematic debugging, verification
+- Security: Semgrep, CodeQL, differential review, SARIF parsing
+- Quality: Code review, code simplifier, knip (dead code)
+- Docs: xlsx, pptx, doc-coauthoring
+- Frameworks: React/Next.js, TanStack Query, Better Auth
 
-## Typical Workflow
+**10 commands**: `/commit`, `/review`, `/pr`, `/branch`, `/sync`, etc.
+
+**Auto-installed tooling**: jq, ripgrep, graphviz, semgrep, CodeQL, playwright, and more
+
+## Recommended Workflow
+
+The workflow enforces quality through gates while remaining practical. Use [Hex](https://hex.kitlangton.com/) for voice dictation to describe tasks quickly.
+
+### Local Development
+
+#### Claude Code
+
+```
+1. Enter plan mode     → Shift+Tab or /plan or Conductor button
+2. Describe outcome    → Voice dictate with Hex or type the goal
+3. Iterate on plan     → Refine until the approach is solid
+4. Execute             → Exit plan mode, let Claude implement
+5. Manual test         → Verify the changes work as expected
+6. Open PR             → /pr to create pull request
+7. Handle feedback     → /fixup until CI green + reviews resolved
+```
+
+**Key commands:**
+- `Shift+Tab` or `/plan` - Enter plan mode
+- `/pr` - Create pull request with smart template
+- `/fixup` - Fix PR review comments and CI failures
+- `/review` - Run comprehensive code review
+
+#### Codex
+
+Codex has no formal plan mode, so request a plan explicitly:
+
+```
+1. Request plan        → "Create a plan for: [describe outcome]"
+2. Iterate on plan     → Refine until the approach is solid
+3. Execute             → "Execute the plan"
+4. Manual test         → Verify the changes work as expected
+5. Open PR             → /pr or ask Codex to create PR
+6. Handle feedback     → /fixup or ask to fix review comments
+```
+
+### Remote Development
+
+When running remotely, the workflow is less interactive—the agent proceeds autonomously and only asks questions when genuinely ambiguous (ambiguity score > 7/10).
+
+#### Claude Code Remote
+
+**Starting a remote session:**
+
+| Method | How |
+|--------|-----|
+| **From terminal** | `& <task description>` or `claude --remote "<task>"` |
+| **From web** | Go to [claude.ai/code](https://claude.ai/code) and start a session |
+| **From iOS** | Open Claude app → Claude Code → New task |
+| **From Slack** | Mention `@Claude` with a coding task in any channel |
+
+**The `&` prefix** sends tasks to run asynchronously on the web:
+```bash
+# Plan locally first
+claude --permission-mode plan
+
+# Then send to web for autonomous execution
+& Execute the migration plan we discussed
+
+# Or run multiple tasks in parallel
+& Fix the flaky test in auth.spec.ts
+& Update the API documentation
+```
+
+**Monitoring and retrieving work:**
+- `/tasks` - View all background sessions
+- `/teleport` or `/tp` - Pull a web session into your terminal
+- `claude --teleport <session-id>` - Resume specific session locally
+- Press `t` in `/tasks` view to teleport into a session
+
+**Requirements for teleport:**
+- Clean git state (no uncommitted changes)
+- Same repository (not a fork)
+- Branch pushed to remote
+- Same Claude.ai account
+
+**Slack workflow:**
+1. Mention `@Claude` with task in a channel or thread
+2. Claude creates a web session and posts progress updates
+3. When complete, use "View Session" or "Create PR" buttons
+4. Continue conversation in thread for follow-ups
+
+#### Codex Remote
+
+**Starting a remote session:**
+
+| Method | How |
+|--------|-----|
+| **From web** | Go to [codex.openai.com](https://codex.openai.com) and start a task |
+| **From iOS** | Open ChatGPT app → Codex → New task |
+| **From Linear** | Assign issue to `@Codex` or mention `@Codex` in comments |
+| **From CLI** | `codex exec --env <env-id> "<task>"` |
+
+**Linear integration:**
+
+1. Connect Linear MCP server:
+   ```bash
+   codex mcp add linear --url https://mcp.linear.app/mcp
+   ```
+
+2. Enable in `~/.codex/config.toml`:
+   ```toml
+   [features]
+   rmcp_client = true
+   ```
+
+3. Use in Linear:
+   - **Assign to Codex**: Assign any issue to `@Codex` like a team member
+   - **Mention in comments**: Write `@Codex <task>` in issue comments
+   - Codex posts progress updates back to Linear
+   - When complete, review and open PR from the linked session
+
+**Mobile workflow (ChatGPT iOS):**
+1. Open ChatGPT app → Codex section
+2. Start new cloud task or review past tasks
+3. Open pull requests directly from completed tasks
+
+### Environment Detection
+
+Both tools detect remote execution automatically:
+
+| Tool | Environment Variable | Remote Value |
+|------|---------------------|--------------|
+| Claude Code | `CLAUDE_CODE_REMOTE` | `true` |
+| Codex | `CODEX_INTERNAL_ORIGINATOR_OVERRIDE` | `codex_web_agent` |
+
+In remote mode:
+- Questions are optional (only asked if genuinely ambiguous)
+- All quality gates remain enforced
+- The agent proceeds autonomously with documented assumptions
+
+## Manual Setup
 
 ```bash
-# 1. Enter plan mode - skills auto-load
-# Use EnterPlanMode or let Claude suggest planning
-# planning-methodology skill activates automatically
-
-# 2. Implement with TDD - skills auto-load
-# implementing-code skill activates on code changes
-# Spawns specialized agents for each task
-
-# 3. Commit your changes
-/commit
-
-# 4. Create a PR
-/pr
+curl -sL https://github.com/roderik/mpe/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 "mpe-main/.agents"
+bash .agents/setup.sh
 ```
 
-## Plugins
+## Cloud Setup
 
-### Plan Mode (v2.7.0)
+Both Claude Code and Codex require specific configuration for cloud/web environments.
 
-Structured planning with a 7-phase workflow:
+### Claude Code (claude.ai/code)
 
-1. **Context Gathering** - 4-phase codebase exploration
-2. **Clarifying Questions** - One question at a time, resolve ambiguities
-3. **Specification** - Six Core Areas checklist
-4. **Architecture** - Trade-off evaluation, clean implementation
-5. **Task Decomposition** - 2-5 minute tasks with parallelization markers
-6. **Validation** - Confidence-based filtering (≥80% only)
-7. **Documentation** - Linear ticket creation/update
+1. **Network Permissions**: Set to **Full** in project settings
+   - Required for installing dependencies and accessing package registries
 
-**Skills:**
-- `planning-methodology` - Auto-triggered on plan mode entry (runs in Plan agent context)
+2. **Dependency Installation**: Automatic via session-start hook
+   - The hook at `.claude/settings.json` triggers `.claude/scripts/web/session-start/setup.sh`
+   - Installs system tools (jq, ripgrep, graphviz, etc.)
+   - Installs Python packages (markitdown, semgrep)
+   - Installs Node packages (agent-browser, playwright, knip)
+   - Sets up CodeQL for security analysis
 
-**MCP Servers:**
-- **Octocode** - Semantic code research, LSP analysis, GitHub search
-- **Context7** - Fetch latest package documentation
-- **Linear** - Ticket management integration
+### Codex (codex.openai.com)
 
-### Build Mode (v1.5.0)
+1. **Network Permissions**: Set to **Full** in project settings
+   - Required for installing dependencies and accessing package registries
 
-TDD-driven implementation with quality gates:
+2. **Setup Script**: Configure in project settings
+   - Add to **Setup script** field:
+     ```
+     bash ./.claude/scripts/web/session-start/setup.sh
+     ```
 
-- **Red-Green-Refactor** cycle for all changes
-- **Subagent orchestration** - Fresh context per task
-- **Two-stage review** - Spec compliance, then quality
-- **Visual testing** - Chrome MCP + Playwright
-- **Evidence-based completion** - No claims without proof
+3. **Maintenance Script**: Configure in project settings
+   - Add to **Maintenance script** field:
+     ```
+     bash ./.claude/scripts/web/session-start/setup.sh
+     ```
 
-**Skills:**
-- `implementing-code` - Auto-triggered on implementation tasks (runs in general-purpose agent context)
+### What the Setup Script Installs
 
-**Commands:**
-- `/fixup [PR#]` - Fix PR review comments and CI failures
+The web setup script (`.claude/scripts/web/session-start/setup.sh`) installs:
 
-**Agents:**
-| Agent | Purpose |
-|-------|---------|
-| `task-implementer` | TDD implementation |
-| `spec-reviewer` | Requirement verification |
-| `quality-reviewer` | Code quality assessment |
-| `silent-failure-hunter` | Error handling gaps |
-| `visual-tester` | UI verification |
-| `completion-validator` | Final gate |
+| Category | Packages |
+| --- | --- |
+| System tools | jq, ripgrep, graphviz, poppler-utils |
+| Python | markitdown[pptx], defusedxml, semgrep |
+| Node.js | agent-browser, pptxgenjs, playwright, knip |
+| Security | CodeQL CLI |
 
-### Git (v1.3.2)
+The script only runs in remote environments (checks for `CLAUDE_CODE_REMOTE` or detects cloud environment).
 
-Git workflow automation:
+## Refresh Workflow + Routing Tables
 
-**Commands:**
-| Command | Purpose |
-|---------|---------|
-| `/commit` | Conventional commit with selective staging |
-| `/commit-push` | Commit and push in one step |
-| `/branch` | Create branch: `username/type/slug` |
-| `/pr` | Create PR with template body |
-| `/update-pr` | Update PR title and body from commits |
-| `/push` | Safe push with force-with-lease |
-| `/sync` | Merge/rebase from main |
-| `/clean-gone` | Remove deleted branches |
-
-**Commit Types:**
-- `feat` - New feature
-- `fix` - Bug fix
-- `docs` - Documentation
-- `refactor` - Code restructure
-- `test` - Tests
-- `chore` - Maintenance
-- `perf` - Performance
-
-## Configuration
-
-The `settings.json` enables these key features:
-
-```json
-{
-  "env": {
-    "ENABLE_BACKGROUND_TASKS": "1",
-    "FORCE_AUTO_BACKGROUND_TASKS": "1",
-    "ENABLE_LSP_TOOLS": "1",
-    "FORCE_AUTOUPDATE_PLUGINS": "1"
-  },
-  "permissions": {
-    "defaultMode": "bypassPermissions"
-  },
-  "enableAllProjectMcpServers": true,
-  "enabledPlugins": {
-    "plan-mode@settlemint": true,
-    "build-mode@settlemint": true,
-    "git@settlemint": true
-  }
-}
-```
-
-| Setting | Purpose |
-|---------|---------|
-| `ENABLE_BACKGROUND_TASKS` | Run background operations |
-| `ENABLE_LSP_TOOLS` | Code intelligence features |
-| `enableAllProjectMcpServers` | Load MCP servers from plugins |
-| `bypassPermissions` | Full autonomy for plugins |
-
-## Manual Installation
-
-If you prefer manual installation:
+When you update skills or the workflow config, re-sync the docs:
 
 ```bash
-# Add the marketplace
-claude plugin marketplace add settlemint/agent-marketplace
-
-# Install individual plugins
-claude plugin install plan-mode@settlemint
-claude plugin install build-mode@settlemint
-claude plugin install git@settlemint
+./scripts/refresh-docs
 ```
 
-## Global Templates
+## Structure
 
-The setup script installs two global template files that guide all Claude Code sessions:
-
-### ~/.claude/CLAUDE.md
-
-Global guidelines loaded into every Claude Code session:
-- **TDD enforcement** - No production code without failing tests first
-- **Workflow selection** - When to plan vs when to build directly
-- **Agent orchestration** - Use specialized build-mode agents, not generic agents
-- **Evidence requirements** - Verify claims with command output
-- **Quality gates** - CI must pass before completion
-
-### ~/.codex/AGENTS.md
-
-Instructions loaded into Codex subagents (spawned tasks):
-- **Role-specific guidelines** - Different rules for implementers, reviewers, hunters
-- **Output formats** - Structured evidence reporting
-- **Anti-patterns** - Common mistakes to avoid
-- **Self-review checklists** - What to verify before reporting
-
-These templates reduce the need for blocking hooks by embedding best practices directly into agent context.
-
-## What setup.sh Does
-
-The setup script:
-1. Adds the SettleMint marketplace to Claude Code
-2. Updates marketplace indices
-3. Force-updates all plugins (uninstall + reinstall for latest versions)
-4. Cleans up unauthorized plugins/marketplaces
-5. Installs official Anthropic plugins (plugin-dev, typescript-lsp)
-6. Installs global templates (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`)
-7. Syncs plugin skills and commands to Codex (`~/.codex`) when run directly
-8. Syncs plugin MCP servers into Codex config (`~/.codex/config.toml`) when run directly
-
-It can run:
-- Directly via curl for initial setup
-- As a SessionStart hook for automatic updates
-
-## License
-
-MIT
+```
+├── CLAUDE.md           # Claude Code instructions (generated from templates/claude/)
+├── AGENTS.md           # Codex instructions (generated from templates/codex/)
+├── .claude/
+│   ├── settings.json   # Hooks configuration (session-start)
+│   ├── commands/       # Slash commands (/commit, /review, etc.)
+│   └── scripts/        # Session scripts for web environments
+└── .agents/
+    ├── setup.json      # Skills and MCP configuration
+    ├── setup.sh        # Installation script
+    ├── commands/       # Command templates (copied to .claude/commands/)
+    ├── templates/
+    │   ├── claude/     # Claude Code templates (CLAUDE.md + sections)
+    │   └── codex/      # Codex templates (AGENTS.md + sections)
+    └── skills/         # Installed skills (gitignored)
+```

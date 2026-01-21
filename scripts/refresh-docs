@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$SCRIPT_DIR/.."
+
+if [[ ! -x "$PROJECT_ROOT/.agents/setup.sh" ]]; then
+    echo "Error: .agents/setup.sh not found. Run setup first."
+    exit 1
+fi
+
+echo "Refreshing workflow and routing tables..."
+bash "$PROJECT_ROOT/.agents/setup.sh" --docs-only
+echo "Done."

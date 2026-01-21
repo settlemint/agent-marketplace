@@ -1,61 +1,450 @@
-# Claude Code Guidelines
+# Claude
+<task-classification>
+## Task Classification
 
-## Versioning Requirements
+Classify before implementation. When in doubt, classify up.
 
-When modifying any plugin, you MUST update version numbers in ALL locations.
+### Rules
+1. New file => at least Simple (never Trivial).
+2. Multiple files => at least Standard.
+3. Security/auth/payments => Complex.
+4. Uncertain => up.
 
-### Semantic Versioning
+### Categories (minimum steps / may skip)
+- **Trivial:** single-line/typo/comment only. Steps: TodoWrite(in_progress) -> Implementation -> Verification -> TodoWrite(completed). May skip: plan refinement, review, deep reasoning.
+- **Simple:** single file, clear scope; new file ok. Steps: TodoWrite, Planning (1 pass), Implementation, Testing/syntax check, Verification skill, TodoWrite(completed). May skip: deep reasoning, security review, multi-iteration review.
+- **Standard:** multi-file/behavior change. Steps: all phases, minimum 2 iterations each. Skip none.
+- **Complex:** architectural/cross-cutting/security-sensitive. Steps: all phases, 5+ iterations each. Skip none.
 
-- **PATCH** (x.y.Z): Bug fixes, documentation, minor tweaks
-- **MINOR** (x.Y.0): New features, backward-compatible changes
-- **MAJOR** (X.0.0): Breaking changes, removed features
+### Checklists (output immediately after classification)
 
-### Files to Update
+#### Trivial
+```
+CLASSIFICATION: Trivial
 
-For each plugin change, update these files:
+REQUIRED SKILLS (invoke Skill() tool before GATE-3):
+- [ ] verification-before-completion
 
-#### 1. Plugin Manifest
-`<plugin>/.claude-plugin/plugin.json` → Update `"version"` field
+REQUIRED PHASES:
+- [ ] Phase 3: Implementation (TodoWrite -> Code -> TodoWrite)
+- [ ] Phase 7: Verification (min 1 iteration)
 
-#### 2. Root README
-`README.md` → Update version in plugin section header:
-- `### Plan Mode (vX.Y.Z)`
-- `### Build Mode (vX.Y.Z)`
-- `### Git (vX.Y.Z)`
-
-#### 3. Plugin README
-`<plugin>/README.md` → Update version in:
-- Title: `# <Plugin> Plugin vX.Y.Z`
-- Version History section (add entry describing changes)
-
-### Version History Format
-
-Add a new entry at the top of the Version History section:
-
-```markdown
-- **vX.Y.Z**: Brief description of changes
+ITERATION TRACKING:
+- Plan Refinement: 0 required
+- Review: 0 required
+- Verification: 1 required | Completed: ___
 ```
 
-If the plugin README lacks a Version History section, add one before the License section.
+#### Simple
+```
+CLASSIFICATION: Simple
 
-### When to Version
+REQUIRED SKILLS (invoke Skill() tool - checklist is not loading):
+- [ ] verification-before-completion — invoke before GATE-3
+- [ ] test-driven-development — invoke before GATE-3
+- [ ] ask-questions-if-underspecified — invoke before GATE-2 (ALWAYS, no exceptions)
 
-**DO bump version:**
-- New features, commands, agents, skills, hooks
-- Bug fixes
-- Configuration changes
-- Behavior changes
+REQUIRED PHASES (output gate with PROOF before each):
+- [ ] Phase 1: Planning (1 pass) → GATE-1
+- [ ] Phase 2: Plan Refinement (1 pass) → GATE-2 ⚠️ DON'T SKIP
+- [ ] Phase 3: Implementation → GATE-3
+- [ ] Phase 5: Testing → GATE-5
+- [ ] Phase 6: Review (1 pass) → GATE-6 ⚠️ DON'T SKIP
+- [ ] Phase 7: Verification → GATE-7
 
-**DON'T bump version:**
-- Typo fixes in comments
-- Whitespace/formatting only
-- Changes to unrelated files
+ITERATION TRACKING:
+- Plan Refinement: 1 required | Completed: ___
+- Review: 1 required | Completed: ___
+- Verification: 1 required | Completed: ___
 
-### Checklist
+SELF-CHECKS:
+- Before GATE-2: search context for `Skill.*ask-questions`. If not found, STOP.
+- Before GATE-3: search context for `Skill.*test-driven`. If not found, STOP.
+- Before GATE-5: verify test file exists or explain why tests N/A.
+- Before GATE-6: search context for `Skill.*review`. If not found, STOP.
+```
 
-Before completing any plugin change:
-- [ ] Determine version bump type (patch/minor/major)
-- [ ] Update `<plugin>/.claude-plugin/plugin.json`
-- [ ] Update `README.md` section header
-- [ ] Update `<plugin>/README.md` title
-- [ ] Add Version History entry in `<plugin>/README.md`
+#### Standard
+```
+CLASSIFICATION: Standard
+
+REQUIRED SKILLS (invoke Skill() tool - checklist is not loading):
+- [ ] verification-before-completion — invoke before GATE-3
+- [ ] test-driven-development — invoke before GATE-3
+- [ ] ask-questions-if-underspecified — invoke before GATE-2
+
+REQUIRED PHASES (output gate with PROOF before each):
+- [ ] Phase 1: Planning → GATE-1
+- [ ] Phase 2: Plan Refinement (2+) → GATE-2 ⚠️ TRACK ITERATIONS
+- [ ] Phase 3: Implementation → GATE-3
+- [ ] Phase 4: Cleanup → GATE-4
+- [ ] Phase 5: Testing → GATE-5
+- [ ] Phase 6: Review (2+) → GATE-6 ⚠️ TRACK ITERATIONS
+- [ ] Phase 7: Verification (2+) → GATE-7 ⚠️ TRACK ITERATIONS
+
+ITERATION TRACKING:
+- Plan Refinement: 2+ required | Completed: ___
+- Review: 2+ required | Completed: ___
+- Verification: 2+ required | Completed: ___
+
+SELF-CHECKS:
+- Before GATE-2: search context for `Skill.*ask-questions`. If not found, STOP.
+- Before GATE-3: search context for `Skill.*test-driven`. If not found, STOP.
+- Before GATE-5: verify test file exists or explain why tests N/A.
+- Before GATE-6: search context for `Skill.*review`. If not found, STOP.
+```
+
+#### Complex
+```
+CLASSIFICATION: Complex
+
+REQUIRED SKILLS (invoke Skill() tool - checklist is not loading):
+- [ ] verification-before-completion — invoke before GATE-3
+- [ ] test-driven-development — invoke before GATE-3
+- [ ] ask-questions-if-underspecified — invoke before GATE-2
+- [ ] systematic-debugging — invoke if modifying existing code
+- [ ] differential-review — invoke before GATE-6
+
+REQUIRED PHASES (output gate with PROOF before each):
+- [ ] Phase 1: Planning (with mcp__codex) → GATE-1
+- [ ] Phase 2: Plan Refinement (5+) → GATE-2 ⚠️ TRACK ITERATIONS
+- [ ] Phase 3: Implementation → GATE-3
+- [ ] Phase 4: Cleanup → GATE-4
+- [ ] Phase 5: Testing → GATE-5
+- [ ] Phase 6: Review (5+, security) → GATE-6 ⚠️ TRACK ITERATIONS
+- [ ] Phase 7: Verification (5+) → GATE-7 ⚠️ TRACK ITERATIONS
+
+ITERATION TRACKING:
+- Plan Refinement: 5+ required | Completed: ___
+- Review: 5+ required | Completed: ___
+- Verification: 5+ required | Completed: ___
+
+SELF-CHECKS:
+- Before GATE-2: search context for `Skill.*ask-questions`. If not found, STOP.
+- Before GATE-3: search context for `Skill.*test-driven`. If not found, STOP.
+- Before GATE-5: verify test file exists or explain why tests N/A.
+- Before GATE-6: search context for `Skill.*review` or `Skill.*differential-review`. If not found, STOP.
+```
+</task-classification>
+<hard-requirements>
+## Hard Requirements (No Exceptions)
+
+**ALWAYS**
+- `TodoWrite({ status: "in_progress" })` before any implementation code.
+- `TodoWrite({ status: "completed" })` after implementation.
+- Load skills via `Skill({ skill: "name" })` tool call - listing is not loading.
+- Output EVERY gate check (GATE-1 through GATE-7) - not just first few.
+- Provide verification evidence (command output/test results with exit code 0) before claiming done.
+- Use at least one skill per implementation task (minimum: verification-before-completion).
+- Immediately after classification, output the Classification Checklist.
+- **Use `AskUserQuestion` tool for ALL clarifying questions** - never plain text questions.
+- **Consider parallel Task agents** when 2+ independent implementation tasks exist.
+
+**NEVER**
+- Skip phases/gates because "simple" or "trivial".
+- Skip Phase 2 (Plan Refinement) or Phase 6 (Review) - commonly forgotten.
+- Write production code before TodoWrite.
+- Claim completion without evidence.
+- Skip skills or "acknowledge" them without loading via Skill() tool.
+- Say "Done", "should work", or "looks good" without evidence.
+- Proceed past a gate without meeting requirements.
+- Stop outputting gates after the first few pass.
+- Check a gate box without showing proof in that same message.
+- **Ask clarifying questions in plain text** - MUST use `AskUserQuestion` tool.
+- **Execute independent tasks sequentially** when parallel agents could be used.
+
+### Skill Loading (MANDATORY)
+
+**Checklist is not loading.** You must invoke `Skill({ skill: "name" })` tool.
+
+Before GATE-3, you MUST have tool invocations for:
+```
+Skill({ skill: "test-driven-development" })
+Skill({ skill: "verification-before-completion" })
+```
+
+If Standard/Complex, also before GATE-2:
+```
+Skill({ skill: "ask-questions-if-underspecified" })
+```
+
+**Self-check:** Search your context for `<invoke name="Skill">`. If not found, you have not loaded skills.
+
+### Classification Checklist (MANDATORY)
+
+Output immediately after classification:
+
+```
+CLASSIFICATION: [Trivial|Simple|Standard|Complex]
+
+REQUIRED SKILLS (load before implementation):
+- [ ] verification-before-completion (ALL tasks)
+- [ ] [skill-2 if applicable]
+- [ ] [skill-3 if applicable]
+
+REQUIRED PHASES:
+- [ ] Phase 1: Planning
+- [ ] Phase 3: Implementation
+- [ ] Phase 7: Verification
+- [ ] [additional phases per classification]
+
+ITERATIONS: Plan Refinement [1|2|5+] | Review [1|2|5+] | Verification [1|2|5+]
+```
+
+### Phase Gates (MANDATORY - ALL OF THEM)
+
+Before each phase, output a gate check. Do not proceed if BLOCKED. Do not skip gates.
+
+⚠️ **Gate amnesia is a failure mode.** You must output EVERY applicable gate, not just early ones.
+
+⚠️ **Gate rushing is a failure mode.** Each checked box requires proof in the same message.
+
+Gate requirements:
+- GATE-1 Planning: classification stated + checklist output.
+- GATE-2 Plan Refinement: `Skill({ skill: "ask-questions-if-underspecified" })` tool call visible + `AskUserQuestion` tool used (not plain text questions).
+- GATE-3 Implementation: `Skill({ skill: "test-driven-development" })` tool call visible + TodoWrite(in_progress) called + parallel agents considered for 2+ independent tasks.
+- GATE-4 Cleanup: all implementation todos complete.
+- GATE-5 Testing: test file exists + test output with exit code shown (or explicit "no tests possible" justification).
+- GATE-6 Review: `Skill({ skill: "review" })` tool call visible + review output shown. "Manual review" is NOT acceptable.
+- GATE-7 Verification: verification commands run IN THIS MESSAGE with exit code 0 shown.
+- GATE-DONE Completion: all evidence compiled.
+
+**Loading ≠ Following:** Invoking a skill means you MUST follow its instructions. Loading TDD then writing code without tests = violation.
+
+Gate format (use verbatim):
+```
+GATE-[N] CHECK:
+- [x] Requirement 1 — PROOF: [what you did]
+- [x] Requirement 2 — PROOF: [what you did]
+- [ ] Requirement 3 (BLOCKED: reason)
+
+STATUS: PASS | BLOCKED
+```
+
+### Pre-Completion Gate
+
+Before saying "done" or "complete", confirm evidence for:
+- TodoWrite start
+- Classification + checklist
+- All gates output (count them: did you output GATE-1 through GATE-7?)
+- Phase 2 executed (not skipped) — show questions asked
+- Phase 6 executed (not skipped) — show review output
+- Required skills loaded via Skill() tool (not just mentioned) — search for `<invoke name="Skill">`
+- Verification skill executed (not just loaded)
+- Verification command exit code 0
+
+**Banned phrases:** "looks good", "should work", "Done!", "that's it", "requirements are clear", "it's just a port", "direct translation", "1:1 conversion", "straightforward", "manual review", "reviewed the code"
+
+**Required completion format:** evidence summary + verification output + gates passed list + iteration counts
+</hard-requirements>
+<anti-patterns>
+## Anti-Patterns (Never)
+
+### Workflow Bypass
+- Trivial bypass: "task is simple" to skip workflow -> classify first and follow minimum steps.
+- Direct implementation: code before `TodoWrite` -> call `TodoWrite({ status: "in_progress" })` first.
+- Classification avoidance: no classification before implementation -> state classification before first TodoWrite.
+
+### Skill Failures
+- Skill avoidance: no skills loaded -> load at least verification-before-completion.
+- Skill mention vs load: "I'll use TDD" without `Skill({ skill: "..." })` call -> actually invoke the tool.
+- Checklist theater: listing skills in checklist without invoking Skill() tool -> checklist is not loading.
+- Conditional skip: "shell scripts don't need TDD" -> TDD applies to all code, load the skill.
+- Implicit knowledge: "I know TDD" without loading -> skill provides specific instructions, load it.
+- **Load without follow:** invoked Skill() but ignored its instructions -> loading = commitment to follow.
+- **TDD theater:** loaded TDD skill then wrote code without tests -> delete code, write test first.
+- **Fake ask-questions:** checked box without invoking skill, said "requirements clear" -> MUST invoke tool AND ask.
+- **Plain text questions:** loaded ask-questions skill but asked in markdown instead of `AskUserQuestion` tool -> FORBIDDEN, always use the tool.
+
+### Gate Failures
+- Gate amnesia: output GATE-1, GATE-3, then forget the rest -> output ALL gates for your classification.
+- Gate rushing: GATE-N CHECK with all boxes checked without doing the work -> gates verify work, not skip it.
+- Proofless checkboxes: `[x] Requirement` without showing evidence -> add `— PROOF: [what you did]`.
+- Early gate only: stop at GATE-3 because "implementation is done" -> GATE-4 through GATE-7 still required.
+- False pass: marking STATUS: PASS when requirements not met -> BLOCKED until proof shown.
+
+### Phase Skipping
+- Phase 2 skip: "requirements are clear" -> ask anyway via `ask-questions-if-underspecified`.
+- Phase 6 skip: "code is simple, doesn't need review" -> run `/review` regardless.
+- Implicit phases: doing phase work without outputting the gate -> gate output is mandatory.
+- Single iteration: doing 1 pass when classification requires 2+ -> track and show iteration count.
+- **Manual review substitution:** "reviewed manually" or "reviewed the code" instead of `Skill({ skill: "review" })` -> tool invocation required.
+- **Port rationalization:** "it's just a port/translation" to skip questions -> ports have ambiguity too (error handling, idioms, edge cases).
+
+### Iteration Failures
+- Iteration shortcut: "did 1 iteration, that's enough" for Standard -> Standard requires 2+ iterations.
+- Shallow iteration: repeating same check without deepening -> each iteration must add: edge cases, error handling, test strategy.
+- Uncounted iterations: not tracking iteration count -> output "Iteration N of M" for each pass.
+
+### Verification Failures
+- Unverified completion: claim done without verification -> run `Skill({ skill: "verification-before-completion" })` with evidence.
+- Partial verification: "syntax check passed" as full verification -> run project CI if available.
+- Stale evidence: "tests passed earlier" -> run fresh verification before completion claim.
+- Load without execute: loaded verification skill but never ran it -> execute and show output.
+
+### Implementation Failures
+- **Sequential when parallel possible:** executing 2+ independent tasks one-by-one with Bash -> use parallel Task agents.
+- **Bash familiarity bias:** defaulting to sequential bash "because it's simpler" -> check skill routing table for `dispatching-parallel-agents`.
+- **Agent avoidance:** "file operations are quick" to skip parallel agents -> if tasks are independent, parallelize.
+
+### Evidence Failures
+- Implied evidence: "I ran the tests" without showing output -> paste actual command output.
+- Exit code assumption: "command succeeded" without checking -> show exit code 0 explicitly.
+- Selective evidence: showing passing tests, hiding failures -> show full output.
+</anti-patterns>
+<workflows>
+## Development Workflow
+
+Mandatory for implementation tasks. Creating any new file = implementation task. Only exception: pure research/exploration with no artifacts.
+
+**Enforcement**
+- Each phase has a gate; output gate check (see Hard Requirements) before entering.
+- Do not proceed if a gate is BLOCKED.
+- Each gate checkbox requires proof in same message.
+
+**Sub-agents (use when 2+ independent tasks)**
+- Format: `Task({ subagent_type: "<type>", prompt: "<task>" })`
+- Multiple Task() in one message = parallel
+- `run_in_background: true` for background agents
+- Skills: `subagent-driven-development`, `dispatching-parallel-agents`
+
+**Principles**
+- Use latest package versions (@latest/:latest). Verify on npmjs.com, hub.docker.com, pypi.org. If pinned older, note current version.
+
+### Phase 1: Planning
+- **STOP: Output GATE-1 before proceeding.**
+- Gather context (Explore Task for large codebases; direct tools for small).
+- Repo-wide search if needed (mcp__octocode__* or local rg/git).
+- Check docs (mcp__context7__* if available; else local docs/README).
+- If modifying existing behavior: `Skill({ skill: "systematic-debugging" })`.
+- Draft plan with file paths and 2-5 minute tasks; mark parallelizable tasks.
+- If complex/architectural: `mcp__codex` (Claude Code only).
+- If Linear configured: find issue, then comment plan.
+
+### Phase 2: Plan Refinement ⚠️ COMMONLY SKIPPED
+- **STOP: Output GATE-2 before proceeding.**
+- **REQUIRED:** `Skill({ skill: "ask-questions-if-underspecified" })` - actually invoke the tool.
+- **REQUIRED:** Use `AskUserQuestion` tool for questions - **NEVER plain text questions**.
+- **REQUIRED:** Ask at least one clarifying question. No exceptions. "Requirements clear" is a banned phrase.
+- Even "simple ports" have ambiguity: error handling idioms, edge cases, output format, version compatibility.
+- Review plan vs requirements; update.
+- Deep review: `mcp__codex` (Claude Code) or manual (Codex).
+- Each iteration must deepen: requirements clarity, edge cases, error handling, test strategy.
+- **Iteration tracking:** Output "Plan Refinement Iteration N of M" for each pass.
+
+**Questions to consider (ask via `AskUserQuestion` tool):**
+- Scope: What's included/excluded?
+- Behavior: How should edge cases behave?
+- Output: What format/structure is expected?
+- Error handling: How should failures be handled?
+- Testing: What test coverage is expected?
+- Compatibility: Version constraints? Breaking changes?
+
+### Phase 3: Implementation
+- **STOP: Output GATE-3 before proceeding.**
+- **REQUIRED:** Load skills via `Skill({ skill: "..." })` tool - not just mention them:
+  - `Skill({ skill: "test-driven-development" })` - even for shell scripts, config files, "ports".
+  - `Skill({ skill: "verification-before-completion" })` - load now, execute in Phase 7.
+- **Self-check before proceeding:** Search context for `<invoke name="Skill">`. If not found, STOP.
+- **Loading = Commitment:** Once you invoke a skill, you MUST follow its instructions. No exceptions.
+- `TodoWrite(in_progress)` -> RED (failing test) -> GREEN (minimal code) -> `TodoWrite(completed)`.
+- Iron Law: no production code before a failing test. No exceptions for "simple" file types.
+- **REQUIRED:** If 2+ independent tasks exist, use parallel Task agents - not sequential Bash.
+- **Parallel check:** Review todo list - can any tasks run simultaneously? If yes, dispatch parallel agents.
+- Load `dispatching-parallel-agents` skill when parallelization is possible.
+
+### Phase 4: Cleanup
+- **STOP: Output GATE-4 before proceeding.**
+- `code-simplifier`, `claude-md-improver` (if CLAUDE.md needs maintenance), `deslop`, `knip`.
+- For non-JS/TS files: note "cleanup skills N/A" but still output gate.
+
+### Phase 5: Testing
+- **STOP: Output GATE-5 before proceeding.**
+- Run `bun run ci` or `bun run lint` + `bun run test`.
+- If no project tests exist, note this explicitly.
+- If UI: `agent-browser`, run visual checks.
+- Check for silent failure gaps.
+- **REQUIRED:** Show test output with exit code.
+
+### Phase 6: Review ⚠️ COMMONLY SKIPPED
+- **STOP: Output GATE-6 before proceeding.**
+- **REQUIRED:** Run `Skill({ skill: "review" })` or `/review` - do not skip.
+- **REQUIRED:** Show review output in gate.
+- **"Manual review" is NOT acceptable** - must invoke the skill tool.
+- Review for bugs/regressions/missing tests.
+- Security review if auth/data/payments (semgrep/codeql).
+- `differential-review` for diff security.
+- "Code is simple, doesn't need review" is a banned phrase.
+- **Iteration tracking:** Output "Review Iteration N of M" for each pass.
+
+### Phase 7: Verification (iterations per classification)
+- **STOP: Output GATE-7 before proceeding.**
+- **REQUIRED:** Execute `Skill({ skill: "verification-before-completion" })` - not just load.
+- **REQUIRED:** Show verification output in gate.
+- Run completion validation; `bun run ci`.
+- Document evidence (exit codes, test counts, warnings).
+- Update README/docs if behavior changed.
+- Update Linear issue if configured; otherwise note status in response.
+- **Iteration tracking:** Output "Verification Iteration N of M" for each pass.
+- **GATE-DONE:** List all gates passed (1-7) + evidence + iteration counts before completion claim.
+</workflows>
+<skill-routing-table>
+### Planning & Context (triggers: plan/design/requirements/docs)
+- /plan, plan this, design approach, implementation plan -> `Skill({ skill: "planning workflow" })`
+- unclear/ambiguous/missing requirements -> `Skill({ skill: "ask-questions-if-underspecified" })`
+- library docs/API reference/current docs -> `mcp__context7__resolve-library-id` then `mcp__context7__query-docs`
+
+### Implementation (triggers: implement/build/code/write/create feature)
+- TDD, write test first, red-green-refactor -> `Skill({ skill: "test-driven-development" })`
+- execute/follow plan -> `Skill({ skill: "executing-plans" })`
+- parallel tasks/spawn agents -> `Skill({ skill: "subagent-driven-development" })`
+- parallel/concurrent/independent/2+ tasks -> `Skill({ skill: "dispatching-parallel-agents" })`
+- spawn agent/run in parallel -> direct `Task({ subagent_type: ... })`
+
+### Code Quality (triggers: review/quality/clean/refactor/lint/unused)
+- /review, code review, review changes, deep review -> `Skill({ skill: "mcp__codex (Claude Code)" })`
+- simplify/cleaner/reduce complexity -> `Skill({ skill: "code-simplifier" })`
+- AI slop/defensive comments/generated cleanup -> `Skill({ skill: "deslop" })`
+- unused/dead code/exports/deps -> `Skill({ skill: "knip" })`
+- done?/complete?/verify/before PR -> `Skill({ skill: "verification-before-completion" })`
+- accessibility/WCAG/a11y/visual review -> `Skill({ skill: "rams" })`
+
+### Security (triggers: security/vulnerability/audit/CVE/OWASP/injection)
+- semgrep/SAST/pattern scan/quick scan -> `Skill({ skill: "semgrep" })`
+- codeql/taint/data-flow/deep analysis -> `Skill({ skill: "codeql" })`
+- PR security/diff review/regression/blast radius -> `Skill({ skill: "differential-review" })`
+- similar bugs/variants/pattern hunting -> `Skill({ skill: "variant-analysis" })`
+- SARIF/scan results/aggregate report -> `Skill({ skill: "sarif-parsing" })`
+- footgun/misuse/secure defaults -> `Skill({ skill: "sharp-edges" })`
+
+### Debugging (triggers: bug/error/broken/fix/debug)
+- investigate/root cause/why failing/trace error -> `Skill({ skill: "systematic-debugging" })`
+
+### Testing (triggers: test/spec/coverage/browser/e2e)
+- property test/fuzzing/quickcheck/edge cases -> `Skill({ skill: "property-based-testing" })`
+- browser/e2e/visual/screenshot/form fill -> `Skill({ skill: "agent-browser" })`
+
+### Documentation & Files (triggers: doc/write/spreadsheet/presentation/xlsx/pptx)
+- doc/proposal/spec/decision doc/RFC -> `Skill({ skill: "doc-coauthoring" })`
+- .xlsx/Excel/CSV analysis/formulas -> `Skill({ skill: "xlsx" })`
+- .pptx/PowerPoint/slides -> `Skill({ skill: "pptx" })`
+- create skill/skill development -> `Skill({ skill: "writing-skills" })`
+- CLAUDE.md audit/improve -> `Skill({ skill: "claude-md-improver" })`
+
+### Web3 & Smart Contracts (triggers: solidity/contract/ERC/blockchain/web3/defi)
+- contract review/Trail of Bits -> `Skill({ skill: "guidelines-advisor" })`
+- Slither/security diagram/fuzzing properties -> `Skill({ skill: "secure-workflow-guide" })`
+- ERC20/ERC721/token integration/weird tokens -> `Skill({ skill: "token-integration-analyzer" })`
+- fuzzer blocked/checksum/bypass -> `Skill({ skill: "fuzzing-obstacles" })`
+
+### Framework-Specific (triggers: React/Next.js/TypeScript/auth/query)
+- React perf/Next.js/bundle/SSR/RSC -> `Skill({ skill: "vercel-react-best-practices" })`
+- TanStack/React Query/useQuery/useMutation -> `Skill({ skill: "tanstack-query" })`
+- generic/conditional/mapped/infer/template literal -> `Skill({ skill: "typescript-advanced-types" })`
+- Better Auth/auth setup/session/OAuth -> `Skill({ skill: "better-auth-best-practices" })`
+- add auth/auth layer/auth feature -> `Skill({ skill: "create-auth-skill" })`
+
+### Tooling & Meta (triggers: setup/configure/automate/logging)
+- Claude Code setup/hooks/MCP automation -> `Skill({ skill: "claude-automation-recommender" })`
+- logging/canonical log/wide events/structured logs -> `Skill({ skill: "logging-best-practices" })`
+</skill-routing-table>

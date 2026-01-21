@@ -1,0 +1,116 @@
+{
+  "agents": ["claude-code", "codex"],
+  "mcpServers": {
+    "linear": {
+      "type": "http",
+      "url": "https://mcp.linear.app/mcp"
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp/oauth"
+    },
+    "octocode": {
+      "command": "npx",
+      "args": ["-y", "octocode-mcp@latest"]
+    },
+    "shadcn": {
+      "command": "npx",
+      "args": ["shadcn@latest", "mcp"]
+    },
+    "codex": {
+      "command": "codex",
+      "args": ["-m", "gpt-5.2-codex", "-c", "model_reasoning_effort=xhigh", "mcp-server"],
+      "_note": "Claude Code only - do not configure in Codex"
+    },
+    "restate-docs": {
+      "type": "http",
+      "url": "https://docs.restate.dev/mcp"
+    }
+  },
+  "postInstall": {
+    "darwin": [
+      "brew install jq graphviz poppler semgrep uv ripgrep",
+      "brew install --cask libreoffice codeql"
+    ],
+    "linux": [
+      "if command -v apt-get >/dev/null 2>&1; then (sudo -n apt-get update -qq && sudo -n apt-get install -y jq ripgrep graphviz poppler-utils) || (apt-get update -qq && apt-get install -y jq ripgrep graphviz poppler-utils) || true; fi"
+    ],
+    "common": [
+      "uv pip install --system --break-system-packages 'markitdown[pptx]' defusedxml",
+      "npm install -g agent-browser@latest pptxgenjs@latest playwright@latest knip@latest",
+      "agent-browser install",
+      "npx playwright@latest install"
+    ]
+  },
+  "skills": [
+    {
+      "repo": "better-auth/skills",
+      "skills": ["better-auth-best-practices", "create-auth-skill"]
+    },
+    {
+      "repo": "vercel-labs/agent-skills",
+      "skills": ["vercel-react-best-practices"]
+    },
+    {
+      "repo": "anthropics/claude-plugins-official",
+      "skills": ["claude-md-improver", "claude-automation-recommender"]
+    },
+    {
+      "repo": "vercel-labs/agent-browser",
+      "skills": ["agent-browser"]
+    },
+    {
+      "repo": "anthropics/skills",
+      "skills": ["xlsx", "pptx", "doc-coauthoring"]
+    },
+    {
+      "repo": "obra/superpowers",
+      "skills": [
+        "test-driven-development",
+        "systematic-debugging",
+        "verification-before-completion",
+        "executing-plans",
+        "writing-skills",
+        "subagent-driven-development",
+        "dispatching-parallel-agents"
+      ]
+    },
+    {
+      "repo": "trailofbits/skills",
+      "skills": [
+        "ask-questions-if-underspecified",
+        "semgrep",
+        "property-based-testing",
+        "sharp-edges",
+        "guidelines-advisor",
+        "secure-workflow-guide",
+        "differential-review",
+        "token-integration-analyzer",
+        "fuzzing-obstacles",
+        "variant-analysis",
+        "codeql",
+        "sarif-parsing"
+      ]
+    },
+    {
+      "repo": "jezweb/claude-skills",
+      "skills": ["tanstack-query"]
+    },
+    {
+      "repo": "boristane/agent-skills",
+      "skills": ["logging-best-practices"]
+    },
+    {
+      "repo": "wshobson/agents",
+      "skills": ["typescript-advanced-types"]
+    },
+    {
+      "repo": "simonwong/agent-skills",
+      "skills": ["code-simplifier"]
+    },
+    {
+      "repo": "brianlovin/claude-config",
+      "skills": ["deslop", "rams", "knip"]
+    }
+  ]
+}
