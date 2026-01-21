@@ -111,6 +111,10 @@
     {
       "repo": "brianlovin/claude-config",
       "skills": ["deslop", "rams", "knip"]
+    },
+    {
+      "repo": "remotion-dev/skills",
+      "skills": ["remotion-best-practices"]
     }
   ]
 }
