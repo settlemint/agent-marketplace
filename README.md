@@ -1,4 +1,4 @@
-# mpe
+# Agent Marketplace
 
 Portable agent setup for Claude Code and Codex that works identically in local CLI and cloud environments.
 
@@ -9,7 +9,7 @@ Portable agent setup for Claude Code and Codex that works identically in local C
 ## Quick Install (Local CLI)
 
 ```bash
-curl -sL https://raw.githubusercontent.com/roderik/mpe/main/setup.sh | bash
+curl -sL https://raw.githubusercontent.com/settlemint/agent-marketplace/main/setup.sh | bash
 ```
 
 This installs into the **current directory** and will download the full `.agents` folder if it’s missing.
@@ -175,7 +175,7 @@ In remote mode:
 ## Manual Setup
 
 ```bash
-curl -sL https://github.com/roderik/mpe/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 "mpe-main/.agents"
+curl -sL https://github.com/settlemint/agent-marketplace/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 "agent-marketplace-main/.agents"
 bash .agents/setup.sh
 ```
 

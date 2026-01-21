@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-REPO="roderik/mpe"
+REPO="settlemint/agent-marketplace"
 BRANCH="main"
 ARCHIVE_URL="https://github.com/$REPO/archive/refs/heads/$BRANCH.tar.gz"
 ARGS=("$@")
