@@ -148,15 +148,65 @@ ensure_agents_dir() {
     download_agents
 }
 
+configure_claude_global_settings() {
+    local claude_home="${HOME}/.claude"
+    local settings_file="$claude_home/settings.json"
+
+    echo "Configuring global Claude settings..."
+
+    mkdir -p "$claude_home"
+
+    # Start with existing settings or empty object
+    local current_settings="{}"
+    if [[ -f "$settings_file" ]]; then
+        current_settings=$(cat "$settings_file")
+    fi
+
+    # Define the settings to merge
+    local new_settings
+    new_settings=$(cat <<'SETTINGS_EOF'
+{
+  "statusLine": {
+    "type": "command",
+    "command": "ccline",
+    "padding": 0
+  },
+  "env": {
+    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
+    "DISABLE_COST_WARNINGS": "1",
+    "ENABLE_LSP_TOOLS": "1",
+    "ENABLE_TOOL_SEARCH": "1",
+    "FORCE_AUTOUPDATE_PLUGINS": "1"
+  },
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "defaultMode": "bypassPermissions"
+  },
+  "enableAllProjectMcpServers": true
+}
+SETTINGS_EOF
+)
+
+    # Merge settings (new settings override existing)
+    local merged_settings
+    merged_settings=$(echo "$current_settings" | jq --argjson new "$new_settings" '. * $new')
+
+    echo "$merged_settings" > "$settings_file"
+    echo "  Updated $settings_file"
+}
+
 echo "Setting up agent skills..."
 
+ensure_jq
 ensure_agents_dir
 
 chmod +x "$TARGET_AGENTS_DIR/setup.sh"
 
+# Configure global Claude settings
+configure_claude_global_settings
+
 # Run the setup
 echo "Installing skills..."
-ensure_jq
 bash "$TARGET_AGENTS_DIR/setup.sh" "${ARGS[@]}"
 
 echo "Done! Skills installed to .agents/skills/"
