@@ -4,11 +4,24 @@ set -e
 REPO="settlemint/agent-marketplace"
 BRANCH="main"
 ARCHIVE_URL="https://github.com/$REPO/archive/refs/heads/$BRANCH.tar.gz"
-ARGS=("$@")
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET_DIR="$(pwd)"
 TARGET_AGENTS_DIR="$TARGET_DIR/.agents"
 SOURCE_AGENTS_DIR="$SCRIPT_DIR/.agents"
+FORCE_UPDATE=0
+
+# Parse args, separating --update from pass-through args
+ARGS=()
+for arg in "$@"; do
+    case "$arg" in
+        --update)
+            FORCE_UPDATE=1
+            ;;
+        *)
+            ARGS+=("$arg")
+            ;;
+    esac
+done
 
 ensure_jq() {
     if command -v jq &>/dev/null; then
@@ -90,7 +103,37 @@ download_agents() {
     rm -rf "$tmp_dir"
 }
 
+update_agents() {
+    echo "Updating .agents..."
+
+    # Preserve user's setup.json if it differs from default
+    local user_config=""
+    if [[ -f "$TARGET_AGENTS_DIR/setup.json" ]]; then
+        user_config=$(cat "$TARGET_AGENTS_DIR/setup.json")
+    fi
+
+    # Remove existing .agents (except skills which are gitignored anyway)
+    if [[ -d "$TARGET_AGENTS_DIR" ]]; then
+        rm -rf "$TARGET_AGENTS_DIR"
+    fi
+
+    # Download fresh
+    download_agents
+
+    # Restore user config if they had customizations
+    if [[ -n "$user_config" ]]; then
+        echo "$user_config" > "$TARGET_AGENTS_DIR/setup.json"
+        echo "Preserved your setup.json customizations"
+    fi
+}
+
 ensure_agents_dir() {
+    # Force update if requested
+    if [[ $FORCE_UPDATE -eq 1 ]]; then
+        update_agents
+        return
+    fi
+
     if agents_ready; then
         return
     fi

@@ -16,6 +16,7 @@ This installs into the **current directory** and will download the full `.agents
 
 Setup flags:
 
+- `--update` - re-download `.agents` folder even if it exists (preserves your `setup.json`)
 - `--lite` - skip post-install system/package setup (fast, minimal)
 - `--skip-postinstall` - same as `--lite`, but explicit
 - `--skip-codex-mcp` - skip updating Codex MCP config in `~/.codex/config.toml`
