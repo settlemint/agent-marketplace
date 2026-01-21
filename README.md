@@ -63,7 +63,7 @@ This marketplace provides three integrated plugins that work together:
 
 ## Plugins
 
-### Plan Mode (v2.6.0)
+### Plan Mode (v2.7.0)
 
 Structured planning with a 7-phase workflow:
 
