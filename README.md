@@ -9,7 +9,7 @@ Portable agent setup for Claude Code and Codex that works identically in local C
 ## Quick Install (Local CLI)
 
 ```bash
-curl -sL https://raw.githubusercontent.com/settlemint/agent-marketplace/main/setup.sh | bash
+curl -sL https://github.com/settlemint/agent-marketplace/archive/refs/heads/main.tar.gz | tar -xzf - --to-stdout "agent-marketplace-main/setup.sh" | bash
 ```
 
 This installs into the **current directory** and will download the full `.agents` folder if it’s missing.
