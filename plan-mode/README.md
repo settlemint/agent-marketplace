@@ -1,4 +1,4 @@
-# Plan Mode Plugin v2.6.0
+# Plan Mode Plugin v2.7.0
 
 Enhanced planning workflow for Claude Code with structured exploration, clarifying questions, confidence-based validation, and Linear integration.
 
@@ -192,6 +192,7 @@ Linear integration uses OAuth (SSE transport) - authenticate via browser when pr
 
 ## Version History
 
+- **v2.7.0**: Add Task tool hook to guide agent selection. Update CLAUDE.template.md to mandate plan-mode agents instead of Explore. Fix wrong skill references.
 - **v2.6.0**: Skills now run in built-in agent contexts via `context: fork` + `agent: Plan`. Removed `/plan` command - planning-methodology skill now contains full workflow with Task() spawns. Simplified hooks.
 - **v2.5.8**: Trim agents and skills for conciseness (40-80% reduction) - tokens are gold
 - **v2.5.7**: Add Skill() and Task() invocation format to commands for better discoverability

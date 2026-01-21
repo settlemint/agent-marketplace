@@ -1,5 +1,5 @@
 {
-  "description": "Trigger planning methodology skill on plan mode entry",
+  "description": "Guide agent selection for planning tasks",
   "hooks": {
     "PreToolUse": [
       {
@@ -8,6 +8,16 @@
           {
             "type": "command",
             "command": "echo '{\"hookSpecificOutput\":{\"permissionDecision\":\"allow\"},\"systemMessage\":\"<system-reminder>Load planning methodology: Skill({ skill: \\\"plan-mode:planning-methodology\\\" })</system-reminder>\"}'",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"permissionDecision\":\"allow\"},\"systemMessage\":\"<system-reminder>AGENT SELECTION: For planning/research use plan-mode:context-researcher, plan-mode:architecture-analyst, plan-mode:task-decomposer, plan-mode:plan-validator. NEVER use Explore or general-purpose.</system-reminder>\"}'",
             "timeout": 5
           }
         ]

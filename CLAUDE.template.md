@@ -21,7 +21,7 @@ Use planning for tasks that:
 - Have unclear requirements
 - Need user approval before implementation
 
-**Invoke planning:** `Skill({ skill: "plan-mode:plan" })` or `/plan`
+**Invoke planning:** `Skill({ skill: "plan-mode:planning-methodology" })` or `/plan`
 
 **Planning produces a written specification with 2-5 minute tasks.**
 
@@ -116,14 +116,25 @@ When agent results are incomplete:
 
 **Load planning skill:** `Skill({ skill: "plan-mode:planning-methodology" })`
 
+### Mandatory: Use Plan-Mode Agents
+
+**NEVER use "Explore" or "general-purpose" for planning tasks.**
+
+| Phase | Invocation |
+|-------|------------|
+| Context Gathering | `Task({ subagent_type: "plan-mode:context-researcher", prompt: "..." })` |
+| Architecture Analysis | `Task({ subagent_type: "plan-mode:architecture-analyst", prompt: "..." })` |
+| Task Decomposition | `Task({ subagent_type: "plan-mode:task-decomposer", prompt: "..." })` |
+| Plan Validation | `Task({ subagent_type: "plan-mode:plan-validator", prompt: "..." })` |
+
 ### 7-Phase Planning
 
-1. **Context Gathering** - Launch parallel Explore agents
+1. **Context Gathering** - `plan-mode:context-researcher` with 4-phase exploration
 2. **Clarifying Questions** - One question at a time, multiple choice preferred
 3. **Specification** - Six Core Areas, exact file paths, no vague language
-4. **Architecture Decision** - 2-3 options with trade-offs, recommend one
-5. **Task Decomposition** - 2-5 minute tasks with `[parallel]`/`[serial]` markers
-6. **Validation** - Rule of Five convergence
+4. **Architecture Decision** - `plan-mode:architecture-analyst` with trade-offs
+5. **Task Decomposition** - `plan-mode:task-decomposer` with 2-5 min tasks
+6. **Validation** - `plan-mode:plan-validator` with Rule of Five
 7. **Documentation** - Write plan, ask about Linear integration
 
 ### Task Requirements
@@ -266,7 +277,7 @@ When agent results are incomplete:
 
 | Command/Skill | Purpose | Invocation |
 |---------------|---------|------------|
-| /plan | Start 7-phase planning workflow | `Skill({ skill: "plan-mode:plan" })` |
+| /plan | Start 7-phase planning workflow | `Skill({ skill: "plan-mode:planning-methodology" })` |
 | /build | Execute plan with TDD and agents | `Skill({ skill: "build-mode:build" })` |
 | /review | Run comprehensive code review | `Skill({ skill: "build-mode:review" })` |
 | /commit | Create conventional commit | `Skill({ skill: "git:commit" })` |
