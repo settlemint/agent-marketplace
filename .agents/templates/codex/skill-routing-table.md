@@ -42,6 +42,9 @@
 - create skill/skill development -> `$writing-skills`
 - CLAUDE.md audit/improve -> `$claude-md-improver` (if present in this repo)
 
+### Database (triggers: postgres/sql/query optimization/database performance/supabase)
+- Postgres/SQL optimization/slow query/connection pool/RLS -> `$supabase-postgres-best-practices`
+
 ### Tooling & Meta (triggers: setup/configure/automate/logging)
 - Codex CLI setup/MCP/prompt automation -> use `/mcp`, `/prompts`, config file, and `codex exec`
 - logging/canonical log/wide events/structured logs -> `$logging-best-practices`
