@@ -4,6 +4,8 @@
 
 Classify before implementation. When in doubt, classify up.
 
+**Execution Mode:** Check `CLAUDE_CODE_REMOTE` env var. If `true` → Remote Mode (autonomous). See Hard Requirements for adjustments.
+
 ### Rules
 1. New file => at least Simple (never Trivial).
 2. Multiple files => at least Standard.
@@ -38,11 +40,12 @@ ITERATION TRACKING:
 #### Simple
 ```
 CLASSIFICATION: Simple
+MODE: [Local|Remote] ← check CLAUDE_CODE_REMOTE
 
 REQUIRED SKILLS (invoke Skill() tool - checklist is not loading):
 - [ ] verification-before-completion — invoke before GATE-3
 - [ ] test-driven-development — invoke before GATE-3
-- [ ] ask-questions-if-underspecified — invoke before GATE-2 (ALWAYS, no exceptions)
+- [ ] ask-questions-if-underspecified — invoke before GATE-2 (Local: ask always | Remote: ask only if ambiguous)
 
 REQUIRED PHASES (output gate with PROOF before each):
 - [ ] Phase 1: Planning (1 pass) → GATE-1
@@ -67,11 +70,12 @@ SELF-CHECKS:
 #### Standard
 ```
 CLASSIFICATION: Standard
+MODE: [Local|Remote] ← check CLAUDE_CODE_REMOTE
 
 REQUIRED SKILLS (invoke Skill() tool - checklist is not loading):
 - [ ] verification-before-completion — invoke before GATE-3
 - [ ] test-driven-development — invoke before GATE-3
-- [ ] ask-questions-if-underspecified — invoke before GATE-2
+- [ ] ask-questions-if-underspecified — invoke before GATE-2 (Local: ask always | Remote: ask only if ambiguous)
 
 REQUIRED PHASES (output gate with PROOF before each):
 - [ ] Phase 1: Planning → GATE-1
@@ -97,11 +101,12 @@ SELF-CHECKS:
 #### Complex
 ```
 CLASSIFICATION: Complex
+MODE: [Local|Remote] ← check CLAUDE_CODE_REMOTE
 
 REQUIRED SKILLS (invoke Skill() tool - checklist is not loading):
 - [ ] verification-before-completion — invoke before GATE-3
 - [ ] test-driven-development — invoke before GATE-3
-- [ ] ask-questions-if-underspecified — invoke before GATE-2
+- [ ] ask-questions-if-underspecified — invoke before GATE-2 (Local: ask always | Remote: ask only if ambiguous)
 - [ ] systematic-debugging — invoke if modifying existing code
 - [ ] differential-review — invoke before GATE-6
 
@@ -128,6 +133,18 @@ SELF-CHECKS:
 </task-classification>
 <hard-requirements>
 ## Hard Requirements (No Exceptions)
+
+### Execution Mode Detection
+
+Check `CLAUDE_CODE_REMOTE` environment variable at session start:
+- `CLAUDE_CODE_REMOTE=true` → **Remote Mode** (autonomous, minimal interaction)
+- Otherwise → **Local Mode** (interactive, full questioning)
+
+**Remote Mode Adjustments:**
+- Phase 2 questioning is **optional** - only ask if genuinely ambiguous
+- "Requirements are clear" is **allowed** (not a banned phrase)
+- `ask-questions-if-underspecified` skill: load but only act if ambiguity score > 7/10
+- All other gates, skills, and quality requirements remain **unchanged**
 
 **ALWAYS**
 - `TodoWrite({ status: "in_progress" })` before any implementation code.
@@ -201,7 +218,7 @@ Before each phase, output a gate check. Do not proceed if BLOCKED. Do not skip g
 
 Gate requirements:
 - GATE-1 Planning: classification stated + checklist output.
-- GATE-2 Plan Refinement: `Skill({ skill: "ask-questions-if-underspecified" })` tool call visible + `AskUserQuestion` tool used (not plain text questions).
+- GATE-2 Plan Refinement: `Skill({ skill: "ask-questions-if-underspecified" })` tool call visible. **Local:** `AskUserQuestion` tool used. **Remote:** questions optional unless genuinely ambiguous.
 - GATE-3 Implementation: `Skill({ skill: "test-driven-development" })` tool call visible + TodoWrite(in_progress) called + parallel agents considered for 2+ independent tasks.
 - GATE-4 Cleanup: all implementation todos complete.
 - GATE-5 Testing: test file exists + test output with exit code shown (or explicit "no tests possible" justification).
@@ -233,7 +250,8 @@ Before saying "done" or "complete", confirm evidence for:
 - Verification skill executed (not just loaded)
 - Verification command exit code 0
 
-**Banned phrases:** "looks good", "should work", "Done!", "that's it", "requirements are clear", "it's just a port", "direct translation", "1:1 conversion", "straightforward", "manual review", "reviewed the code"
+**Banned phrases:** "looks good", "should work", "Done!", "that's it", "it's just a port", "direct translation", "1:1 conversion", "straightforward", "manual review", "reviewed the code"
+- **Local only banned:** "requirements are clear" (allowed in Remote Mode when genuinely clear)
 
 **Required completion format:** evidence summary + verification output + gates passed list + iteration counts
 </hard-requirements>
@@ -253,8 +271,8 @@ Before saying "done" or "complete", confirm evidence for:
 - Implicit knowledge: "I know TDD" without loading -> skill provides specific instructions, load it.
 - **Load without follow:** invoked Skill() but ignored its instructions -> loading = commitment to follow.
 - **TDD theater:** loaded TDD skill then wrote code without tests -> delete code, write test first.
-- **Fake ask-questions:** checked box without invoking skill, said "requirements clear" -> MUST invoke tool AND ask.
-- **Plain text questions:** loaded ask-questions skill but asked in markdown instead of `AskUserQuestion` tool -> FORBIDDEN, always use the tool.
+- **Fake ask-questions:** checked box without invoking skill, said "requirements clear" -> MUST invoke tool. (Remote: asking is optional if ambiguity ≤ 7)
+- **Plain text questions:** loaded ask-questions skill but asked in markdown instead of `AskUserQuestion` tool -> FORBIDDEN, always use the tool when asking.
 
 ### Gate Failures
 - Gate amnesia: output GATE-1, GATE-3, then forget the rest -> output ALL gates for your classification.
@@ -264,7 +282,7 @@ Before saying "done" or "complete", confirm evidence for:
 - False pass: marking STATUS: PASS when requirements not met -> BLOCKED until proof shown.
 
 ### Phase Skipping
-- Phase 2 skip: "requirements are clear" -> ask anyway via `ask-questions-if-underspecified`.
+- Phase 2 skip: "requirements are clear" -> Local: ask anyway. Remote: allowed if ambiguity ≤ 7 (still invoke skill, document assumptions).
 - Phase 6 skip: "code is simple, doesn't need review" -> run `/review` regardless.
 - Implicit phases: doing phase work without outputting the gate -> gate output is mandatory.
 - Single iteration: doing 1 pass when classification requires 2+ -> track and show iteration count.
@@ -324,15 +342,25 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 ### Phase 2: Plan Refinement ⚠️ COMMONLY SKIPPED
 - **STOP: Output GATE-2 before proceeding.**
 - **REQUIRED:** `Skill({ skill: "ask-questions-if-underspecified" })` - actually invoke the tool.
+
+**Local Mode (interactive):**
 - **REQUIRED:** Use `AskUserQuestion` tool for questions - **NEVER plain text questions**.
 - **REQUIRED:** Ask at least one clarifying question. No exceptions. "Requirements clear" is a banned phrase.
+
+**Remote Mode (autonomous):**
+- Assess ambiguity: Is the request genuinely unclear? (Score 1-10)
+- If ambiguity ≤ 7: proceed with reasonable assumptions, document them in plan.
+- If ambiguity > 7: ask focused questions via `AskUserQuestion` (max 2-3 questions).
+- "Requirements clear" is allowed when genuinely clear.
+
+**Both modes:**
 - Even "simple ports" have ambiguity: error handling idioms, edge cases, output format, version compatibility.
 - Review plan vs requirements; update.
 - Deep review: `mcp__codex` (Claude Code) or manual (Codex).
 - Each iteration must deepen: requirements clarity, edge cases, error handling, test strategy.
 - **Iteration tracking:** Output "Plan Refinement Iteration N of M" for each pass.
 
-**Questions to consider (ask via `AskUserQuestion` tool):**
+**Questions to consider (ask via `AskUserQuestion` tool if needed):**
 - Scope: What's included/excluded?
 - Behavior: How should edge cases behave?
 - Output: What format/structure is expected?
@@ -443,6 +471,9 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 - generic/conditional/mapped/infer/template literal -> `Skill({ skill: "typescript-advanced-types" })`
 - Better Auth/auth setup/session/OAuth -> `Skill({ skill: "better-auth-best-practices" })`
 - add auth/auth layer/auth feature -> `Skill({ skill: "create-auth-skill" })`
+
+### Database (triggers: postgres/sql/query optimization/database performance/supabase)
+- Postgres/SQL optimization/slow query/connection pool/RLS -> `Skill({ skill: "postgres-best-practices" })`
 
 ### Tooling & Meta (triggers: setup/configure/automate/logging)
 - Claude Code setup/hooks/MCP automation -> `Skill({ skill: "claude-automation-recommender" })`

@@ -115,6 +115,10 @@
     {
       "repo": "remotion-dev/skills",
       "skills": ["remotion-best-practices"]
+    },
+    {
+      "repo": "supabase/agent-skills",
+      "skills": ["supabase-postgres-best-practices"]
     }
   ]
 }
