@@ -22,6 +22,8 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - Immediately after classification, output the Classification Checklist.
 - **Use `AskUserQuestion` tool for ALL clarifying questions** - never plain text questions.
 - **Consider parallel Task agents** when 2+ independent implementation tasks exist.
+- **Use Task `mode` parameter** appropriately: `plan` for risky changes, `bypassPermissions` for trusted autonomous work.
+- **Consider swarm launch** via `ExitPlanMode({ launchSwarm: true, teammateCount: N })` for complex multi-task plans.
 
 **NEVER**
 - Skip phases/gates because "simple" or "trivial".
@@ -85,7 +87,7 @@ Before each phase, output a gate check. Do not proceed if BLOCKED. Do not skip g
 Gate requirements:
 - GATE-1 Planning: classification stated + checklist output.
 - GATE-2 Plan Refinement: `Skill({ skill: "ask-questions-if-underspecified" })` tool call visible. **Local:** `AskUserQuestion` tool used. **Remote:** questions optional unless genuinely ambiguous.
-- GATE-3 Implementation: `Skill({ skill: "test-driven-development" })` tool call visible + TodoWrite(in_progress) called + parallel agents considered for 2+ independent tasks.
+- GATE-3 Implementation: `Skill({ skill: "test-driven-development" })` tool call visible + TodoWrite(in_progress) called + parallel agents considered for 2+ independent tasks (with appropriate `name` and `mode`).
 - GATE-4 Cleanup: all implementation todos complete.
 - GATE-5 Testing: test file exists + test output with exit code shown (or explicit "no tests possible" justification).
 - GATE-6 Review: `Skill({ skill: "review" })` tool call visible + review output shown. "Manual review" is NOT acceptable.

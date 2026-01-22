@@ -473,7 +473,7 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 - add auth/auth layer/auth feature -> `Skill({ skill: "create-auth-skill" })`
 
 ### Database (triggers: postgres/sql/query optimization/database performance/supabase)
-- Postgres/SQL optimization/slow query/connection pool/RLS -> `Skill({ skill: "postgres-best-practices" })`
+- Postgres/SQL optimization/slow query/connection pool/RLS -> `Skill({ skill: "supabase-postgres-best-practices" })`
 
 ### Tooling & Meta (triggers: setup/configure/automate/logging)
 - Claude Code setup/hooks/MCP automation -> `Skill({ skill: "claude-automation-recommender" })`
