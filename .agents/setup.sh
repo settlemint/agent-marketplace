@@ -9,6 +9,7 @@ TEMPLATES_DIR="$SCRIPT_DIR/templates"
 COMMANDS_DIR="$SCRIPT_DIR/commands"
 CODEX_PROMPTS_DIR=""
 RUN_CODEX_MCP=1
+RUN_CODEX_INSTALL=1
 RUN_POST_INSTALL=1
 RUN_SKILLS=1
 DOCS_ONLY=0
@@ -32,6 +33,9 @@ for arg in "$@"; do
         --skip-codex-mcp)
             RUN_CODEX_MCP=0
             ;;
+        --skip-codex-install)
+            RUN_CODEX_INSTALL=0
+            ;;
     esac
 done
 
@@ -51,6 +55,33 @@ if [[ -n "$HOME" ]]; then
 else
     CODEX_PROMPTS_DIR="$PROJECT_ROOT/.codex/prompts"
 fi
+
+# Install and configure Codex CLI
+install_codex() {
+    if [[ $RUN_CODEX_INSTALL -ne 1 ]]; then
+        return
+    fi
+
+    echo "Configuring Codex CLI..."
+
+    npx -y codex-1up install \
+        --yes \
+        --profile yolo \
+        --profiles-scope all \
+        --profile-mode overwrite \
+        --file-opener cursor \
+        --credentials-store auto \
+        --alt-screen auto \
+        --web-search live \
+        --experimental steering,collaboration-modes \
+        --codex-cli yes \
+        --tools all \
+        --skills skip \
+        --no-vscode \
+        --sound skip
+
+    echo "Codex CLI configured successfully"
+}
 
 # Compose markdown files from templates
 # $1: agent template directory (e.g., templates/claude or templates/codex)
@@ -384,6 +415,7 @@ if [[ $DOCS_ONLY -eq 1 ]]; then
     exit 0
 fi
 
+install_codex
 copy_templates
 copy_commands
 generate_mcp_json
