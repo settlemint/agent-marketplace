@@ -12,6 +12,19 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 - Multiple Task() in one message = parallel
 - `run_in_background: true` for background agents
 - Skills: `subagent-driven-development`, `dispatching-parallel-agents`
+- **Agent naming:** Use `name` parameter for tracking (e.g., `name: "test-runner"`)
+- **Team coordination:** Use `team_name` to group related agents
+- **Permission modes:** Use `mode` parameter to control agent behavior:
+  - `default` - standard permissions
+  - `plan` - require plan approval before implementation
+  - `acceptEdits` - auto-accept file edits
+  - `bypassPermissions` - autonomous mode (use sparingly)
+  - `delegate` - can spawn sub-agents
+  - `dontAsk` - skip confirmation prompts
+
+**Swarm launch from planning**
+- After plan approval, use `ExitPlanMode({ launchSwarm: true, teammateCount: N })` to spawn implementation swarm
+- Swarm distributes plan tasks across N parallel teammates
 
 **Principles**
 - Use latest package versions (@latest/:latest). Verify on npmjs.com, hub.docker.com, pypi.org. If pinned older, note current version.
@@ -66,6 +79,7 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 - Iron Law: no production code before a failing test. No exceptions for "simple" file types.
 - **REQUIRED:** If 2+ independent tasks exist, use parallel Task agents - not sequential Bash.
 - **Parallel check:** Review todo list - can any tasks run simultaneously? If yes, dispatch parallel agents.
+- **Agent configuration:** Use `name` for tracking, `mode: "plan"` for risky changes, `mode: "bypassPermissions"` for trusted work.
 - Load `dispatching-parallel-agents` skill when parallelization is possible.
 
 ### Phase 4: Cleanup

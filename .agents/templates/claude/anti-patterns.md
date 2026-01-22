@@ -46,6 +46,9 @@
 - **Sequential when parallel possible:** executing 2+ independent tasks one-by-one with Bash -> use parallel Task agents.
 - **Bash familiarity bias:** defaulting to sequential bash "because it's simpler" -> check skill routing table for `dispatching-parallel-agents`.
 - **Agent avoidance:** "file operations are quick" to skip parallel agents -> if tasks are independent, parallelize.
+- **Unnamed agents:** spawning agents without `name` parameter -> use names for tracking (e.g., `name: "test-runner"`).
+- **Overly permissive mode:** using `mode: "bypassPermissions"` for risky/security tasks -> use `mode: "plan"` for changes requiring review.
+- **Mode omission:** not specifying mode when context requires it -> explicitly set `mode` based on task risk level.
 
 ### Evidence Failures
 - Implied evidence: "I ran the tests" without showing output -> paste actual command output.
