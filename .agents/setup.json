@@ -9,6 +9,10 @@
       "type": "http",
       "url": "https://mcp.context7.com/mcp/oauth"
     },
+    "exa": {
+      "type": "http",
+      "url": "https://mcp.exa.ai/mcp?tools=web_search_exa,web_search_advanced_exa,get_code_context_exa,deep_search_exa,crawling_exa,company_research_exa,linkedin_search_exa,deep_researcher_start,deep_researcher_check"
+    },
     "octocode": {
       "command": "npx",
       "args": ["-y", "octocode-mcp@latest"]
@@ -19,7 +23,13 @@
     },
     "codex": {
       "command": "codex",
-      "args": ["-m", "gpt-5.2-codex", "-c", "model_reasoning_effort=xhigh", "mcp-server"],
+      "args": [
+        "-m",
+        "gpt-5.2-codex",
+        "-c",
+        "model_reasoning_effort=xhigh",
+        "mcp-server"
+      ],
       "_note": "Claude Code only - do not configure in Codex"
     },
     "restate-docs": {

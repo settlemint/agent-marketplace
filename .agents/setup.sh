@@ -6,8 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
 CONFIG_FILE="$SCRIPT_DIR/setup.json"
 TEMPLATES_DIR="$SCRIPT_DIR/templates"
-COMMANDS_DIR="$SCRIPT_DIR/commands"
-CODEX_PROMPTS_DIR=""
+SKILLS_LOCAL_DIR="$SCRIPT_DIR/skills-local"
 RUN_CODEX_MCP=1
 RUN_CODEX_INSTALL=1
 RUN_POST_INSTALL=1
@@ -48,12 +47,6 @@ fi
 if [[ ! -f "$CONFIG_FILE" ]]; then
     echo "Error: $CONFIG_FILE not found"
     exit 1
-fi
-
-if [[ -n "$HOME" ]]; then
-    CODEX_PROMPTS_DIR="$HOME/.codex/prompts"
-else
-    CODEX_PROMPTS_DIR="$PROJECT_ROOT/.codex/prompts"
 fi
 
 # Install and configure Codex CLI
@@ -154,6 +147,13 @@ copy_templates() {
         cp "$claude_templates/.claude/settings.json" "$PROJECT_ROOT/.claude/settings.json"
         cp "$claude_templates/.claude/scripts/web/session-start/setup.sh" "$PROJECT_ROOT/.claude/scripts/web/session-start/setup.sh"
         chmod +x "$PROJECT_ROOT/.claude/scripts/web/session-start/setup.sh"
+
+        # Copy validation scripts if they exist
+        if [[ -d "$claude_templates/.claude/scripts/validation" ]]; then
+            mkdir -p "$PROJECT_ROOT/.claude/scripts/validation"
+            cp "$claude_templates/.claude/scripts/validation/"*.sh "$PROJECT_ROOT/.claude/scripts/validation/" 2>/dev/null || true
+            chmod +x "$PROJECT_ROOT/.claude/scripts/validation/"*.sh 2>/dev/null || true
+        fi
     fi
 
     # Compose CLAUDE.md from claude/ templates
@@ -169,51 +169,48 @@ copy_templates() {
     fi
 }
 
-# Copy commands to agent-specific folders
-copy_commands() {
-    if [[ ! -d "$COMMANDS_DIR" ]]; then
+# Install local skills (from skills-local directory)
+install_local_skills() {
+    if [[ ! -d "$SKILLS_LOCAL_DIR" ]]; then
         return
     fi
 
-    local command_files
-    command_files=$(find "$COMMANDS_DIR" -name "*.md" -type f 2>/dev/null)
+    local skill_dirs
+    skill_dirs=$(find "$SKILLS_LOCAL_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
 
-    if [[ -z "$command_files" ]]; then
+    if [[ -z "$skill_dirs" ]]; then
         return
     fi
 
-    echo "Setting up commands..."
+    echo "Installing local skills..."
 
     # Get configured agents
     local agents
     agents=$(jq -r '.agents // ["claude-code"] | .[]' "$CONFIG_FILE" 2>/dev/null)
 
-    for agent in $agents; do
-        case "$agent" in
-            claude-code|claude)
-                # Claude Code uses .claude/commands/
-                mkdir -p "$PROJECT_ROOT/.claude/commands"
-                for cmd_file in $command_files; do
-                    local filename
-                    filename=$(basename "$cmd_file")
-                    cp "$cmd_file" "$PROJECT_ROOT/.claude/commands/$filename"
-                done
-                echo "  Copied commands to .claude/commands/"
-                ;;
-            codex)
-                # Codex custom prompts live in ~/.codex/prompts
-                mkdir -p "$CODEX_PROMPTS_DIR"
-                for cmd_file in $command_files; do
-                    local filename
-                    filename=$(basename "$cmd_file")
-                    cp "$cmd_file" "$CODEX_PROMPTS_DIR/$filename"
-                done
-                echo "  Copied commands to $CODEX_PROMPTS_DIR"
-                ;;
-        esac
+    for skill_dir in $skill_dirs; do
+        local skill_name
+        skill_name=$(basename "$skill_dir")
+
+        for agent in $agents; do
+            case "$agent" in
+                claude-code|claude)
+                    # Symlink to .claude/skills/
+                    mkdir -p "$PROJECT_ROOT/.claude/skills"
+                    ln -sfn "../../.agents/skills-local/$skill_name" "$PROJECT_ROOT/.claude/skills/$skill_name"
+                    ;;
+                codex)
+                    # Symlink to .codex/skills/
+                    mkdir -p "$PROJECT_ROOT/.codex/skills"
+                    ln -sfn "../../.agents/skills-local/$skill_name" "$PROJECT_ROOT/.codex/skills/$skill_name"
+                    ;;
+            esac
+        done
+
+        echo "  Installed $skill_name"
     done
 
-    echo "Commands installed successfully"
+    echo "Local skills installed successfully"
 }
 
 # Generate .mcp.json from config
@@ -411,13 +408,13 @@ run_post_install() {
 if [[ $DOCS_ONLY -eq 1 ]]; then
     generate_mcp_json
     copy_templates
-    copy_commands
+    install_local_skills
     exit 0
 fi
 
 install_codex
 copy_templates
-copy_commands
+install_local_skills
 generate_mcp_json
 configure_codex_mcp
 install_skills

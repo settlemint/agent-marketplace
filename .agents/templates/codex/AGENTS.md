@@ -12,9 +12,9 @@
  - If files change unexpectedly, assume parallel edits and continue; keep your diff scoped. Stop only for conflicts/breakage, then ask the user.
  - When web searching, prefer 2026 (latest) sources/docs unless an older version is explicitly needed.
 
-## Codex Prompts & Skills
-- Skills live in repo `.codex/skills` and global `~/.codex/skills`; if `$<myskill>` isn’t found locally, explicitly load `~/.codex/skills/<myskill>/SKILL.md` (plus any `references/`/`scripts/`).
-- Prompts live in `~/.codex/prompts/*.md`
+## Codex Skills
+- Skills live in repo `.codex/skills` and global `~/.codex/skills`; if `$<myskill>` isn't found locally, explicitly load `~/.codex/skills/<myskill>/SKILL.md` (plus any `references/`/`scripts/`).
+- Use `/skills` to list available skills, `$skill-name` for direct invocation.
 
 ## Coding Style
 - Target <=500 LOC (hard cap 750; imports/types excluded).

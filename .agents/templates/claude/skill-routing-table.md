@@ -3,6 +3,16 @@
 - unclear/ambiguous/missing requirements -> `Skill({ skill: "ask-questions-if-underspecified" })`
 - library docs/API reference/current docs -> `mcp__context7__resolve-library-id` then `mcp__context7__query-docs`
 
+### Research & Discovery (triggers: search/research/find/lookup/current/latest)
+- web search/current info/latest news -> `mcp__exa__web_search_exa`
+- advanced search/filters/date range -> `mcp__exa__web_search_advanced_exa`
+- code examples/snippets/GitHub/StackOverflow -> `mcp__exa__get_code_context_exa`
+- company research/business info/competitors -> `mcp__exa__company_research_exa`
+- LinkedIn/people search/profiles -> `mcp__exa__linkedin_search_exa`
+- deep research/comprehensive report -> `mcp__exa__deep_researcher_start` then `mcp__exa__deep_researcher_check`
+- crawl URL/fetch page/PDF content -> `mcp__exa__crawling_exa`
+- smart query expansion/summaries -> `mcp__exa__deep_search_exa`
+
 ### Implementation (triggers: implement/build/code/write/create feature)
 - TDD, write test first, red-green-refactor -> `Skill({ skill: "test-driven-development" })`
 - execute/follow plan -> `Skill({ skill: "executing-plans" })`

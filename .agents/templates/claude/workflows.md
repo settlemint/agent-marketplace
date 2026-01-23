@@ -2,10 +2,66 @@
 
 Mandatory for implementation tasks. Creating any new file = implementation task. Only exception: pure research/exploration with no artifacts.
 
+### Plan Mode Workflow
+
+When `system-reminder` indicates "Plan mode is active", use this dedicated gate structure:
+
+**PLAN-GATE-1: Understanding**
+```
+PLAN-GATE-1 CHECK:
+- [ ] Classification stated (Trivial/Simple/Standard/Complex)
+- [ ] User request understood
+- [ ] Codebase exploration complete (mcp__octocode__* for code search, Explore agent for structure)
+- [ ] Library docs checked (mcp__context7__* for external libs, local docs for project)
+- [ ] Web research done if needed (mcp__exa__* for current info, code examples, company research)
+STATUS: PASS | BLOCKED
+```
+
+**PLAN-GATE-2: Design**
+```
+PLAN-GATE-2 CHECK:
+- [ ] Implementation approach documented
+- [ ] Critical files identified
+- [ ] Questions asked (via AskUserQuestion) if ambiguous
+- [ ] Plan written to plan file
+STATUS: PASS | BLOCKED
+```
+
+**After Plan Approval**: Regular workflow resumes at GATE-3 (Implementation phase).
+
+**Plan Mode maps to workflow phases:**
+- PLAN-GATE-1 → Phase 1 (Planning)
+- PLAN-GATE-2 → Phase 2 (Plan Refinement)
+- After approval → Phase 3+ (Implementation onwards)
+
+---
+
 **Enforcement**
 - Each phase has a gate; output gate check (see Hard Requirements) before entering.
 - Do not proceed if a gate is BLOCKED.
 - Each gate checkbox requires proof in same message.
+
+**Task Management (use Tasks tools when available, TodoWrite as fallback)**
+
+Task Granularity:
+- **Phase-level tasks:** Create one task per workflow phase (e.g., "Phase 1: Planning", "Phase 3: Implementation")
+- **Work-item tasks:** Create sub-tasks for discrete work items within phases (e.g., "Update file X", "Add test for Y")
+- **Dependencies:** Use `TaskUpdate({ addBlockedBy: [...] })` to establish ordering
+
+Task Workflow:
+```
+1. TaskCreate({ subject: "...", description: "...", activeForm: "..." })
+2. TaskUpdate({ taskId: "N", status: "in_progress" }) - before starting work
+3. [Do the work]
+4. TaskUpdate({ taskId: "N", status: "completed" }) - after finishing
+5. TaskList - verify all tasks complete before claiming done
+```
+
+Multi-Session Collaboration:
+- Set `CLAUDE_CODE_TASK_LIST_ID=<list-id>` environment variable to share tasks across sessions
+- Example: `CLAUDE_CODE_TASK_LIST_ID=feature-auth claude` - all sessions share the same task list
+- Works with `claude -p` and AgentSDK for subagent coordination
+- When one session updates a task, changes are visible to all sessions on that list
 
 **Sub-agents (use when 2+ independent tasks)**
 - Format: `Task({ subagent_type: "<type>", prompt: "<task>" })`
@@ -34,6 +90,9 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 - Gather context (Explore Task for large codebases; direct tools for small).
 - Repo-wide search if needed (mcp__octocode__* or local rg/git).
 - Check docs (mcp__context7__* if available; else local docs/README).
+- Web research if needed (mcp__exa__web_search_exa for current info, mcp__exa__get_code_context_exa for code examples).
+- Company/competitor research (mcp__exa__company_research_exa, mcp__exa__linkedin_search_exa).
+- Deep research for complex topics (mcp__exa__deep_researcher_start → mcp__exa__deep_researcher_check).
 - If modifying existing behavior: `Skill({ skill: "systematic-debugging" })`.
 - Draft plan with file paths and 2-5 minute tasks; mark parallelizable tasks.
 - If complex/architectural: `mcp__codex` (Claude Code only).
@@ -75,10 +134,14 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
   - `Skill({ skill: "verification-before-completion" })` - load now, execute in Phase 7.
 - **Self-check before proceeding:** Search context for `<invoke name="Skill">`. If not found, STOP.
 - **Loading = Commitment:** Once you invoke a skill, you MUST follow its instructions. No exceptions.
-- `TodoWrite(in_progress)` -> RED (failing test) -> GREEN (minimal code) -> `TodoWrite(completed)`.
+- **Task tracking workflow:**
+  1. `TaskCreate` for each work item (or `TodoWrite(in_progress)` fallback)
+  2. `TaskUpdate({ status: "in_progress" })` before starting each task
+  3. RED (failing test) -> GREEN (minimal code)
+  4. `TaskUpdate({ status: "completed" })` after each task
 - Iron Law: no production code before a failing test. No exceptions for "simple" file types.
 - **REQUIRED:** If 2+ independent tasks exist, use parallel Task agents - not sequential Bash.
-- **Parallel check:** Review todo list - can any tasks run simultaneously? If yes, dispatch parallel agents.
+- **Parallel check:** Review task list (`TaskList`) - can any tasks run simultaneously? If yes, dispatch parallel agents.
 - **Agent configuration:** Use `name` for tracking, `mode: "plan"` for risky changes, `mode: "bypassPermissions"` for trusted work.
 - Load `dispatching-parallel-agents` skill when parallelization is possible.
 
@@ -110,9 +173,10 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 - **STOP: Output GATE-7 before proceeding.**
 - **REQUIRED:** Execute `Skill({ skill: "verification-before-completion" })` - not just load.
 - **REQUIRED:** Show verification output in gate.
+- **REQUIRED:** Run `TaskList` to verify all tasks are completed.
 - Run completion validation; `bun run ci`.
 - Document evidence (exit codes, test counts, warnings).
 - Update README/docs if behavior changed.
 - Update Linear issue if configured; otherwise note status in response.
 - **Iteration tracking:** Output "Verification Iteration N of M" for each pass.
-- **GATE-DONE:** List all gates passed (1-7) + evidence + iteration counts before completion claim.
+- **GATE-DONE:** List all gates passed (1-7) + evidence + iteration counts + TaskList output before completion claim.

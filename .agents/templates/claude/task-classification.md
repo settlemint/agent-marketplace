@@ -11,10 +11,24 @@ Classify before implementation. When in doubt, classify up.
 4. Uncertain => up.
 
 ### Categories (minimum steps / may skip)
-- **Trivial:** single-line/typo/comment only. Steps: TodoWrite(in_progress) -> Implementation -> Verification -> TodoWrite(completed). May skip: plan refinement, review, deep reasoning.
-- **Simple:** single file, clear scope; new file ok. Steps: TodoWrite, Planning (1 pass), Implementation, Testing/syntax check, Verification skill, TodoWrite(completed). May skip: deep reasoning, security review, multi-iteration review.
+- **Trivial:** single-line/typo/comment only. Steps: TaskCreate -> TaskUpdate(in_progress) -> Implementation -> Verification -> TaskUpdate(completed). May skip: plan refinement, review, deep reasoning.
+- **Simple:** single file, clear scope; new file ok. Steps: TaskCreate -> TaskUpdate(in_progress), Planning (1 pass), Implementation, Testing/syntax check, Verification skill, TaskUpdate(completed). May skip: deep reasoning, security review, multi-iteration review.
 - **Standard:** multi-file/behavior change. Steps: all phases, minimum 2 iterations each. Skip none.
 - **Complex:** architectural/cross-cutting/security-sensitive. Steps: all phases, 5+ iterations each. Skip none.
+
+### Task Management Tools
+
+**Primary (Claude Code with Tasks support):**
+- `TaskCreate` - Create tasks with subject, description, activeForm
+- `TaskUpdate` - Update status (pending → in_progress → completed), add dependencies
+- `TaskList` - View all tasks and their status
+- `TaskGet` - Retrieve full task details by ID
+
+**Fallback (older Conductor without Tasks):**
+- `TodoWrite({ status: "in_progress" })` - Mark work starting
+- `TodoWrite({ status: "completed" })` - Mark work done
+
+**Detection:** If TaskCreate/TaskList tools are unavailable, use TodoWrite fallback.
 
 ### Checklists (output immediately after classification)
 
@@ -26,7 +40,7 @@ REQUIRED SKILLS (invoke Skill() tool before GATE-3):
 - [ ] verification-before-completion
 
 REQUIRED PHASES:
-- [ ] Phase 3: Implementation (TodoWrite -> Code -> TodoWrite)
+- [ ] Phase 3: Implementation (TaskCreate -> Code -> TaskUpdate)
 - [ ] Phase 7: Verification (min 1 iteration)
 
 ITERATION TRACKING:

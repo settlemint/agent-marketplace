@@ -14,7 +14,7 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 **Codex helpers**
 - `/diff` for changes, `/review` for review, `/approvals` and `/status` for safety, `/model` for model selection.
 - `/mcp` to list available MCP tools, `/mention` to add files into context, `/compact` to reduce context.
-- `/prompts` to run a custom prompt (from `~/.codex/prompts`).
+- `/skills` to list and run skills, `$skill-name` for direct invocation.
 
 **Principles**
 - Use latest package versions (@latest/:latest). Verify on npmjs.com, hub.docker.com, pypi.org. If pinned older, note current version.
@@ -24,6 +24,9 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 - Gather context (Explore Task for large codebases; direct tools for small).
 - Repo-wide search if needed (MCP tools if configured, or local rg/git).
 - Check docs (local docs/README or MCP if available).
+- Web research if needed (mcp__exa__web_search_exa for current info, mcp__exa__get_code_context_exa for code examples).
+- Company/competitor research (mcp__exa__company_research_exa, mcp__exa__linkedin_search_exa).
+- Deep research for complex topics (mcp__exa__deep_researcher_start → mcp__exa__deep_researcher_check).
 - If modifying existing behavior: use `$systematic-debugging` (if available).
 - Draft plan with file paths and 2-5 minute tasks; mark parallelizable tasks.
 - If complex/architectural: consider switching models via `/model` or `--model`.

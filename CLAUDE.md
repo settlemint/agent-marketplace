@@ -13,10 +13,24 @@ Classify before implementation. When in doubt, classify up.
 4. Uncertain => up.
 
 ### Categories (minimum steps / may skip)
-- **Trivial:** single-line/typo/comment only. Steps: TodoWrite(in_progress) -> Implementation -> Verification -> TodoWrite(completed). May skip: plan refinement, review, deep reasoning.
-- **Simple:** single file, clear scope; new file ok. Steps: TodoWrite, Planning (1 pass), Implementation, Testing/syntax check, Verification skill, TodoWrite(completed). May skip: deep reasoning, security review, multi-iteration review.
+- **Trivial:** single-line/typo/comment only. Steps: TaskCreate -> TaskUpdate(in_progress) -> Implementation -> Verification -> TaskUpdate(completed). May skip: plan refinement, review, deep reasoning.
+- **Simple:** single file, clear scope; new file ok. Steps: TaskCreate -> TaskUpdate(in_progress), Planning (1 pass), Implementation, Testing/syntax check, Verification skill, TaskUpdate(completed). May skip: deep reasoning, security review, multi-iteration review.
 - **Standard:** multi-file/behavior change. Steps: all phases, minimum 2 iterations each. Skip none.
 - **Complex:** architectural/cross-cutting/security-sensitive. Steps: all phases, 5+ iterations each. Skip none.
+
+### Task Management Tools
+
+**Primary (Claude Code with Tasks support):**
+- `TaskCreate` - Create tasks with subject, description, activeForm
+- `TaskUpdate` - Update status (pending → in_progress → completed), add dependencies
+- `TaskList` - View all tasks and their status
+- `TaskGet` - Retrieve full task details by ID
+
+**Fallback (older Conductor without Tasks):**
+- `TodoWrite({ status: "in_progress" })` - Mark work starting
+- `TodoWrite({ status: "completed" })` - Mark work done
+
+**Detection:** If TaskCreate/TaskList tools are unavailable, use TodoWrite fallback.
 
 ### Checklists (output immediately after classification)
 
@@ -28,7 +42,7 @@ REQUIRED SKILLS (invoke Skill() tool before GATE-3):
 - [ ] verification-before-completion
 
 REQUIRED PHASES:
-- [ ] Phase 3: Implementation (TodoWrite -> Code -> TodoWrite)
+- [ ] Phase 3: Implementation (TaskCreate -> Code -> TaskUpdate)
 - [ ] Phase 7: Verification (min 1 iteration)
 
 ITERATION TRACKING:
@@ -147,8 +161,13 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - All other gates, skills, and quality requirements remain **unchanged**
 
 **ALWAYS**
-- `TodoWrite({ status: "in_progress" })` before any implementation code.
-- `TodoWrite({ status: "completed" })` after implementation.
+- **Output classification checklist as ABSOLUTE FIRST action** - before any tools, exploration, or planning.
+- **If Plan Mode active, classification precedes exploration** - output PLAN-GATE-1 after classification.
+- **Classification determines which gates are required** - Trivial needs fewer, Complex needs more.
+- **Task tracking before implementation:** Use `TaskCreate` to create tasks, `TaskUpdate({ status: "in_progress" })` before starting work.
+- **Task completion after implementation:** Use `TaskUpdate({ status: "completed" })` after each task is done.
+- **Task dependencies:** Use `TaskUpdate({ addBlockedBy: [...] })` to establish task ordering.
+- **Fallback:** If Tasks tools unavailable (older Conductor), use `TodoWrite({ status: "in_progress/completed" })`.
 - Load skills via `Skill({ skill: "name" })` tool call - listing is not loading.
 - Output EVERY gate check (GATE-1 through GATE-7) - not just first few.
 - Provide verification evidence (command output/test results with exit code 0) before claiming done.
@@ -156,12 +175,17 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - Immediately after classification, output the Classification Checklist.
 - **Use `AskUserQuestion` tool for ALL clarifying questions** - never plain text questions.
 - **Consider parallel Task agents** when 2+ independent implementation tasks exist.
+- **Use Task `mode` parameter** appropriately: `plan` for risky changes, `bypassPermissions` for trusted autonomous work.
+- **Consider swarm launch** via `ExitPlanMode({ launchSwarm: true, teammateCount: N })` for complex multi-task plans.
 
 **NEVER**
+- **Start exploration/planning without classification output** - classification is FIRST.
+- **Proceed with tool calls before stating classification** - no exceptions.
 - Skip phases/gates because "simple" or "trivial".
 - Skip Phase 2 (Plan Refinement) or Phase 6 (Review) - commonly forgotten.
-- Write production code before TodoWrite.
+- Write production code before creating/updating tasks (TaskCreate or TodoWrite fallback).
 - Claim completion without evidence.
+- Skip task dependency setup when tasks have ordering requirements.
 - Skip skills or "acknowledge" them without loading via Skill() tool.
 - Say "Done", "should work", or "looks good" without evidence.
 - Proceed past a gate without meeting requirements.
@@ -219,12 +243,12 @@ Before each phase, output a gate check. Do not proceed if BLOCKED. Do not skip g
 Gate requirements:
 - GATE-1 Planning: classification stated + checklist output.
 - GATE-2 Plan Refinement: `Skill({ skill: "ask-questions-if-underspecified" })` tool call visible. **Local:** `AskUserQuestion` tool used. **Remote:** questions optional unless genuinely ambiguous.
-- GATE-3 Implementation: `Skill({ skill: "test-driven-development" })` tool call visible + TodoWrite(in_progress) called + parallel agents considered for 2+ independent tasks.
-- GATE-4 Cleanup: all implementation todos complete.
+- GATE-3 Implementation: `Skill({ skill: "test-driven-development" })` tool call visible + Tasks created (or TodoWrite fallback) + task status set to in_progress + parallel agents considered for 2+ independent tasks (with appropriate `name` and `mode`).
+- GATE-4 Cleanup: all implementation tasks complete (TaskList shows no pending tasks for current work).
 - GATE-5 Testing: test file exists + test output with exit code shown (or explicit "no tests possible" justification).
 - GATE-6 Review: `Skill({ skill: "review" })` tool call visible + review output shown. "Manual review" is NOT acceptable.
-- GATE-7 Verification: verification commands run IN THIS MESSAGE with exit code 0 shown.
-- GATE-DONE Completion: all evidence compiled.
+- GATE-7 Verification: verification commands run IN THIS MESSAGE with exit code 0 shown + all tasks marked completed.
+- GATE-DONE Completion: all evidence compiled + TaskList shows all tasks completed.
 
 **Loading ≠ Following:** Invoking a skill means you MUST follow its instructions. Loading TDD then writing code without tests = violation.
 
@@ -241,7 +265,8 @@ STATUS: PASS | BLOCKED
 ### Pre-Completion Gate
 
 Before saying "done" or "complete", confirm evidence for:
-- TodoWrite start
+- Tasks created and tracked (TaskCreate/TaskUpdate or TodoWrite fallback)
+- All tasks marked completed (run TaskList to verify)
 - Classification + checklist
 - All gates output (count them: did you output GATE-1 through GATE-7?)
 - Phase 2 executed (not skipped) — show questions asked
@@ -254,14 +279,35 @@ Before saying "done" or "complete", confirm evidence for:
 - **Local only banned:** "requirements are clear" (allowed in Remote Mode when genuinely clear)
 
 **Required completion format:** evidence summary + verification output + gates passed list + iteration counts
+
+### Plan Mode Integration
+
+When `system-reminder` indicates "Plan mode is active":
+
+1. **First**: Output classification checklist (same as always)
+2. **Then**: Output PLAN-GATE-1 before exploration
+3. **Then**: Output PLAN-GATE-2 before writing plan
+4. **Finally**: Call ExitPlanMode when plan is complete
+
+**Plan Mode maps to workflow phases:**
+- PLAN-GATE-1 → Phase 1 (Planning)
+- PLAN-GATE-2 → Phase 2 (Plan Refinement)
+- After approval → Phase 3+ (Implementation onwards)
+
+**Plan Mode does NOT exempt you from:**
+- Classification output (still FIRST)
+- Skill loading (ask-questions-if-underspecified before PLAN-GATE-2)
+- AskUserQuestion tool usage (never plain text questions)
 </hard-requirements>
 <anti-patterns>
 ## Anti-Patterns (Never)
 
 ### Workflow Bypass
 - Trivial bypass: "task is simple" to skip workflow -> classify first and follow minimum steps.
-- Direct implementation: code before `TodoWrite` -> call `TodoWrite({ status: "in_progress" })` first.
-- Classification avoidance: no classification before implementation -> state classification before first TodoWrite.
+- Direct implementation: code before task tracking -> call `TaskCreate` + `TaskUpdate({ status: "in_progress" })` first (or `TodoWrite` fallback).
+- Classification avoidance: no classification before implementation -> state classification before first task creation.
+- Task dependency skip: ignoring task ordering -> use `TaskUpdate({ addBlockedBy: [...] })` for dependent tasks.
+- Task status neglect: not updating task status -> always set in_progress before work, completed after.
 
 ### Skill Failures
 - Skill avoidance: no skills loaded -> load at least verification-before-completion.
@@ -304,27 +350,115 @@ Before saying "done" or "complete", confirm evidence for:
 - **Sequential when parallel possible:** executing 2+ independent tasks one-by-one with Bash -> use parallel Task agents.
 - **Bash familiarity bias:** defaulting to sequential bash "because it's simpler" -> check skill routing table for `dispatching-parallel-agents`.
 - **Agent avoidance:** "file operations are quick" to skip parallel agents -> if tasks are independent, parallelize.
+- **Unnamed agents:** spawning agents without `name` parameter -> use names for tracking (e.g., `name: "test-runner"`).
+- **Overly permissive mode:** using `mode: "bypassPermissions"` for risky/security tasks -> use `mode: "plan"` for changes requiring review.
+- **Mode omission:** not specifying mode when context requires it -> explicitly set `mode` based on task risk level.
 
 ### Evidence Failures
 - Implied evidence: "I ran the tests" without showing output -> paste actual command output.
 - Exit code assumption: "command succeeded" without checking -> show exit code 0 explicitly.
 - Selective evidence: showing passing tests, hiding failures -> show full output.
+
+### Self-Check Questions
+
+Before each phase, ask yourself:
+
+**Before any action**: "Did I output classification?"
+**Before exploration**: "Did I output PLAN-GATE-1?" (if in plan mode)
+**Before writing plan**: "Did I output PLAN-GATE-2?" (if in plan mode)
+**Before Write/Edit**: "Did I output GATE-3 and create/update tasks?"
+**Before claiming done**: "Did I output all required gates and run TaskList?"
+
+If the answer to any question is "no", STOP and output the missing gate/classification first.
+
+### Task Management Failures
+- Orphan tasks: creating tasks without tracking completion -> run `TaskList` before claiming done.
+- Stale task list: not checking TaskList after subagent work -> always verify task status after delegation.
+- Missing dependencies: parallel tasks that should be sequential -> define blockedBy relationships.
+- Tool confusion: mixing Tasks and TodoWrite in same session -> use one system consistently per session.
 </anti-patterns>
 <workflows>
 ## Development Workflow
 
 Mandatory for implementation tasks. Creating any new file = implementation task. Only exception: pure research/exploration with no artifacts.
 
+### Plan Mode Workflow
+
+When `system-reminder` indicates "Plan mode is active", use this dedicated gate structure:
+
+**PLAN-GATE-1: Understanding**
+```
+PLAN-GATE-1 CHECK:
+- [ ] Classification stated (Trivial/Simple/Standard/Complex)
+- [ ] User request understood
+- [ ] Codebase exploration complete (if needed)
+STATUS: PASS | BLOCKED
+```
+
+**PLAN-GATE-2: Design**
+```
+PLAN-GATE-2 CHECK:
+- [ ] Implementation approach documented
+- [ ] Critical files identified
+- [ ] Questions asked (via AskUserQuestion) if ambiguous
+- [ ] Plan written to plan file
+STATUS: PASS | BLOCKED
+```
+
+**After Plan Approval**: Regular workflow resumes at GATE-3 (Implementation phase).
+
+**Plan Mode maps to workflow phases:**
+- PLAN-GATE-1 → Phase 1 (Planning)
+- PLAN-GATE-2 → Phase 2 (Plan Refinement)
+- After approval → Phase 3+ (Implementation onwards)
+
+---
+
 **Enforcement**
 - Each phase has a gate; output gate check (see Hard Requirements) before entering.
 - Do not proceed if a gate is BLOCKED.
 - Each gate checkbox requires proof in same message.
+
+**Task Management (use Tasks tools when available, TodoWrite as fallback)**
+
+Task Granularity:
+- **Phase-level tasks:** Create one task per workflow phase (e.g., "Phase 1: Planning", "Phase 3: Implementation")
+- **Work-item tasks:** Create sub-tasks for discrete work items within phases (e.g., "Update file X", "Add test for Y")
+- **Dependencies:** Use `TaskUpdate({ addBlockedBy: [...] })` to establish ordering
+
+Task Workflow:
+```
+1. TaskCreate({ subject: "...", description: "...", activeForm: "..." })
+2. TaskUpdate({ taskId: "N", status: "in_progress" }) - before starting work
+3. [Do the work]
+4. TaskUpdate({ taskId: "N", status: "completed" }) - after finishing
+5. TaskList - verify all tasks complete before claiming done
+```
+
+Multi-Session Collaboration:
+- Set `CLAUDE_CODE_TASK_LIST_ID=<list-id>` environment variable to share tasks across sessions
+- Example: `CLAUDE_CODE_TASK_LIST_ID=feature-auth claude` - all sessions share the same task list
+- Works with `claude -p` and AgentSDK for subagent coordination
+- When one session updates a task, changes are visible to all sessions on that list
 
 **Sub-agents (use when 2+ independent tasks)**
 - Format: `Task({ subagent_type: "<type>", prompt: "<task>" })`
 - Multiple Task() in one message = parallel
 - `run_in_background: true` for background agents
 - Skills: `subagent-driven-development`, `dispatching-parallel-agents`
+- **Agent naming:** Use `name` parameter for tracking (e.g., `name: "test-runner"`)
+- **Team coordination:** Use `team_name` to group related agents
+- **Permission modes:** Use `mode` parameter to control agent behavior:
+  - `default` - standard permissions
+  - `plan` - require plan approval before implementation
+  - `acceptEdits` - auto-accept file edits
+  - `bypassPermissions` - autonomous mode (use sparingly)
+  - `delegate` - can spawn sub-agents
+  - `dontAsk` - skip confirmation prompts
+
+**Swarm launch from planning**
+- After plan approval, use `ExitPlanMode({ launchSwarm: true, teammateCount: N })` to spawn implementation swarm
+- Swarm distributes plan tasks across N parallel teammates
 
 **Principles**
 - Use latest package versions (@latest/:latest). Verify on npmjs.com, hub.docker.com, pypi.org. If pinned older, note current version.
@@ -375,10 +509,15 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
   - `Skill({ skill: "verification-before-completion" })` - load now, execute in Phase 7.
 - **Self-check before proceeding:** Search context for `<invoke name="Skill">`. If not found, STOP.
 - **Loading = Commitment:** Once you invoke a skill, you MUST follow its instructions. No exceptions.
-- `TodoWrite(in_progress)` -> RED (failing test) -> GREEN (minimal code) -> `TodoWrite(completed)`.
+- **Task tracking workflow:**
+  1. `TaskCreate` for each work item (or `TodoWrite(in_progress)` fallback)
+  2. `TaskUpdate({ status: "in_progress" })` before starting each task
+  3. RED (failing test) -> GREEN (minimal code)
+  4. `TaskUpdate({ status: "completed" })` after each task
 - Iron Law: no production code before a failing test. No exceptions for "simple" file types.
 - **REQUIRED:** If 2+ independent tasks exist, use parallel Task agents - not sequential Bash.
-- **Parallel check:** Review todo list - can any tasks run simultaneously? If yes, dispatch parallel agents.
+- **Parallel check:** Review task list (`TaskList`) - can any tasks run simultaneously? If yes, dispatch parallel agents.
+- **Agent configuration:** Use `name` for tracking, `mode: "plan"` for risky changes, `mode: "bypassPermissions"` for trusted work.
 - Load `dispatching-parallel-agents` skill when parallelization is possible.
 
 ### Phase 4: Cleanup
@@ -409,12 +548,13 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 - **STOP: Output GATE-7 before proceeding.**
 - **REQUIRED:** Execute `Skill({ skill: "verification-before-completion" })` - not just load.
 - **REQUIRED:** Show verification output in gate.
+- **REQUIRED:** Run `TaskList` to verify all tasks are completed.
 - Run completion validation; `bun run ci`.
 - Document evidence (exit codes, test counts, warnings).
 - Update README/docs if behavior changed.
 - Update Linear issue if configured; otherwise note status in response.
 - **Iteration tracking:** Output "Verification Iteration N of M" for each pass.
-- **GATE-DONE:** List all gates passed (1-7) + evidence + iteration counts before completion claim.
+- **GATE-DONE:** List all gates passed (1-7) + evidence + iteration counts + TaskList output before completion claim.
 </workflows>
 <skill-routing-table>
 ### Planning & Context (triggers: plan/design/requirements/docs)
