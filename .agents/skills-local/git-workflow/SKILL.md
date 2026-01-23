@@ -729,7 +729,8 @@ Fix all unresolved PR review comments and CI failures with educational feedback.
 ! git status --short
 ! gh pr view --json number,title,state,reviewDecision 2>/dev/null || echo "No PR found"
 ! gh pr checks 2>/dev/null | head -20 || echo "No checks"
-! gh pr view --json reviewThreads --jq '.reviewThreads[] | select(.isResolved == false) | {path: .path, line: .line, body: .comments[0].body}' 2>/dev/null | head -30 || echo "No unresolved threads"
+# Get unresolved review threads (uses GraphQL API - reviewThreads field doesn't exist in gh pr view)
+! .agents/skills-local/git-workflow/scripts/get-unresolved-threads.sh 2>/dev/null | head -30 || echo "No unresolved threads"
 ```
 
 ### Workflow
@@ -784,17 +785,12 @@ For EACH unresolved thread, provide feedback using symbols:
 **Resolve thread via GraphQL:**
 
 ```bash
-# Get thread ID
-THREAD_ID=$(gh pr view --json reviewThreads --jq '.reviewThreads[] | select(.isResolved == false) | .id' | head -1)
+# Get thread IDs from context (already fetched above) or fetch again
+THREADS=$(.agents/skills-local/git-workflow/scripts/get-unresolved-threads.sh)
+THREAD_ID=$(echo "$THREADS" | jq -r '.id' | head -1)
 
-# Resolve with comment
-gh api graphql -f query='
-  mutation {
-    resolveReviewThread(input: {threadId: "'"$THREAD_ID"'"}) {
-      thread { isResolved }
-    }
-  }
-'
+# Resolve the thread
+.agents/skills-local/git-workflow/scripts/resolve-thread.sh "$THREAD_ID"
 ```
 
 **Example feedback patterns:**
@@ -810,7 +806,7 @@ gh api graphql -f query='
 #### 6. Verify All Threads Resolved
 
 ```bash
-gh pr view --json reviewThreads --jq '[.reviewThreads[] | select(.isResolved == false)] | length'
+.agents/skills-local/git-workflow/scripts/count-unresolved-threads.sh
 ```
 
 Should return 0.
