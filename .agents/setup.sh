@@ -154,6 +154,13 @@ copy_templates() {
             cp "$claude_templates/.claude/scripts/validation/"*.sh "$PROJECT_ROOT/.claude/scripts/validation/" 2>/dev/null || true
             chmod +x "$PROJECT_ROOT/.claude/scripts/validation/"*.sh 2>/dev/null || true
         fi
+
+        # Copy commands if they exist
+        if [[ -d "$claude_templates/.claude/commands" ]]; then
+            mkdir -p "$PROJECT_ROOT/.claude/commands"
+            cp "$claude_templates/.claude/commands/"*.md "$PROJECT_ROOT/.claude/commands/" 2>/dev/null || true
+            echo "  Installed Claude commands"
+        fi
     fi
 
     # Compose CLAUDE.md from claude/ templates

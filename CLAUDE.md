@@ -241,7 +241,7 @@ Before each phase, output a gate check. Do not proceed if BLOCKED. Do not skip g
 ⚠️ **Gate rushing is a failure mode.** Each checked box requires proof in the same message.
 
 Gate requirements:
-- GATE-1 Planning: classification stated + checklist output.
+- GATE-1 Planning: classification stated + checklist output + research complete (mcp__octocode__* for code, mcp__context7__* for docs, mcp__exa__* for web/company research).
 - GATE-2 Plan Refinement: `Skill({ skill: "ask-questions-if-underspecified" })` tool call visible. **Local:** `AskUserQuestion` tool used. **Remote:** questions optional unless genuinely ambiguous.
 - GATE-3 Implementation: `Skill({ skill: "test-driven-development" })` tool call visible + Tasks created (or TodoWrite fallback) + task status set to in_progress + parallel agents considered for 2+ independent tasks (with appropriate `name` and `mode`).
 - GATE-4 Cleanup: all implementation tasks complete (TaskList shows no pending tasks for current work).
@@ -391,7 +391,9 @@ When `system-reminder` indicates "Plan mode is active", use this dedicated gate 
 PLAN-GATE-1 CHECK:
 - [ ] Classification stated (Trivial/Simple/Standard/Complex)
 - [ ] User request understood
-- [ ] Codebase exploration complete (if needed)
+- [ ] Codebase exploration complete (mcp__octocode__* for code search, Explore agent for structure)
+- [ ] Library docs checked (mcp__context7__* for external libs, local docs for project)
+- [ ] Web research done if needed (mcp__exa__* for current info, code examples, company research)
 STATUS: PASS | BLOCKED
 ```
 
@@ -468,6 +470,9 @@ Multi-Session Collaboration:
 - Gather context (Explore Task for large codebases; direct tools for small).
 - Repo-wide search if needed (mcp__octocode__* or local rg/git).
 - Check docs (mcp__context7__* if available; else local docs/README).
+- Web research if needed (mcp__exa__web_search_exa for current info, mcp__exa__get_code_context_exa for code examples).
+- Company/competitor research (mcp__exa__company_research_exa, mcp__exa__linkedin_search_exa).
+- Deep research for complex topics (mcp__exa__deep_researcher_start → mcp__exa__deep_researcher_check).
 - If modifying existing behavior: `Skill({ skill: "systematic-debugging" })`.
 - Draft plan with file paths and 2-5 minute tasks; mark parallelizable tasks.
 - If complex/architectural: `mcp__codex` (Claude Code only).
@@ -561,6 +566,16 @@ Multi-Session Collaboration:
 - /plan, plan this, design approach, implementation plan -> `Skill({ skill: "planning workflow" })`
 - unclear/ambiguous/missing requirements -> `Skill({ skill: "ask-questions-if-underspecified" })`
 - library docs/API reference/current docs -> `mcp__context7__resolve-library-id` then `mcp__context7__query-docs`
+
+### Research & Discovery (triggers: search/research/find/lookup/current/latest)
+- web search/current info/latest news -> `mcp__exa__web_search_exa`
+- advanced search/filters/date range -> `mcp__exa__web_search_advanced_exa`
+- code examples/snippets/GitHub/StackOverflow -> `mcp__exa__get_code_context_exa`
+- company research/business info/competitors -> `mcp__exa__company_research_exa`
+- LinkedIn/people search/profiles -> `mcp__exa__linkedin_search_exa`
+- deep research/comprehensive report -> `mcp__exa__deep_researcher_start` then `mcp__exa__deep_researcher_check`
+- crawl URL/fetch page/PDF content -> `mcp__exa__crawling_exa`
+- smart query expansion/summaries -> `mcp__exa__deep_search_exa`
 
 ### Implementation (triggers: implement/build/code/write/create feature)
 - TDD, write test first, red-green-refactor -> `Skill({ skill: "test-driven-development" })`
