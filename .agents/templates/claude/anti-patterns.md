@@ -2,8 +2,10 @@
 
 ### Workflow Bypass
 - Trivial bypass: "task is simple" to skip workflow -> classify first and follow minimum steps.
-- Direct implementation: code before `TodoWrite` -> call `TodoWrite({ status: "in_progress" })` first.
-- Classification avoidance: no classification before implementation -> state classification before first TodoWrite.
+- Direct implementation: code before task tracking -> call `TaskCreate` + `TaskUpdate({ status: "in_progress" })` first (or `TodoWrite` fallback).
+- Classification avoidance: no classification before implementation -> state classification before first task creation.
+- Task dependency skip: ignoring task ordering -> use `TaskUpdate({ addBlockedBy: [...] })` for dependent tasks.
+- Task status neglect: not updating task status -> always set in_progress before work, completed after.
 
 ### Skill Failures
 - Skill avoidance: no skills loaded -> load at least verification-before-completion.
@@ -54,3 +56,21 @@
 - Implied evidence: "I ran the tests" without showing output -> paste actual command output.
 - Exit code assumption: "command succeeded" without checking -> show exit code 0 explicitly.
 - Selective evidence: showing passing tests, hiding failures -> show full output.
+
+### Self-Check Questions
+
+Before each phase, ask yourself:
+
+**Before any action**: "Did I output classification?"
+**Before exploration**: "Did I output PLAN-GATE-1?" (if in plan mode)
+**Before writing plan**: "Did I output PLAN-GATE-2?" (if in plan mode)
+**Before Write/Edit**: "Did I output GATE-3 and create/update tasks?"
+**Before claiming done**: "Did I output all required gates and run TaskList?"
+
+If the answer to any question is "no", STOP and output the missing gate/classification first.
+
+### Task Management Failures
+- Orphan tasks: creating tasks without tracking completion -> run `TaskList` before claiming done.
+- Stale task list: not checking TaskList after subagent work -> always verify task status after delegation.
+- Missing dependencies: parallel tasks that should be sequential -> define blockedBy relationships.
+- Tool confusion: mixing Tasks and TodoWrite in same session -> use one system consistently per session.

@@ -1,0 +1,8 @@
+[metadata]
+name = "git-workflow"
+description = "Git workflow commands for commits, branches, PRs, and reviews"
+icon = "git-branch"
+color = "#F05032"
+
+[defaults]
+prompt = "commit"
