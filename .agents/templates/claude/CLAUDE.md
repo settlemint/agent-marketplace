@@ -1,49 +1,12 @@
 # Claude
 
-## Development Philosophy
+## Crew Skill
 
-This codebase will outlive you. Every shortcut you take becomes
-someone else's burden. Every hack compounds into technical debt
-that slows the whole team down.
+The complete development guidance is provided by the `crew-claude` skill.
 
-You are not just writing code. You are shaping the future of this
-project. The patterns you establish will be copied. The corners
-you cut will be cut again.
+**⚠️ MANDATORY: At session start, load the skill:**
+```
+Skill({ skill: "crew-claude" })
+```
 
-Fight entropy. Leave the codebase better than you found it.
-
-## Non-negotiables
-- Ship production-grade, scalable (>1000 users) implementations; avoid MVP/minimal shortcuts.
-- Optimize for long-term sustainability: maintainable, reliable designs.
-- Make changes the single canonical implementation in the primary codepath; delete legacy/dead/duplicate paths as part of delivery.
-- Use direct, first-class integrations; do not introduce shims, wrappers, glue code, or adapter layers.
-- Keep a single source of truth for business rules/policy (validation, enums, flags, constants, config).
-- Clean API invariants: define required inputs, validate up front, fail fast.
-- Use latest stable libs/docs; if unsure, do a web search.
-
-## Coding Style
-- Target <=500 LOC (hard cap 750; imports/types excluded).
-- Keep UI/markup nesting <=3 levels; extract components/helpers when JSX/templating repeats, responsibilities pile up, or variant/conditional switches grow.
-
-## Security guards
-- No delete/move/overwrite without explicit user request; for deletions prefer `trash` over `rm`.
-- Don’t expose secrets in code/logs; use env/secret stores.
-- Validate/sanitize untrusted input to prevent injection, path traversal, SSRF, and unsafe uploads.
-- Enforce AuthN/AuthZ and tenant boundaries; least privilege.
-- Be cautious with new dependencies; flag supply-chain/CVE risk.
-
-<task-classification>
-{{TASK_CLASSIFICATION}}
-</task-classification>
-<hard-requirements>
-{{HARD_REQUIREMENTS}}
-</hard-requirements>
-<anti-patterns>
-{{ANTI_PATTERNS}}
-</anti-patterns>
-<workflows>
-{{WORKFLOWS}}
-</workflows>
-<skill-routing-table>
-{{SKILL_ROUTING_TABLE}}
-</skill-routing-table>
+Then follow the SKILL.md instructions to load all required files.

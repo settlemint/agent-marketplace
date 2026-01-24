@@ -2,11 +2,26 @@
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "startup",
+        "matcher": "",
         "hooks": [
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/scripts/web/session-start/setup.sh"
+          },
+          {
+            "type": "prompt",
+            "prompt": "MANDATORY: Load the crew-claude skill now by invoking: Skill({ skill: \"crew-claude\" }). Then read all files listed in the SKILL.md and output the CREW-CLAUDE LOADED verification checklist before proceeding with any work."
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "CONTEXT COMPACTING: After compaction completes, you MUST reload the crew-claude skill by invoking: Skill({ skill: \"crew-claude\" }) and reading all files listed in the SKILL.md. Output the CREW-CLAUDE LOADED verification checklist before continuing work."
           }
         ]
       }
