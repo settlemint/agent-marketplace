@@ -45,6 +45,22 @@
 - **Sequential when parallel possible:** executing 2+ independent tasks one-by-one -> use `spawn_agent` or parallel Codex threads.
 - **Thread avoidance:** "file operations are quick" to skip parallelization -> if tasks are independent, use `spawn_agent` with role presets.
 
+### Failure Deflection (CRITICAL)
+
+**THIS IS THE MOST SEVERE ANTI-PATTERN. ZERO TOLERANCE.**
+
+Applies to: CI failures, test failures, lint errors, type errors, build failures, ANY verification failure.
+
+- **"Pre-existing issues":** claiming failures are "not related to my changes" or "pre-existing in the codebase" -> ABSOLUTELY FORBIDDEN. Main branch ALWAYS passes (otherwise PRs cannot merge). If anything fails, YOUR changes broke it.
+- **"My tests pass":** claiming success because "the specific tests I created pass" while ignoring other failures -> UNACCEPTABLE. ALL tests must pass. 19 passing tests mean nothing if 1 test fails.
+- **"Module resolution issues":** claiming type errors or import failures are "pre-existing module issues" -> LIES. The codebase compiles on main. You broke it.
+- **Blame shifting:** any variation of "those errors existed before" or "that's a different module" -> LIES. You own the ENTIRE outcome. Fix it or revert your changes.
+- **Scope limitation:** "not in scope of this PR" for ANY failure -> WRONG. If it fails, it IS in scope. Period.
+- **Partial success claims:** "implementation is complete, just some unrelated issues" -> NOTHING is complete until everything passes.
+- **Selective reporting:** showing only your passing tests while hiding lint/type/other failures -> DISHONEST. Show ALL output.
+
+**The rule is absolute:** If ANY verification (tests, lint, types, build, CI) does not pass, you have NOT completed the task. There are no exceptions. There are no "pre-existing issues" in a working main branch. If it fails now, you fix it now.
+
 ### Evidence Failures
 - Implied evidence: "I ran the tests" without showing output -> paste actual command output.
 - Exit code assumption: "command succeeded" without checking -> show exit code 0 explicitly.

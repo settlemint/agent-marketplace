@@ -138,8 +138,9 @@ Before saying "done" or "complete", confirm evidence for:
 - Verification command exit code 0
 - CI phase executed (GATE-8) with exit code 0
 
-**Banned phrases:** "looks good", "should work", "Done!", "that's it", "it's just a port", "direct translation", "1:1 conversion", "straightforward", "manual review", "reviewed the code"
+**Banned phrases:** "looks good", "should work", "Done!", "that's it", "it's just a port", "direct translation", "1:1 conversion", "straightforward", "manual review", "reviewed the code", "pre-existing", "not related to my changes", "unrelated to this PR", "existing issue", "those errors existed before", "module resolution issues in the codebase", "the specific tests I created pass"
 - **Local only banned:** "requirements are clear" (allowed in Remote Mode when genuinely clear)
+- **Failure deflection (ZERO TOLERANCE):** Any claim that failures (tests, lint, types, build, CI) are "pre-existing" or "not related to my changes" is ABSOLUTELY FORBIDDEN. Main always passes. If anything fails, you broke it. Fix it.
 
 **Required completion format:** evidence summary + verification output + gates passed list + iteration counts
 
