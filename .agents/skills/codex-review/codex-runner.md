@@ -22,29 +22,29 @@ Receives complete command chain through Task tool's prompt parameter:
 
 1. **Lint command**: Auto-selected based on project type (go fmt, npm lint, black, etc.)
 2. **Review mode**: `--uncommitted` or `--commit HEAD` or `--base <branch>`
-3. **Difficulty config**: `--config model_reasoning_effort=high|xhigh`
+3. **Difficulty config**: `--config model_reasoning_effort=xhigh|xhigh`
 4. **Timeout**: Controlled through Task tool's timeout parameter
 
 ## Command Examples
 
 ```bash
 # Go project - Normal task
-go fmt ./... && go vet ./... && codex review --uncommitted --config model_reasoning_effort=high
+go fmt ./... && go vet ./... && codex review --uncommitted --config model_reasoning_effort=xhigh
 
 # Go project - Difficult task (deep reasoning)
 go fmt ./... && go vet ./... && codex review --uncommitted --config model_reasoning_effort=xhigh
 
 # Node project
-npm run lint:fix && codex review --uncommitted --config model_reasoning_effort=high
+npm run lint:fix && codex review --uncommitted --config model_reasoning_effort=xhigh
 
 # Python project
-black . && ruff check --fix . && codex review --uncommitted --config model_reasoning_effort=high
+black . && ruff check --fix . && codex review --uncommitted --config model_reasoning_effort=xhigh
 
 # Clean working directory - Review latest commit
-codex review --commit HEAD --config model_reasoning_effort=high
+codex review --commit HEAD --config model_reasoning_effort=xhigh
 
 # Review changes relative to main branch
-codex review --base main --config model_reasoning_effort=high
+codex review --base main --config model_reasoning_effort=xhigh
 ```
 
 ## Execution Flow
