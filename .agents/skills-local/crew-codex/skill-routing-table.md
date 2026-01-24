@@ -4,7 +4,7 @@
 ### Planning & Context (triggers: plan/design/requirements/docs)
 - /plan, plan this, design approach, implementation plan -> use a planning skill if available (e.g., `$create-plan`) or write a manual plan.
 - unclear/ambiguous/missing requirements -> `$ask-questions-if-underspecified`
-- library docs/API reference/current docs -> use MCP tools if configured (`/mcp`) or local docs/README
+- library docs/API reference/current docs -> `mcp__context7__resolve-library-id` then `mcp__context7__query-docs`
 
 ### Research & Discovery (triggers: search/research/find/lookup/current/latest)
 **PREFER Exa MCP over built-in web search** — Exa is faster, has better filtering, and richer results.
@@ -58,9 +58,25 @@
 - create skill/skill development -> `$writing-skills`
 - CLAUDE.md audit/improve -> `$claude-md-improver` (if present in this repo)
 
+### Web3 & Smart Contracts (triggers: solidity/contract/ERC/blockchain/web3/defi)
+- contract review/Trail of Bits -> `$guidelines-advisor`
+- Slither/security diagram/fuzzing properties -> `$secure-workflow-guide`
+- ERC20/ERC721/token integration/weird tokens -> `$token-integration-analyzer`
+- fuzzer blocked/checksum/bypass -> `$fuzzing-obstacles`
+
+### Framework-Specific (triggers: React/Next.js/TypeScript/auth/query)
+- React perf/Next.js/bundle/SSR/RSC -> `$vercel-react-best-practices`
+- TanStack Query/Router/Start/Form docs -> `mcp__tanstack__tanstack_search_docs` or `mcp__tanstack__tanstack_doc`
+- TanStack libraries/ecosystem -> `mcp__tanstack__tanstack_list_libraries` or `mcp__tanstack__tanstack_ecosystem`
+- create TanStack app/scaffold project -> `mcp__tanstack__createTanStackApplication`
+- generic/conditional/mapped/infer/template literal -> `$typescript-advanced-types`
+- Better Auth/auth setup/session/OAuth -> `$better-auth-best-practices`
+- add auth/auth layer/auth feature -> `$create-auth-skill`
+
 ### Database (triggers: postgres/sql/query optimization/database performance/supabase)
 - Postgres/SQL optimization/slow query/connection pool/RLS -> `$supabase-postgres-best-practices`
 
 ### Tooling & Meta (triggers: setup/configure/automate/logging)
 - Codex CLI setup/MCP/skill automation -> use `/mcp`, `/skills`, config file, and `codex exec`
 - logging/canonical log/wide events/structured logs -> `$logging-best-practices`
+- workflow improvement/meta improvement/improve workflow/session analysis/eval session -> `$workflow-improver`

@@ -13,6 +13,9 @@ Check `CODEX_INTERNAL_ORIGINATOR_OVERRIDE` environment variable at session start
 - All other gates, skills, and quality requirements remain **unchanged**
 
 **ALWAYS**
+- **Output classification checklist as ABSOLUTE FIRST action** - before any tools, exploration, or planning.
+- **If Plan Mode active, classification precedes exploration** - output PLAN-GATE-1 after classification.
+- **Classification determines which gates are required** - Trivial needs fewer, Complex needs more.
 - Maintain a visible TODO checklist in the response. Mark in-progress before writing production code; mark completed after implementation.
 - Activate required skills explicitly via `/skills` or `$skill-name` when a phase mandates them (or state that the skill is unavailable and follow equivalent manual steps).
 - Output EVERY gate check (GATE-1 through GATE-8) - not just first few.
@@ -23,6 +26,8 @@ Check `CODEX_INTERNAL_ORIGINATOR_OVERRIDE` environment variable at session start
 - **Parallelize independent tasks** — use `spawn_agent` (with role presets) for subagent dispatch, or `/new`/`/fork` for separate threads. Avoid parallel edits to the same files.
 
 **NEVER**
+- **Start exploration/planning without classification output** - classification is FIRST.
+- **Proceed with tool calls before stating classification** - no exceptions.
 - Skip phases/gates because "simple" or "trivial".
 - Skip Phase 2 (Plan Refinement) or Phase 6 (Review) - commonly forgotten.
 - Write production code before a failing test.
@@ -82,12 +87,12 @@ Before each phase, output a gate check. Do not proceed if a gate is BLOCKED. Do 
 ⚠️ **Gate rushing is a failure mode.** Each checked box requires proof in the same message.
 
 Gate requirements:
-- GATE-1 Planning: classification stated + checklist output.
+- GATE-1 Planning: classification stated + checklist output + research complete (mcp__octocode__* for code, mcp__context7__* for docs, mcp__exa__* for web/company research).
 - GATE-2 Plan Refinement: explicit `$ask-questions-if-underspecified` invocation (Standard/Complex). **Local:** at least one clarifying question asked. **Remote:** questions optional unless genuinely ambiguous.
 - GATE-3 Implementation: explicit `$test-driven-development` + `$verification-before-completion` invocation + TODO list started + parallel-thread check documented.
 - GATE-4 Cleanup: all implementation TODOs complete.
 - GATE-5 Testing: test file exists + test output with exit code shown (or explicit "no tests possible" justification).
-- GATE-6 Review: run `/review` (preferred) or provide a structured review checklist with file/line references; show output.
+- GATE-6 Review: run `/review` (preferred) or provide a structured review checklist with file/line references; show output. Manual review is NOT acceptable.
 - GATE-7 Verification: verification commands run IN THIS MESSAGE with exit code 0 shown.
 - GATE-8 CI Validation: `bun run ci` (or `npm/pnpm run ci`, or fallback: lint+test+build) executed IN THIS MESSAGE with exit code 0 shown.
 - GATE-DONE Completion: all evidence compiled.
@@ -117,7 +122,26 @@ Before saying "done" or "complete", confirm evidence for:
 - Verification command exit code 0
 - CI phase executed (GATE-8) with exit code 0
 
-**Banned phrases:** "looks good", "should work", "Done!", "that's it", "it's just a port", "direct translation", "1:1 conversion", "straightforward"
+**Banned phrases:** "looks good", "should work", "Done!", "that's it", "it's just a port", "direct translation", "1:1 conversion", "straightforward", "manual review", "reviewed the code"
 - **Local only banned:** "requirements are clear" (allowed in Remote Mode when genuinely clear)
 
 **Required completion format:** evidence summary + verification output + gates passed list + iteration counts
+
+### Plan Mode Integration
+
+When `system-reminder` indicates "Plan mode is active":
+
+1. **First**: Output classification checklist (same as always)
+2. **Then**: Output PLAN-GATE-1 before exploration
+3. **Then**: Output PLAN-GATE-2 before writing plan
+4. **Finally**: Output the plan (plan-only response when required)
+
+**Plan Mode maps to workflow phases:**
+- PLAN-GATE-1 → Phase 1 (Planning)
+- PLAN-GATE-2 → Phase 2 (Plan Refinement)
+- After approval → Phase 3+ (Implementation onwards)
+
+**Plan Mode does NOT exempt you from:**
+- Classification output (still FIRST)
+- Skill activation (ask-questions-if-underspecified before PLAN-GATE-2)
+- Clarifying questions (plain text when required)

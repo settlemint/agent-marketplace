@@ -2,6 +2,40 @@
 
 Mandatory for implementation tasks. Creating any new file = implementation task. Only exception: pure research/exploration with no artifacts.
 
+### Plan Mode Workflow
+
+When `system-reminder` indicates "Plan mode is active", use this dedicated gate structure:
+
+**PLAN-GATE-1: Understanding**
+```
+PLAN-GATE-1 CHECK:
+- [ ] Classification stated (Trivial/Simple/Standard/Complex)
+- [ ] User request understood
+- [ ] Codebase exploration complete (mcp__octocode__* for code search, Explore agent for structure)
+- [ ] Library docs checked (mcp__context7__* for external libs, local docs for project)
+- [ ] Web research done if needed (mcp__exa__* for current info, code examples, company research)
+STATUS: PASS | BLOCKED
+```
+
+**PLAN-GATE-2: Design**
+```
+PLAN-GATE-2 CHECK:
+- [ ] Implementation approach documented
+- [ ] Critical files identified
+- [ ] Questions asked (plain text) if ambiguous
+- [ ] Plan written (plan-only response when required)
+STATUS: PASS | BLOCKED
+```
+
+**After Plan Approval**: Regular workflow resumes at GATE-3 (Implementation phase).
+
+**Plan Mode maps to workflow phases:**
+- PLAN-GATE-1 → Phase 1 (Planning)
+- PLAN-GATE-2 → Phase 2 (Plan Refinement)
+- After approval → Phase 3+ (Implementation onwards)
+
+---
+
 **Enforcement**
 - Each phase has a gate; output gate check (see Hard Requirements) before entering.
 - Do not proceed if a gate is BLOCKED.
@@ -119,6 +153,56 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 - Security review if auth/data/payments (use `$semgrep`/`$codeql` if available).
 - "Code is simple, doesn't need review" is a banned phrase.
 - **Iteration tracking:** Output "Review Iteration N of M" for each pass.
+
+#### Parallel Review Iterations (Standard/Complex tasks)
+
+**REQUIRED for Standard/Complex tasks**: Dispatch three focused review agents IN PARALLEL.
+
+**Step 1: Dispatch ALL THREE in a SINGLE message (parallel execution)**
+```
+spawn_agent({
+  agent_type: "worker",
+  message: "Simplicity review: read ./iterations/simplicity-reviewer.md and apply to changed files: [files]. Output VERDICT."
+})
+spawn_agent({
+  agent_type: "worker",
+  message: "Completeness review: read ./iterations/completeness-reviewer.md. Original request: [quote]. Output VERDICT."
+})
+spawn_agent({
+  agent_type: "worker",
+  message: "Quality review: read ./iterations/quality-reviewer.md and apply to: [files]. Output VERDICT."
+})
+```
+
+**CRITICAL**: Multiple `spawn_agent` calls in ONE message = parallel. Separate messages = sequential.
+
+| Agent | File | Focus | Verdict Format |
+|-------|------|-------|----------------|
+| Simplicity | `./iterations/simplicity-reviewer.md` | YAGNI, LOC reduction | `PASS \| NEEDS_SIMPLIFICATION` |
+| Completeness | `./iterations/completeness-reviewer.md` | Spec compliance | `PASS \| INCOMPLETE \| OVERBUILT` |
+| Quality | `./iterations/quality-reviewer.md` | Patterns, security, perf | `PASS \| NEEDS_FIXES` |
+
+**Optional: Tech-Stack Reviewers (4th parallel agent)**
+For Standard/Complex tasks, add a tech-specific review agent that applies curated OSS review guidelines:
+```
+spawn_agent({
+  agent_type: "worker",
+  message: "Tech-stack review: 1) Identify tech stack from changed files. 2) Read 3-5 matching reviewers from .agents/skills-local/reviewers/reviewers/ (e.g., react-*, nest-*, bun-*). 3) Apply guidelines to: [files]. Output VERDICT: PASS | NEEDS_FIXES with specific issues."
+})
+```
+
+**GATE-6 Output (with parallel reviews):**
+```
+GATE-6 CHECK:
+- [x] Simplicity review — PROOF: [VERDICT] - [key findings]
+- [x] Completeness review — PROOF: [VERDICT] - [requirements N/N]
+- [x] Quality review — PROOF: [VERDICT] - [P1: N, P2: N]
+- [ ] Tech-stack review (optional) — PROOF: [VERDICT] - [reviewers applied: react-*, nest-*, etc.]
+- [x] All review agents completed — PROOF: wait() shows all agents done
+STATUS: PASS | BLOCKED
+```
+
+See `./iterations/parallel-review-dispatch.md` for full dispatch template.
 
 ### Phase 7: Verification (iterations per classification)
 - **STOP: Output GATE-7 before proceeding.**

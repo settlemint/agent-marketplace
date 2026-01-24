@@ -195,8 +195,64 @@ Multi-Session Collaboration:
 - Review for bugs/regressions/missing tests.
 - Security review if auth/data/payments (semgrep/codeql).
 - `differential-review` for diff security.
+- **Tech-specific review guidelines:** Load `Skill({ skill: "reviewers" })` to access 4400+ curated review prompts from OSS projects. Select reviewers by:
+  - Language prefix: `react-*`, `nest-*`, `bun-*`, `kubernetes-*`, etc.
+  - Read 3-5 relevant reviewers from `.agents/skills-local/reviewers/reviewers/` matching the tech stack
 - "Code is simple, doesn't need review" is a banned phrase.
 - **Iteration tracking:** Output "Review Iteration N of M" for each pass.
+
+#### Parallel Review Iterations (Standard/Complex tasks)
+
+**REQUIRED for Standard/Complex tasks**: Dispatch three focused review agents IN PARALLEL.
+
+**Step 1: Create review tasks (optional but recommended for tracking)**
+```
+TaskCreate({ subject: "[R001] [P] Simplicity review", description: "Apply simplicity-reviewer.md", activeForm: "Running simplicity review" })
+TaskCreate({ subject: "[R002] [P] Completeness review", description: "Apply completeness-reviewer.md", activeForm: "Running completeness review" })
+TaskCreate({ subject: "[R003] [P] Quality review", description: "Apply quality-reviewer.md", activeForm: "Running quality review" })
+```
+
+**Step 2: Dispatch ALL THREE in a SINGLE message (parallel execution)**
+```
+Task({ subagent_type: "general-purpose", description: "Simplicity review", prompt: "Read ./iterations/simplicity-reviewer.md and apply to changed files: [files]. Output VERDICT." })
+Task({ subagent_type: "general-purpose", description: "Completeness review", prompt: "Read ./iterations/completeness-reviewer.md. Original request: [quote]. Output VERDICT." })
+Task({ subagent_type: "general-purpose", description: "Quality review", prompt: "Read ./iterations/quality-reviewer.md and apply to: [files]. Output VERDICT." })
+```
+
+**CRITICAL**: Multiple Task() calls in ONE message = parallel. Separate messages = sequential.
+
+**Step 3: Aggregate and update tasks**
+```
+TaskUpdate({ taskId: "R001", status: "completed" })  // after simplicity returns
+TaskUpdate({ taskId: "R002", status: "completed" })  // after completeness returns
+TaskUpdate({ taskId: "R003", status: "completed" })  // after quality returns
+TaskList()  // verify all complete
+```
+
+| Agent | File | Focus | Verdict Format |
+|-------|------|-------|----------------|
+| Simplicity | `./iterations/simplicity-reviewer.md` | YAGNI, LOC reduction | `PASS \| NEEDS_SIMPLIFICATION` |
+| Completeness | `./iterations/completeness-reviewer.md` | Spec compliance | `PASS \| INCOMPLETE \| OVERBUILT` |
+| Quality | `./iterations/quality-reviewer.md` | Patterns, security, perf | `PASS \| NEEDS_FIXES` |
+
+**Optional: Tech-Stack Reviewers (4th parallel agent)**
+For Standard/Complex tasks, add a tech-specific review agent that applies curated OSS review guidelines:
+```
+Task({ subagent_type: "general-purpose", description: "Tech-stack review", prompt: "1. Identify tech stack from changed files. 2. Read 3-5 matching reviewers from .agents/skills-local/reviewers/reviewers/ (e.g., react-*, nest-*, bun-*). 3. Apply their guidelines to: [files]. Output VERDICT: PASS | NEEDS_FIXES with specific issues." })
+```
+
+**GATE-6 Output (with parallel reviews):**
+```
+GATE-6 CHECK:
+- [x] Simplicity review — PROOF: [VERDICT] - [key findings]
+- [x] Completeness review — PROOF: [VERDICT] - [requirements N/N]
+- [x] Quality review — PROOF: [VERDICT] - [P1: N, P2: N]
+- [ ] Tech-stack review (optional) — PROOF: [VERDICT] - [reviewers applied: react-*, nest-*, etc.]
+- [x] All review tasks completed — PROOF: TaskList shows R001-R003 done
+STATUS: PASS | BLOCKED
+```
+
+See `./iterations/parallel-review-dispatch.md` for full dispatch template.
 
 ### Phase 7: Verification (iterations per classification)
 - **STOP: Output GATE-7 before proceeding.**

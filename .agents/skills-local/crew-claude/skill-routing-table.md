@@ -77,3 +77,4 @@
 ### Tooling & Meta (triggers: setup/configure/automate/logging)
 - Claude Code setup/hooks/MCP automation -> `Skill({ skill: "claude-automation-recommender" })`
 - logging/canonical log/wide events/structured logs -> `Skill({ skill: "logging-best-practices" })`
+- workflow improvement/meta improvement/improve workflow/session analysis/eval session -> `Skill({ skill: "workflow-improver" })`
