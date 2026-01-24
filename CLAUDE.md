@@ -230,6 +230,7 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - Check a gate box without showing proof in that same message.
 - **Ask clarifying questions in plain text** - MUST use `AskUserQuestion` tool.
 - **Execute independent tasks sequentially** when parallel agents could be used.
+- You do NOT have the permission to change linter settings, and ignore statements are severely discouraged. Especially the no barrel files rule!
 
 ### Skill Loading (MANDATORY)
 

@@ -21,7 +21,7 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - **Task dependencies:** Use `TaskUpdate({ addBlockedBy: [...] })` to establish task ordering.
 - **Fallback:** If Tasks tools unavailable (older Conductor), use `TodoWrite({ status: "in_progress/completed" })`.
 - Load skills via `Skill({ skill: "name" })` tool call - listing is not loading.
-- Output EVERY gate check (GATE-1 through GATE-7) - not just first few.
+- Output EVERY gate check (GATE-1 through GATE-8) - not just first few.
 - Provide verification evidence (command output/test results with exit code 0) before claiming done.
 - Use at least one skill per implementation task (minimum: verification-before-completion).
 - Immediately after classification, output the Classification Checklist.
@@ -45,6 +45,7 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - Check a gate box without showing proof in that same message.
 - **Ask clarifying questions in plain text** - MUST use `AskUserQuestion` tool.
 - **Execute independent tasks sequentially** when parallel agents could be used.
+- You do NOT have the permission to change linter settings, and ignore statements are severely discouraged. Especially the no barrel files rule!
 
 ### Skill Loading (MANDATORY)
 
@@ -100,6 +101,7 @@ Gate requirements:
 - GATE-5 Testing: test file exists + test output with exit code shown (or explicit "no tests possible" justification).
 - GATE-6 Review: `Skill({ skill: "review" })` tool call visible + review output shown. "Manual review" is NOT acceptable.
 - GATE-7 Verification: verification commands run IN THIS MESSAGE with exit code 0 shown + all tasks marked completed.
+- GATE-8 CI Validation: `bun run ci` (or fallback: lint+test+build) executed IN THIS MESSAGE with exit code 0 shown.
 - GATE-DONE Completion: all evidence compiled + TaskList shows all tasks completed.
 
 **Loading ≠ Following:** Invoking a skill means you MUST follow its instructions. Loading TDD then writing code without tests = violation.
@@ -120,12 +122,13 @@ Before saying "done" or "complete", confirm evidence for:
 - Tasks created and tracked (TaskCreate/TaskUpdate or TodoWrite fallback)
 - All tasks marked completed (run TaskList to verify)
 - Classification + checklist
-- All gates output (count them: did you output GATE-1 through GATE-7?)
+- All gates output (count them: did you output GATE-1 through GATE-8?)
 - Phase 2 executed (not skipped) — show questions asked
 - Phase 6 executed (not skipped) — show review output
 - Required skills loaded via Skill() tool (not just mentioned) — search for `<invoke name="Skill">`
 - Verification skill executed (not just loaded)
 - Verification command exit code 0
+- CI phase executed (GATE-8) with exit code 0
 
 **Banned phrases:** "looks good", "should work", "Done!", "that's it", "it's just a port", "direct translation", "1:1 conversion", "straightforward", "manual review", "reviewed the code"
 - **Local only banned:** "requirements are clear" (allowed in Remote Mode when genuinely clear)

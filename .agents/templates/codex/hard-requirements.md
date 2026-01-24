@@ -33,6 +33,7 @@ Check `CODEX_INTERNAL_ORIGINATOR_OVERRIDE` environment variable at session start
 - Check a gate box without showing proof in that same message.
 - Skip clarifying questions.
 - Execute independent tasks sequentially when parallel threads could be used.
+- You do NOT have the permission to change linter settings, and ignore statements are severely discouraged. Especially the no barrel files rule!
 
 ### Skill Activation (MANDATORY)
 
