@@ -185,7 +185,7 @@ Multi-Session Collaboration:
 - **REQUIRED:** Run CI commands in this priority:
   1. `bun run ci` (if available)
   2. `npm run ci` / `pnpm run ci` (if bun unavailable)
-  3. Fallback: `bun run lint && bun run test && bun run build` (if no ci script)
+  3. Fallback: `<pkg> run lint && <pkg> run test && <pkg> run build` (if no ci script, where `<pkg>` is bun/npm/pnpm)
 - **REQUIRED:** Show full CI output with exit code 0 in gate.
 - If no CI/lint/test/build scripts exist: document this explicitly in GATE-8.
 - This phase runs AFTER Phase 7 verification - it is the absolute last check.
