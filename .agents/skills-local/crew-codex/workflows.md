@@ -141,6 +141,8 @@ STATUS: PASS | BLOCKED
 ### Phase 5: Testing
 - **STOP: Output GATE-5 before proceeding.**
 - Run `bun run ci` or `bun run lint` + `bun run test`.
+- **NOTE:** These commands use turborepo and must be run from the repository root folder.
+- **NOTE:** Infrastructure services may be required for tests. Launch with `bun dev:up` (do not use docker-compose directly).
 - If no project tests exist, note this explicitly.
 - If UI: use `$agent-browser` for visual checks.
 - Check for silent failure gaps.
@@ -219,6 +221,8 @@ See `./iterations/parallel-review-dispatch.md` for full dispatch template.
   1. `bun run ci` (if available)
   2. `npm run ci` / `pnpm run ci` (if bun unavailable)
   3. Fallback: `<pkg> run lint && <pkg> run test && <pkg> run build` (if no ci script, where `<pkg>` is bun/npm/pnpm)
+- **NOTE:** All CI commands use turborepo and must be run from the repository root folder.
+- **NOTE:** Infrastructure services may be required. Launch with `bun dev:up` (do not use docker-compose directly).
 - **REQUIRED:** Show full CI output with exit code 0 in gate.
 - If no CI/lint/test/build scripts exist: document this explicitly in GATE-8.
 - This phase runs AFTER Phase 7 verification - it is the absolute last check.

@@ -95,6 +95,8 @@ Gate requirements:
 - GATE-6 Review: run `/review` (preferred) or provide a structured review checklist with file/line references; show output. Manual review is NOT acceptable.
 - GATE-7 Verification: verification commands run IN THIS MESSAGE with exit code 0 shown.
 - GATE-8 CI Validation: `bun run ci` (or `npm/pnpm run ci`, or fallback: lint+test+build) executed IN THIS MESSAGE with exit code 0 shown.
+  - **NOTE:** CI commands use turborepo—run from repository root folder.
+  - **NOTE:** Infrastructure services may be required—launch with `bun dev:up` (do not use docker-compose directly).
 - GATE-DONE Completion: all evidence compiled.
 
 **Activation ≠ Following:** Invoking a skill means you MUST follow its instructions. Activating TDD then writing code without tests = violation.
