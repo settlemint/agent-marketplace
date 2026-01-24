@@ -58,7 +58,9 @@
 
 ### Framework-Specific (triggers: React/Next.js/TypeScript/auth/query)
 - React perf/Next.js/bundle/SSR/RSC -> `Skill({ skill: "vercel-react-best-practices" })`
-- TanStack/React Query/useQuery/useMutation -> `Skill({ skill: "tanstack-query" })`
+- TanStack Query/Router/Start/Form docs -> `mcp__tanstack__tanstack_search_docs` or `mcp__tanstack__tanstack_doc`
+- TanStack libraries/ecosystem -> `mcp__tanstack__tanstack_list_libraries` or `mcp__tanstack__tanstack_ecosystem`
+- create TanStack app/scaffold project -> `mcp__tanstack__createTanStackApplication`
 - generic/conditional/mapped/infer/template literal -> `Skill({ skill: "typescript-advanced-types" })`
 - Better Auth/auth setup/session/OAuth -> `Skill({ skill: "better-auth-best-practices" })`
 - add auth/auth layer/auth feature -> `Skill({ skill: "create-auth-skill" })`

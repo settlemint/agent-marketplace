@@ -35,6 +35,10 @@
     "restate-docs": {
       "type": "http",
       "url": "https://docs.restate.dev/mcp"
+    },
+    "tanstack": {
+      "command": "npx",
+      "args": ["@tanstack/cli", "mcp"]
     }
   },
   "postInstall": {
@@ -102,11 +106,7 @@
         "sarif-parsing"
       ]
     },
-    {
-      "repo": "jezweb/claude-skills",
-      "skills": ["tanstack-query"]
-    },
-    {
+        {
       "repo": "boristane/agent-skills",
       "skills": ["logging-best-practices"]
     },
