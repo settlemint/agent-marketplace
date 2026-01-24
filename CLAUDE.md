@@ -1,4 +1,37 @@
 # Claude
+
+## Development Philosophy
+
+This codebase will outlive you. Every shortcut you take becomes
+someone else's burden. Every hack compounds into technical debt
+that slows the whole team down.
+
+You are not just writing code. You are shaping the future of this
+project. The patterns you establish will be copied. The corners
+you cut will be cut again.
+
+Fight entropy. Leave the codebase better than you found it.
+
+## Non-negotiables
+- Ship production-grade, scalable (>1000 users) implementations; avoid MVP/minimal shortcuts.
+- Optimize for long-term sustainability: maintainable, reliable designs.
+- Make changes the single canonical implementation in the primary codepath; delete legacy/dead/duplicate paths as part of delivery.
+- Use direct, first-class integrations; do not introduce shims, wrappers, glue code, or adapter layers.
+- Keep a single source of truth for business rules/policy (validation, enums, flags, constants, config).
+- Clean API invariants: define required inputs, validate up front, fail fast.
+- Use latest stable libs/docs; if unsure, do a web search.
+
+## Coding Style
+- Target <=500 LOC (hard cap 750; imports/types excluded).
+- Keep UI/markup nesting <=3 levels; extract components/helpers when JSX/templating repeats, responsibilities pile up, or variant/conditional switches grow.
+
+## Security guards
+- No delete/move/overwrite without explicit user request; for deletions prefer `trash` over `rm`.
+- Don’t expose secrets in code/logs; use env/secret stores.
+- Validate/sanitize untrusted input to prevent injection, path traversal, SSRF, and unsafe uploads.
+- Enforce AuthN/AuthZ and tenant boundaries; least privilege.
+- Be cautious with new dependencies; flag supply-chain/CVE risk.
+
 <task-classification>
 ## Task Classification
 
@@ -44,6 +77,7 @@ REQUIRED SKILLS (invoke Skill() tool before GATE-3):
 REQUIRED PHASES:
 - [ ] Phase 3: Implementation (TaskCreate -> Code -> TaskUpdate)
 - [ ] Phase 7: Verification (min 1 iteration)
+- [ ] Phase 8: CI Validation → GATE-8
 
 ITERATION TRACKING:
 - Plan Refinement: 0 required
@@ -68,6 +102,7 @@ REQUIRED PHASES (output gate with PROOF before each):
 - [ ] Phase 5: Testing → GATE-5
 - [ ] Phase 6: Review (1 pass) → GATE-6 ⚠️ DON'T SKIP
 - [ ] Phase 7: Verification → GATE-7
+- [ ] Phase 8: CI Validation → GATE-8
 
 ITERATION TRACKING:
 - Plan Refinement: 1 required | Completed: ___
@@ -76,7 +111,6 @@ ITERATION TRACKING:
 
 SELF-CHECKS:
 - Before GATE-2: search context for `Skill.*ask-questions`. If not found, STOP.
-- Before PLAN-GATE-2: search context for `mcp__codex`. If not found (and MCP available), STOP.
 - Before GATE-3: search context for `Skill.*test-driven`. If not found, STOP.
 - Before GATE-5: verify test file exists or explain why tests N/A.
 - Before GATE-6: search context for `Skill.*review`. If not found, STOP.
@@ -100,6 +134,7 @@ REQUIRED PHASES (output gate with PROOF before each):
 - [ ] Phase 5: Testing → GATE-5
 - [ ] Phase 6: Review (2+) → GATE-6 ⚠️ TRACK ITERATIONS
 - [ ] Phase 7: Verification (2+) → GATE-7 ⚠️ TRACK ITERATIONS
+- [ ] Phase 8: CI Validation → GATE-8
 
 ITERATION TRACKING:
 - Plan Refinement: 2+ required | Completed: ___
@@ -108,7 +143,6 @@ ITERATION TRACKING:
 
 SELF-CHECKS:
 - Before GATE-2: search context for `Skill.*ask-questions`. If not found, STOP.
-- Before PLAN-GATE-2: search context for `mcp__codex`. If not found (and MCP available), STOP.
 - Before GATE-3: search context for `Skill.*test-driven`. If not found, STOP.
 - Before GATE-5: verify test file exists or explain why tests N/A.
 - Before GATE-6: search context for `Skill.*review`. If not found, STOP.
@@ -134,6 +168,7 @@ REQUIRED PHASES (output gate with PROOF before each):
 - [ ] Phase 5: Testing → GATE-5
 - [ ] Phase 6: Review (5+, security) → GATE-6 ⚠️ TRACK ITERATIONS
 - [ ] Phase 7: Verification (5+) → GATE-7 ⚠️ TRACK ITERATIONS
+- [ ] Phase 8: CI Validation → GATE-8
 
 ITERATION TRACKING:
 - Plan Refinement: 5+ required | Completed: ___
@@ -171,7 +206,7 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - **Task dependencies:** Use `TaskUpdate({ addBlockedBy: [...] })` to establish task ordering.
 - **Fallback:** If Tasks tools unavailable (older Conductor), use `TodoWrite({ status: "in_progress/completed" })`.
 - Load skills via `Skill({ skill: "name" })` tool call - listing is not loading.
-- Output EVERY gate check (GATE-1 through GATE-7) - not just first few.
+- Output EVERY gate check (GATE-1 through GATE-8) - not just first few.
 - Provide verification evidence (command output/test results with exit code 0) before claiming done.
 - Use at least one skill per implementation task (minimum: verification-before-completion).
 - Immediately after classification, output the Classification Checklist.
@@ -195,6 +230,7 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - Check a gate box without showing proof in that same message.
 - **Ask clarifying questions in plain text** - MUST use `AskUserQuestion` tool.
 - **Execute independent tasks sequentially** when parallel agents could be used.
+- You do NOT have the permission to change linter settings, and ignore statements are severely discouraged. Especially the no barrel files rule!
 
 ### Skill Loading (MANDATORY)
 
@@ -250,6 +286,7 @@ Gate requirements:
 - GATE-5 Testing: test file exists + test output with exit code shown (or explicit "no tests possible" justification).
 - GATE-6 Review: `Skill({ skill: "review" })` tool call visible + review output shown. "Manual review" is NOT acceptable.
 - GATE-7 Verification: verification commands run IN THIS MESSAGE with exit code 0 shown + all tasks marked completed.
+- GATE-8 CI Validation: `bun run ci` (or `npm/pnpm run ci`, or fallback: lint+test+build) executed IN THIS MESSAGE with exit code 0 shown.
 - GATE-DONE Completion: all evidence compiled + TaskList shows all tasks completed.
 
 **Loading ≠ Following:** Invoking a skill means you MUST follow its instructions. Loading TDD then writing code without tests = violation.
@@ -270,12 +307,13 @@ Before saying "done" or "complete", confirm evidence for:
 - Tasks created and tracked (TaskCreate/TaskUpdate or TodoWrite fallback)
 - All tasks marked completed (run TaskList to verify)
 - Classification + checklist
-- All gates output (count them: did you output GATE-1 through GATE-7?)
+- All gates output (count them: did you output GATE-1 through GATE-8?)
 - Phase 2 executed (not skipped) — show questions asked
 - Phase 6 executed (not skipped) — show review output
 - Required skills loaded via Skill() tool (not just mentioned) — search for `<invoke name="Skill">`
 - Verification skill executed (not just loaded)
 - Verification command exit code 0
+- CI phase executed (GATE-8) with exit code 0
 
 **Banned phrases:** "looks good", "should work", "Done!", "that's it", "it's just a port", "direct translation", "1:1 conversion", "straightforward", "manual review", "reviewed the code"
 - **Local only banned:** "requirements are clear" (allowed in Remote Mode when genuinely clear)
@@ -300,8 +338,6 @@ When `system-reminder` indicates "Plan mode is active":
 - Classification output (still FIRST)
 - Skill loading (ask-questions-if-underspecified before PLAN-GATE-2)
 - AskUserQuestion tool usage (never plain text questions)
-- Codex plan review for Simple+ (invoke `mcp__codex__codex` with plan content)
-- Plan iteration counts per classification (Simple=1, Standard=2+, Complex=5+)
 </hard-requirements>
 <anti-patterns>
 ## Anti-Patterns (Never)
@@ -344,18 +380,12 @@ When `system-reminder` indicates "Plan mode is active":
 - Shallow iteration: repeating same check without deepening -> each iteration must add: edge cases, error handling, test strategy.
 - Uncounted iterations: not tracking iteration count -> output "Iteration N of M" for each pass.
 
-### Plan Iteration Failures
-- Single plan pass: "wrote plan once" for Standard -> Standard requires 2+ plan iterations with Codex review.
-- Skipped Codex review: plan for Simple+ without `mcp__codex__codex` call (and MCP was available).
-- Shallow plan iteration: same plan repeated without incorporating Codex feedback or deepening analysis.
-- Counted draft without review: calling draft "iteration 1" without Codex review -> iteration = draft + review + revise.
-- Classification downgrade to dodge review: marking task as Trivial to skip Codex -> classify correctly first.
-
 ### Verification Failures
 - Unverified completion: claim done without verification -> run `Skill({ skill: "verification-before-completion" })` with evidence.
 - Partial verification: "syntax check passed" as full verification -> run project CI if available.
 - Stale evidence: "tests passed earlier" -> run fresh verification before completion claim.
 - Load without execute: loaded verification skill but never ran it -> execute and show output.
+- CI skip: claiming done without running `bun run ci` or fallback -> GATE-8 is mandatory for all classifications.
 
 ### Implementation Failures
 - **Sequential when parallel possible:** executing 2+ independent tasks one-by-one with Bash -> use parallel Task agents.
@@ -405,7 +435,6 @@ PLAN-GATE-1 CHECK:
 - [ ] Codebase exploration complete (mcp__octocode__* for code search, Explore agent for structure)
 - [ ] Library docs checked (mcp__context7__* for external libs, local docs for project)
 - [ ] Web research done if needed (mcp__exa__* for current info, code examples, company research)
-- [ ] Plan iteration tracking started (Iteration 1 of N per classification)
 STATUS: PASS | BLOCKED
 ```
 
@@ -415,9 +444,6 @@ PLAN-GATE-2 CHECK:
 - [ ] Implementation approach documented
 - [ ] Critical files identified
 - [ ] Questions asked (via AskUserQuestion) if ambiguous
-- [ ] Codex review completed and incorporated (Simple+): `mcp__codex__codex` invoked, feedback shown
-      OR "Codex unavailable - manual review checklist completed" (documented exception)
-- [ ] Plan iteration N of M complete (per classification: Simple=1, Standard=2+, Complex=5+)
 - [ ] Plan written to plan file
 STATUS: PASS | BLOCKED
 ```
@@ -428,42 +454,6 @@ STATUS: PASS | BLOCKED
 - PLAN-GATE-1 → Phase 1 (Planning)
 - PLAN-GATE-2 → Phase 2 (Plan Refinement)
 - After approval → Phase 3+ (Implementation onwards)
-
-**Plan Iteration Requirements (plans iterate like code):**
-
-**Definition:** One plan iteration = draft → Codex review → revision
-
-**Iteration counts per classification:**
-- **Trivial:** 0 iterations (no planning phase)
-- **Simple:** 1 iteration (draft → Codex review → revise)
-- **Standard:** 2+ iterations (Codex review on iteration 1; subsequent iterations reference first review, re-submit only if major changes)
-- **Complex:** 5+ iterations (Codex review on iteration 1; subsequent iterations reference first review, re-submit only if major changes)
-
-**Each iteration must deepen:**
-- Requirements clarity
-- Edge case handling
-- Error scenarios
-- Test strategy
-- Implementation approach
-
-**MCP Unavailability Fallback (autonomous - no user approval required):**
-If `mcp__codex__codex` fails or is unavailable:
-1. Document exception: "Codex review skipped - MCP unavailable"
-2. Complete manual review checklist:
-   - [ ] Plan addresses all user requirements
-   - [ ] Edge cases identified
-   - [ ] Error handling specified
-   - [ ] Test strategy defined
-   - [ ] Implementation steps are concrete
-3. Proceed autonomously - mark gate as PASS with documented exception
-
-**Iteration tracking format:**
-```
-Plan Iteration 1 of 2:
-- Focus: [what this iteration addresses]
-- Codex feedback: [summary of mcp__codex response]
-- Changes made: [what was refined]
-```
 
 ---
 
@@ -526,8 +516,7 @@ Multi-Session Collaboration:
 - Deep research for complex topics (mcp__exa__deep_researcher_start → mcp__exa__deep_researcher_check).
 - If modifying existing behavior: `Skill({ skill: "systematic-debugging" })`.
 - Draft plan with file paths and 2-5 minute tasks; mark parallelizable tasks.
-- Draft initial plan (this is iteration 1 draft, not complete iteration).
-- **Codex review happens in Phase 2** - do not submit to Codex here.
+- If complex/architectural: `mcp__codex` (Claude Code only).
 - If Linear configured: find issue, then comment plan.
 
 ### Phase 2: Plan Refinement ⚠️ COMMONLY SKIPPED
@@ -547,28 +536,9 @@ Multi-Session Collaboration:
 **Both modes:**
 - Even "simple ports" have ambiguity: error handling idioms, edge cases, output format, version compatibility.
 - Review plan vs requirements; update.
+- Deep review: `mcp__codex` (Claude Code) or manual (Codex).
 - Each iteration must deepen: requirements clarity, edge cases, error handling, test strategy.
 - **Iteration tracking:** Output "Plan Refinement Iteration N of M" for each pass.
-
-**Plan Iteration Loop (MANDATORY for Simple+):**
-1. Complete draft from Phase 1
-2. Submit to `mcp__codex__codex` with plan content for review
-3. Read Codex feedback, incorporate into plan
-4. This completes iteration 1
-5. For Standard/Complex subsequent iterations:
-   - Reference first Codex review feedback
-   - Only re-submit to Codex if major changes made
-   - Each iteration must still deepen analysis (edge cases, error handling, etc.)
-6. Output "Plan Iteration N of M" for each pass
-
-**Codex submission format:**
-```
-mcp__codex__codex({
-  prompt: "Review this implementation plan: [plan content].
-           Check for: completeness, edge cases, error handling,
-           test strategy, implementation clarity."
-})
-```
 
 **Questions to consider (ask via `AskUserQuestion` tool if needed):**
 - Scope: What's included/excluded?
@@ -625,12 +595,23 @@ mcp__codex__codex({
 - **REQUIRED:** Execute `Skill({ skill: "verification-before-completion" })` - not just load.
 - **REQUIRED:** Show verification output in gate.
 - **REQUIRED:** Run `TaskList` to verify all tasks are completed.
-- Run completion validation; `bun run ci`.
+- Run completion validation.
 - Document evidence (exit codes, test counts, warnings).
 - Update README/docs if behavior changed.
 - Update Linear issue if configured; otherwise note status in response.
 - **Iteration tracking:** Output "Verification Iteration N of M" for each pass.
-- **GATE-DONE:** List all gates passed (1-7) + evidence + iteration counts + TaskList output before completion claim.
+
+### Phase 8: CI Validation ⚠️ MANDATORY FINAL STEP
+- **STOP: Output GATE-8 before claiming completion.**
+- **REQUIRED:** Run CI commands in this priority:
+  1. `bun run ci` (if available)
+  2. `npm run ci` / `pnpm run ci` (if bun unavailable)
+  3. Fallback: `<pkg> run lint && <pkg> run test && <pkg> run build` (if no ci script, where `<pkg>` is bun/npm/pnpm)
+- **REQUIRED:** Show full CI output with exit code 0 in gate.
+- If no CI/lint/test/build scripts exist: document this explicitly in GATE-8.
+- This phase runs AFTER Phase 7 verification - it is the absolute last check.
+- **No completion claim without GATE-8 passing.**
+- **GATE-DONE:** List all gates passed (1-8) + evidence + iteration counts + TaskList output before completion claim.
 </workflows>
 <skill-routing-table>
 ### Planning & Context (triggers: plan/design/requirements/docs)

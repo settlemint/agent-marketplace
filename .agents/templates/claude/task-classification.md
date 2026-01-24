@@ -42,6 +42,7 @@ REQUIRED SKILLS (invoke Skill() tool before GATE-3):
 REQUIRED PHASES:
 - [ ] Phase 3: Implementation (TaskCreate -> Code -> TaskUpdate)
 - [ ] Phase 7: Verification (min 1 iteration)
+- [ ] Phase 8: CI Validation → GATE-8
 
 ITERATION TRACKING:
 - Plan Refinement: 0 required
@@ -66,6 +67,7 @@ REQUIRED PHASES (output gate with PROOF before each):
 - [ ] Phase 5: Testing → GATE-5
 - [ ] Phase 6: Review (1 pass) → GATE-6 ⚠️ DON'T SKIP
 - [ ] Phase 7: Verification → GATE-7
+- [ ] Phase 8: CI Validation → GATE-8
 
 ITERATION TRACKING:
 - Plan Refinement: 1 required | Completed: ___
@@ -97,6 +99,7 @@ REQUIRED PHASES (output gate with PROOF before each):
 - [ ] Phase 5: Testing → GATE-5
 - [ ] Phase 6: Review (2+) → GATE-6 ⚠️ TRACK ITERATIONS
 - [ ] Phase 7: Verification (2+) → GATE-7 ⚠️ TRACK ITERATIONS
+- [ ] Phase 8: CI Validation → GATE-8
 
 ITERATION TRACKING:
 - Plan Refinement: 2+ required | Completed: ___
@@ -130,6 +133,7 @@ REQUIRED PHASES (output gate with PROOF before each):
 - [ ] Phase 5: Testing → GATE-5
 - [ ] Phase 6: Review (5+, security) → GATE-6 ⚠️ TRACK ITERATIONS
 - [ ] Phase 7: Verification (5+) → GATE-7 ⚠️ TRACK ITERATIONS
+- [ ] Phase 8: CI Validation → GATE-8
 
 ITERATION TRACKING:
 - Plan Refinement: 5+ required | Completed: ___
