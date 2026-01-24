@@ -101,7 +101,7 @@ Gate requirements:
 - GATE-5 Testing: test file exists + test output with exit code shown (or explicit "no tests possible" justification).
 - GATE-6 Review: `Skill({ skill: "review" })` tool call visible + review output shown. "Manual review" is NOT acceptable.
 - GATE-7 Verification: verification commands run IN THIS MESSAGE with exit code 0 shown + all tasks marked completed.
-- GATE-8 CI Validation: `bun run ci` (or fallback: lint+test+build) executed IN THIS MESSAGE with exit code 0 shown.
+- GATE-8 CI Validation: `bun run ci` (or `npm/pnpm run ci`, or fallback: lint+test+build) executed IN THIS MESSAGE with exit code 0 shown.
 - GATE-DONE Completion: all evidence compiled + TaskList shows all tasks completed.
 
 **Loading ≠ Following:** Invoking a skill means you MUST follow its instructions. Loading TDD then writing code without tests = violation.
