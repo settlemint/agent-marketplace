@@ -15,7 +15,7 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 **ALWAYS**
 - **Output classification checklist as ABSOLUTE FIRST action** - before any tools, exploration, or planning.
 - **If Plan Mode active, classification precedes exploration** - output PLAN-GATE-1 after classification.
-- **Classification determines which gates are required** - Trivial needs fewer, Complex needs more.
+- **Classification determines which gates are required** - Trivial needs fewer, Standard needs more.
 - **Task tracking before implementation:** Use `TaskCreate` to create tasks, `TaskUpdate({ status: "in_progress" })` before starting work.
 - **Task completion after implementation:** Use `TaskUpdate({ status: "completed" })` after each task is done.
 - **Task dependencies:** Use `TaskUpdate({ addBlockedBy: [...] })` to establish task ordering.
@@ -57,7 +57,7 @@ Skill({ skill: "test-driven-development" })
 Skill({ skill: "verification-before-completion" })
 ```
 
-If Standard/Complex, also before GATE-2:
+If Standard, also before GATE-2:
 ```
 Skill({ skill: "ask-questions-if-underspecified" })
 ```
@@ -83,7 +83,7 @@ When modifying existing code:
 Output immediately after classification:
 
 ```
-CLASSIFICATION: [Trivial|Simple|Standard|Complex]
+CLASSIFICATION: [Trivial|Simple|Standard]
 
 REQUIRED SKILLS (load before implementation):
 - [ ] verification-before-completion (ALL tasks)
@@ -96,7 +96,7 @@ REQUIRED PHASES:
 - [ ] Phase 7: Verification
 - [ ] [additional phases per classification]
 
-ITERATIONS: Plan Refinement [1|2|5+] | Review [1|2|5+] | Verification [1|2|5+]
+ITERATIONS: Plan Refinement [1|5+] | Review [1|5+] | Verification [1|5+]
 ```
 
 ### Phase Gates (MANDATORY - ALL OF THEM)
@@ -113,7 +113,7 @@ Gate requirements:
 - GATE-3 Implementation: `Skill({ skill: "test-driven-development" })` tool call visible + **backfill check done (if modifying existing file without tests → tests added first)** + Tasks created (or TodoWrite fallback) + task status set to in_progress + parallel agents considered for 2+ independent tasks (with appropriate `name` and `mode`).
 - GATE-4 Cleanup: all implementation tasks complete (TaskList shows no pending tasks for current work).
 - GATE-5 Testing: test file exists + test output with exit code shown (or explicit "no tests possible" justification).
-- GATE-6 Review: `Skill({ skill: "review" })` tool call visible + review output shown. "Manual review" is NOT acceptable.
+- GATE-6 Review: `Skill({ skill: "review" })` tool call visible + review output shown + `codex review --uncommitted` executed (Simple+) with P1/P2 issues fixed. Standard tasks also require `differential-review` and security review. "Manual review" is NOT acceptable.
 - GATE-7 Verification: verification commands run IN THIS MESSAGE with exit code 0 shown + all tasks marked completed.
 - GATE-8 CI Validation: `bun run ci` (or `npm/pnpm run ci`, or fallback: lint+test+build) executed IN THIS MESSAGE with exit code 0 shown.
   - **NOTE:** CI commands use turborepo—run from repository root folder.
@@ -141,6 +141,7 @@ Before saying "done" or "complete", confirm evidence for:
 - All gates output (count them: did you output GATE-1 through GATE-8?)
 - Phase 2 executed (not skipped) — show questions asked
 - Phase 6 executed (not skipped) — show review output
+- **Codex review executed (Simple+)** — show `codex review --uncommitted` output, P1/P2 issues fixed
 - Required skills loaded via Skill() tool (not just mentioned) — search for `<invoke name="Skill">`
 - Verification skill executed (not just loaded)
 - Verification command exit code 0

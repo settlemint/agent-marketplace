@@ -42,7 +42,7 @@ CREW-CLAUDE LOADED:
 
 These files contain:
 - **Philosophy** — Development mindset, non-negotiables, coding style, security guards
-- **Task Classification** — Trivial/Simple/Standard/Complex with minimum steps
+- **Task Classification** — Trivial/Simple/Standard with minimum steps
 - **Hard Requirements** — Gates that BLOCK progress if not met
 - **Anti-Patterns** — Failure modes that result in rejected work
 - **Workflows** — The 8-phase process with gates
