@@ -76,6 +76,7 @@ ITERATION TRACKING:
 
 SELF-CHECKS:
 - Before GATE-2: search context for `Skill.*ask-questions`. If not found, STOP.
+- Before PLAN-GATE-2: search context for `mcp__codex`. If not found (and MCP available), STOP.
 - Before GATE-3: search context for `Skill.*test-driven`. If not found, STOP.
 - Before GATE-5: verify test file exists or explain why tests N/A.
 - Before GATE-6: search context for `Skill.*review`. If not found, STOP.
@@ -107,6 +108,7 @@ ITERATION TRACKING:
 
 SELF-CHECKS:
 - Before GATE-2: search context for `Skill.*ask-questions`. If not found, STOP.
+- Before PLAN-GATE-2: search context for `mcp__codex`. If not found (and MCP available), STOP.
 - Before GATE-3: search context for `Skill.*test-driven`. If not found, STOP.
 - Before GATE-5: verify test file exists or explain why tests N/A.
 - Before GATE-6: search context for `Skill.*review`. If not found, STOP.
@@ -298,6 +300,8 @@ When `system-reminder` indicates "Plan mode is active":
 - Classification output (still FIRST)
 - Skill loading (ask-questions-if-underspecified before PLAN-GATE-2)
 - AskUserQuestion tool usage (never plain text questions)
+- Codex plan review for Simple+ (invoke `mcp__codex__codex` with plan content)
+- Plan iteration counts per classification (Simple=1, Standard=2+, Complex=5+)
 </hard-requirements>
 <anti-patterns>
 ## Anti-Patterns (Never)
@@ -339,6 +343,13 @@ When `system-reminder` indicates "Plan mode is active":
 - Iteration shortcut: "did 1 iteration, that's enough" for Standard -> Standard requires 2+ iterations.
 - Shallow iteration: repeating same check without deepening -> each iteration must add: edge cases, error handling, test strategy.
 - Uncounted iterations: not tracking iteration count -> output "Iteration N of M" for each pass.
+
+### Plan Iteration Failures
+- Single plan pass: "wrote plan once" for Standard -> Standard requires 2+ plan iterations with Codex review.
+- Skipped Codex review: plan for Simple+ without `mcp__codex__codex` call (and MCP was available).
+- Shallow plan iteration: same plan repeated without incorporating Codex feedback or deepening analysis.
+- Counted draft without review: calling draft "iteration 1" without Codex review -> iteration = draft + review + revise.
+- Classification downgrade to dodge review: marking task as Trivial to skip Codex -> classify correctly first.
 
 ### Verification Failures
 - Unverified completion: claim done without verification -> run `Skill({ skill: "verification-before-completion" })` with evidence.
@@ -394,6 +405,7 @@ PLAN-GATE-1 CHECK:
 - [ ] Codebase exploration complete (mcp__octocode__* for code search, Explore agent for structure)
 - [ ] Library docs checked (mcp__context7__* for external libs, local docs for project)
 - [ ] Web research done if needed (mcp__exa__* for current info, code examples, company research)
+- [ ] Plan iteration tracking started (Iteration 1 of N per classification)
 STATUS: PASS | BLOCKED
 ```
 
@@ -403,6 +415,9 @@ PLAN-GATE-2 CHECK:
 - [ ] Implementation approach documented
 - [ ] Critical files identified
 - [ ] Questions asked (via AskUserQuestion) if ambiguous
+- [ ] Codex review completed and incorporated (Simple+): `mcp__codex__codex` invoked, feedback shown
+      OR "Codex unavailable - manual review checklist completed" (documented exception)
+- [ ] Plan iteration N of M complete (per classification: Simple=1, Standard=2+, Complex=5+)
 - [ ] Plan written to plan file
 STATUS: PASS | BLOCKED
 ```
@@ -413,6 +428,42 @@ STATUS: PASS | BLOCKED
 - PLAN-GATE-1 → Phase 1 (Planning)
 - PLAN-GATE-2 → Phase 2 (Plan Refinement)
 - After approval → Phase 3+ (Implementation onwards)
+
+**Plan Iteration Requirements (plans iterate like code):**
+
+**Definition:** One plan iteration = draft → Codex review → revision
+
+**Iteration counts per classification:**
+- **Trivial:** 0 iterations (no planning phase)
+- **Simple:** 1 iteration (draft → Codex review → revise)
+- **Standard:** 2+ iterations (Codex review on iteration 1; subsequent iterations reference first review, re-submit only if major changes)
+- **Complex:** 5+ iterations (Codex review on iteration 1; subsequent iterations reference first review, re-submit only if major changes)
+
+**Each iteration must deepen:**
+- Requirements clarity
+- Edge case handling
+- Error scenarios
+- Test strategy
+- Implementation approach
+
+**MCP Unavailability Fallback (autonomous - no user approval required):**
+If `mcp__codex__codex` fails or is unavailable:
+1. Document exception: "Codex review skipped - MCP unavailable"
+2. Complete manual review checklist:
+   - [ ] Plan addresses all user requirements
+   - [ ] Edge cases identified
+   - [ ] Error handling specified
+   - [ ] Test strategy defined
+   - [ ] Implementation steps are concrete
+3. Proceed autonomously - mark gate as PASS with documented exception
+
+**Iteration tracking format:**
+```
+Plan Iteration 1 of 2:
+- Focus: [what this iteration addresses]
+- Codex feedback: [summary of mcp__codex response]
+- Changes made: [what was refined]
+```
 
 ---
 
@@ -475,7 +526,8 @@ Multi-Session Collaboration:
 - Deep research for complex topics (mcp__exa__deep_researcher_start → mcp__exa__deep_researcher_check).
 - If modifying existing behavior: `Skill({ skill: "systematic-debugging" })`.
 - Draft plan with file paths and 2-5 minute tasks; mark parallelizable tasks.
-- If complex/architectural: `mcp__codex` (Claude Code only).
+- Draft initial plan (this is iteration 1 draft, not complete iteration).
+- **Codex review happens in Phase 2** - do not submit to Codex here.
 - If Linear configured: find issue, then comment plan.
 
 ### Phase 2: Plan Refinement ⚠️ COMMONLY SKIPPED
@@ -495,9 +547,28 @@ Multi-Session Collaboration:
 **Both modes:**
 - Even "simple ports" have ambiguity: error handling idioms, edge cases, output format, version compatibility.
 - Review plan vs requirements; update.
-- Deep review: `mcp__codex` (Claude Code) or manual (Codex).
 - Each iteration must deepen: requirements clarity, edge cases, error handling, test strategy.
 - **Iteration tracking:** Output "Plan Refinement Iteration N of M" for each pass.
+
+**Plan Iteration Loop (MANDATORY for Simple+):**
+1. Complete draft from Phase 1
+2. Submit to `mcp__codex__codex` with plan content for review
+3. Read Codex feedback, incorporate into plan
+4. This completes iteration 1
+5. For Standard/Complex subsequent iterations:
+   - Reference first Codex review feedback
+   - Only re-submit to Codex if major changes made
+   - Each iteration must still deepen analysis (edge cases, error handling, etc.)
+6. Output "Plan Iteration N of M" for each pass
+
+**Codex submission format:**
+```
+mcp__codex__codex({
+  prompt: "Review this implementation plan: [plan content].
+           Check for: completeness, edge cases, error handling,
+           test strategy, implementation clarity."
+})
+```
 
 **Questions to consider (ask via `AskUserQuestion` tool if needed):**
 - Scope: What's included/excluded?
@@ -622,7 +693,9 @@ Multi-Session Collaboration:
 
 ### Framework-Specific (triggers: React/Next.js/TypeScript/auth/query)
 - React perf/Next.js/bundle/SSR/RSC -> `Skill({ skill: "vercel-react-best-practices" })`
-- TanStack/React Query/useQuery/useMutation -> `Skill({ skill: "tanstack-query" })`
+- TanStack Query/Router/Start/Form docs -> `mcp__tanstack__tanstack_search_docs` or `mcp__tanstack__tanstack_doc`
+- TanStack libraries/ecosystem -> `mcp__tanstack__tanstack_list_libraries` or `mcp__tanstack__tanstack_ecosystem`
+- create TanStack app/scaffold project -> `mcp__tanstack__createTanStackApplication`
 - generic/conditional/mapped/infer/template literal -> `Skill({ skill: "typescript-advanced-types" })`
 - Better Auth/auth setup/session/OAuth -> `Skill({ skill: "better-auth-best-practices" })`
 - add auth/auth layer/auth feature -> `Skill({ skill: "create-auth-skill" })`
