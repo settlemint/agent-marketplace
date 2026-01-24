@@ -57,6 +57,20 @@ $ask-questions-if-underspecified
 
 **Self-check:** Confirm you explicitly invoked required skills (or documented unavailability) in the transcript.
 
+### Test Backfilling (MANDATORY)
+
+When modifying existing code:
+- **If file has no tests → add tests BEFORE modifying**
+- This is not optional: "Existing code has no tests → You're improving it. Add tests."
+- Applies to: bug fixes, refactors, behavior changes, any file touch
+- **Minimum coverage:** Test the behavior you're changing/touching
+
+**Self-check before modifying any file:**
+1. Does a test file exist for this file? (e.g., `foo.ts` → `foo.test.ts`)
+2. If no → create test file, add tests for existing behavior first
+3. If yes → verify tests cover the code you're about to change
+4. Only then proceed with TDD for new changes
+
 ### Classification Checklist (MANDATORY)
 
 Output immediately after classification:
@@ -89,7 +103,7 @@ Before each phase, output a gate check. Do not proceed if a gate is BLOCKED. Do 
 Gate requirements:
 - GATE-1 Planning: classification stated + checklist output + research complete (mcp__octocode__* for code, mcp__context7__* for docs, mcp__exa__* for web/company research).
 - GATE-2 Plan Refinement: explicit `$ask-questions-if-underspecified` invocation (Standard/Complex). **Local:** at least one clarifying question asked. **Remote:** questions optional unless genuinely ambiguous.
-- GATE-3 Implementation: explicit `$test-driven-development` + `$verification-before-completion` invocation + TODO list started + parallel-thread check documented.
+- GATE-3 Implementation: explicit `$test-driven-development` + `$verification-before-completion` invocation + **backfill check done (if modifying existing file without tests → tests added first)** + TODO list started + parallel-thread check documented.
 - GATE-4 Cleanup: all implementation TODOs complete.
 - GATE-5 Testing: test file exists + test output with exit code shown (or explicit "no tests possible" justification).
 - GATE-6 Review: run `/review` (preferred) or provide a structured review checklist with file/line references; show output. Manual review is NOT acceptable.

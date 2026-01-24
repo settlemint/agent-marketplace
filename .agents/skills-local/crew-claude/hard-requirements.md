@@ -64,6 +64,20 @@ Skill({ skill: "ask-questions-if-underspecified" })
 
 **Self-check:** Search your context for `<invoke name="Skill">`. If not found, you have not loaded skills.
 
+### Test Backfilling (MANDATORY)
+
+When modifying existing code:
+- **If file has no tests → add tests BEFORE modifying**
+- This is not optional: "Existing code has no tests → You're improving it. Add tests."
+- Applies to: bug fixes, refactors, behavior changes, any file touch
+- **Minimum coverage:** Test the behavior you're changing/touching
+
+**Self-check before modifying any file:**
+1. Does a test file exist for this file? (e.g., `foo.ts` → `foo.test.ts`)
+2. If no → create test file, add tests for existing behavior first
+3. If yes → verify tests cover the code you're about to change
+4. Only then proceed with TDD for new changes
+
 ### Classification Checklist (MANDATORY)
 
 Output immediately after classification:
@@ -96,7 +110,7 @@ Before each phase, output a gate check. Do not proceed if BLOCKED. Do not skip g
 Gate requirements:
 - GATE-1 Planning: classification stated + checklist output + research complete (mcp__octocode__* for code, mcp__context7__* for docs, mcp__exa__* for web/company research).
 - GATE-2 Plan Refinement: `Skill({ skill: "ask-questions-if-underspecified" })` tool call visible. **Local:** `AskUserQuestion` tool used. **Remote:** questions optional unless genuinely ambiguous.
-- GATE-3 Implementation: `Skill({ skill: "test-driven-development" })` tool call visible + Tasks created (or TodoWrite fallback) + task status set to in_progress + parallel agents considered for 2+ independent tasks (with appropriate `name` and `mode`).
+- GATE-3 Implementation: `Skill({ skill: "test-driven-development" })` tool call visible + **backfill check done (if modifying existing file without tests → tests added first)** + Tasks created (or TodoWrite fallback) + task status set to in_progress + parallel agents considered for 2+ independent tasks (with appropriate `name` and `mode`).
 - GATE-4 Cleanup: all implementation tasks complete (TaskList shows no pending tasks for current work).
 - GATE-5 Testing: test file exists + test output with exit code shown (or explicit "no tests possible" justification).
 - GATE-6 Review: `Skill({ skill: "review" })` tool call visible + review output shown. "Manual review" is NOT acceptable.

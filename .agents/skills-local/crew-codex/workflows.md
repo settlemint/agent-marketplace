@@ -120,6 +120,10 @@ STATUS: PASS | BLOCKED
 - **STOP: Output GATE-3 before proceeding.**
 - **REQUIRED:** Activate `$test-driven-development` and `$verification-before-completion`.
 - **Self-check before proceeding:** Confirm explicit skill invocations are in the transcript.
+- **Backfill check:** Before modifying any existing file:
+  1. Check if test file exists (e.g., `foo.ts` → `foo.test.ts`)
+  2. If no tests → add tests for existing behavior FIRST
+  3. Then proceed with TDD for new changes
 - **Task generation (use strict format above):**
   1. Break work into **MANY small atomic tasks** — prefer 10+ tasks over 3 vague ones
   2. Each task = single file + clear action: `[T001] [P] Create User model in src/models/user.ts`

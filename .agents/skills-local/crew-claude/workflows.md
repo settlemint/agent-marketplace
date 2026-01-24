@@ -158,6 +158,10 @@ Multi-Session Collaboration:
   - `Skill({ skill: "verification-before-completion" })` - load now, execute in Phase 7.
 - **Self-check before proceeding:** Search context for `<invoke name="Skill">`. If not found, STOP.
 - **Loading = Commitment:** Once you invoke a skill, you MUST follow its instructions. No exceptions.
+- **Backfill check:** Before modifying any existing file:
+  1. Check if test file exists (e.g., `foo.ts` → `foo.test.ts`)
+  2. If no tests → add tests for existing behavior FIRST
+  3. Then proceed with TDD for new changes
 - **Task generation (use strict format above):**
   1. Break work into **MANY small atomic tasks** — prefer 10+ tasks over 3 vague ones
   2. Each task = single file + clear action: `[T001] [P] Create User model in src/models/user.ts`
