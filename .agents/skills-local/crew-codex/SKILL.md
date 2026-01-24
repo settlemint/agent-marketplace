@@ -1,3 +1,8 @@
+---
+name: crew-codex
+description: Complete development workflow for Codex. Defines philosophy, task classification, hard requirements, anti-patterns, and 8-phase development process with spawn_agent.
+---
+
 # Crew Codex Skill
 
 ## MANDATORY LOADING — NO EXCEPTIONS
