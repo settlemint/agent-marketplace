@@ -49,3 +49,19 @@
 - Implied evidence: "I ran the tests" without showing output -> paste actual command output.
 - Exit code assumption: "command succeeded" without checking -> show exit code 0 explicitly.
 - Selective evidence: showing passing tests, hiding failures -> show full output.
+
+### Self-Check Questions
+
+Before each phase, ask yourself:
+
+**Before any action**: "Did I output classification?"
+**Before exploration**: "Did I output PLAN-GATE-1?" (if in plan mode)
+**Before writing plan**: "Did I output PLAN-GATE-2?" (if in plan mode)
+**Before Write/Edit**: "Did I output GATE-3 and start the TODO list?"
+**Before claiming done**: "Did I output all required gates?"
+
+If the answer to any question is "no", STOP and output the missing gate/classification first.
+
+### Task Management Failures
+- Orphan tasks: creating TODOs without tracking completion -> keep TODO list updated until completion.
+- Missing dependencies: parallel tasks that should be sequential -> mark dependent items and avoid parallelization.

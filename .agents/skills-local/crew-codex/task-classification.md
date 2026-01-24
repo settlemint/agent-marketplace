@@ -16,6 +16,14 @@ Classify before implementation. When in doubt, classify up.
 - **Standard:** multi-file/behavior change. Steps: all phases, minimum 2 iterations each. Skip none.
 - **Complex:** architectural/cross-cutting/security-sensitive. Steps: all phases, 5+ iterations each. Skip none.
 
+### Task Management
+
+Use the TODO checklist as the primary task tracker.
+- Start with a numbered task list in Phase 3.
+- Mark tasks `in_progress` before code changes.
+- Mark tasks `completed` after each atomic change.
+- Use `[P]` in task IDs to denote parallelizable items.
+
 ### Checklists (output immediately after classification)
 
 #### Trivial
