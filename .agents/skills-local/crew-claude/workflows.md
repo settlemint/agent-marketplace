@@ -220,9 +220,9 @@ TaskCreate({ subject: "[R003] [P] Quality review", description: "Apply quality-r
 
 **Step 2: Dispatch ALL THREE in a SINGLE message (parallel execution)**
 ```
-Task({ subagent_type: "general-purpose", description: "Simplicity review", prompt: "Read ./iterations/simplicity-reviewer.md and apply to changed files: [files]. Output VERDICT." })
-Task({ subagent_type: "general-purpose", description: "Completeness review", prompt: "Read ./iterations/completeness-reviewer.md. Original request: [quote]. Output VERDICT." })
-Task({ subagent_type: "general-purpose", description: "Quality review", prompt: "Read ./iterations/quality-reviewer.md and apply to: [files]. Output VERDICT." })
+Task({ subagent_type: "general-purpose", description: "Simplicity review", prompt: "Read .agents/skills-local/crew-claude/iterations/simplicity-reviewer.md and apply to changed files: [files]. Output VERDICT." })
+Task({ subagent_type: "general-purpose", description: "Completeness review", prompt: "Read .agents/skills-local/crew-claude/iterations/completeness-reviewer.md. Original request: [quote]. Output VERDICT." })
+Task({ subagent_type: "general-purpose", description: "Quality review", prompt: "Read .agents/skills-local/crew-claude/iterations/quality-reviewer.md and apply to: [files]. Output VERDICT." })
 ```
 
 **CRITICAL**: Multiple Task() calls in ONE message = parallel. Separate messages = sequential.
@@ -237,9 +237,9 @@ TaskList()  // verify all complete
 
 | Agent | File | Focus | Verdict Format |
 |-------|------|-------|----------------|
-| Simplicity | `./iterations/simplicity-reviewer.md` | YAGNI, LOC reduction | `PASS \| NEEDS_SIMPLIFICATION` |
-| Completeness | `./iterations/completeness-reviewer.md` | Spec compliance | `PASS \| INCOMPLETE \| OVERBUILT` |
-| Quality | `./iterations/quality-reviewer.md` | Patterns, security, perf | `PASS \| NEEDS_FIXES` |
+| Simplicity | `.agents/skills-local/crew-claude/iterations/simplicity-reviewer.md` | YAGNI, LOC reduction | `PASS \| NEEDS_SIMPLIFICATION` |
+| Completeness | `.agents/skills-local/crew-claude/iterations/completeness-reviewer.md` | Spec compliance | `PASS \| INCOMPLETE \| OVERBUILT` |
+| Quality | `.agents/skills-local/crew-claude/iterations/quality-reviewer.md` | Patterns, security, perf | `PASS \| NEEDS_FIXES` |
 
 **Optional: Tech-Stack Reviewers (4th parallel agent)**
 For Standard/Complex tasks, add a tech-specific review agent that applies curated OSS review guidelines:
@@ -258,7 +258,7 @@ GATE-6 CHECK:
 STATUS: PASS | BLOCKED
 ```
 
-See `./iterations/parallel-review-dispatch.md` for full dispatch template.
+See `.agents/skills-local/crew-claude/iterations/parallel-review-dispatch.md` for full dispatch template.
 
 ### Phase 7: Verification (iterations per classification)
 - **STOP: Output GATE-7 before proceeding.**

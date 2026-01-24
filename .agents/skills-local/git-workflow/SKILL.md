@@ -731,6 +731,8 @@ Fix all unresolved PR review comments and CI failures with educational feedback.
 ! gh pr checks 2>/dev/null | head -20 || echo "No checks"
 # Get unresolved review threads (uses GraphQL API - reviewThreads field doesn't exist in gh pr view)
 ! .agents/skills-local/git-workflow/scripts/get-unresolved-threads.sh 2>/dev/null | head -30 || echo "No unresolved threads"
+# Get PR issue comments (general comments like Codex/Gemini reviews, not inline threads)
+! .agents/skills-local/git-workflow/scripts/get-issue-comments.sh --actionable 2>/dev/null | head -30 || echo "No issue comments"
 ```
 
 ### Workflow
@@ -738,17 +740,23 @@ Fix all unresolved PR review comments and CI failures with educational feedback.
 #### 1. Parse Context
 
 Extract from the data above:
-- Unresolved review threads (file path, line, comment)
+- Unresolved review threads (file path, line, comment) - inline code comments
+- Issue comments (general PR comments like Codex/Gemini reviews) - often contain code suggestions
 - Failed CI checks
 - Current branch state
 
 #### 2. Fix Issues
 
-For each unresolved thread or CI failure:
-1. Read the file mentioned
+For each unresolved thread, issue comment, or CI failure:
+1. Read the file mentioned (for threads) or parse the code suggestion (for issue comments)
 2. Understand the reviewer's concern
 3. Make the appropriate code fix
 4. Consider if reviewer was correct, partially correct, or incorrect
+
+**Issue comments** (like Codex or Gemini reviews) often contain:
+- Code suggestions with file paths and line numbers
+- Priority labels (P0, P1, P2)
+- Specific fix recommendations in code blocks
 
 #### 3. Run Local Validation
 
