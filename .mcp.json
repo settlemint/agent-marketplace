@@ -1,0 +1,52 @@
+{
+  "mcpServers": {
+    "linear": {
+      "type": "http",
+      "url": "https://mcp.linear.app/mcp"
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp/oauth"
+    },
+    "exa": {
+      "type": "http",
+      "url": "https://mcp.exa.ai/mcp?tools=web_search_exa,web_search_advanced_exa,get_code_context_exa,deep_search_exa,crawling_exa,company_research_exa,linkedin_search_exa,deep_researcher_start,deep_researcher_check"
+    },
+    "octocode": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "octocode-mcp@latest"
+      ]
+    },
+    "shadcn": {
+      "command": "npx",
+      "args": [
+        "shadcn@latest",
+        "mcp"
+      ]
+    },
+    "codex": {
+      "command": "codex",
+      "args": [
+        "-m",
+        "gpt-5.2-codex",
+        "-c",
+        "model_reasoning_effort=xhigh",
+        "mcp-server"
+      ],
+      "_note": "Claude Code only - do not configure in Codex"
+    },
+    "restate-docs": {
+      "type": "http",
+      "url": "https://docs.restate.dev/mcp"
+    },
+    "tanstack": {
+      "command": "npx",
+      "args": [
+        "@tanstack/cli",
+        "mcp"
+      ]
+    }
+  }
+}
