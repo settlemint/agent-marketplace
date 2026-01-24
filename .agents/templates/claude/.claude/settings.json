@@ -6,11 +6,16 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/scripts/web/session-start/setup.sh"
-          },
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/scripts/web/session-start/setup.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
           {
             "type": "prompt",
-            "prompt": "MANDATORY: Load the crew-claude skill now by invoking: Skill({ skill: \"crew-claude\" }). Then read all files listed in the SKILL.md and output the CREW-CLAUDE LOADED verification checklist before proceeding with any work."
+            "prompt": "BLOCKED - SESSION START GATE\n\nYou CANNOT proceed with ANY user request until you:\n1. Invoke: Skill({ skill: \"crew-claude\" })\n2. Read all 6 workflow files listed in SKILL.md\n3. Output CREW-CLAUDE LOADED verification checklist\n\nThis is non-negotiable. Your FIRST action must be the Skill() invocation. Do NOT explore, read files, or start planning until the verification checklist is output."
           }
         ]
       }
@@ -21,7 +26,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "CONTEXT COMPACTING: After compaction completes, you MUST reload the crew-claude skill by invoking: Skill({ skill: \"crew-claude\" }) and reading all files listed in the SKILL.md. Output the CREW-CLAUDE LOADED verification checklist before continuing work."
+            "prompt": "BLOCKED - POST-COMPACTION GATE\n\nContext was compacted. You CANNOT continue work until you:\n1. Invoke: Skill({ skill: \"crew-claude\" })\n2. Read all 6 workflow files listed in SKILL.md\n3. Output CREW-CLAUDE LOADED verification checklist\n\nYour NEXT action must be the Skill() invocation. Do NOT continue previous work until verification is output."
           }
         ]
       }
@@ -32,7 +37,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/scripts/validation/warn-write.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/scripts/validation/warn-write.sh"
           }
         ]
       },
@@ -41,7 +46,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/scripts/validation/warn-edit.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/scripts/validation/warn-edit.sh"
           }
         ]
       }
