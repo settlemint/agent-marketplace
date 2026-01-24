@@ -1,3 +1,8 @@
+---
+name: crew-claude
+description: Complete development workflow for Claude Code. Defines philosophy, task classification, hard requirements, anti-patterns, and 8-phase development process.
+---
+
 # Crew Claude Skill
 
 ## MANDATORY LOADING — NO EXCEPTIONS
