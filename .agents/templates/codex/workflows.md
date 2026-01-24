@@ -92,9 +92,20 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 ### Phase 7: Verification (iterations per classification)
 - **STOP: Output GATE-7 before proceeding.**
 - **REQUIRED:** Execute verification commands and show output (exit code 0).
-- Run completion validation; `bun run ci`.
+- Run completion validation.
 - Document evidence (exit codes, test counts, warnings).
 - Update README/docs if behavior changed.
 - Update Linear issue if configured; otherwise note status in response.
 - **Iteration tracking:** Output "Verification Iteration N of M" for each pass.
-- **GATE-DONE:** List all gates passed (1-7) + evidence + iteration counts before completion claim.
+
+### Phase 8: CI Validation ⚠️ MANDATORY FINAL STEP
+- **STOP: Output GATE-8 before claiming completion.**
+- **REQUIRED:** Run CI commands in this priority:
+  1. `bun run ci` (if available)
+  2. `npm run ci` / `pnpm run ci` (if bun unavailable)
+  3. Fallback: `bun run lint && bun run test && bun run build` (if no ci script)
+- **REQUIRED:** Show full CI output with exit code 0 in gate.
+- If no CI/lint/test/build scripts exist: document this explicitly in GATE-8.
+- This phase runs AFTER Phase 7 verification - it is the absolute last check.
+- **No completion claim without GATE-8 passing.**
+- **GATE-DONE:** List all gates passed (1-8) + evidence + iteration counts before completion claim.

@@ -39,6 +39,7 @@
 - Partial verification: "syntax check passed" as full verification -> run project CI if available.
 - Stale evidence: "tests passed earlier" -> run fresh verification before completion claim.
 - Activation without execution: activated verification skill but never ran verification -> execute and show output.
+- CI skip: claiming done without running `bun run ci` or fallback -> GATE-8 is mandatory for all classifications.
 
 ### Implementation Failures
 - **Sequential when parallel possible:** executing 2+ independent tasks one-by-one -> use parallel Codex threads.

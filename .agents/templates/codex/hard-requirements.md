@@ -15,7 +15,7 @@ Check `CODEX_INTERNAL_ORIGINATOR_OVERRIDE` environment variable at session start
 **ALWAYS**
 - Maintain a visible TODO checklist in the response. Mark in-progress before writing production code; mark completed after implementation.
 - Activate required skills explicitly via `/skills` or `$skill-name` when a phase mandates them (or state that the skill is unavailable and follow equivalent manual steps).
-- Output EVERY gate check (GATE-1 through GATE-7) - not just first few.
+- Output EVERY gate check (GATE-1 through GATE-8) - not just first few.
 - Provide verification evidence (command output/test results with exit code 0) before claiming done.
 - Use at least one skill per implementation task (minimum: `verification-before-completion`), or explicitly state why no skills are available in this environment.
 - Immediately after classification, output the Classification Checklist.
@@ -89,6 +89,7 @@ Gate requirements:
 - GATE-5 Testing: test file exists + test output with exit code shown (or explicit "no tests possible" justification).
 - GATE-6 Review: run `/review` (preferred) or provide a structured review checklist with file/line references; show output.
 - GATE-7 Verification: verification commands run IN THIS MESSAGE with exit code 0 shown.
+- GATE-8 CI Validation: `bun run ci` (or fallback: lint+test+build) executed IN THIS MESSAGE with exit code 0 shown.
 - GATE-DONE Completion: all evidence compiled.
 
 **Activation ≠ Following:** Invoking a skill means you MUST follow its instructions. Activating TDD then writing code without tests = violation.
@@ -108,12 +109,13 @@ STATUS: PASS | BLOCKED
 Before saying "done" or "complete", confirm evidence for:
 - TODO checklist started and completed
 - Classification + checklist
-- All gates output (count them: did you output GATE-1 through GATE-7?)
+- All gates output (count them: did you output GATE-1 through GATE-8?)
 - Phase 2 executed (not skipped) — show questions asked
 - Phase 6 executed (not skipped) — show review output
 - Required skills explicitly invoked (not just mentioned)
 - Verification executed
 - Verification command exit code 0
+- CI phase executed (GATE-8) with exit code 0
 
 **Banned phrases:** "looks good", "should work", "Done!", "that's it", "it's just a port", "direct translation", "1:1 conversion", "straightforward"
 - **Local only banned:** "requirements are clear" (allowed in Remote Mode when genuinely clear)
