@@ -138,7 +138,7 @@ git diff --stat | tail -1
 
 **Normal Tasks** (other cases):
 
-- Config: `model_reasoning_effort=high`, timeout 10 minutes
+- Config: `model_reasoning_effort=xhigh`, timeout 10 minutes
 
 **Evaluation Method:**
 
@@ -196,7 +196,7 @@ Go project - Difficult task:
   (timeout: 1800000)
 
 Go project - Normal task:
-  go fmt ./... && go vet ./... && codex review --uncommitted --config model_reasoning_effort=high
+  go fmt ./... && go vet ./... && codex review --uncommitted --config model_reasoning_effort=xhigh
   (timeout: 600000)
 
 Node project - Difficult task:
@@ -204,7 +204,7 @@ Node project - Difficult task:
   (timeout: 1800000)
 
 Node project - Normal task:
-  npm run lint:fix && codex review --uncommitted --config model_reasoning_effort=high
+  npm run lint:fix && codex review --uncommitted --config model_reasoning_effort=xhigh
   (timeout: 600000)
 
 Python project - Difficult task:
@@ -212,11 +212,11 @@ Python project - Difficult task:
   (timeout: 1800000)
 
 Python project - Normal task:
-  black . && ruff check --fix . && codex review --uncommitted --config model_reasoning_effort=high
+  black . && ruff check --fix . && codex review --uncommitted --config model_reasoning_effort=xhigh
   (timeout: 600000)
 
 Clean working directory:
-  codex review --commit HEAD --config model_reasoning_effort=high
+  codex review --commit HEAD --config model_reasoning_effort=xhigh
   (timeout: 600000)
 ```
 
