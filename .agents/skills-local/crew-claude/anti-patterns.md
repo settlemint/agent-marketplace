@@ -27,14 +27,15 @@
 
 ### Phase Skipping
 - Phase 2 skip: "requirements are clear" -> Local: ask anyway. Remote: allowed if ambiguity ≤ 7 (still invoke skill, document assumptions).
-- Phase 6 skip: "code is simple, doesn't need review" -> run `/review` regardless.
+- Phase 6 skip: "code is simple, doesn't need review" -> run `/review` AND `codex review` regardless.
+- **Codex skip:** "my review skill passed" without running `codex review --uncommitted` -> BLOCKED. Both review skill AND codex are required (Simple+).
 - Implicit phases: doing phase work without outputting the gate -> gate output is mandatory.
-- Single iteration: doing 1 pass when classification requires 2+ -> track and show iteration count.
+- Single iteration: doing 1 pass when classification requires 5+ -> track and show iteration count.
 - **Manual review substitution:** "reviewed manually" or "reviewed the code" instead of `Skill({ skill: "review" })` -> tool invocation required.
 - **Port rationalization:** "it's just a port/translation" to skip questions -> ports have ambiguity too (error handling, idioms, edge cases).
 
 ### Iteration Failures
-- Iteration shortcut: "did 1 iteration, that's enough" for Standard -> Standard requires 2+ iterations.
+- Iteration shortcut: "did 1 iteration, that's enough" for Standard -> Standard requires 5+ iterations.
 - Shallow iteration: repeating same check without deepening -> each iteration must add: edge cases, error handling, test strategy.
 - Uncounted iterations: not tracking iteration count -> output "Iteration N of M" for each pass.
 

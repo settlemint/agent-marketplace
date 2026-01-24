@@ -6,15 +6,14 @@ Classify before implementation. When in doubt, classify up.
 
 ### Rules
 1. New file => at least Simple (never Trivial).
-2. Multiple files => at least Standard.
-3. Security/auth/payments => Complex.
+2. Multiple files => Standard.
+3. Security/auth/payments => Standard (with extra security review).
 4. Uncertain => up.
 
 ### Categories (minimum steps / may skip)
 - **Trivial:** single-line/typo/comment only. Steps: TaskCreate -> TaskUpdate(in_progress) -> Implementation -> Verification -> TaskUpdate(completed). May skip: plan refinement, review, deep reasoning.
-- **Simple:** single file, clear scope; new file ok. Steps: TaskCreate -> TaskUpdate(in_progress), Planning (1 pass), Implementation, Testing/syntax check, Verification skill, TaskUpdate(completed). May skip: deep reasoning, security review, multi-iteration review.
-- **Standard:** multi-file/behavior change. Steps: all phases, minimum 2 iterations each. Skip none.
-- **Complex:** architectural/cross-cutting/security-sensitive. Steps: all phases, 5+ iterations each. Skip none.
+- **Simple:** single file, clear scope; new file ok. Steps: TaskCreate -> TaskUpdate(in_progress), Planning (1 pass), Implementation, Testing/syntax check, Verification skill, codex review, TaskUpdate(completed). May skip: deep reasoning, multi-iteration review.
+- **Standard:** multi-file/behavior change/architectural/security-sensitive. Steps: all phases, 5+ iterations each, mcp__codex for planning, differential-review, codex review. Skip none.
 
 ### Task Management Tools
 
@@ -65,7 +64,7 @@ REQUIRED PHASES (output gate with PROOF before each):
 - [ ] Phase 2: Plan Refinement (1 pass) → GATE-2 ⚠️ DON'T SKIP
 - [ ] Phase 3: Implementation → GATE-3
 - [ ] Phase 5: Testing → GATE-5
-- [ ] Phase 6: Review (1 pass) → GATE-6 ⚠️ DON'T SKIP
+- [ ] Phase 6: Review (1 pass, codex) → GATE-6 ⚠️ DON'T SKIP CODEX
 - [ ] Phase 7: Verification → GATE-7
 - [ ] Phase 8: CI Validation → GATE-8
 
@@ -79,43 +78,12 @@ SELF-CHECKS:
 - Before GATE-3: search context for `Skill.*test-driven`. If not found, STOP.
 - Before GATE-5: verify test file exists or explain why tests N/A.
 - Before GATE-6: search context for `Skill.*review`. If not found, STOP.
+- Before GATE-6: verify `codex review --uncommitted` will be run. If skipped, STOP.
 ```
 
 #### Standard
 ```
 CLASSIFICATION: Standard
-MODE: [Local|Remote] ← check CLAUDE_CODE_REMOTE
-
-REQUIRED SKILLS (invoke Skill() tool - checklist is not loading):
-- [ ] verification-before-completion — invoke before GATE-3
-- [ ] test-driven-development — invoke before GATE-3
-- [ ] ask-questions-if-underspecified — invoke before GATE-2 (Local: ask always | Remote: ask only if ambiguous)
-
-REQUIRED PHASES (output gate with PROOF before each):
-- [ ] Phase 1: Planning → GATE-1
-- [ ] Phase 2: Plan Refinement (2+) → GATE-2 ⚠️ TRACK ITERATIONS
-- [ ] Phase 3: Implementation → GATE-3
-- [ ] Phase 4: Cleanup → GATE-4
-- [ ] Phase 5: Testing → GATE-5
-- [ ] Phase 6: Review (2+) → GATE-6 ⚠️ TRACK ITERATIONS
-- [ ] Phase 7: Verification (2+) → GATE-7 ⚠️ TRACK ITERATIONS
-- [ ] Phase 8: CI Validation → GATE-8
-
-ITERATION TRACKING:
-- Plan Refinement: 2+ required | Completed: ___
-- Review: 2+ required | Completed: ___
-- Verification: 2+ required | Completed: ___
-
-SELF-CHECKS:
-- Before GATE-2: search context for `Skill.*ask-questions`. If not found, STOP.
-- Before GATE-3: search context for `Skill.*test-driven`. If not found, STOP.
-- Before GATE-5: verify test file exists or explain why tests N/A.
-- Before GATE-6: search context for `Skill.*review`. If not found, STOP.
-```
-
-#### Complex
-```
-CLASSIFICATION: Complex
 MODE: [Local|Remote] ← check CLAUDE_CODE_REMOTE
 
 REQUIRED SKILLS (invoke Skill() tool - checklist is not loading):
@@ -131,7 +99,7 @@ REQUIRED PHASES (output gate with PROOF before each):
 - [ ] Phase 3: Implementation → GATE-3
 - [ ] Phase 4: Cleanup → GATE-4
 - [ ] Phase 5: Testing → GATE-5
-- [ ] Phase 6: Review (5+, security) → GATE-6 ⚠️ TRACK ITERATIONS
+- [ ] Phase 6: Review (5+, security, codex) → GATE-6 ⚠️ TRACK ITERATIONS
 - [ ] Phase 7: Verification (5+) → GATE-7 ⚠️ TRACK ITERATIONS
 - [ ] Phase 8: CI Validation → GATE-8
 
@@ -145,4 +113,5 @@ SELF-CHECKS:
 - Before GATE-3: search context for `Skill.*test-driven`. If not found, STOP.
 - Before GATE-5: verify test file exists or explain why tests N/A.
 - Before GATE-6: search context for `Skill.*review` or `Skill.*differential-review`. If not found, STOP.
+- Before GATE-6: verify `codex review --uncommitted` will be run. If skipped, STOP.
 ```

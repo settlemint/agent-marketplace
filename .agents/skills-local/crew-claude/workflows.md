@@ -9,7 +9,7 @@ When `system-reminder` indicates "Plan mode is active", use this dedicated gate 
 **PLAN-GATE-1: Understanding**
 ```
 PLAN-GATE-1 CHECK:
-- [ ] Classification stated (Trivial/Simple/Standard/Complex)
+- [ ] Classification stated (Trivial/Simple/Standard)
 - [ ] User request understood
 - [ ] Codebase exploration complete (mcp__octocode__* for code search, Explore agent for structure)
 - [ ] Library docs checked (mcp__context7__* for external libs, local docs for project)
@@ -119,7 +119,7 @@ Multi-Session Collaboration:
 - Deep research for complex topics (mcp__exa__deep_researcher_start → mcp__exa__deep_researcher_check).
 - If modifying existing behavior: `Skill({ skill: "systematic-debugging" })`.
 - Draft plan with file paths and 2-5 minute tasks; mark parallelizable tasks.
-- If complex/architectural: `mcp__codex` (Claude Code only).
+- If Standard task: `mcp__codex` (Claude Code only) for planning assistance.
 - If Linear configured: find issue, then comment plan.
 
 ### Phase 2: Plan Refinement ⚠️ COMMONLY SKIPPED
@@ -196,8 +196,9 @@ Multi-Session Collaboration:
 ### Phase 6: Review ⚠️ COMMONLY SKIPPED
 - **STOP: Output GATE-6 before proceeding.**
 - **REQUIRED:** Run `Skill({ skill: "review" })` or `/review` - do not skip.
-- **REQUIRED:** Show review output in gate.
-- **"Manual review" is NOT acceptable** - must invoke the skill tool.
+- **REQUIRED:** Run `codex review --uncommitted` (Simple+) - do not skip.
+- **REQUIRED:** Show review output AND codex output in gate.
+- **"Manual review" is NOT acceptable** - must invoke the skill tool AND run codex.
 - Review for bugs/regressions/missing tests.
 - Security review if auth/data/payments (semgrep/codeql).
 - `differential-review` for diff security.
@@ -207,9 +208,9 @@ Multi-Session Collaboration:
 - "Code is simple, doesn't need review" is a banned phrase.
 - **Iteration tracking:** Output "Review Iteration N of M" for each pass.
 
-#### Parallel Review Iterations (Standard/Complex tasks)
+#### Parallel Review Iterations (Standard tasks)
 
-**REQUIRED for Standard/Complex tasks**: Dispatch three focused review agents IN PARALLEL.
+**REQUIRED for Standard tasks**: Dispatch three focused review agents IN PARALLEL.
 
 **Step 1: Create review tasks (optional but recommended for tracking)**
 ```
@@ -242,7 +243,7 @@ TaskList()  // verify all complete
 | Quality | `.agents/skills-local/crew-claude/iterations/quality-reviewer.md` | Patterns, security, perf | `PASS \| NEEDS_FIXES` |
 
 **Optional: Tech-Stack Reviewers (4th parallel agent)**
-For Standard/Complex tasks, add a tech-specific review agent that applies curated OSS review guidelines:
+For Standard tasks, add a tech-specific review agent that applies curated OSS review guidelines:
 ```
 Task({ subagent_type: "general-purpose", description: "Tech-stack review", prompt: "1. Identify tech stack from changed files. 2. Read 3-5 matching reviewers from .agents/skills-local/reviewers/reviewers/ (e.g., react-*, nest-*, bun-*). 3. Apply their guidelines to: [files]. Output VERDICT: PASS | NEEDS_FIXES with specific issues." })
 ```
@@ -259,6 +260,32 @@ STATUS: PASS | BLOCKED
 ```
 
 See `.agents/skills-local/crew-claude/iterations/parallel-review-dispatch.md` for full dispatch template.
+
+### Codex AI Review (Simple/Standard - NOT Trivial) ⚠️ MANDATORY
+
+After parallel reviews complete, run codex for independent AI analysis:
+
+1. **Stage any untracked files:**
+   ```bash
+   git ls-files --others --exclude-standard -z | xargs -0 git add
+   ```
+
+2. **Run codex review:**
+   ```bash
+   codex review --uncommitted --config model_reasoning_effort=high
+   ```
+
+3. **Handle findings:**
+   - If P1/P2 issues found → **MUST fix before proceeding**
+   - If only P3/P4 → document and proceed
+
+**GATE-6 codex requirement (add to GATE-6 output):**
+```
+- [x] Codex review executed — PROOF: `codex review --uncommitted` output shown
+- [x] P1/P2 issues resolved — PROOF: [count] P1, [count] P2 → all fixed OR none found
+```
+
+**Anti-pattern:** "My review skill passed" without running codex → **BLOCKED**. Both are required.
 
 ### Phase 7: Verification (iterations per classification)
 - **STOP: Output GATE-7 before proceeding.**
