@@ -168,15 +168,15 @@ STATUS: PASS | BLOCKED
 ```
 spawn_agent({
   agent_type: "worker",
-  message: "Simplicity review: read ./iterations/simplicity-reviewer.md and apply to changed files: [files]. Output VERDICT."
+  message: "Simplicity review: read .agents/skills-local/crew-claude/iterations/simplicity-reviewer.md and apply to changed files: [files]. Output VERDICT."
 })
 spawn_agent({
   agent_type: "worker",
-  message: "Completeness review: read ./iterations/completeness-reviewer.md. Original request: [quote]. Output VERDICT."
+  message: "Completeness review: read .agents/skills-local/crew-claude/iterations/completeness-reviewer.md. Original request: [quote]. Output VERDICT."
 })
 spawn_agent({
   agent_type: "worker",
-  message: "Quality review: read ./iterations/quality-reviewer.md and apply to: [files]. Output VERDICT."
+  message: "Quality review: read .agents/skills-local/crew-claude/iterations/quality-reviewer.md and apply to: [files]. Output VERDICT."
 })
 ```
 
@@ -184,9 +184,9 @@ spawn_agent({
 
 | Agent | File | Focus | Verdict Format |
 |-------|------|-------|----------------|
-| Simplicity | `./iterations/simplicity-reviewer.md` | YAGNI, LOC reduction | `PASS \| NEEDS_SIMPLIFICATION` |
-| Completeness | `./iterations/completeness-reviewer.md` | Spec compliance | `PASS \| INCOMPLETE \| OVERBUILT` |
-| Quality | `./iterations/quality-reviewer.md` | Patterns, security, perf | `PASS \| NEEDS_FIXES` |
+| Simplicity | `.agents/skills-local/crew-claude/iterations/simplicity-reviewer.md` | YAGNI, LOC reduction | `PASS \| NEEDS_SIMPLIFICATION` |
+| Completeness | `.agents/skills-local/crew-claude/iterations/completeness-reviewer.md` | Spec compliance | `PASS \| INCOMPLETE \| OVERBUILT` |
+| Quality | `.agents/skills-local/crew-claude/iterations/quality-reviewer.md` | Patterns, security, perf | `PASS \| NEEDS_FIXES` |
 
 **Optional: Tech-Stack Reviewers (4th parallel agent)**
 For Standard/Complex tasks, add a tech-specific review agent that applies curated OSS review guidelines:
@@ -208,7 +208,7 @@ GATE-6 CHECK:
 STATUS: PASS | BLOCKED
 ```
 
-See `./iterations/parallel-review-dispatch.md` for full dispatch template.
+See `.agents/skills-local/crew-claude/iterations/parallel-review-dispatch.md` for full dispatch template.
 
 ### Phase 7: Verification (iterations per classification)
 - **STOP: Output GATE-7 before proceeding.**
