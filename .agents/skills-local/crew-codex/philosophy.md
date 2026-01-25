@@ -33,6 +33,9 @@ Fight entropy. Leave the codebase better than you found it.
 ## Codex behaviour
 - If files change unexpectedly, assume parallel edits and continue; keep your diff scoped. Stop only for conflicts/breakage, then ask the user.
 - When web searching, prefer 2026 (latest) sources/docs unless an older version is explicitly needed.
+- Set an approval mode that matches the task risk; switch with `/approvals` as needed, and use full access sparingly.
+- Use `/review` for a second set of eyes on risky or wide changes.
+- Keep AGENTS.md scoped and lean to avoid unnecessary context bloat.
 
 ## Codex Skills
 - Skills live in repo `.codex/skills` and global `~/.codex/skills`; if `$<myskill>` isn't found locally, explicitly load `~/.codex/skills/<myskill>/SKILL.md` (plus any `references/`/`scripts/`).

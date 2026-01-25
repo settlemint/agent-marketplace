@@ -1,8 +1,8 @@
-# STOP - MANDATORY FIRST ACTION
+# Codex Workflow (Lightweight)
 
-## You Are BLOCKED Until Skill Loaded
+## Recommended First Action
 
-Before ANY other action (reading files, exploring, planning, answering):
+For Standard/Complex or multi-file code changes, load the crew-codex skill before deeper work:
 
 ```
 $crew-codex
@@ -13,7 +13,7 @@ Or explicitly:
 read_file .agents/skills-local/crew-codex/SKILL.md
 ```
 
-Then read ALL 6 files listed in SKILL.md and output:
+If you read all 6 files listed in SKILL.md, output:
 
 ```
 CREW-CODEX LOADED:
@@ -25,18 +25,7 @@ CREW-CODEX LOADED:
 - [x] skill-routing-table.md
 ```
 
-**If you cannot check all boxes, you have NOT loaded the skill. STOP and load it.**
-
----
-
-## BLOCKED Actions (until verification above is output)
-
-You may NOT:
-- Explore codebase
-- Read files (except SKILL.md and the 6 workflow files)
-- Start planning
-- Answer questions about code
-- Write any code
+For Trivial/Simple or docs/config-only tasks, you may proceed after classification and load the skill only if unsure.
 
 ---
 
@@ -44,42 +33,35 @@ You may NOT:
 
 ### Classification First - ALWAYS
 
-Output classification BEFORE any tools/exploration:
+Output classification before edits or deep exploration. Light discovery (e.g., `ls`, `rg`, file list) is allowed to determine scope:
 - **Trivial**: single-line, typo, comment only
 - **Simple**: single file, clear scope
 - **Standard**: multi-file, behavior change
 - **Complex**: architectural, security-sensitive
 
-### 8 Mandatory Gates
+### Gates (lightweight)
 
-Every implementation requires gates. Output gate check before each phase:
+Use gates only for Standard/Complex changes. For Trivial/Simple or docs/config-only, provide a short summary of what ran or was skipped:
 - GATE-1: Planning (classification + research complete)
 - GATE-2: Plan Refinement (questions asked)
 - GATE-3: Implementation (skills loaded, tasks created)
 - GATE-4: Cleanup
-- GATE-5: Testing (test output with exit code)
-- GATE-6: Review (review skill invoked)
-- GATE-7: Verification (verification skill executed)
-- GATE-8: CI Validation (bun run ci with exit code 0)
+- GATE-5: Testing (if applicable; summarize results)
+- GATE-6: Review (required for Standard/Complex code changes; method noted)
+- GATE-7: Verification (summarize what ran or skipped)
+- GATE-8: CI Validation (required for Standard/Complex code changes; optional for docs/low-risk)
 
-### Skills Must Be INVOKED
+### Skills
 
-Listing skills is NOT loading. You must call:
-```
-$test-driven-development
-$verification-before-completion
-$ask-questions-if-underspecified
-```
+Invoke skills when helpful; no mandatory skill list. Prefer `$ask-questions-if-underspecified` only when requirements are unclear.
 
-### Banned Phrases
+### Reporting
 
-Never say: "looks good", "should work", "Done!", "requirements are clear" (local), "manual review", "code is simple"
+Be honest about what ran or was skipped; do not hide failures.
 
-### Task Tracking Required
+### Task Tracking
 
-Before code: Create task + mark in_progress
-After code: Mark task completed
-Before completion: List all tasks to verify done
+Task tracking is optional; use when it helps clarity or multi-step work.
 
 ---
 

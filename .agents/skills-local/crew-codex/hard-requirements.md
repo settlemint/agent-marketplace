@@ -13,113 +13,76 @@ Check `CODEX_INTERNAL_ORIGINATOR_OVERRIDE` environment variable at session start
 - All other gates, skills, and quality requirements remain **unchanged**
 
 **ALWAYS**
-- **Output classification checklist as ABSOLUTE FIRST action** - before any tools, exploration, or planning.
-- **If Plan Mode active, classification precedes exploration** - output PLAN-GATE-1 after classification.
-- **Classification determines which gates are required** - Trivial needs fewer, Complex needs more.
-- Maintain a visible TODO checklist in the response. Mark in-progress before writing production code; mark completed after implementation.
-- Activate required skills explicitly via `/skills` or `$skill-name` when a phase mandates them (or state that the skill is unavailable and follow equivalent manual steps).
-- Output EVERY gate check (GATE-1 through GATE-8) - not just first few.
-- Provide verification evidence (command output/test results with exit code 0) before claiming done.
-- Use at least one skill per implementation task (minimum: `verification-before-completion`), or explicitly state why no skills are available in this environment.
-- Immediately after classification, output the Classification Checklist.
-- Ask clarifying questions in plain text during plan refinement (at least one).
-- **Parallelize independent tasks** — use `spawn_agent` (with role presets) for subagent dispatch, or `/new`/`/fork` for separate threads. Avoid parallel edits to the same files.
+- **Output classification before edits or deep exploration** - light discovery (e.g., `ls`, `rg`, file list) is allowed to determine scope.
+- **If Plan Mode active, classification precedes deep exploration**.
+- **Classification determines which guidance applies** - Trivial/Simple can be lightweight; Standard/Complex should use gates.
+- Provide a brief verification summary before claiming done (commands run and/or explicitly skipped with reason).
+- Ask clarifying questions when ambiguity remains.
 
 **NEVER**
-- **Start exploration/planning without classification output** - classification is FIRST.
-- **Proceed with tool calls before stating classification** - no exceptions.
-- Skip phases/gates because "simple" or "trivial".
-- Skip Phase 2 (Plan Refinement) or Phase 6 (Review) - commonly forgotten.
-- Write production code before a failing test.
-- Claim completion without evidence.
-- Say "Done", "should work", or "looks good" without evidence.
-- Proceed past a gate without meeting requirements.
-- Stop outputting gates after the first few pass.
-- Check a gate box without showing proof in that same message.
-- Skip clarifying questions.
-- Execute independent tasks sequentially when parallel threads could be used.
+- **Start deep exploration/planning without classification output** - classification is FIRST.
+- **Proceed with heavy tool use before stating classification** - use light discovery only to determine scope.
+- Claim completion without stating what was verified or intentionally skipped.
+- Skip clarifying questions when requirements are ambiguous.
 - You do NOT have the permission to change linter settings, and ignore statements are severely discouraged. Especially the no barrel files rule!
 
-### Skill Activation (MANDATORY)
+### Skill Activation
 
-Codex activates skills explicitly when you invoke them with `/skills` or `$skill-name`, and it can also invoke them implicitly when the task matches the skill description. If a skill is required by a gate, you MUST explicitly invoke it (or explicitly state that the skill is unavailable and follow its equivalent workflow manually).
+Codex activates skills explicitly when you invoke them with `/skills` or `$skill-name`. Skills are optional; use them when helpful. Prefer `$ask-questions-if-underspecified` if ambiguity remains.
 
-Before GATE-3, you MUST have explicit invocations for:
-```
-$test-driven-development
-$verification-before-completion
-```
-
-If Standard/Complex, also before GATE-2:
-```
-$ask-questions-if-underspecified
-```
-
-**Self-check:** Confirm you explicitly invoked required skills (or documented unavailability) in the transcript.
-
-### Test Backfilling (MANDATORY)
+### Test Backfilling
 
 When modifying existing code:
-- **If file has no tests → add tests BEFORE modifying**
-- This is not optional: "Existing code has no tests → You're improving it. Add tests."
-- Applies to: bug fixes, refactors, behavior changes, any file touch
-- **Minimum coverage:** Test the behavior you're changing/touching
+- Add tests when risk is medium/high or behavior changes materially.
+- Docs/config-only changes are exempt.
 
 **Self-check before modifying any file:**
 1. Does a test file exist for this file? (e.g., `foo.ts` → `foo.test.ts`)
-2. If no → create test file, add tests for existing behavior first
-3. If yes → verify tests cover the code you're about to change
-4. Only then proceed with TDD for new changes
+2. If no, decide based on risk: add minimal tests for risky changes
 
-### Classification Checklist (MANDATORY)
+### Classification Checklist (Guidance)
 
 Output immediately after classification:
 
 ```
 CLASSIFICATION: [Trivial|Simple|Standard|Complex]
 
-REQUIRED SKILLS (activate before implementation):
-- [ ] verification-before-completion (ALL tasks)
-- [ ] [skill-2 if applicable]
-- [ ] [skill-3 if applicable]
+SKILLS (optional):
+- [ ] [skill if helpful]
 
-REQUIRED PHASES:
+PHASES (Standard/Complex):
 - [ ] Phase 1: Planning
 - [ ] Phase 3: Implementation
 - [ ] Phase 7: Verification
 - [ ] [additional phases per classification]
 
-ITERATIONS: Plan Refinement [1|2|5+] | Review [1|2|5+] | Verification [1|2|5+]
+ITERATIONS: as needed
 ```
 
-### Phase Gates (MANDATORY - ALL OF THEM)
+### Phase Gates (Standard/Complex)
 
-Before each phase, output a gate check. Do not proceed if a gate is BLOCKED. Do not skip gates.
+Before each phase, output a gate check. Do not proceed if a gate is BLOCKED.
 
-⚠️ **Gate amnesia is a failure mode.** You must output EVERY applicable gate, not just early ones.
-
-⚠️ **Gate rushing is a failure mode.** Each checked box requires proof in the same message.
-
-Gate requirements:
-- GATE-1 Planning: classification stated + checklist output + research complete (mcp__octocode__* for code, mcp__context7__* for docs, mcp__exa__* for web/company research).
-- GATE-2 Plan Refinement: explicit `$ask-questions-if-underspecified` invocation (Standard/Complex). **Local:** at least one clarifying question asked. **Remote:** questions optional unless genuinely ambiguous.
-- GATE-3 Implementation: explicit `$test-driven-development` + `$verification-before-completion` invocation + **backfill check done (if modifying existing file without tests → tests added first)** + TODO list started + parallel-thread check documented.
-- GATE-4 Cleanup: all implementation TODOs complete.
-- GATE-5 Testing: test file exists + test output with exit code shown (or explicit "no tests possible" justification).
-- GATE-6 Review: run `/review` (preferred) or provide a structured review checklist with file/line references; show output. Manual review is NOT acceptable.
-- GATE-7 Verification: verification commands run IN THIS MESSAGE with exit code 0 shown.
-- GATE-8 CI Validation: `bun run ci` (or `npm/pnpm run ci`, or fallback: lint+test+build) executed IN THIS MESSAGE with exit code 0 shown.
+Gate requirements (Standard/Complex):
+- GATE-1 Planning: classification stated + research complete.
+- GATE-2 Plan Refinement: clarify ambiguities; questions optional if clear.
+- GATE-3 Implementation: start work; use TDD/testing if risk warrants.
+- GATE-4 Cleanup: ensure implementation is tidy.
+- GATE-5 Testing: run relevant tests if they exist and behavior changes.
+- GATE-6 Review: do a quick review or `/review` for risky/wide changes.
+- GATE-7 Verification: list verification commands run or explicitly note skips.
+- GATE-8 CI Validation: run CI for risky/wide changes or when requested; otherwise note skip.
   - **NOTE:** CI commands use turborepo—run from repository root folder.
   - **NOTE:** Infrastructure services may be required—launch with `bun dev:up` (do not use docker-compose directly).
-- GATE-DONE Completion: all evidence compiled.
+- GATE-DONE Completion: verification summary + gates list.
 
-**Activation ≠ Following:** Invoking a skill means you MUST follow its instructions. Activating TDD then writing code without tests = violation.
+**Activation ≠ Following:** Invoking a skill means you should follow its instructions.
 
-Gate format (use verbatim):
+Gate format (use verbatim when gates are used):
 ```
 GATE-[N] CHECK:
-- [x] Requirement 1 — PROOF: [what you did]
-- [x] Requirement 2 — PROOF: [what you did]
+- [x] Requirement 1 — PROOF: [brief note or output if run]
+- [x] Requirement 2 — PROOF: [brief note or output if run]
 - [ ] Requirement 3 (BLOCKED: reason)
 
 STATUS: PASS | BLOCKED
@@ -127,22 +90,15 @@ STATUS: PASS | BLOCKED
 
 ### Pre-Completion Gate
 
-Before saying "done" or "complete", confirm evidence for:
-- TODO checklist started and completed
-- Classification + checklist
-- All gates output (count them: did you output GATE-1 through GATE-8?)
-- Phase 2 executed (not skipped) — show questions asked
-- Phase 6 executed (not skipped) — show review output
-- Required skills explicitly invoked (not just mentioned)
-- Verification executed
-- Verification command exit code 0
-- CI phase executed (GATE-8) with exit code 0
+Before saying "done" or "complete", confirm:
+- Classification + brief verification summary
+- Gates used if Standard/Complex
+- Verification/testing/CI run or explicitly skipped with rationale
 
-**Banned phrases:** "looks good", "should work", "Done!", "that's it", "it's just a port", "direct translation", "1:1 conversion", "straightforward", "manual review", "reviewed the code", "pre-existing", "not related to my changes", "unrelated to this PR", "existing issue", "those errors existed before", "module resolution issues in the codebase", "the specific tests I created pass"
-- **Local only banned:** "requirements are clear" (allowed in Remote Mode when genuinely clear)
+**Banned phrases:** "pre-existing", "not related to my changes", "unrelated to this PR", "existing issue", "those errors existed before", "module resolution issues in the codebase", "the specific tests I created pass"
 - **Failure deflection (ZERO TOLERANCE):** Any claim that failures (tests, lint, types, build, CI) are "pre-existing" or "not related to my changes" is ABSOLUTELY FORBIDDEN. Main always passes. If anything fails, you broke it. Fix it.
 
-**Required completion format:** evidence summary + verification output + gates passed list + iteration counts
+**Required completion format:** verification summary (and gates list if used)
 
 ### Plan Mode Integration
 
@@ -159,6 +115,5 @@ When `system-reminder` indicates "Plan mode is active":
 - After approval → Phase 3+ (Implementation onwards)
 
 **Plan Mode does NOT exempt you from:**
-- Classification output (still FIRST)
-- Skill activation (ask-questions-if-underspecified before PLAN-GATE-2)
-- Clarifying questions (plain text when required)
+- Classification output
+- Clarifying questions when ambiguous

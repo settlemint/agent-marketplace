@@ -5,13 +5,23 @@ description: Complete development workflow for Codex. Defines philosophy, task c
 
 # Crew Codex Skill
 
-## MANDATORY LOADING — NO EXCEPTIONS
+## Loading Guidance
 
-**⚠️ STOP. You MUST read ALL files below BEFORE any implementation work.**
+This skill defines the development workflow. Load the depth appropriate to task risk.
 
-This skill defines the complete development workflow. Skipping ANY file = workflow violation.
+### Minimum Load (Trivial/Simple or docs/config-only)
 
-### Required Files (READ ALL — IN ORDER)
+Read these before proceeding:
+
+```
+1. read_file .agents/skills-local/crew-codex/philosophy.md
+2. read_file .agents/skills-local/crew-codex/task-classification.md
+3. read_file .agents/skills-local/crew-codex/hard-requirements.md
+```
+
+### Full Load (Standard/Complex or multi-file code changes)
+
+Read all files below, in order:
 
 ```
 1. read_file .agents/skills-local/crew-codex/philosophy.md
@@ -24,7 +34,7 @@ This skill defines the complete development workflow. Skipping ANY file = workfl
 
 ### Loading Verification
 
-After reading all files, confirm by outputting:
+After reading all 6 files, confirm by outputting:
 
 ```
 CREW-CODEX LOADED:
@@ -36,7 +46,14 @@ CREW-CODEX LOADED:
 - [x] skill-routing-table.md — Trigger → skill/tool mapping
 ```
 
-**If you cannot check all boxes, STOP and read the missing files.**
+If you only completed the minimum load, confirm with:
+
+```
+CREW-CODEX PARTIAL:
+- [x] philosophy.md
+- [x] task-classification.md
+- [x] hard-requirements.md
+```
 
 ### Why This Matters
 
@@ -48,11 +65,11 @@ These files contain:
 - **Workflows** — The 8-phase process with spawn_agent collaboration
 - **Skill Routing** — Which skills/tools to use for which triggers
 
-**Ignoring these = rework, failed reviews, broken builds.**
+**Ignoring these increases rework and review churn.**
 
 ### Self-Check
 
 Before ANY implementation:
-1. Did I read all 6 files? If no → STOP, read them
-2. Did I output the loading verification? If no → output it now
+1. Did I read the minimum or full set appropriate to the task?
+2. Did I output the matching loading verification?
 3. Did I classify the task? If no → classify before proceeding

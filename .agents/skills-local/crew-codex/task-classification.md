@@ -10,133 +10,36 @@ Classify before implementation. When in doubt, classify up.
 3. Security/auth/payments => Complex.
 4. Uncertain => up.
 
-### Categories (minimum steps / may skip)
-- **Trivial:** single-line/typo/comment only. Steps: TODO checklist start -> Implementation -> Verification -> TODO checklist complete. May skip: plan refinement, review, deep reasoning.
-- **Simple:** single file, clear scope; new file ok. Steps: TODO checklist, Planning (1 pass), Implementation, Testing/syntax check, Verification, TODO checklist complete. May skip: deep reasoning, security review, multi-iteration review.
-- **Standard:** multi-file/behavior change. Steps: all phases, minimum 2 iterations each. Skip none.
-- **Complex:** architectural/cross-cutting/security-sensitive. Steps: all phases, 5+ iterations each. Skip none.
+**Applicability notes**
+- Docs/config-only or formatting-only changes may skip TDD/testing/CI; mark gates as N/A with a short rationale.
+- Behavior-changing code should follow TDD/testing guidance.
+
+### Categories (guidance, not strict)
+- **Trivial:** single-line/typo/comment only. Keep it minimal; no formal gates required.
+- **Simple:** single file, clear scope; keep it lightweight and ask questions only if unclear.
+- **Standard:** multi-file/behavior change. Use gates for structure; iterate as needed.
+- **Complex:** architectural/cross-cutting/security-sensitive. Use gates and deeper review/testing.
 
 ### Task Management
 
-Use the TODO checklist as the primary task tracker.
-- Start with a numbered task list in Phase 3.
-- Mark tasks `in_progress` before code changes.
-- Mark tasks `completed` after each atomic change.
-- Use `[P]` in task IDs to denote parallelizable items.
+Task tracking is optional; use it when it improves clarity or helps break up large work.
 
-### Checklists (output immediately after classification)
+### Checklists (optional)
 
-#### Trivial
+#### Trivial (optional template)
 ```
 CLASSIFICATION: Trivial
-
-REQUIRED SKILLS (activate before GATE-3):
-- [ ] verification-before-completion
-
-REQUIRED PHASES:
-- [ ] Phase 3: Implementation (TODO -> Code -> TODO)
-- [ ] Phase 7: Verification (min 1 iteration)
-- [ ] Phase 8: CI Validation → GATE-8
-
-ITERATION TRACKING:
-- Plan Refinement: 0 required
-- Review: 0 required
-- Verification: 1 required | Completed: ___
+SUMMARY: [what you changed] | VERIFICATION: [ran or skipped + reason]
 ```
 
-#### Simple
+#### Simple (optional template)
 ```
 CLASSIFICATION: Simple
-MODE: [Local|Remote] ← check CODEX_INTERNAL_ORIGINATOR_OVERRIDE
-
-REQUIRED SKILLS (activate via `/skills` or `$skill-name`):
-- [ ] verification-before-completion — activate before GATE-3
-- [ ] test-driven-development — activate before GATE-3
-- [ ] ask-questions-if-underspecified — activate before GATE-2 (Local: ask always | Remote: ask only if ambiguous)
-
-REQUIRED PHASES (output gate with PROOF before each):
-- [ ] Phase 1: Planning (1 pass) → GATE-1
-- [ ] Phase 2: Plan Refinement (1 pass) → GATE-2 ⚠️ DON'T SKIP
-- [ ] Phase 3: Implementation → GATE-3
-- [ ] Phase 5: Testing → GATE-5
-- [ ] Phase 6: Review (1 pass) → GATE-6 ⚠️ DON'T SKIP
-- [ ] Phase 7: Verification → GATE-7
-- [ ] Phase 8: CI Validation → GATE-8
-
-ITERATION TRACKING:
-- Plan Refinement: 1 required | Completed: ___
-- Review: 1 required | Completed: ___
-- Verification: 1 required | Completed: ___
-
-SELF-CHECKS:
-- Before GATE-2: confirm `$ask-questions-if-underspecified` was invoked (or document unavailability).
-- Before GATE-3: confirm `$test-driven-development` was invoked (or document unavailability).
-- Before GATE-5: verify test file exists or explain why tests N/A.
-- Before GATE-6: confirm `/review` output included.
+SUMMARY: [what you changed] | VERIFICATION: [ran or skipped + reason]
 ```
 
 #### Standard
-```
-CLASSIFICATION: Standard
-MODE: [Local|Remote] ← check CODEX_INTERNAL_ORIGINATOR_OVERRIDE
-
-REQUIRED SKILLS (activate via `/skills` or `$skill-name`):
-- [ ] verification-before-completion — activate before GATE-3
-- [ ] test-driven-development — activate before GATE-3
-- [ ] ask-questions-if-underspecified — activate before GATE-2 (Local: ask always | Remote: ask only if ambiguous)
-
-REQUIRED PHASES (output gate with PROOF before each):
-- [ ] Phase 1: Planning → GATE-1
-- [ ] Phase 2: Plan Refinement (2+) → GATE-2 ⚠️ TRACK ITERATIONS
-- [ ] Phase 3: Implementation → GATE-3
-- [ ] Phase 4: Cleanup → GATE-4
-- [ ] Phase 5: Testing → GATE-5
-- [ ] Phase 6: Review (2+) → GATE-6 ⚠️ TRACK ITERATIONS
-- [ ] Phase 7: Verification (2+) → GATE-7 ⚠️ TRACK ITERATIONS
-- [ ] Phase 8: CI Validation → GATE-8
-
-ITERATION TRACKING:
-- Plan Refinement: 2+ required | Completed: ___
-- Review: 2+ required | Completed: ___
-- Verification: 2+ required | Completed: ___
-
-SELF-CHECKS:
-- Before GATE-2: confirm `$ask-questions-if-underspecified` was invoked (or document unavailability).
-- Before GATE-3: confirm `$test-driven-development` was invoked (or document unavailability).
-- Before GATE-5: verify test file exists or explain why tests N/A.
-- Before GATE-6: confirm `/review` output included.
-```
+Use gates as needed; iterate until risk feels covered.
 
 #### Complex
-```
-CLASSIFICATION: Complex
-MODE: [Local|Remote] ← check CODEX_INTERNAL_ORIGINATOR_OVERRIDE
-
-REQUIRED SKILLS (activate via `/skills` or `$skill-name`):
-- [ ] verification-before-completion — activate before GATE-3
-- [ ] test-driven-development — activate before GATE-3
-- [ ] ask-questions-if-underspecified — activate before GATE-2 (Local: ask always | Remote: ask only if ambiguous)
-- [ ] systematic-debugging — activate if modifying existing code
-- [ ] differential-review — activate before GATE-6
-
-REQUIRED PHASES (output gate with PROOF before each):
-- [ ] Phase 1: Planning (consider `/model` for deep reasoning) → GATE-1
-- [ ] Phase 2: Plan Refinement (5+) → GATE-2 ⚠️ TRACK ITERATIONS
-- [ ] Phase 3: Implementation → GATE-3
-- [ ] Phase 4: Cleanup → GATE-4
-- [ ] Phase 5: Testing → GATE-5
-- [ ] Phase 6: Review (5+, security) → GATE-6 ⚠️ TRACK ITERATIONS
-- [ ] Phase 7: Verification (5+) → GATE-7 ⚠️ TRACK ITERATIONS
-- [ ] Phase 8: CI Validation → GATE-8
-
-ITERATION TRACKING:
-- Plan Refinement: 5+ required | Completed: ___
-- Review: 5+ required | Completed: ___
-- Verification: 5+ required | Completed: ___
-
-SELF-CHECKS:
-- Before GATE-2: confirm `$ask-questions-if-underspecified` was invoked (or document unavailability).
-- Before GATE-3: confirm `$test-driven-development` was invoked (or document unavailability).
-- Before GATE-5: verify test file exists or explain why tests N/A.
-- Before GATE-6: confirm `/review` output included (or document why unavailable).
-```
+Use gates and deeper review/testing; choose iterations based on risk.

@@ -29,7 +29,7 @@
 - parallel/concurrent/independent/2+ tasks -> use `spawn_agent` with role presets, or `/new`/`/fork` for separate threads
 
 ### Code Quality (triggers: review/quality/clean/refactor/lint/unused)
-- /review, code review, review changes, deep review -> run `/review` and include output
+- /review, code review, review changes, deep review -> run `/review` when helpful; summarize results (output optional unless requested)
 - simplify/cleaner/reduce complexity -> `$code-simplifier`
 - AI slop/defensive comments/generated cleanup -> `$deslop`
 - unused/dead code/exports/deps -> `$knip`

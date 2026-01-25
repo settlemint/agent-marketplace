@@ -37,25 +37,21 @@ STATUS: PASS | BLOCKED
 ---
 
 **Enforcement**
-- Each phase has a gate; output gate check (see Hard Requirements) before entering.
-- Do not proceed if a gate is BLOCKED.
-- Each gate checkbox requires proof in same message.
+- Use gates for Standard/Complex work; Simple/Trivial can skip gates and provide a short verification summary.
+- If a gate is BLOCKED, do not proceed.
 
-**Parallel work (when 2+ independent tasks exist)**
-- Use Codex collaboration tools: `spawn_agent` (accepts role presets) or `send_input` (can interrupt running agents)
-- Alternative: separate Codex threads (`/new`, `/fork`, `/resume`) or `codex exec` runs
-- For MCP-based orchestration: `codex mcp-server` exposes `codex` and `codex-reply` tools with `threadId` for session continuity
-- Avoid parallel edits to the same files.
+**Parallel work**
+- Optional; use when it materially speeds up large independent tasks.
 
-**Task format (strict)**
+**Task format (optional)**
 ```
 [T001] [P] [US1] Description with exact file path
 ```
-- **Task ID**: Sequential (T001, T002...) in execution order
-- **[P] marker**: Include ONLY if parallelizable (different files, no dependencies)
-- **[US#] label**: Map to user story/feature when applicable
-- **File path**: REQUIRED — every task specifies exact file(s)
-- **Atomic**: Each task executable without additional context
+- **Task ID**: Use if helpful
+- **[P] marker**: Optional
+- **[US#] label**: Optional
+- **File path**: Include when it helps clarity
+- **Atomic**: Keep tasks bite-sized if you use them
 
 **Task phases**
 1. **Setup** — project initialization, dependencies
@@ -64,12 +60,10 @@ STATUS: PASS | BLOCKED
 4. **Polish** — cross-cutting concerns, cleanup, docs
 
 **Task granularity**
-- **MANY small tasks** > few large tasks — prefer 10+ atomic tasks over 3 vague ones
-- **Single file per task** when possible — enables parallelization
-- **Clear completion criteria** — task is done when X file exists/passes/works
+- Use whatever task breakdown helps you move quickly and stay accurate.
 
 **Codex helpers**
-- `/diff` for changes, `/review` for review, `/approvals` and `/status` for safety, `/model` for model selection.
+- `/diff` for changes, `/review` for review, `/approvals` to switch approval modes (Auto/read-only), `/status` for safety, `/model` for model selection.
 - `/mcp` to list available MCP tools, `/mention` to add files into context, `/compact` to reduce context.
 - `/skills` to list and run skills, `$skill-name` for direct invocation.
 
@@ -77,7 +71,7 @@ STATUS: PASS | BLOCKED
 - Use latest package versions (@latest/:latest). Verify on npmjs.com, hub.docker.com, pypi.org. If pinned older, note current version.
 
 ### Phase 1: Planning
-- **STOP: Output GATE-1 before proceeding.**
+- Use GATE-1 for Standard/Complex work.
 - Gather context (Explore Task for large codebases; direct tools for small).
 - Repo-wide search if needed (MCP tools if configured, or local rg/git).
 - Check docs (local docs/README or MCP if available).
@@ -89,12 +83,12 @@ STATUS: PASS | BLOCKED
 - If complex/architectural: consider switching models via `/model` or `--model`.
 - If Linear configured: find issue, then comment plan.
 
-### Phase 2: Plan Refinement ⚠️ COMMONLY SKIPPED
-- **STOP: Output GATE-2 before proceeding.**
-- **REQUIRED:** Activate `$ask-questions-if-underspecified` (if available).
+### Phase 2: Plan Refinement
+- Use GATE-2 for Standard/Complex work.
+- Ask questions only if requirements are unclear.
 
 **Local Mode (interactive):**
-- **REQUIRED:** Ask at least one clarifying question in plain text. No exceptions.
+- Ask questions only when ambiguous.
 
 **Remote Mode (autonomous):**
 - Assess ambiguity: Is the request genuinely unclear? (Score 1-10)
@@ -103,10 +97,7 @@ STATUS: PASS | BLOCKED
 - "Requirements are clear" is allowed when genuinely clear.
 
 **Both modes:**
-- Even "simple ports" have ambiguity: error handling idioms, edge cases, output format, version compatibility.
-- Review plan vs requirements; update.
-- Each iteration must deepen: requirements clarity, edge cases, error handling, test strategy.
-- **Iteration tracking:** Output "Plan Refinement Iteration N of M" for each pass.
+- Review plan vs requirements; update as needed.
 
 **Questions to consider (ask if needed):**
 - Scope: What's included/excluded?
@@ -117,118 +108,52 @@ STATUS: PASS | BLOCKED
 - Compatibility: Version constraints? Breaking changes?
 
 ### Phase 3: Implementation
-- **STOP: Output GATE-3 before proceeding.**
-- **REQUIRED:** Activate `$test-driven-development` and `$verification-before-completion`.
-- **Self-check before proceeding:** Confirm explicit skill invocations are in the transcript.
-- **Backfill check:** Before modifying any existing file:
-  1. Check if test file exists (e.g., `foo.ts` → `foo.test.ts`)
-  2. If no tests → add tests for existing behavior FIRST
-  3. Then proceed with TDD for new changes
-- **Task generation (use strict format above):**
-  1. Break work into **MANY small atomic tasks** — prefer 10+ tasks over 3 vague ones
-  2. Each task = single file + clear action: `[T001] [P] Create User model in src/models/user.ts`
-  3. Mark `[P]` for parallelizable tasks (different files, no dependencies)
-  4. Group by phase: Setup → Foundational → Features → Polish
-  5. Output TODO checklist with task IDs before writing code
-- **Task execution:**
-  1. Mark task in-progress in TODO
-  2. RED (failing test) -> GREEN (minimal code) — one task at a time
-  3. Mark task completed in TODO
-- Iron Law: no production code before a failing test. No exceptions for "simple" file types.
-- **Parallel check:** If 2+ tasks marked `[P]`, use `spawn_agent` or parallel Codex threads.
+- Use GATE-3 for Standard/Complex work.
+- Use TDD/tests when risk is medium/high or behavior changes materially.
+- **Backfill check:** add minimal tests for risky bug fixes if none exist.
+- Break work into tasks if it helps; keep it lightweight.
 
 ### Phase 4: Cleanup
-- **STOP: Output GATE-4 before proceeding.**
+- Use GATE-4 for Standard/Complex work.
 - Use relevant cleanup skills if available (`$code-simplifier`, `$deslop`, `$knip`).
 - For non-JS/TS files: note "cleanup skills N/A" but still output gate.
 
 ### Phase 5: Testing
-- **STOP: Output GATE-5 before proceeding.**
-- Run `bun run ci` or `bun run lint` + `bun run test`.
+- Use GATE-5 for Standard/Complex work.
+- Run relevant tests when behavior changes and tests exist.
 - **NOTE:** These commands use turborepo and must be run from the repository root folder.
 - **NOTE:** Infrastructure services may be required for tests. Launch with `bun dev:up` (do not use docker-compose directly).
 - If no project tests exist, note this explicitly.
 - If UI: use `$agent-browser` for visual checks.
 - Check for silent failure gaps.
-- **REQUIRED:** Show test output with exit code.
+- Output optional unless requested or failures occur.
 
-### Phase 6: Review ⚠️ COMMONLY SKIPPED
-- **STOP: Output GATE-6 before proceeding.**
-- **REQUIRED:** Run `/review` (preferred) and include output.
-- Review for bugs/regressions/missing tests.
+### Phase 6: Review
+- Use GATE-6 for Standard/Complex work.
+- Review for bugs/regressions/missing tests on risky changes; `/review` is optional.
 - Security review if auth/data/payments (use `$semgrep`/`$codeql` if available).
-- "Code is simple, doesn't need review" is a banned phrase.
-- **Iteration tracking:** Output "Review Iteration N of M" for each pass.
+-
 
-#### Parallel Review Iterations (Standard/Complex tasks)
+#### Parallel Review Iterations (optional)
 
-**REQUIRED for Standard/Complex tasks**: Dispatch three focused review agents IN PARALLEL.
-
-**Step 1: Dispatch ALL THREE in a SINGLE message (parallel execution)**
-```
-spawn_agent({
-  agent_type: "worker",
-  message: "Simplicity review: read .agents/skills-local/crew-claude/iterations/simplicity-reviewer.md and apply to changed files: [files]. Output VERDICT."
-})
-spawn_agent({
-  agent_type: "worker",
-  message: "Completeness review: read .agents/skills-local/crew-claude/iterations/completeness-reviewer.md. Original request: [quote]. Output VERDICT."
-})
-spawn_agent({
-  agent_type: "worker",
-  message: "Quality review: read .agents/skills-local/crew-claude/iterations/quality-reviewer.md and apply to: [files]. Output VERDICT."
-})
-```
-
-**CRITICAL**: Multiple `spawn_agent` calls in ONE message = parallel. Separate messages = sequential.
-
-| Agent | File | Focus | Verdict Format |
-|-------|------|-------|----------------|
-| Simplicity | `.agents/skills-local/crew-claude/iterations/simplicity-reviewer.md` | YAGNI, LOC reduction | `PASS \| NEEDS_SIMPLIFICATION` |
-| Completeness | `.agents/skills-local/crew-claude/iterations/completeness-reviewer.md` | Spec compliance | `PASS \| INCOMPLETE \| OVERBUILT` |
-| Quality | `.agents/skills-local/crew-claude/iterations/quality-reviewer.md` | Patterns, security, perf | `PASS \| NEEDS_FIXES` |
-
-**Optional: Tech-Stack Reviewers (4th parallel agent)**
-For Standard/Complex tasks, add a tech-specific review agent that applies curated OSS review guidelines:
-```
-spawn_agent({
-  agent_type: "worker",
-  message: "Tech-stack review: 1) Identify tech stack from changed files. 2) Read 3-5 matching reviewers from .agents/skills-local/reviewers/reviewers/ (e.g., react-*, nest-*, bun-*). 3) Apply guidelines to: [files]. Output VERDICT: PASS | NEEDS_FIXES with specific issues."
-})
-```
-
-**GATE-6 Output (with parallel reviews):**
-```
-GATE-6 CHECK:
-- [x] Simplicity review — PROOF: [VERDICT] - [key findings]
-- [x] Completeness review — PROOF: [VERDICT] - [requirements N/N]
-- [x] Quality review — PROOF: [VERDICT] - [P1: N, P2: N]
-- [ ] Tech-stack review (optional) — PROOF: [VERDICT] - [reviewers applied: react-*, nest-*, etc.]
-- [x] All review agents completed — PROOF: wait() shows all agents done
-STATUS: PASS | BLOCKED
-```
-
-See `.agents/skills-local/crew-claude/iterations/parallel-review-dispatch.md` for full dispatch template.
-
-### Phase 7: Verification (iterations per classification)
-- **STOP: Output GATE-7 before proceeding.**
-- **REQUIRED:** Execute verification commands and show output (exit code 0).
+### Phase 7: Verification
+- Use GATE-7 for Standard/Complex work.
+- Execute verification commands when applicable; summarize results.
 - Run completion validation.
-- Document evidence (exit codes, test counts, warnings).
+- Document results (test counts, warnings) when available.
 - Update README/docs if behavior changed.
 - Update Linear issue if configured; otherwise note status in response.
-- **Iteration tracking:** Output "Verification Iteration N of M" for each pass.
+-
 
-### Phase 8: CI Validation ⚠️ MANDATORY FINAL STEP
-- **STOP: Output GATE-8 before claiming completion.**
-- **REQUIRED:** Run CI commands in this priority:
+### Phase 8: CI Validation (final step when applicable)
+- Use GATE-8 for Standard/Complex work.
+- Run CI for risky/wide changes or when requested; otherwise skip with rationale:
   1. `bun run ci` (if available)
   2. `npm run ci` / `pnpm run ci` (if bun unavailable)
   3. Fallback: `<pkg> run lint && <pkg> run test && <pkg> run build` (if no ci script, where `<pkg>` is bun/npm/pnpm)
 - **NOTE:** All CI commands use turborepo and must be run from the repository root folder.
 - **NOTE:** Infrastructure services may be required. Launch with `bun dev:up` (do not use docker-compose directly).
-- **REQUIRED:** Show full CI output with exit code 0 in gate.
-- If no CI/lint/test/build scripts exist: document this explicitly in GATE-8.
-- This phase runs AFTER Phase 7 verification - it is the absolute last check.
-- **No completion claim without GATE-8 passing.**
-- **GATE-DONE:** List all gates passed (1-8) + evidence + iteration counts before completion claim.
+- Output optional unless requested or failures occur.
+- If no CI/lint/test/build scripts exist, or CI is skipped for low-risk/docs: document this explicitly in GATE-8.
+- This phase runs AFTER Phase 7 verification.
+- **GATE-DONE:** List gates used (if any) + verification summary before completion claim.
