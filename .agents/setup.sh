@@ -351,8 +351,10 @@ install_skills() {
         fi
         repos+=("$repo")
 
-        local skills
-        readarray -t skills < <(jq -r ".skills[$i].skills[]" "$CONFIG_FILE")
+        local skills=()
+        while IFS= read -r skill; do
+            skills+=("$skill")
+        done < <(jq -r ".skills[$i].skills[]" "$CONFIG_FILE")
         local skill_flags=""
         for skill in "${skills[@]}"; do
             if [[ ! "$skill" =~ ^[a-zA-Z0-9._-]+$ ]]; then
