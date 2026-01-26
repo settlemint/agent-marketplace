@@ -34,7 +34,7 @@
     "darwin": [
       "brew install jq graphviz poppler semgrep uv ripgrep worktrunk",
       "brew install --cask libreoffice codeql",
-      "wt config shell install"
+      "wt config shell install --yes"
     ],
     "linux": [
       "if command -v apt-get >/dev/null 2>&1; then (sudo -n apt-get update -qq && sudo -n apt-get install -y jq ripgrep graphviz poppler-utils) || (apt-get update -qq && apt-get install -y jq ripgrep graphviz poppler-utils) || true; fi"
