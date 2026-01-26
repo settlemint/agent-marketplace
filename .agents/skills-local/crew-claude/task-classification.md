@@ -29,119 +29,71 @@ Classify before implementation. When in doubt, classify up.
 
 **Detection:** If TaskCreate/TaskList tools are unavailable, use TodoWrite fallback.
 
-### Checklists (output immediately after classification)
+### After Classification: Create Gate Tasks via TodoWrite
 
-#### Trivial
+Output only `CLASSIFICATION: [type]` then immediately create gate tasks. No verbose checklists.
+
+#### Trivial — 4 gates
+```typescript
+TodoWrite([
+  { content: "[GATE-3] Implementation", status: "pending", activeForm: "Implementing" },
+  { content: "[GATE-7] Verification", status: "pending", activeForm: "Verifying" },
+  { content: "[GATE-8] CI", status: "pending", activeForm: "Running CI" },
+  { content: "[GATE-9] Integration", status: "pending", activeForm: "Running integration tests" },
+])
 ```
-CLASSIFICATION: Trivial
+Skills: verification-before-completion
 
-GATE TASKS (create after classification):
-- [ ] TaskCreate [GATE-3] Implementation
-- [ ] TaskCreate [GATE-7] Verification (blockedBy: GATE-3)
-- [ ] TaskCreate [GATE-8] CI (blockedBy: GATE-7)
-- [ ] TaskCreate [GATE-9] Integration (blockedBy: GATE-8)
-
-REQUIRED SKILLS (invoke Skill() tool before [GATE-3] completion):
-- [ ] verification-before-completion
-
-REQUIRED PHASES (update gate task to completed with proof):
-- [ ] Phase 3: Implementation → update [GATE-3] to completed
-- [ ] Phase 7: Verification → update [GATE-7] to completed
-- [ ] Phase 8: CI Validation → update [GATE-8] to completed
-- [ ] Phase 9: Integration Tests → update [GATE-9] to completed
-
-ITERATION TRACKING:
-- Plan Refinement: 0 required
-- Review: 0 required
-- Verification: 1 required | Completed: ___
+#### Simple — 8 gates (skip GATE-4)
+```typescript
+TodoWrite([
+  { content: "[GATE-1] Planning", status: "pending", activeForm: "Planning" },
+  { content: "[GATE-2] Refinement", status: "pending", activeForm: "Refining" },
+  { content: "[GATE-3] Implementation", status: "pending", activeForm: "Implementing" },
+  { content: "[GATE-5] Testing", status: "pending", activeForm: "Testing" },
+  { content: "[GATE-6] Review", status: "pending", activeForm: "Reviewing" },
+  { content: "[GATE-7] Verification", status: "pending", activeForm: "Verifying" },
+  { content: "[GATE-8] CI", status: "pending", activeForm: "Running CI" },
+  { content: "[GATE-9] Integration", status: "pending", activeForm: "Running integration tests" },
+])
 ```
+Skills: verification-before-completion, test-driven-development, ask-questions-if-underspecified
 
-#### Simple
+#### Standard — 9 gates with iteration sub-tasks
+```typescript
+TodoWrite([
+  { content: "[GATE-1] Planning", status: "pending", activeForm: "Planning" },
+  { content: "[GATE-2] Refinement", status: "pending", activeForm: "Refining" },
+  { content: "[GATE-3] Implementation", status: "pending", activeForm: "Implementing" },
+  { content: "[GATE-4] Cleanup", status: "pending", activeForm: "Cleaning up" },
+  { content: "[GATE-5] Testing", status: "pending", activeForm: "Testing" },
+  { content: "[GATE-6] Review", status: "pending", activeForm: "Reviewing" },
+  { content: "[GATE-7] Verification", status: "pending", activeForm: "Verifying" },
+  { content: "[GATE-8] CI", status: "pending", activeForm: "Running CI" },
+  { content: "[GATE-9] Integration", status: "pending", activeForm: "Running integration tests" },
+])
 ```
-CLASSIFICATION: Simple
-MODE: [Local|Remote] ← check CLAUDE_CODE_REMOTE
+Skills: verification-before-completion, test-driven-development, ask-questions-if-underspecified, systematic-debugging (if modifying existing code), differential-review
 
-GATE TASKS (create after classification — Simple skips GATE-4 Cleanup):
-- [ ] TaskCreate [GATE-1] Planning
-- [ ] TaskCreate [GATE-2] Refinement (blockedBy: GATE-1)
-- [ ] TaskCreate [GATE-3] Implementation (blockedBy: GATE-2)
-- [ ] TaskCreate [GATE-5] Testing (blockedBy: GATE-3)  // GATE-4 skipped for Simple
-- [ ] TaskCreate [GATE-6] Review (blockedBy: GATE-5)
-- [ ] TaskCreate [GATE-7] Verification (blockedBy: GATE-6)
-- [ ] TaskCreate [GATE-8] CI (blockedBy: GATE-7)
-- [ ] TaskCreate [GATE-9] Integration (blockedBy: GATE-8)
-
-REQUIRED SKILLS (invoke Skill() tool - checklist is not loading):
-- [ ] verification-before-completion — invoke before [GATE-3] completion
-- [ ] test-driven-development — invoke before [GATE-3] completion
-- [ ] ask-questions-if-underspecified — invoke before [GATE-2] completion (Local: ask always | Remote: ask only if ambiguous)
-
-REQUIRED PHASES (update gate task to completed with proof in description):
-- [ ] Phase 1: Planning (1 pass) → update [GATE-1] to completed
-- [ ] Phase 2: Plan Refinement (1 pass) → update [GATE-2] to completed ⚠️ DON'T SKIP
-- [ ] Phase 3: Implementation → update [GATE-3] to completed
-- [ ] Phase 5: Testing → update [GATE-5] to completed
-- [ ] Phase 6: Review (1 pass, codex) → update [GATE-6] to completed ⚠️ DON'T SKIP CODEX
-- [ ] Phase 7: Verification → update [GATE-7] to completed
-- [ ] Phase 8: CI Validation → update [GATE-8] to completed
-- [ ] Phase 9: Integration Tests → update [GATE-9] to completed
-
-ITERATION TRACKING:
-- Plan Refinement: 1 required | Completed: ___
-- Review: 1 required | Completed: ___
-- Verification: 1 required | Completed: ___
-
-SELF-CHECKS:
-- Before [GATE-2] completion: search context for `Skill.*ask-questions`. If not found, STOP.
-- Before [GATE-3] completion: search context for `Skill.*test-driven`. If not found, STOP.
-- Before [GATE-5] completion: verify test file exists or explain why tests N/A.
-- Before [GATE-6] completion: search context for `Skill.*review`. If not found, STOP.
-- Before [GATE-6] completion: verify `codex review --uncommitted` will be run. If skipped, STOP.
+**Iteration sub-tasks (Standard only):** When starting GATE-2, GATE-6, or GATE-7, create 5 iteration sub-tasks:
+```typescript
+// Example for GATE-2 Refinement
+TodoWrite([
+  { content: "[GATE-2] Refinement", status: "in_progress", activeForm: "Refining" },
+  { content: "[GATE-2.1] Refinement iteration 1", status: "pending", activeForm: "Iteration 1" },
+  { content: "[GATE-2.2] Refinement iteration 2", status: "pending", activeForm: "Iteration 2" },
+  { content: "[GATE-2.3] Refinement iteration 3", status: "pending", activeForm: "Iteration 3" },
+  { content: "[GATE-2.4] Refinement iteration 4", status: "pending", activeForm: "Iteration 4" },
+  { content: "[GATE-2.5] Refinement iteration 5", status: "pending", activeForm: "Iteration 5" },
+])
 ```
+Parent gate can only be completed when all iteration sub-tasks are completed.
 
-#### Standard
-```
-CLASSIFICATION: Standard
-MODE: [Local|Remote] ← check CLAUDE_CODE_REMOTE
-
-GATE TASKS (create all 9 after classification with blockedBy chain):
-- [ ] TaskCreate [GATE-1] Planning
-- [ ] TaskCreate [GATE-2] Refinement (blockedBy: GATE-1)
-- [ ] TaskCreate [GATE-3] Implementation (blockedBy: GATE-2)
-- [ ] TaskCreate [GATE-4] Cleanup (blockedBy: GATE-3)
-- [ ] TaskCreate [GATE-5] Testing (blockedBy: GATE-4)
-- [ ] TaskCreate [GATE-6] Review (blockedBy: GATE-5)
-- [ ] TaskCreate [GATE-7] Verification (blockedBy: GATE-6)
-- [ ] TaskCreate [GATE-8] CI (blockedBy: GATE-7)
-- [ ] TaskCreate [GATE-9] Integration (blockedBy: GATE-8)
-
-REQUIRED SKILLS (invoke Skill() tool - checklist is not loading):
-- [ ] verification-before-completion — invoke before [GATE-3] completion
-- [ ] test-driven-development — invoke before [GATE-3] completion
-- [ ] ask-questions-if-underspecified — invoke before [GATE-2] completion (Local: ask always | Remote: ask only if ambiguous)
-- [ ] systematic-debugging — invoke if modifying existing code
-- [ ] differential-review — invoke before [GATE-6] completion
-
-REQUIRED PHASES (update gate task to completed with proof in description):
-- [ ] Phase 1: Planning (with mcp__codex) → update [GATE-1] to completed
-- [ ] Phase 2: Plan Refinement (5+) → update [GATE-2] to completed ⚠️ TRACK ITERATIONS
-- [ ] Phase 3: Implementation → update [GATE-3] to completed
-- [ ] Phase 4: Cleanup → update [GATE-4] to completed
-- [ ] Phase 5: Testing → update [GATE-5] to completed
-- [ ] Phase 6: Review (5+, security, codex) → update [GATE-6] to completed ⚠️ TRACK ITERATIONS
-- [ ] Phase 7: Verification (5+) → update [GATE-7] to completed ⚠️ TRACK ITERATIONS
-- [ ] Phase 8: CI Validation → update [GATE-8] to completed
-- [ ] Phase 9: Integration Tests → update [GATE-9] to completed
-
-ITERATION TRACKING:
-- Plan Refinement: 5+ required | Completed: ___
-- Review: 5+ required | Completed: ___
-- Verification: 5+ required | Completed: ___
-
-SELF-CHECKS:
-- Before [GATE-2] completion: search context for `Skill.*ask-questions`. If not found, STOP.
-- Before [GATE-3] completion: search context for `Skill.*test-driven`. If not found, STOP.
-- Before [GATE-5] completion: verify test file exists or explain why tests N/A.
-- Before [GATE-6] completion: search context for `Skill.*review` or `Skill.*differential-review`. If not found, STOP.
-- Before [GATE-6] completion: verify `codex review --uncommitted` will be run. If skipped, STOP.
+#### Plan Mode — GATE-1,2 only; remaining gates after approval
+```typescript
+TodoWrite([
+  { content: "[GATE-1] Planning", status: "pending", activeForm: "Planning" },
+  { content: "[GATE-2] Refinement", status: "pending", activeForm: "Refining" },
+])
+// After plan approval, create [GATE-3] through [GATE-9]
 ```
