@@ -1,0 +1,8 @@
+# Worktrunk configuration
+# https://worktrunk.dev/hook/
+
+# Copy gitignored files (caches, node_modules, .env) from existing worktrees
+# to eliminate cold starts when creating new worktrees
+[post-create]
+copy = "wt step copy-ignored"
+setup = "./.agents/setup.sh --skip-postinstall"
