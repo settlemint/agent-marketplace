@@ -143,6 +143,11 @@ Multi-Session Collaboration:
 - Each iteration must deepen: requirements clarity, edge cases, error handling, test strategy.
 - **Iteration tracking:** Output "Plan Refinement Iteration N of M" for each pass.
 
+**Question Format Check (self-check before sending message):**
+- Does my message contain "Would you like", "Should we/I", "Do you want", "Could you clarify", or "Which option"?
+- If YES and followed by "?" → STOP, use `AskUserQuestion` tool instead
+- If NO → proceed with message
+
 **Questions to consider (ask via `AskUserQuestion` tool if needed):**
 - Scope: What's included/excluded?
 - Behavior: How should edge cases behave?
