@@ -489,6 +489,19 @@ Mark Refinement in_progress.
 2. Execute: Use `AskUserQuestion` tool (Local: always; Remote: only if ambiguous)
 3. Mark "Ask clarifying questions" completed with evidence (questions asked or N/A)
 
+**Codex plan review Task (Standard):** Get second opinion on plan:
+
+```typescript
+Task({
+  subagent_type: "general-purpose",
+  description: "Codex plan review",
+  prompt: `Run codex review on the plan file (path from system-reminder).
+Report any P1/P2 concerns that should be addressed before implementation.`
+})
+```
+
+Address any P1/P2 concerns before calling ExitPlanMode.
+
 Mark Refinement completed when execution task done.
 
 ### Phase 3: Implementation
@@ -570,6 +583,46 @@ Mark Review in_progress.
    - Execute: address security findings
    - Mark completed with evidence (findings fixed or "no findings")
 
+**Parallel reviewer Tasks (Standard):** Dispatch 4 reviewer Tasks in SINGLE message:
+
+```typescript
+// ALL FOUR in ONE message = parallel execution
+Task({
+  subagent_type: "general-purpose",
+  description: "Simplicity review",
+  prompt: `Read iterations/simplicity-reviewer.md and apply to changed files.
+Output: VERDICT: PASS | NEEDS_SIMPLIFICATION with findings.`
+})
+
+Task({
+  subagent_type: "general-purpose",
+  description: "Completeness review",
+  prompt: `Read iterations/completeness-reviewer.md.
+Original request: [QUOTE REQUEST]
+Output: VERDICT: PASS | INCOMPLETE | OVERBUILT with findings.`
+})
+
+Task({
+  subagent_type: "general-purpose",
+  description: "Quality review",
+  prompt: `Read iterations/quality-reviewer.md and apply to changed files.
+Output: VERDICT: PASS | NEEDS_FIXES with P1/P2 counts.`
+})
+
+Task({
+  subagent_type: "general-purpose",
+  description: "Test coverage review",
+  prompt: `Read iterations/comprehensive-test-reviewer.md.
+For each file to be modified, verify:
+1. Adequate test coverage exists
+2. Current tests pass (green phase)
+Only allow modifications after green phase confirmed.
+Output: VERDICT: PASS | NEEDS_TESTS | TESTS_FAILING with file list.`
+})
+```
+
+Aggregate verdicts, fix any NEEDS_* findings, re-run failed reviewers until all PASS.
+
 Mark Review completed when ALL execution tasks done with evidence.
 
 ### Phase 7: Verification
@@ -602,6 +655,16 @@ Mark Integration completed.
 3. Mark completed with evidence (analysis output shown)
 
 **Completion:** Task list must show ALL gates AND execution tasks completed with evidence before claiming done.
+
+### Reviewer Prompts (Standard tasks)
+
+The `iterations/` folder contains reviewer prompt files for Phase 6:
+- `simplicity-reviewer.md` - YAGNI, LOC reduction focus
+- `completeness-reviewer.md` - spec compliance verification
+- `quality-reviewer.md` - patterns, security, performance checks
+- `comprehensive-test-reviewer.md` - test coverage + green phase enforcement
+
+Each is read by a parallel Task agent during review.
 
 ---
 

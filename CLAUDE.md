@@ -8,19 +8,11 @@ Before ANY other action (reading files, exploring, planning, answering):
 Skill({ skill: "crew-claude" })
 ```
 
-Then read ALL 6 files listed in SKILL.md and output:
+The skill content loads inline. Output:
 
 ```
-CREW-CLAUDE LOADED:
-- [x] philosophy.md
-- [x] task-classification.md
-- [x] hard-requirements.md
-- [x] anti-patterns.md
-- [x] workflows.md
-- [x] skill-routing-table.md
+CREW-CLAUDE LOADED: ✓
 ```
-
-**If you cannot check all boxes, you have NOT loaded the skill. STOP and load it.**
 
 ---
 
@@ -28,7 +20,7 @@ CREW-CLAUDE LOADED:
 
 You may NOT:
 - Explore codebase
-- Read files (except SKILL.md and the 6 workflow files)
+- Read files (except SKILL.md)
 - Use Task/Explore agents
 - Start planning
 - Answer questions about code
@@ -82,6 +74,6 @@ Before completion: `TaskList` to verify all done
 
 ## Now Load The Skill
 
-This summary is a backup. The full workflow is in the skill files.
+This summary is a backup. The full workflow loads inline with the skill.
 
 **Your next action MUST be:** `Skill({ skill: "crew-claude" })`
