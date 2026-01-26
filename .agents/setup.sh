@@ -313,7 +313,7 @@ configure_codex_mcp() {
     echo "Updated Codex MCP config at $config_file"
 }
 
-# Install skills from config
+# Install skills from config (parallel)
 install_skills() {
     if [[ $RUN_SKILLS -ne 1 ]]; then
         return
@@ -325,25 +325,50 @@ install_skills() {
     local repo_count
     repo_count=$(jq -r '.skills | length' "$CONFIG_FILE")
 
+    if [[ $repo_count -eq 0 ]]; then
+        return
+    fi
+
+    local tmp_dir
+    tmp_dir=$(mktemp -d)
+    trap "rm -rf '$tmp_dir'" RETURN
+
+    local pids=()
+    local repos=()
+
     for ((i = 0; i < repo_count; i++)); do
         local repo
         repo=$(jq -r ".skills[$i].repo" "$CONFIG_FILE")
+        repos+=("$repo")
 
         local skills
         skills=$(jq -r ".skills[$i].skills | map(\"--skill \\\"\" + . + \"\\\"\") | join(\" \")" "$CONFIG_FILE")
 
         echo "Installing skills from $repo..."
 
-        local output
+        (
+            eval "npx -y skills@latest add \"$repo\" -y $agents $skills" > "$tmp_dir/$i.out" 2>&1
+            echo $? > "$tmp_dir/$i.exit"
+        ) &
+        pids+=($!)
+    done
+
+    local failed=0
+    for ((i = 0; i < repo_count; i++)); do
+        wait "${pids[$i]}"
         local exit_code
-        output=$(eval "npx -y skills@latest add \"$repo\" -y $agents $skills" 2>&1) && exit_code=$? || exit_code=$?
+        exit_code=$(cat "$tmp_dir/$i.exit")
 
         if [[ $exit_code -ne 0 ]]; then
-            echo "Error installing skills from $repo:"
-            echo "$output"
-            exit 1
+            echo "Error installing skills from ${repos[$i]}:"
+            cat "$tmp_dir/$i.out"
+            failed=1
         fi
     done
+
+    if [[ $failed -ne 0 ]]; then
+        exit 1
+    fi
 
     echo "All skills installed successfully"
 }
