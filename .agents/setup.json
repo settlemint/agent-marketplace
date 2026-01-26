@@ -32,8 +32,9 @@
   },
   "postInstall": {
     "darwin": [
-      "brew install jq graphviz poppler semgrep uv ripgrep",
-      "brew install --cask libreoffice codeql"
+      "brew install jq graphviz poppler semgrep uv ripgrep worktrunk",
+      "brew install --cask libreoffice codeql",
+      "wt config shell install"
     ],
     "linux": [
       "if command -v apt-get >/dev/null 2>&1; then (sudo -n apt-get update -qq && sudo -n apt-get install -y jq ripgrep graphviz poppler-utils) || (apt-get update -qq && apt-get install -y jq ripgrep graphviz poppler-utils) || true; fi"
@@ -42,7 +43,9 @@
       "uv pip install --system --break-system-packages 'markitdown[pptx]' defusedxml",
       "npm install -g agent-browser@latest pptxgenjs@latest playwright@latest knip@latest",
       "agent-browser install",
-      "npx playwright@latest install"
+      "npx playwright@latest install",
+      "command -v claude >/dev/null && claude plugin marketplace add max-sixty/worktrunk || true",
+      "command -v claude >/dev/null && claude plugin install worktrunk@worktrunk || true"
     ]
   },
   "skills": [

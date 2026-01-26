@@ -168,8 +168,7 @@ configure_claude_global_settings() {
 {
   "statusLine": {
     "type": "command",
-    "command": "ccline",
-    "padding": 0
+    "command": "wt list statusline --claude-code"
   },
   "env": {
     "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
