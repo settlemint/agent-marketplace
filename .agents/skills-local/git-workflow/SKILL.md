@@ -243,6 +243,14 @@ If on main -> stop and instruct to use `/branch` first.
 
 If uncommitted changes exist, use `/commit` workflow first.
 
+#### Step 2.5: Sync with Main
+
+Before pushing, sync with main to avoid conflicts:
+
+```javascript
+Skill({ skill: "git-workflow", args: "sync --rebase" })
+```
+
 #### Step 3: Push Branch
 
 ```bash
@@ -335,6 +343,7 @@ gh pr view --json url -q '.url'
 
 - [ ] Not on main/master branch
 - [ ] All changes committed
+- [ ] Synced with main before pushing
 - [ ] Branch pushed to origin
 - [ ] User confirmed PR options
 - [ ] PR created with template body
@@ -357,11 +366,22 @@ Push commits to remote with safety checks and auto-retry.
 
 ### Workflow
 
-1. **Check uncommitted changes** - Warn if working directory is dirty
-2. **Verify not on protected branch** - Block push to main/master
-3. **Determine push type** - New branch vs existing, rebased vs normal
-4. **Execute push** - With appropriate flags
-5. **Auto-retry if rejected** - Fetch, rebase, push again
+1. **Sync with main** - Rebase on main to avoid conflicts
+2. **Check uncommitted changes** - Warn if working directory is dirty
+3. **Verify not on protected branch** - Block push to main/master
+4. **Determine push type** - New branch vs existing, rebased vs normal
+5. **Execute push** - With appropriate flags
+6. **Auto-retry if rejected** - Fetch, rebase, push again
+
+#### Step 1: Sync with Main
+
+Before pushing, sync with main to avoid conflicts:
+
+```javascript
+Skill({ skill: "git-workflow", args: "sync --rebase" })
+```
+
+This delegates to the sync command which handles fetch, rebase, conflict resolution, and push.
 
 ### Push Types
 
@@ -424,6 +444,7 @@ fi
 
 ### Success Criteria
 
+- [ ] Synced with main before pushing
 - [ ] Not pushing to protected branch
 - [ ] Using `-u` flag for new branches
 - [ ] Using `--force-with-lease` (not `--force`) if needed
@@ -445,10 +466,16 @@ Sync current branch with main (or specified base) using merge or rebase.
 ! git status --short
 ```
 
+### Arguments
+
+- `base`: Base branch to sync with (default: main)
+- `--rebase`: Use rebase strategy without prompting (for automated sync before push)
+- `--merge`: Use merge strategy without prompting
+
 ### Workflow
 
 1. **Fetch latest** from origin
-2. **Choose strategy** - Merge (default) or rebase
+2. **Choose strategy** - Use `--rebase` or `--merge` flag if provided, otherwise ask user
 3. **Execute sync** - Handle any conflicts
 4. **Push** - Normal for merge, force-with-lease for rebase
 5. **Auto-retry if rejected** - Fetch, rebase, push again
@@ -456,11 +483,23 @@ Sync current branch with main (or specified base) using merge or rebase.
 ### Commands
 
 ```bash
-# Set base branch (default: main)
-BASE="${1:-main}"
+# Parse arguments
+BASE="main"
+STRATEGY=""
+for arg in "$@"; do
+  case "$arg" in
+    --rebase) STRATEGY="rebase" ;;
+    --merge) STRATEGY="merge" ;;
+    *) BASE="$arg" ;;
+  esac
+done
 
 # Fetch latest
 git fetch origin "$BASE"
+
+# If no strategy flag provided, ask user (see Merge vs Rebase Decision below)
+# If --rebase flag: use rebase
+# If --merge flag: use merge
 
 # MERGE (preserves history, creates merge commit)
 git merge "origin/$BASE" --no-edit
@@ -767,6 +806,14 @@ bun run test
 bun run ci  # if available
 ```
 
+#### 3.5. Sync Before Push
+
+Before pushing fixes, sync with main:
+
+```javascript
+Skill({ skill: "git-workflow", args: "sync --rebase" })
+```
+
 #### 4. Commit and Push
 
 Use single responsibility - delegate to commit-push:
@@ -845,6 +892,7 @@ Max 3 CI retry iterations before escalating.
 
 - [ ] All review comments addressed with code fixes
 - [ ] All threads resolved on GitHub with educational feedback
+- [ ] Synced with main before pushing
 - [ ] All CI checks passing
 - [ ] No new issues introduced
 
