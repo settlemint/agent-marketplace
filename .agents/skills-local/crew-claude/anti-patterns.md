@@ -18,6 +18,21 @@
 - **Fake ask-questions:** checked box without invoking skill, said "requirements clear" -> MUST invoke tool. (Remote: asking is optional if ambiguity ≤ 7)
 - **Plain text questions:** loaded ask-questions skill but asked in markdown instead of `AskUserQuestion` tool -> FORBIDDEN, always use the tool when asking.
 
+### Decision Question Patterns (MUST use AskUserQuestion)
+
+These phrases in assistant messages = VIOLATION if not using the tool:
+- `Would you like me to...?` → Use AskUserQuestion with options
+- `Should we...?` / `Should I...?` → Use AskUserQuestion with yes/no or options
+- `Do you want...?` → Use AskUserQuestion with options
+- `Which would you prefer...?` → Use AskUserQuestion with the options listed
+- `Could you clarify...?` → Use AskUserQuestion
+- `What should I...?` → Use AskUserQuestion with options
+
+**ALLOWED without tool** (rhetorical/explanatory):
+- Questions analyzing the problem: "The question is whether X works with Y..."
+- Questions in code comments or documentation
+- Questions quoting the user back to them
+
 ### Gate Failures
 - Gate amnesia: output GATE-1, GATE-3, then forget the rest -> output ALL gates for your classification.
 - Gate rushing: GATE-N CHECK with all boxes checked without doing the work -> gates verify work, not skip it.

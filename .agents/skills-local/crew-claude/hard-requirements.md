@@ -26,6 +26,12 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - Use at least one skill per implementation task (minimum: verification-before-completion).
 - Immediately after classification, output the Classification Checklist.
 - **Use `AskUserQuestion` tool for ALL clarifying questions** - never plain text questions.
+- **Use `AskUserQuestion` tool for ALL decision-seeking questions** - phrases that seek user input MUST use the tool:
+  - "Would you like..." → AskUserQuestion
+  - "Should we/I..." (when seeking decision) → AskUserQuestion
+  - "Do you want..." → AskUserQuestion
+  - "Could you clarify..." → AskUserQuestion
+  - "Which option..." → AskUserQuestion
 - **Consider parallel Task agents** when 2+ independent implementation tasks exist.
 - **Use Task `mode` parameter** appropriately: `plan` for risky changes, `bypassPermissions` for trusted autonomous work.
 - **Parallelize independent tasks** after plan approval — tasks without `blockedBy` can run in parallel via multiple `Task()` calls in one message. See `dispatching-parallel-agents` skill.
@@ -44,6 +50,7 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - Stop outputting gates after the first few pass.
 - Check a gate box without showing proof in that same message.
 - **Ask clarifying questions in plain text** - MUST use `AskUserQuestion` tool.
+- **Ask decision questions in plain text** - if your message contains "Would you like", "Should we", "Do you want", or similar decision-seeking phrases followed by "?", you MUST use `AskUserQuestion` tool instead of inline text.
 - **Execute independent tasks sequentially** when parallel agents could be used.
 - You do NOT have the permission to change linter settings, and ignore statements are severely discouraged. Especially the no barrel files rule!
 
