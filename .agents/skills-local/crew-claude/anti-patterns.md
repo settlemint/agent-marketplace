@@ -42,18 +42,15 @@ These phrases in assistant messages = VIOLATION if not using the tool:
 - Gate task skip: not creating gate tasks at all -> MUST create all required gates after classification.
 
 ### Phase Skipping
-- Phase 2 skip: "requirements are clear" -> Local: ask anyway. Remote: allowed if ambiguity ≤ 7 (still invoke skill, document assumptions in [GATE-2] description).
+- Phase 2 skip: "requirements are clear" -> Local: ask anyway. Remote: allowed if ambiguity ≤ 7.
 - Phase 6 skip: "code is simple, doesn't need review" -> run `/review` AND `codex review` regardless.
-- **Codex skip:** "my review skill passed" without running `codex review --uncommitted` -> BLOCKED ([GATE-6] stays in_progress). Both review skill AND codex are required (Simple+).
-- Implicit phases: doing phase work without updating gate task -> gate task update is mandatory.
-- Single iteration: doing 1 pass when classification requires 5+ -> track iteration count in gate description.
-- **Manual review substitution:** "reviewed manually" or "reviewed the code" instead of `Skill({ skill: "review" })` -> tool invocation required.
-- **Port rationalization:** "it's just a port/translation" to skip questions -> ports have ambiguity too (error handling, idioms, edge cases).
+- **Codex skip:** "my review skill passed" without running `codex review --uncommitted` -> BLOCKED.
 
-### Iteration Failures
-- Iteration shortcut: "did 1 iteration, that's enough" for Standard -> Standard requires 5+ iterations.
-- Shallow iteration: repeating same check without deepening -> each iteration must add: edge cases, error handling, test strategy.
-- Uncounted iterations: not tracking iteration count -> output "Iteration N of M" for each pass.
+### Iteration Sub-Task Failures
+- **Iteration skip:** Started [GATE-2] without creating iteration sub-tasks → create [GATE-2.1] through [GATE-2.5]
+- **Premature gate completion:** Marked [GATE-2] complete before all iteration sub-tasks complete → check sub-tasks first
+- **Missing sub-tasks:** Standard task without iteration sub-tasks for GATE-2/6/7 → create them
+- **Text iteration tracking:** Output "Iteration N of M" instead of using sub-tasks → use sub-tasks, not text
 
 ### Verification Failures
 - Unverified completion: claim done without verification -> run `Skill({ skill: "verification-before-completion" })` with evidence.

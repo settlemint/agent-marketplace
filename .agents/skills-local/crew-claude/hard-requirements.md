@@ -85,70 +85,34 @@ When modifying existing code:
 3. If yes → verify tests cover the code you're about to change
 4. Only then proceed with TDD for new changes
 
-### Classification Checklist (MANDATORY)
+### Classification Output (MANDATORY)
 
-Output immediately after classification:
+Output ONLY this single line, then create gate tasks via TodoWrite:
 
 ```
 CLASSIFICATION: [Trivial|Simple|Standard]
-
-REQUIRED SKILLS (load before implementation):
-- [ ] verification-before-completion (ALL tasks)
-- [ ] [skill-2 if applicable]
-- [ ] [skill-3 if applicable]
-
-REQUIRED PHASES:
-- [ ] Phase 1: Planning
-- [ ] Phase 3: Implementation
-- [ ] Phase 7: Verification
-- [ ] [additional phases per classification]
-
-ITERATIONS: Plan Refinement [1|5+] | Review [1|5+] | Verification [1|5+]
 ```
+
+No verbose checklists. The task list IS the tracking mechanism.
 
 ### Gate Task Creation (MANDATORY)
 
-Immediately after classification, create gate tasks per classification:
+Immediately after classification, create gate tasks via TodoWrite. See task-classification.md for exact patterns per classification type.
 
 | Classification | Gates to Create |
 |---------------|-----------------|
 | **Trivial** | GATE-3, GATE-7, GATE-8, GATE-9 (4 gates) |
 | **Simple** | GATE-1,2,3,5,6,7,8,9 (8 gates, skip GATE-4) |
-| **Standard** | All 9 gates |
+| **Standard** | All 9 gates + iteration sub-tasks for GATE-2,6,7 |
 | **Plan Mode** | GATE-1,2 initially; GATE-3+ after approval |
 
-```typescript
-// Standard example (all 9 gates with dependency chain):
-TaskCreate({ subject: "[GATE-1] Planning", description: "Awaiting start", activeForm: "Verifying planning requirements" })
-TaskCreate({ subject: "[GATE-2] Refinement", description: "Awaiting GATE-1", blockedBy: ["gate-1-id"], activeForm: "Verifying refinement requirements" })
-TaskCreate({ subject: "[GATE-3] Implementation", description: "Awaiting GATE-2", blockedBy: ["gate-2-id"], activeForm: "Verifying implementation requirements" })
-TaskCreate({ subject: "[GATE-4] Cleanup", description: "Awaiting GATE-3", blockedBy: ["gate-3-id"], activeForm: "Verifying cleanup requirements" })
-TaskCreate({ subject: "[GATE-5] Testing", description: "Awaiting GATE-4", blockedBy: ["gate-4-id"], activeForm: "Verifying testing requirements" })
-TaskCreate({ subject: "[GATE-6] Review", description: "Awaiting GATE-5", blockedBy: ["gate-5-id"], activeForm: "Verifying review requirements" })
-TaskCreate({ subject: "[GATE-7] Verification", description: "Awaiting GATE-6", blockedBy: ["gate-6-id"], activeForm: "Verifying completion requirements" })
-TaskCreate({ subject: "[GATE-8] CI", description: "Awaiting GATE-7", blockedBy: ["gate-7-id"], activeForm: "Verifying CI requirements" })
-TaskCreate({ subject: "[GATE-9] Integration", description: "Awaiting GATE-8", blockedBy: ["gate-8-id"], activeForm: "Verifying integration test requirements" })
+### Gate Task Status
 
-// Simple: skip GATE-4, adjust blockedBy (GATE-5 blockedBy GATE-3)
-// Trivial: only GATE-3,7,8,9 (GATE-7 blockedBy GATE-3, GATE-8 blockedBy GATE-7, GATE-9 blockedBy GATE-8)
-// Plan Mode: create GATE-1,2 first; after approval create remaining gates
-```
-
-### Gate Task Lifecycle
-
-```
-pending → in_progress → completed
-           ↓
-       (if blocked, stays in_progress with "BLOCKED: reason" in description)
-```
-
-**Status mapping:**
-| Gate Status | Task Status | Description Format |
-|-------------|-------------|-------------------|
-| Not started | pending | "Awaiting [previous gate]" |
-| Checking | in_progress | "Verifying: [requirement]" |
-| PASS | completed | "PASS: [key]=[evidence] \| ..." |
-| BLOCKED | in_progress | "BLOCKED: [reason]" |
+| Status | When | Description |
+|--------|------|-------------|
+| pending | Not started | — |
+| in_progress | Working on it | — |
+| completed | Done with proof | — |
 
 ### Phase Gates (MANDATORY - ALL OF THEM)
 
@@ -193,38 +157,13 @@ Before each phase, update the corresponding gate task. Do not proceed if BLOCKED
 
 **Loading ≠ Following:** Invoking a skill means you MUST follow its instructions. Loading TDD then writing code without tests = violation.
 
-**Gate update pattern:**
-```typescript
-// When checking a gate:
-TaskUpdate({ taskId: "gate-N-id", status: "in_progress" })
-
-// When gate passes:
-TaskUpdate({ taskId: "gate-N-id", status: "completed", description: "PASS: [key]=[evidence] | ..." })
-
-// When gate blocked:
-TaskUpdate({ taskId: "gate-N-id", status: "in_progress", description: "BLOCKED: [reason]" })
-```
-
 ### Pre-Completion Gate
 
-Before saying "done" or "complete", run `TaskList` and confirm:
-- All gate tasks ([GATE-1] through [GATE-9]) show status: completed
-- All gate descriptions show "PASS:" with proof
-- All implementation tasks show status: completed
-- Classification + checklist were output
-- [GATE-2] description shows questions asked (Local) or "Remote: clear" (Remote)
-- [GATE-6] description shows review + codex output
-- **Codex review executed (Simple+)** — `codex review --uncommitted` output in [GATE-6] description, P1/P2 issues fixed
-- Required skills loaded via Skill() tool (not just mentioned) — search for `<invoke name="Skill">`
-- Verification skill executed (not just loaded)
-- [GATE-7] and [GATE-8] descriptions show exit code 0
-- [GATE-9] shows integration test result (Exit 0 or N/A)
+Before claiming done, the task list must show all gate tasks as completed. No exceptions.
 
-**Banned phrases:** "looks good", "should work", "Done!", "that's it", "it's just a port", "direct translation", "1:1 conversion", "straightforward", "manual review", "reviewed the code", "pre-existing", "not related to my changes", "unrelated to this PR", "existing issue", "those errors existed before", "module resolution issues in the codebase", "the specific tests I created pass"
-- **Local only banned:** "requirements are clear" (allowed in Remote Mode when genuinely clear)
-- **Failure deflection (ZERO TOLERANCE):** Any claim that failures (tests, lint, types, build, CI) are "pre-existing" or "not related to my changes" is ABSOLUTELY FORBIDDEN. Main always passes. If anything fails, you broke it. Fix it.
+**Banned phrases:** "looks good", "should work", "Done!", "it's just a port", "manual review", "pre-existing", "not related to my changes"
 
-**Required completion format:** evidence summary + verification output + gates passed list + iteration counts
+**Failure deflection (ZERO TOLERANCE):** Any claim that failures are "pre-existing" or "not related to my changes" is FORBIDDEN. Main always passes. If anything fails, you broke it.
 
 ### Plan Mode Integration
 
