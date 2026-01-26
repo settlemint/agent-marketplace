@@ -21,7 +21,7 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - **Task dependencies:** Use `TaskUpdate({ addBlockedBy: [...] })` to establish task ordering.
 - **Fallback:** If Tasks tools unavailable (older Conductor), use `TodoWrite({ status: "in_progress/completed" })`.
 - Load skills via `Skill({ skill: "name" })` tool call - listing is not loading.
-- **Create gate tasks after classification** — number depends on classification (Trivial: 3, Simple: 7, Standard: 8; Plan Mode: GATE-1,2 initially, rest after approval). See Gate Task Creation section.
+- **Create gate tasks after classification** — number depends on classification (Trivial: 4, Simple: 8, Standard: 9; Plan Mode: GATE-1,2 initially, rest after approval). See Gate Task Creation section.
 - Provide verification evidence (command output/test results with exit code 0) before claiming done.
 - Use at least one skill per implementation task (minimum: verification-before-completion).
 - Immediately after classification, output the Classification Checklist.
@@ -160,8 +160,8 @@ Before each phase, update the corresponding gate task. Do not proceed if BLOCKED
 
 **Gate requirements (update task description with proof when complete):**
 
-- **[GATE-1] Planning**: `PASS: Classification=[type] | Research=[tools used] | Checklist=output`
-  - Requirements: classification stated + checklist output + research complete (mcp__octocode__* for code, mcp__context7__* for docs, mcp__exa__* for web/company research).
+- **[GATE-1] Planning**: `PASS: Classification=[type] | Request=understood | Research=[tools used] | Docs=checked | Web=[done/N/A]`
+  - Requirements: classification stated + user request understood + research complete (mcp__octocode__* for code, mcp__context7__* for docs, mcp__exa__* for web/company research).
 
 - **[GATE-2] Refinement**: `PASS: AskQuestions=[invoked] | Questions=[count or N/A if Remote]`
   - Requirements: `Skill({ skill: "ask-questions-if-underspecified" })` tool call visible. **Local:** `AskUserQuestion` tool used. **Remote:** questions optional unless genuinely ambiguous.

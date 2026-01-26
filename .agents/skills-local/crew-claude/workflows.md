@@ -17,7 +17,7 @@ TaskCreate({ subject: "[GATE-2] Refinement", description: "Awaiting GATE-1", blo
 TaskUpdate({
   taskId: "gate-1-id",
   status: "completed",
-  description: "PASS: Classification=[type] | Exploration=octocode,exa | Docs=checked"
+  description: "PASS: Classification=[type] | Request=understood | Exploration=octocode,exa | Docs=checked | Web=[done/N/A]"
 })
 ```
 Requirements: Classification stated + User request understood + Codebase exploration complete + Library docs checked + Web research done if needed
@@ -32,7 +32,7 @@ TaskUpdate({
 ```
 Requirements: Implementation approach documented + Critical files identified + Questions asked (via AskUserQuestion) if ambiguous + Plan written to plan file
 
-**After Plan Approval**: Create remaining gate tasks ([GATE-3] through [GATE-8]) and resume at Implementation phase.
+**After Plan Approval**: Create remaining gate tasks ([GATE-3] through [GATE-9]) and resume at Implementation phase.
 
 **Plan Mode maps to workflow phases:**
 - [GATE-1] → Phase 1 (Planning)
