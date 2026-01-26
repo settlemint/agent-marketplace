@@ -361,7 +361,7 @@ install_skills() {
                 echo "Error: Invalid skill name: $skill"
                 exit 1
             fi
-            skill_flags+=" --skill \"$skill\""
+            skill_flags+=" --skill $skill"
         done
         skill_args+=("$skill_flags")
 
