@@ -1,6 +1,6 @@
 ---
 name: git-workflow
-description: "Git workflow commands: commit, branch, pr, push, sync, review, fixup, update-pr, commit-push, clean-gone. Use with command argument."
+description: "Git workflow commands: commit, branch, pr, push, sync, review, fixup, update-pr, commit-push, clean-gone, run-e2e. Use with command argument."
 user-invocable: true
 argument-hint: <command> [options]
 allowed-tools:
@@ -38,6 +38,7 @@ Invoke with a command name as argument:
 | `update-pr` | Update PR title and body from commits |
 | `commit-push` | Create conventional commit and push |
 | `clean-gone` | Remove local branches deleted from remote |
+| `run-e2e` | Trigger e2e tests by toggling PR label |
 
 ---
 
@@ -774,7 +775,17 @@ git commit -m "fix: address PR review comments"
 git push --force-with-lease
 ```
 
-#### 5. Resolve Threads with Educational Feedback
+#### 5. Trigger E2E Tests
+
+After successful push, trigger e2e tests:
+
+```javascript
+Skill({ skill: "git-workflow", args: "run-e2e" })
+```
+
+This removes and re-adds the `run-playwright-tests` label to trigger a fresh CI run.
+
+#### 6. Resolve Threads with Educational Feedback
 
 For EACH unresolved thread, provide feedback using symbols:
 
@@ -803,7 +814,7 @@ THREAD_ID=$(echo "$THREADS" | jq -r '.id' | head -1)
 [x] This pattern is intentional for TypeScript discriminated unions. The 'redundant' check enables type narrowing. Added clarifying comment.
 ```
 
-#### 6. Verify All Threads Resolved
+#### 7. Verify All Threads Resolved
 
 ```bash
 .agents/skills-local/git-workflow/scripts/count-unresolved-threads.sh
@@ -811,7 +822,7 @@ THREAD_ID=$(echo "$THREADS" | jq -r '.id' | head -1)
 
 Should return 0.
 
-#### 7. Wait for CI and Retry if Needed
+#### 8. Wait for CI and Retry if Needed
 
 If CI fails after push:
 1. Read the failure logs: `gh pr checks --watch`
@@ -1171,3 +1182,50 @@ It will NOT delete:
 - [ ] Removed associated worktrees
 - [ ] Deleted gone branches
 - [ ] Reported results to user
+
+---
+
+## run-e2e
+
+Trigger e2e tests on CI by toggling the `run-playwright-tests` label on the current PR.
+
+### Context
+
+```bash
+! git branch --show-current
+! gh pr view --json number,title 2>/dev/null || echo "No PR found"
+```
+
+### Workflow
+
+1. **Get PR for current branch** - Verify a PR exists
+2. **Remove label** - Remove `run-playwright-tests` if present (silently ignore if not)
+3. **Add label** - Add `run-playwright-tests` to trigger fresh e2e run
+
+### Commands
+
+```bash
+PR_NUM=$(gh pr view --json number -q '.number' 2>/dev/null)
+if [[ -z "$PR_NUM" ]]; then
+  echo "ERROR: No PR found for current branch"
+  exit 1
+fi
+
+# Remove then add to ensure fresh trigger
+gh pr edit "$PR_NUM" --remove-label "run-playwright-tests" 2>/dev/null || true
+gh pr edit "$PR_NUM" --add-label "run-playwright-tests"
+
+echo "E2E tests triggered for PR #$PR_NUM"
+```
+
+### Constraints
+
+**Required:**
+- PR must exist for current branch
+- GitHub CLI authenticated with write access
+
+### Success Criteria
+
+- [ ] PR exists for current branch
+- [ ] Label added to PR
+- [ ] E2E workflow triggered in CI
