@@ -103,6 +103,22 @@ download_agents() {
     rm -rf "$tmp_dir"
 }
 
+refresh_setup_json() {
+    echo "Checking for setup.json updates..."
+    local tmp_file repo_name
+    tmp_file=$(mktemp)
+    repo_name="${REPO##*/}"
+
+    if curl -sL "$ARCHIVE_URL" | tar -xzf - -O "${repo_name}-${BRANCH}/.agents/setup.json" > "$tmp_file" 2>/dev/null; then
+        if ! diff -q "$tmp_file" "$TARGET_AGENTS_DIR/setup.json" >/dev/null 2>&1; then
+            cp "$tmp_file" "$TARGET_AGENTS_DIR/setup.json"
+            echo "  Updated setup.json with latest configuration"
+        fi
+    fi
+
+    rm -f "$tmp_file"
+}
+
 update_agents() {
     echo "Updating .agents..."
 
@@ -123,6 +139,7 @@ ensure_agents_dir() {
     fi
 
     if agents_ready; then
+        refresh_setup_json
         return
     fi
 
