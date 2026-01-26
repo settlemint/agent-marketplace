@@ -313,7 +313,7 @@ configure_codex_mcp() {
     echo "Updated Codex MCP config at $config_file"
 }
 
-# Install skills from config
+# Install skills from config (parallel)
 install_skills() {
     if [[ $RUN_SKILLS -ne 1 ]]; then
         return
@@ -325,25 +325,70 @@ install_skills() {
     local repo_count
     repo_count=$(jq -r '.skills | length' "$CONFIG_FILE")
 
+    if [[ $repo_count -eq 0 ]]; then
+        return
+    fi
+
+    local tmp_dir
+    tmp_dir=$(mktemp -d)
+
+    cleanup_tmp() {
+        rm -rf "$tmp_dir"
+    }
+    trap cleanup_tmp RETURN EXIT INT TERM
+
+    local pids=()
+    local repos=()
+    local skill_args=()
+
     for ((i = 0; i < repo_count; i++)); do
         local repo
         repo=$(jq -r ".skills[$i].repo" "$CONFIG_FILE")
 
+        if [[ ! "$repo" =~ ^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$ ]]; then
+            echo "Error: Invalid repo format: $repo"
+            exit 1
+        fi
+        repos+=("$repo")
+
         local skills
-        skills=$(jq -r ".skills[$i].skills | map(\"--skill \\\"\" + . + \"\\\"\") | join(\" \")" "$CONFIG_FILE")
+        readarray -t skills < <(jq -r ".skills[$i].skills[]" "$CONFIG_FILE")
+        local skill_flags=""
+        for skill in "${skills[@]}"; do
+            if [[ ! "$skill" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+                echo "Error: Invalid skill name: $skill"
+                exit 1
+            fi
+            skill_flags+=" --skill \"$skill\""
+        done
+        skill_args+=("$skill_flags")
 
         echo "Installing skills from $repo..."
 
-        local output
+        (
+            set +e
+            npx -y skills@latest add "$repo" -y $agents ${skill_args[$i]} > "$tmp_dir/$i.out" 2>&1
+            echo $? > "$tmp_dir/$i.exit"
+        ) &
+        pids+=("$!")
+    done
+
+    local failed=0
+    for ((i = 0; i < repo_count; i++)); do
+        wait "${pids[$i]}" || true
         local exit_code
-        output=$(eval "npx -y skills@latest add \"$repo\" -y $agents $skills" 2>&1) && exit_code=$? || exit_code=$?
+        exit_code=$(cat "$tmp_dir/$i.exit" 2>/dev/null || echo "1")
 
         if [[ $exit_code -ne 0 ]]; then
-            echo "Error installing skills from $repo:"
-            echo "$output"
-            exit 1
+            echo "Error installing skills from ${repos[$i]}:"
+            cat "$tmp_dir/$i.out" 2>/dev/null || echo "No output captured"
+            failed=1
         fi
     done
+
+    if [[ $failed -ne 0 ]]; then
+        exit 1
+    fi
 
     echo "All skills installed successfully"
 }
