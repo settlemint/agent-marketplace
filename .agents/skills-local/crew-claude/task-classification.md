@@ -11,8 +11,8 @@ Classify before implementation. When in doubt, classify up.
 4. Uncertain => up.
 
 ### Categories (minimum steps / may skip)
-- **Trivial:** single-line/typo/comment only. Steps: Create gate tasks (GATE-3,7,8,9 only) -> TaskCreate -> TaskUpdate(in_progress) -> Implementation -> Update [GATE-3] -> Verification -> Update [GATE-7,8,9] -> TaskUpdate(completed). May skip: plan refinement, review, deep reasoning.
-- **Simple:** single file, clear scope; new file ok. Steps: Create 8 gate tasks (skip GATE-4) -> TaskCreate -> TaskUpdate(in_progress), Planning (1 pass) -> Update [GATE-1], Implementation -> Update [GATE-3], Testing/syntax check -> Update [GATE-5], Verification skill, codex review -> Update [GATE-6,7,8,9], TaskUpdate(completed). May skip: deep reasoning, multi-iteration review.
+- **Trivial:** single-line/typo/comment only. Steps: Create gate tasks (Implementation, Verification, CI, Integration only) -> TaskCreate -> TaskUpdate(in_progress) -> Implementation -> Update Implementation -> Verification -> Update Verification, CI, Integration -> TaskUpdate(completed). May skip: plan refinement, review, deep reasoning.
+- **Simple:** single file, clear scope; new file ok. Steps: Create 8 gate tasks (skip Cleanup) -> TaskCreate -> TaskUpdate(in_progress), Planning (1 pass) -> Update Planning, Implementation -> Update Implementation, Testing/syntax check -> Update Testing, Verification skill, codex review -> Update Review, Verification, CI, Integration, TaskUpdate(completed). May skip: deep reasoning, multi-iteration review.
 - **Standard:** multi-file/behavior change/architectural/security-sensitive. Steps: Create all 9 gate tasks -> all phases with gate task updates, 5+ iterations each, mcp__codex for planning, differential-review, codex review. Skip none.
 
 ### Task Management Tools
@@ -36,25 +36,25 @@ Output only `CLASSIFICATION: [type]` then immediately create gate tasks. No verb
 #### Trivial — 4 gates
 ```typescript
 TodoWrite([
-  { content: "[GATE-3] Implementation", status: "pending", activeForm: "Implementing" },
-  { content: "[GATE-7] Verification", status: "pending", activeForm: "Verifying" },
-  { content: "[GATE-8] CI", status: "pending", activeForm: "Running CI" },
-  { content: "[GATE-9] Integration", status: "pending", activeForm: "Running integration tests" },
+  { content: "Implementation", status: "pending", activeForm: "Implementing" },
+  { content: "Verification", status: "pending", activeForm: "Verifying" },
+  { content: "CI", status: "pending", activeForm: "Running CI" },
+  { content: "Integration", status: "pending", activeForm: "Running integration tests" },
 ])
 ```
 Skills: verification-before-completion
 
-#### Simple — 8 gates (skip GATE-4)
+#### Simple — 8 gates (skip Cleanup)
 ```typescript
 TodoWrite([
-  { content: "[GATE-1] Planning", status: "pending", activeForm: "Planning" },
-  { content: "[GATE-2] Refinement", status: "pending", activeForm: "Refining" },
-  { content: "[GATE-3] Implementation", status: "pending", activeForm: "Implementing" },
-  { content: "[GATE-5] Testing", status: "pending", activeForm: "Testing" },
-  { content: "[GATE-6] Review", status: "pending", activeForm: "Reviewing" },
-  { content: "[GATE-7] Verification", status: "pending", activeForm: "Verifying" },
-  { content: "[GATE-8] CI", status: "pending", activeForm: "Running CI" },
-  { content: "[GATE-9] Integration", status: "pending", activeForm: "Running integration tests" },
+  { content: "Planning", status: "pending", activeForm: "Planning" },
+  { content: "Refinement", status: "pending", activeForm: "Refining" },
+  { content: "Implementation", status: "pending", activeForm: "Implementing" },
+  { content: "Testing", status: "pending", activeForm: "Testing" },
+  { content: "Review", status: "pending", activeForm: "Reviewing" },
+  { content: "Verification", status: "pending", activeForm: "Verifying" },
+  { content: "CI", status: "pending", activeForm: "Running CI" },
+  { content: "Integration", status: "pending", activeForm: "Running integration tests" },
 ])
 ```
 Skills: verification-before-completion, test-driven-development, ask-questions-if-underspecified
@@ -62,38 +62,38 @@ Skills: verification-before-completion, test-driven-development, ask-questions-i
 #### Standard — 9 gates with iteration sub-tasks
 ```typescript
 TodoWrite([
-  { content: "[GATE-1] Planning", status: "pending", activeForm: "Planning" },
-  { content: "[GATE-2] Refinement", status: "pending", activeForm: "Refining" },
-  { content: "[GATE-3] Implementation", status: "pending", activeForm: "Implementing" },
-  { content: "[GATE-4] Cleanup", status: "pending", activeForm: "Cleaning up" },
-  { content: "[GATE-5] Testing", status: "pending", activeForm: "Testing" },
-  { content: "[GATE-6] Review", status: "pending", activeForm: "Reviewing" },
-  { content: "[GATE-7] Verification", status: "pending", activeForm: "Verifying" },
-  { content: "[GATE-8] CI", status: "pending", activeForm: "Running CI" },
-  { content: "[GATE-9] Integration", status: "pending", activeForm: "Running integration tests" },
+  { content: "Planning", status: "pending", activeForm: "Planning" },
+  { content: "Refinement", status: "pending", activeForm: "Refining" },
+  { content: "Implementation", status: "pending", activeForm: "Implementing" },
+  { content: "Cleanup", status: "pending", activeForm: "Cleaning up" },
+  { content: "Testing", status: "pending", activeForm: "Testing" },
+  { content: "Review", status: "pending", activeForm: "Reviewing" },
+  { content: "Verification", status: "pending", activeForm: "Verifying" },
+  { content: "CI", status: "pending", activeForm: "Running CI" },
+  { content: "Integration", status: "pending", activeForm: "Running integration tests" },
 ])
 ```
 Skills: verification-before-completion, test-driven-development, ask-questions-if-underspecified, systematic-debugging (if modifying existing code), differential-review
 
-**Iteration sub-tasks (Standard only):** When starting GATE-2, GATE-6, or GATE-7, create 5 iteration sub-tasks:
+**Iteration sub-tasks (Standard only):** When starting Refinement, Review, or Verification, create 5 iteration sub-tasks:
 ```typescript
-// Example for GATE-2 Refinement
+// Example for Refinement
 TodoWrite([
-  { content: "[GATE-2] Refinement", status: "in_progress", activeForm: "Refining" },
-  { content: "[GATE-2.1] Refinement iteration 1", status: "pending", activeForm: "Iteration 1" },
-  { content: "[GATE-2.2] Refinement iteration 2", status: "pending", activeForm: "Iteration 2" },
-  { content: "[GATE-2.3] Refinement iteration 3", status: "pending", activeForm: "Iteration 3" },
-  { content: "[GATE-2.4] Refinement iteration 4", status: "pending", activeForm: "Iteration 4" },
-  { content: "[GATE-2.5] Refinement iteration 5", status: "pending", activeForm: "Iteration 5" },
+  { content: "Refinement", status: "in_progress", activeForm: "Refining" },
+  { content: "Refinement iteration 1", status: "pending", activeForm: "Iteration 1" },
+  { content: "Refinement iteration 2", status: "pending", activeForm: "Iteration 2" },
+  { content: "Refinement iteration 3", status: "pending", activeForm: "Iteration 3" },
+  { content: "Refinement iteration 4", status: "pending", activeForm: "Iteration 4" },
+  { content: "Refinement iteration 5", status: "pending", activeForm: "Iteration 5" },
 ])
 ```
 Parent gate can only be completed when all iteration sub-tasks are completed.
 
-#### Plan Mode — GATE-1,2 only; remaining gates after approval
+#### Plan Mode — Planning and Refinement only; remaining gates after approval
 ```typescript
 TodoWrite([
-  { content: "[GATE-1] Planning", status: "pending", activeForm: "Planning" },
-  { content: "[GATE-2] Refinement", status: "pending", activeForm: "Refining" },
+  { content: "Planning", status: "pending", activeForm: "Planning" },
+  { content: "Refinement", status: "pending", activeForm: "Refining" },
 ])
-// After plan approval, create [GATE-3] through [GATE-9]
+// After plan approval, create Implementation through Integration gates
 ```

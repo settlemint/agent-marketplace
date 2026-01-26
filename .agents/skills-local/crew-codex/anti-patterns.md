@@ -13,7 +13,7 @@
 - **Fake questions:** claimed to ask questions but skipped them -> activate skill. (Remote: asking is optional if ambiguity ≤ 7)
 
 ### Gate Failures
-- Gate rushing: GATE-N CHECK with all boxes checked without doing the work -> gates verify work, not skip it.
+- Gate rushing: gate CHECK with all boxes checked without doing the work -> gates verify work, not skip it.
 - Proofless checkboxes: `[x] Requirement` without a brief note -> add `— PROOF: [what you did]`.
 
 ### Phase Skipping

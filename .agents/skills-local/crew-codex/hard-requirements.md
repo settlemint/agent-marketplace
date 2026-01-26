@@ -64,23 +64,23 @@ ITERATIONS: as needed
 Before each phase, output a gate check. Do not proceed if a gate is BLOCKED.
 
 Gate requirements (Standard/Complex):
-- GATE-1 Planning: classification stated + research complete.
-- GATE-2 Plan Refinement: clarify ambiguities; questions optional if clear.
-- GATE-3 Implementation: start work; use TDD/testing if risk warrants.
-- GATE-4 Cleanup: ensure implementation is tidy.
-- GATE-5 Testing: run relevant tests if they exist and behavior changes.
-- GATE-6 Review: do a quick review or `/review` for risky/wide changes.
-- GATE-7 Verification: list verification commands run or explicitly note skips.
-- GATE-8 CI Validation: run CI for risky/wide changes or when requested; otherwise note skip.
+- Planning: classification stated + research complete.
+- Refinement: clarify ambiguities; questions optional if clear.
+- Implementation: start work; use TDD/testing if risk warrants.
+- Cleanup: ensure implementation is tidy.
+- Testing: run relevant tests if they exist and behavior changes.
+- Review: do a quick review or `/review` for risky/wide changes.
+- Verification: list verification commands run or explicitly note skips.
+- CI: run CI for risky/wide changes or when requested; otherwise note skip.
   - **NOTE:** CI commands use turborepo—run from repository root folder.
   - **NOTE:** Infrastructure services may be required—launch with `bun dev:up` (do not use docker-compose directly).
-- GATE-DONE Completion: verification summary + gates list.
+- Completion: verification summary + gates list.
 
 **Activation ≠ Following:** Invoking a skill means you should follow its instructions.
 
 Gate format (use verbatim when gates are used):
 ```
-GATE-[N] CHECK:
+[Gate Name] CHECK:
 - [x] Requirement 1 — PROOF: [brief note or output if run]
 - [x] Requirement 2 — PROOF: [brief note or output if run]
 - [ ] Requirement 3 (BLOCKED: reason)
@@ -105,13 +105,13 @@ Before saying "done" or "complete", confirm:
 When `system-reminder` indicates "Plan mode is active":
 
 1. **First**: Output classification checklist (same as always)
-2. **Then**: Output PLAN-GATE-1 before exploration
-3. **Then**: Output PLAN-GATE-2 before writing plan
+2. **Then**: Output Understanding gate before exploration
+3. **Then**: Output Design gate before writing plan
 4. **Finally**: Output the plan (plan-only response when required)
 
 **Plan Mode maps to workflow phases:**
-- PLAN-GATE-1 → Phase 1 (Planning)
-- PLAN-GATE-2 → Phase 2 (Plan Refinement)
+- Understanding → Phase 1 (Planning)
+- Design → Phase 2 (Plan Refinement)
 - After approval → Phase 3+ (Implementation onwards)
 
 **Plan Mode does NOT exempt you from:**

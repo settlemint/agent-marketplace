@@ -145,7 +145,7 @@ Run `TaskList()` to see all pending fix tasks
 ### Overall Status: [PASS / BLOCKED]
 ```
 
-## Step 5: Update [GATE-6] Task
+## Step 5: Update Review Task
 
 Update the gate task with review results:
 
@@ -178,7 +178,7 @@ If any reviewer returns a `NEEDS_*` verdict:
    TaskUpdate({ taskId: "FIX-001", status: "completed" })
    ```
 3. **Re-run ONLY failed reviewer(s)** — single Task() call
-4. **Update [GATE-6] task description** with new verdicts
+4. **Update Review task description** with new verdicts
 5. **Repeat** until all PASS or user accepts current state
 
 ## Example Flow
@@ -206,7 +206,7 @@ Phase 6 Start
     │
     ├── TaskList: All completed
     │
-    └── TaskUpdate [GATE-6] to completed with "PASS: ..."
+    └── TaskUpdate Review to completed with "PASS: ..."
 ```
 
 ## Parallelism Checklist
