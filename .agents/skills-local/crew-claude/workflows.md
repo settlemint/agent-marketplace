@@ -267,12 +267,12 @@ After parallel reviews complete, run codex for independent AI analysis:
 
 1. **Stage any untracked files:**
    ```bash
-   git ls-files --others --exclude-standard -z | xargs -0 git add
+   git ls-files --others --exclude-standard -z | while IFS= read -r -d '' f; do git add -- "$f"; done
    ```
 
 2. **Run codex review:**
    ```bash
-   codex review --uncommitted --config model_reasoning_effort=high
+   codex review --uncommitted --config model_reasoning_effort=xhigh
    ```
 
 3. **Handle findings:**
