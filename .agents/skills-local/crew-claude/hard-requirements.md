@@ -180,8 +180,9 @@ Before each phase, update the corresponding gate task. Do not proceed if BLOCKED
 - **[GATE-7] Verification**: `PASS: Commands=[run] | Exit=[0] | Tasks=[all completed]`
   - Requirements: verification commands run IN THIS MESSAGE with exit code 0 shown + all tasks marked completed.
 
-- **[GATE-8] CI**: `PASS: CI=[command] | Exit=[0]`
+- **[GATE-8] CI**: `PASS: CI=[command] | Exit=[0] | Integration=[Exit 0 or N/A]`
   - Requirements: `bun run ci` (or `npm/pnpm run ci`, or fallback: lint+test+build) executed IN THIS MESSAGE with exit code 0 shown.
+  - **Final step:** Run `bun run test:integration` if script exists in package.json. Include result (`Exit 0`) or note `N/A` if unavailable.
   - **NOTE:** CI commands use turborepo—run from repository root folder.
   - **NOTE:** Infrastructure services may be required—launch with `bun dev:up` (do not use docker-compose directly).
 

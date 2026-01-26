@@ -310,6 +310,10 @@ After parallel reviews complete, run codex for independent AI analysis:
 - **NOTE:** All CI commands use turborepo and must be run from the repository root folder.
 - **NOTE:** Infrastructure services may be required. Launch with `bun dev:up` (do not use docker-compose directly).
 - **REQUIRED:** Include CI exit code in gate description: `PASS: CI=bun run ci | Exit=0`
+- **FINAL STEP:** Run `bun run test:integration` (if script exists) for comprehensive quality assurance.
+  - Check if script exists: `jq -e '.scripts["test:integration"]' package.json`
+  - If available: run and include result in gate description: `| Integration=Exit 0`
+  - If not available: note `| Integration=N/A` in gate description
 - If no CI/lint/test/build scripts exist: document this explicitly in [GATE-8] description.
 - This phase runs AFTER Phase 7 verification - it is the absolute last check.
 - **No completion claim without [GATE-8] showing status: completed.**
