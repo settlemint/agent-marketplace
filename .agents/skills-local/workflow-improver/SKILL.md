@@ -92,11 +92,7 @@ Analyze the transcript for:
 Read these files to understand the intended workflow:
 
 1. **CLAUDE.md**: `./CLAUDE.md`
-2. **Crew skill**: `.agents/skills-local/crew-claude/SKILL.md`
-3. **Workflows**: `.agents/skills-local/crew-claude/workflows.md`
-4. **Hard requirements**: `.agents/skills-local/crew-claude/hard-requirements.md`
-5. **Anti-patterns**: `.agents/skills-local/crew-claude/anti-patterns.md`
-6. **Skill routing**: `.agents/skills-local/crew-claude/skill-routing-table.md`
+2. **Crew skill**: `.agents/skills-local/crew-claude/SKILL.md` (contains workflows, hard requirements, anti-patterns, and skill routing)
 
 ## Scoring Rubric
 
