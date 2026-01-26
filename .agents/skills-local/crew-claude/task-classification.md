@@ -11,9 +11,9 @@ Classify before implementation. When in doubt, classify up.
 4. Uncertain => up.
 
 ### Categories (minimum steps / may skip)
-- **Trivial:** single-line/typo/comment only. Steps: Create gate tasks (GATE-3,7,8 only) -> TaskCreate -> TaskUpdate(in_progress) -> Implementation -> Update [GATE-3] -> Verification -> Update [GATE-7,8] -> TaskUpdate(completed). May skip: plan refinement, review, deep reasoning.
-- **Simple:** single file, clear scope; new file ok. Steps: Create 7 gate tasks (skip GATE-4) -> TaskCreate -> TaskUpdate(in_progress), Planning (1 pass) -> Update [GATE-1], Implementation -> Update [GATE-3], Testing/syntax check -> Update [GATE-5], Verification skill, codex review -> Update [GATE-6,7,8], TaskUpdate(completed). May skip: deep reasoning, multi-iteration review.
-- **Standard:** multi-file/behavior change/architectural/security-sensitive. Steps: Create all 8 gate tasks -> all phases with gate task updates, 5+ iterations each, mcp__codex for planning, differential-review, codex review. Skip none.
+- **Trivial:** single-line/typo/comment only. Steps: Create gate tasks (GATE-3,7,8,9 only) -> TaskCreate -> TaskUpdate(in_progress) -> Implementation -> Update [GATE-3] -> Verification -> Update [GATE-7,8,9] -> TaskUpdate(completed). May skip: plan refinement, review, deep reasoning.
+- **Simple:** single file, clear scope; new file ok. Steps: Create 8 gate tasks (skip GATE-4) -> TaskCreate -> TaskUpdate(in_progress), Planning (1 pass) -> Update [GATE-1], Implementation -> Update [GATE-3], Testing/syntax check -> Update [GATE-5], Verification skill, codex review -> Update [GATE-6,7,8,9], TaskUpdate(completed). May skip: deep reasoning, multi-iteration review.
+- **Standard:** multi-file/behavior change/architectural/security-sensitive. Steps: Create all 9 gate tasks -> all phases with gate task updates, 5+ iterations each, mcp__codex for planning, differential-review, codex review. Skip none.
 
 ### Task Management Tools
 
@@ -39,6 +39,7 @@ GATE TASKS (create after classification):
 - [ ] TaskCreate [GATE-3] Implementation
 - [ ] TaskCreate [GATE-7] Verification (blockedBy: GATE-3)
 - [ ] TaskCreate [GATE-8] CI (blockedBy: GATE-7)
+- [ ] TaskCreate [GATE-9] Integration (blockedBy: GATE-8)
 
 REQUIRED SKILLS (invoke Skill() tool before [GATE-3] completion):
 - [ ] verification-before-completion
@@ -47,6 +48,7 @@ REQUIRED PHASES (update gate task to completed with proof):
 - [ ] Phase 3: Implementation → update [GATE-3] to completed
 - [ ] Phase 7: Verification → update [GATE-7] to completed
 - [ ] Phase 8: CI Validation → update [GATE-8] to completed
+- [ ] Phase 9: Integration Tests → update [GATE-9] to completed
 
 ITERATION TRACKING:
 - Plan Refinement: 0 required
@@ -67,6 +69,7 @@ GATE TASKS (create after classification — Simple skips GATE-4 Cleanup):
 - [ ] TaskCreate [GATE-6] Review (blockedBy: GATE-5)
 - [ ] TaskCreate [GATE-7] Verification (blockedBy: GATE-6)
 - [ ] TaskCreate [GATE-8] CI (blockedBy: GATE-7)
+- [ ] TaskCreate [GATE-9] Integration (blockedBy: GATE-8)
 
 REQUIRED SKILLS (invoke Skill() tool - checklist is not loading):
 - [ ] verification-before-completion — invoke before [GATE-3] completion
@@ -81,6 +84,7 @@ REQUIRED PHASES (update gate task to completed with proof in description):
 - [ ] Phase 6: Review (1 pass, codex) → update [GATE-6] to completed ⚠️ DON'T SKIP CODEX
 - [ ] Phase 7: Verification → update [GATE-7] to completed
 - [ ] Phase 8: CI Validation → update [GATE-8] to completed
+- [ ] Phase 9: Integration Tests → update [GATE-9] to completed
 
 ITERATION TRACKING:
 - Plan Refinement: 1 required | Completed: ___
@@ -100,7 +104,7 @@ SELF-CHECKS:
 CLASSIFICATION: Standard
 MODE: [Local|Remote] ← check CLAUDE_CODE_REMOTE
 
-GATE TASKS (create all 8 after classification with blockedBy chain):
+GATE TASKS (create all 9 after classification with blockedBy chain):
 - [ ] TaskCreate [GATE-1] Planning
 - [ ] TaskCreate [GATE-2] Refinement (blockedBy: GATE-1)
 - [ ] TaskCreate [GATE-3] Implementation (blockedBy: GATE-2)
@@ -109,6 +113,7 @@ GATE TASKS (create all 8 after classification with blockedBy chain):
 - [ ] TaskCreate [GATE-6] Review (blockedBy: GATE-5)
 - [ ] TaskCreate [GATE-7] Verification (blockedBy: GATE-6)
 - [ ] TaskCreate [GATE-8] CI (blockedBy: GATE-7)
+- [ ] TaskCreate [GATE-9] Integration (blockedBy: GATE-8)
 
 REQUIRED SKILLS (invoke Skill() tool - checklist is not loading):
 - [ ] verification-before-completion — invoke before [GATE-3] completion
@@ -126,6 +131,7 @@ REQUIRED PHASES (update gate task to completed with proof in description):
 - [ ] Phase 6: Review (5+, security, codex) → update [GATE-6] to completed ⚠️ TRACK ITERATIONS
 - [ ] Phase 7: Verification (5+) → update [GATE-7] to completed ⚠️ TRACK ITERATIONS
 - [ ] Phase 8: CI Validation → update [GATE-8] to completed
+- [ ] Phase 9: Integration Tests → update [GATE-9] to completed
 
 ITERATION TRACKING:
 - Plan Refinement: 5+ required | Completed: ___

@@ -112,13 +112,13 @@ Immediately after classification, create gate tasks per classification:
 
 | Classification | Gates to Create |
 |---------------|-----------------|
-| **Trivial** | GATE-3, GATE-7, GATE-8 (3 gates) |
-| **Simple** | GATE-1,2,3,5,6,7,8 (7 gates, skip GATE-4) |
-| **Standard** | All 8 gates |
+| **Trivial** | GATE-3, GATE-7, GATE-8, GATE-9 (4 gates) |
+| **Simple** | GATE-1,2,3,5,6,7,8,9 (8 gates, skip GATE-4) |
+| **Standard** | All 9 gates |
 | **Plan Mode** | GATE-1,2 initially; GATE-3+ after approval |
 
 ```typescript
-// Standard example (all 8 gates with dependency chain):
+// Standard example (all 9 gates with dependency chain):
 TaskCreate({ subject: "[GATE-1] Planning", description: "Awaiting start", activeForm: "Verifying planning requirements" })
 TaskCreate({ subject: "[GATE-2] Refinement", description: "Awaiting GATE-1", blockedBy: ["gate-1-id"], activeForm: "Verifying refinement requirements" })
 TaskCreate({ subject: "[GATE-3] Implementation", description: "Awaiting GATE-2", blockedBy: ["gate-2-id"], activeForm: "Verifying implementation requirements" })
@@ -127,9 +127,10 @@ TaskCreate({ subject: "[GATE-5] Testing", description: "Awaiting GATE-4", blocke
 TaskCreate({ subject: "[GATE-6] Review", description: "Awaiting GATE-5", blockedBy: ["gate-5-id"], activeForm: "Verifying review requirements" })
 TaskCreate({ subject: "[GATE-7] Verification", description: "Awaiting GATE-6", blockedBy: ["gate-6-id"], activeForm: "Verifying completion requirements" })
 TaskCreate({ subject: "[GATE-8] CI", description: "Awaiting GATE-7", blockedBy: ["gate-7-id"], activeForm: "Verifying CI requirements" })
+TaskCreate({ subject: "[GATE-9] Integration", description: "Awaiting GATE-8", blockedBy: ["gate-8-id"], activeForm: "Verifying integration test requirements" })
 
 // Simple: skip GATE-4, adjust blockedBy (GATE-5 blockedBy GATE-3)
-// Trivial: only GATE-3,7,8 (GATE-7 blockedBy GATE-3, GATE-8 blockedBy GATE-7)
+// Trivial: only GATE-3,7,8,9 (GATE-7 blockedBy GATE-3, GATE-8 blockedBy GATE-7, GATE-9 blockedBy GATE-8)
 // Plan Mode: create GATE-1,2 first; after approval create remaining gates
 ```
 
@@ -180,11 +181,15 @@ Before each phase, update the corresponding gate task. Do not proceed if BLOCKED
 - **[GATE-7] Verification**: `PASS: Commands=[run] | Exit=[0] | Tasks=[all completed]`
   - Requirements: verification commands run IN THIS MESSAGE with exit code 0 shown + all tasks marked completed.
 
-- **[GATE-8] CI**: `PASS: CI=[command] | Exit=[0] | Integration=[Exit 0 or N/A]`
+- **[GATE-8] CI**: `PASS: CI=[command] | Exit=[0]`
   - Requirements: `bun run ci` (or `npm/pnpm run ci`, or fallback: lint+test+build) executed IN THIS MESSAGE with exit code 0 shown.
-  - **Final step:** Run `bun run test:integration` if script exists in package.json. Include result (`Exit 0`) or note `N/A` if unavailable.
   - **NOTE:** CI commands use turborepo—run from repository root folder.
   - **NOTE:** Infrastructure services may be required—launch with `bun dev:up` (do not use docker-compose directly).
+
+- **[GATE-9] Integration**: `PASS: Integration=[Exit 0 or N/A]`
+  - Requirements: Run `bun run test:integration` if script exists in package.json. Include result (`Exit 0`) or note `N/A` if unavailable.
+  - **Prerequisite:** GATE-8 must pass first—do not attempt integration tests if CI fails.
+  - **NOTE:** Infrastructure services may be required—launch with `bun dev:up` before running.
 
 **Loading ≠ Following:** Invoking a skill means you MUST follow its instructions. Loading TDD then writing code without tests = violation.
 
@@ -203,7 +208,7 @@ TaskUpdate({ taskId: "gate-N-id", status: "in_progress", description: "BLOCKED: 
 ### Pre-Completion Gate
 
 Before saying "done" or "complete", run `TaskList` and confirm:
-- All gate tasks ([GATE-1] through [GATE-8]) show status: completed
+- All gate tasks ([GATE-1] through [GATE-9]) show status: completed
 - All gate descriptions show "PASS:" with proof
 - All implementation tasks show status: completed
 - Classification + checklist were output
@@ -213,6 +218,7 @@ Before saying "done" or "complete", run `TaskList` and confirm:
 - Required skills loaded via Skill() tool (not just mentioned) — search for `<invoke name="Skill">`
 - Verification skill executed (not just loaded)
 - [GATE-7] and [GATE-8] descriptions show exit code 0
+- [GATE-9] shows integration test result (Exit 0 or N/A)
 
 **Banned phrases:** "looks good", "should work", "Done!", "that's it", "it's just a port", "direct translation", "1:1 conversion", "straightforward", "manual review", "reviewed the code", "pre-existing", "not related to my changes", "unrelated to this PR", "existing issue", "those errors existed before", "module resolution issues in the codebase", "the specific tests I created pass"
 - **Local only banned:** "requirements are clear" (allowed in Remote Mode when genuinely clear)

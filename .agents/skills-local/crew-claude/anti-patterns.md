@@ -37,7 +37,7 @@ These phrases in assistant messages = VIOLATION if not using the tool:
 - Gate task amnesia: create [GATE-1], [GATE-3], then forget the rest -> create ALL gate tasks for your classification with blockedBy chain.
 - Gate task rushing: marking gate completed without doing the work -> gates verify work, not skip it.
 - Proofless completion: `status: completed` without proof in description -> add `PASS: [key]=[evidence] | ...` to description.
-- Early gate only: stop at [GATE-3] because "implementation is done" -> [GATE-4] through [GATE-8] still required.
+- Early gate only: stop at [GATE-3] because "implementation is done" -> [GATE-4] through [GATE-9] still required.
 - False completion: marking gate completed when requirements not met -> keep in_progress with `BLOCKED: [reason]` in description.
 - Gate task skip: not creating gate tasks at all -> MUST create all required gates after classification.
 
@@ -99,7 +99,7 @@ Before each phase, ask yourself:
 **Before exploration**: "Did I create [GATE-1] and update to in_progress?" (if in plan mode)
 **Before writing plan**: "Did I complete [GATE-1] and update [GATE-2] to in_progress?" (if in plan mode)
 **Before Write/Edit**: "Did I complete [GATE-3] and create implementation tasks?"
-**Before claiming done**: "Does TaskList show all gate tasks ([GATE-1] through [GATE-8]) as completed with PASS in description?"
+**Before claiming done**: "Does TaskList show all gate tasks ([GATE-1] through [GATE-9]) as completed with PASS in description?"
 
 If the answer to any question is "no", STOP and create/update the missing gate tasks first.
 
