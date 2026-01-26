@@ -34,10 +34,10 @@ These phrases in assistant messages = VIOLATION if not using the tool:
 - Questions quoting the user back to them
 
 ### Gate Task Failures
-- Gate task amnesia: create [GATE-1], [GATE-3], then forget the rest -> create ALL gate tasks for your classification with blockedBy chain.
+- Gate task amnesia: create Planning, Implementation, then forget the rest -> create ALL gate tasks for your classification with blockedBy chain.
 - Gate task rushing: marking gate completed without doing the work -> gates verify work, not skip it.
 - Proofless completion: `status: completed` without proof in description -> add `PASS: [key]=[evidence] | ...` to description.
-- Early gate only: stop at [GATE-3] because "implementation is done" -> [GATE-4] through [GATE-9] still required.
+- Early gate only: stop at Implementation because "implementation is done" -> Cleanup through Integration still required.
 - False completion: marking gate completed when requirements not met -> keep in_progress with `BLOCKED: [reason]` in description.
 - Gate task skip: not creating gate tasks at all -> MUST create all required gates after classification.
 
@@ -47,9 +47,9 @@ These phrases in assistant messages = VIOLATION if not using the tool:
 - **Codex skip:** "my review skill passed" without running `codex review --uncommitted` -> BLOCKED.
 
 ### Iteration Sub-Task Failures
-- **Iteration skip:** Started [GATE-2] without creating iteration sub-tasks → create [GATE-2.1] through [GATE-2.5]
-- **Premature gate completion:** Marked [GATE-2] complete before all iteration sub-tasks complete → check sub-tasks first
-- **Missing sub-tasks:** Standard task without iteration sub-tasks for GATE-2/6/7 → create them
+- **Iteration skip:** Started Refinement without creating iteration sub-tasks → create Refinement iteration 1 through 5
+- **Premature gate completion:** Marked Refinement complete before all iteration sub-tasks complete → check sub-tasks first
+- **Missing sub-tasks:** Standard task without iteration sub-tasks for Refinement/Review/Verification → create them
 - **Text iteration tracking:** Output "Iteration N of M" instead of using sub-tasks → use sub-tasks, not text
 
 ### Verification Failures
@@ -57,7 +57,7 @@ These phrases in assistant messages = VIOLATION if not using the tool:
 - Partial verification: "syntax check passed" as full verification -> run project CI if available.
 - Stale evidence: "tests passed earlier" -> run fresh verification before completion claim.
 - Load without execute: loaded verification skill but never ran it -> execute and show output.
-- CI skip: claiming done without running `bun run ci` or fallback -> [GATE-8] must be completed for all classifications.
+- CI skip: claiming done without running `bun run ci` or fallback -> CI must be completed for all classifications.
 
 ### Implementation Failures
 - **Sequential when parallel possible:** executing 2+ independent tasks one-by-one with Bash -> use parallel Task agents.
@@ -93,10 +93,10 @@ Applies to: CI failures, test failures, lint errors, type errors, build failures
 Before each phase, ask yourself:
 
 **Before any action**: "Did I output classification and create gate tasks?"
-**Before exploration**: "Did I create [GATE-1] and update to in_progress?" (if in plan mode)
-**Before writing plan**: "Did I complete [GATE-1] and update [GATE-2] to in_progress?" (if in plan mode)
-**Before Write/Edit**: "Did I complete [GATE-3] and create implementation tasks?"
-**Before claiming done**: "Does TaskList show all gate tasks ([GATE-1] through [GATE-9]) as completed with PASS in description?"
+**Before exploration**: "Did I create Planning and update to in_progress?" (if in plan mode)
+**Before writing plan**: "Did I complete Planning and update Refinement to in_progress?" (if in plan mode)
+**Before Write/Edit**: "Did I complete Implementation and create implementation tasks?"
+**Before claiming done**: "Does TaskList show all gate tasks (Planning through Integration) as completed with PASS in description?"
 
 If the answer to any question is "no", STOP and create/update the missing gate tasks first.
 
@@ -106,4 +106,4 @@ If the answer to any question is "no", STOP and create/update the missing gate t
 - Missing dependencies: parallel tasks that should be sequential -> define blockedBy relationships.
 - Tool confusion: mixing Tasks and TodoWrite in same session -> use one system consistently per session.
 - Gate task orphans: creating gate tasks without completing them -> all gate tasks must show status: completed with "PASS:" before done.
-- Gate dependency skip: creating gates without blockedBy chain -> gates must have proper dependency order ([GATE-2] blockedBy [GATE-1], etc.).
+- Gate dependency skip: creating gates without blockedBy chain -> gates must have proper dependency order (Refinement blockedBy Planning, etc.).

@@ -46,17 +46,18 @@ Output classification BEFORE any tools/exploration:
 - **Standard**: multi-file, behavior change
 - **Complex**: architectural, security-sensitive
 
-### 8 Mandatory Gates
+### 9 Mandatory Gates
 
 Every implementation requires gates. Output gate check before each phase:
-- GATE-1: Planning (classification + research complete)
-- GATE-2: Plan Refinement (questions asked via AskUserQuestion)
-- GATE-3: Implementation (skills loaded, tasks created)
-- GATE-4: Cleanup
-- GATE-5: Testing (test output with exit code)
-- GATE-6: Review (Skill({ skill: "review" }) invoked)
-- GATE-7: Verification (verification skill executed)
-- GATE-8: CI Validation (bun run ci with exit code 0)
+- Planning (classification + research complete)
+- Refinement (questions asked via AskUserQuestion)
+- Implementation (skills loaded, tasks created)
+- Cleanup
+- Testing (test output with exit code)
+- Review (Skill({ skill: "review" }) invoked)
+- Verification (verification skill executed)
+- CI (bun run ci with exit code 0)
+- Integration (bun run test:integration with exit code 0)
 
 ### Skills Must Be INVOKED
 

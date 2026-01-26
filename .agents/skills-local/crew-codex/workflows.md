@@ -6,9 +6,9 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 
 When `system-reminder` indicates "Plan mode is active", use this dedicated gate structure:
 
-**PLAN-GATE-1: Understanding**
+**Understanding**
 ```
-PLAN-GATE-1 CHECK:
+Understanding CHECK:
 - [ ] Classification stated (Trivial/Simple/Standard/Complex)
 - [ ] User request understood
 - [ ] Codebase exploration complete (mcp__octocode__* for code search, Explore agent for structure)
@@ -17,9 +17,9 @@ PLAN-GATE-1 CHECK:
 STATUS: PASS | BLOCKED
 ```
 
-**PLAN-GATE-2: Design**
+**Design**
 ```
-PLAN-GATE-2 CHECK:
+Design CHECK:
 - [ ] Implementation approach documented
 - [ ] Critical files identified
 - [ ] Questions asked (plain text) if ambiguous
@@ -27,11 +27,11 @@ PLAN-GATE-2 CHECK:
 STATUS: PASS | BLOCKED
 ```
 
-**After Plan Approval**: Regular workflow resumes at GATE-3 (Implementation phase).
+**After Plan Approval**: Regular workflow resumes at Implementation phase.
 
 **Plan Mode maps to workflow phases:**
-- PLAN-GATE-1 → Phase 1 (Planning)
-- PLAN-GATE-2 → Phase 2 (Plan Refinement)
+- Understanding → Phase 1 (Planning)
+- Design → Phase 2 (Plan Refinement)
 - After approval → Phase 3+ (Implementation onwards)
 
 ---
@@ -71,7 +71,7 @@ STATUS: PASS | BLOCKED
 - Use latest package versions (@latest/:latest). Verify on npmjs.com, hub.docker.com, pypi.org. If pinned older, note current version.
 
 ### Phase 1: Planning
-- Use GATE-1 for Standard/Complex work.
+- Use Planning gate for Standard/Complex work.
 - Gather context (Explore Task for large codebases; direct tools for small).
 - Repo-wide search if needed (MCP tools if configured, or local rg/git).
 - Check docs (local docs/README or MCP if available).
@@ -84,7 +84,7 @@ STATUS: PASS | BLOCKED
 - If Linear configured: find issue, then comment plan.
 
 ### Phase 2: Plan Refinement
-- Use GATE-2 for Standard/Complex work.
+- Use Refinement gate for Standard/Complex work.
 - Ask questions only if requirements are unclear.
 
 **Local Mode (interactive):**
@@ -108,18 +108,18 @@ STATUS: PASS | BLOCKED
 - Compatibility: Version constraints? Breaking changes?
 
 ### Phase 3: Implementation
-- Use GATE-3 for Standard/Complex work.
+- Use Implementation gate for Standard/Complex work.
 - Use TDD/tests when risk is medium/high or behavior changes materially.
 - **Backfill check:** add minimal tests for risky bug fixes if none exist.
 - Break work into tasks if it helps; keep it lightweight.
 
 ### Phase 4: Cleanup
-- Use GATE-4 for Standard/Complex work.
+- Use Cleanup gate for Standard/Complex work.
 - Use relevant cleanup skills if available (`$code-simplifier`, `$deslop`, `$knip`).
 - For non-JS/TS files: note "cleanup skills N/A" but still output gate.
 
 ### Phase 5: Testing
-- Use GATE-5 for Standard/Complex work.
+- Use Testing gate for Standard/Complex work.
 - Run relevant tests when behavior changes and tests exist.
 - **NOTE:** These commands use turborepo and must be run from the repository root folder.
 - **NOTE:** Infrastructure services may be required for tests. Launch with `bun dev:up` (do not use docker-compose directly).
@@ -129,7 +129,7 @@ STATUS: PASS | BLOCKED
 - Output optional unless requested or failures occur.
 
 ### Phase 6: Review
-- Use GATE-6 for Standard/Complex work.
+- Use Review gate for Standard/Complex work.
 - Review for bugs/regressions/missing tests on risky changes; `/review` is optional.
 - Security review if auth/data/payments (use `$semgrep`/`$codeql` if available).
 -
@@ -137,7 +137,7 @@ STATUS: PASS | BLOCKED
 #### Parallel Review Iterations (optional)
 
 ### Phase 7: Verification
-- Use GATE-7 for Standard/Complex work.
+- Use Verification gate for Standard/Complex work.
 - Execute verification commands when applicable; summarize results.
 - Run completion validation.
 - Document results (test counts, warnings) when available.
@@ -146,7 +146,7 @@ STATUS: PASS | BLOCKED
 -
 
 ### Phase 8: CI Validation (final step when applicable)
-- Use GATE-8 for Standard/Complex work.
+- Use CI gate for Standard/Complex work.
 - Run CI for risky/wide changes or when requested; otherwise skip with rationale:
   1. `bun run ci` (if available)
   2. `npm run ci` / `pnpm run ci` (if bun unavailable)
@@ -154,6 +154,6 @@ STATUS: PASS | BLOCKED
 - **NOTE:** All CI commands use turborepo and must be run from the repository root folder.
 - **NOTE:** Infrastructure services may be required. Launch with `bun dev:up` (do not use docker-compose directly).
 - Output optional unless requested or failures occur.
-- If no CI/lint/test/build scripts exist, or CI is skipped for low-risk/docs: document this explicitly in GATE-8.
+- If no CI/lint/test/build scripts exist, or CI is skipped for low-risk/docs: document this explicitly in CI gate.
 - This phase runs AFTER Phase 7 verification.
-- **GATE-DONE:** List gates used (if any) + verification summary before completion claim.
+- **Completion:** List gates used (if any) + verification summary before completion claim.
