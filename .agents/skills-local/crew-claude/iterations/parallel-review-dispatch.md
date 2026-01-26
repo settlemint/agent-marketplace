@@ -145,18 +145,25 @@ Run `TaskList()` to see all pending fix tasks
 ### Overall Status: [PASS / BLOCKED]
 ```
 
-## Step 5: GATE-6 Output
+## Step 5: Update [GATE-6] Task
 
+Update the gate task with review results:
+
+```typescript
+TaskUpdate({
+  taskId: "gate-6-id",
+  status: "completed",
+  description: "PASS: Simplicity=[VERDICT] | Completeness=[VERDICT] | Quality=[VERDICT] | Reviews=R001-R003 done | Fixes=[count] created"
+})
 ```
-GATE-6 CHECK:
-- [x] Simplicity review — PROOF: [VERDICT] - [key findings]
-- [x] Completeness review — PROOF: [VERDICT] - [requirements N/N]
-- [x] Quality review — PROOF: [VERDICT] - [P1: N, P2: N]
-- [x] All review tasks completed — PROOF: TaskList shows R001-R003 completed
-- [x] Fix tasks tracked — PROOF: N fix tasks created via TaskCreate
-STATUS: PASS | BLOCKED
 
-Blocked by: [list any NEEDS_* verdicts and pending fix tasks]
+If any reviewer returns `NEEDS_*`:
+```typescript
+TaskUpdate({
+  taskId: "gate-6-id",
+  status: "in_progress",
+  description: "BLOCKED: Simplicity=[VERDICT] | Completeness=[VERDICT] | Quality=[VERDICT] | Pending: [list NEEDS_* and fix tasks]"
+})
 ```
 
 ## Iteration Handling
@@ -171,7 +178,7 @@ If any reviewer returns a `NEEDS_*` verdict:
    TaskUpdate({ taskId: "FIX-001", status: "completed" })
    ```
 3. **Re-run ONLY failed reviewer(s)** — single Task() call
-4. **Update gate output** with new verdicts
+4. **Update [GATE-6] task description** with new verdicts
 5. **Repeat** until all PASS or user accepts current state
 
 ## Example Flow
@@ -199,7 +206,7 @@ Phase 6 Start
     │
     ├── TaskList: All completed
     │
-    └── GATE-6: STATUS: PASS
+    └── TaskUpdate [GATE-6] to completed with "PASS: ..."
 ```
 
 ## Parallelism Checklist

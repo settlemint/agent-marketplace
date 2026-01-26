@@ -4,42 +4,47 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 
 ### Plan Mode Workflow
 
-When `system-reminder` indicates "Plan mode is active", use this dedicated gate structure:
+When `system-reminder` indicates "Plan mode is active", use gate tasks:
 
-**PLAN-GATE-1: Understanding**
-```
-PLAN-GATE-1 CHECK:
-- [ ] Classification stated (Trivial/Simple/Standard)
-- [ ] User request understood
-- [ ] Codebase exploration complete (mcp__octocode__* for code search, Explore agent for structure)
-- [ ] Library docs checked (mcp__context7__* for external libs, local docs for project)
-- [ ] Web research done if needed (mcp__exa__* for current info, code examples, company research)
-STATUS: PASS | BLOCKED
+**Step 1: Create gate tasks after classification**
+```typescript
+TaskCreate({ subject: "[GATE-1] Planning", description: "Awaiting start", activeForm: "Verifying planning requirements" })
+TaskCreate({ subject: "[GATE-2] Refinement", description: "Awaiting GATE-1", blockedBy: ["gate-1-id"], activeForm: "Verifying refinement requirements" })
 ```
 
-**PLAN-GATE-2: Design**
+**Step 2: Update [GATE-1] when planning complete**
+```typescript
+TaskUpdate({
+  taskId: "gate-1-id",
+  status: "completed",
+  description: "PASS: Classification=[type] | Exploration=octocode,exa | Docs=checked"
+})
 ```
-PLAN-GATE-2 CHECK:
-- [ ] Implementation approach documented
-- [ ] Critical files identified
-- [ ] Questions asked (via AskUserQuestion) if ambiguous
-- [ ] Plan written to plan file
-STATUS: PASS | BLOCKED
-```
+Requirements: Classification stated + User request understood + Codebase exploration complete + Library docs checked + Web research done if needed
 
-**After Plan Approval**: Regular workflow resumes at GATE-3 (Implementation phase).
+**Step 3: Update [GATE-2] when plan complete**
+```typescript
+TaskUpdate({
+  taskId: "gate-2-id",
+  status: "completed",
+  description: "PASS: Approach=documented | Files=identified | Questions=[asked/N/A] | Plan=written"
+})
+```
+Requirements: Implementation approach documented + Critical files identified + Questions asked (via AskUserQuestion) if ambiguous + Plan written to plan file
+
+**After Plan Approval**: Create remaining gate tasks ([GATE-3] through [GATE-8]) and resume at Implementation phase.
 
 **Plan Mode maps to workflow phases:**
-- PLAN-GATE-1 → Phase 1 (Planning)
-- PLAN-GATE-2 → Phase 2 (Plan Refinement)
+- [GATE-1] → Phase 1 (Planning)
+- [GATE-2] → Phase 2 (Plan Refinement)
 - After approval → Phase 3+ (Implementation onwards)
 
 ---
 
 **Enforcement**
-- Each phase has a gate; output gate check (see Hard Requirements) before entering.
-- Do not proceed if a gate is BLOCKED.
-- Each gate checkbox requires proof in same message.
+- Each phase has a gate task; update it before proceeding (see Hard Requirements for gate task creation).
+- Do not proceed if a gate is BLOCKED (stays in_progress with "BLOCKED:" in description).
+- Each gate completion requires proof in the task description.
 
 **Task Management (use Tasks tools when available, TodoWrite as fallback)**
 
@@ -110,7 +115,7 @@ Multi-Session Collaboration:
 - Use latest package versions (@latest/:latest). Verify on npmjs.com, hub.docker.com, pypi.org. If pinned older, note current version.
 
 ### Phase 1: Planning
-- **STOP: Output GATE-1 before proceeding.**
+- **STOP: Update [GATE-1] to in_progress, then completed with proof when done.**
 - Gather context (Explore Task for large codebases; direct tools for small).
 - Repo-wide search if needed (mcp__octocode__* or local rg/git).
 - Check docs (mcp__context7__* if available; else local docs/README).
@@ -123,7 +128,7 @@ Multi-Session Collaboration:
 - If Linear configured: find issue, then comment plan.
 
 ### Phase 2: Plan Refinement ⚠️ COMMONLY SKIPPED
-- **STOP: Output GATE-2 before proceeding.**
+- **STOP: Update [GATE-2] to in_progress, then completed with proof when done.**
 - **REQUIRED:** `Skill({ skill: "ask-questions-if-underspecified" })` - actually invoke the tool.
 
 **Local Mode (interactive):**
@@ -157,7 +162,7 @@ Multi-Session Collaboration:
 - Compatibility: Version constraints? Breaking changes?
 
 ### Phase 3: Implementation
-- **STOP: Output GATE-3 before proceeding.**
+- **STOP: Update [GATE-3] to in_progress, then completed with proof when skills loaded and tasks created.**
 - **REQUIRED:** Load skills via `Skill({ skill: "..." })` tool - not just mention them:
   - `Skill({ skill: "test-driven-development" })` - even for shell scripts, config files, "ports".
   - `Skill({ skill: "verification-before-completion" })` - load now, execute in Phase 7.
@@ -184,12 +189,12 @@ Multi-Session Collaboration:
 - Load `dispatching-parallel-agents` skill when parallelization is possible.
 
 ### Phase 4: Cleanup
-- **STOP: Output GATE-4 before proceeding.**
+- **STOP: Update [GATE-4] to in_progress, then completed with proof when all tasks done.**
 - `code-simplifier`, `claude-md-improver` (if CLAUDE.md needs maintenance), `deslop`, `knip`.
-- For non-JS/TS files: note "cleanup skills N/A" but still output gate.
+- For non-JS/TS files: note "cleanup skills N/A" in gate description.
 
 ### Phase 5: Testing
-- **STOP: Output GATE-5 before proceeding.**
+- **STOP: Update [GATE-5] to in_progress, then completed with test results in description.**
 - Run `bun run ci` or `bun run lint` + `bun run test`.
 - **NOTE:** These commands use turborepo and must be run from the repository root folder.
 - **NOTE:** Infrastructure services may be required for tests. Launch with `bun dev:up` (do not use docker-compose directly).
@@ -199,10 +204,10 @@ Multi-Session Collaboration:
 - **REQUIRED:** Show test output with exit code.
 
 ### Phase 6: Review ⚠️ COMMONLY SKIPPED
-- **STOP: Output GATE-6 before proceeding.**
+- **STOP: Update [GATE-6] to in_progress, then completed with review results in description.**
 - **REQUIRED:** Run `Skill({ skill: "review" })` or `/review` - do not skip.
 - **REQUIRED:** Run `codex review --uncommitted` (Simple+) - do not skip.
-- **REQUIRED:** Show review output AND codex output in gate.
+- **REQUIRED:** Include review output AND codex output in gate description.
 - **"Manual review" is NOT acceptable** - must invoke the skill tool AND run codex.
 - Review for bugs/regressions/missing tests.
 - Security review if auth/data/payments (semgrep/codeql).
@@ -253,15 +258,9 @@ For Standard tasks, add a tech-specific review agent that applies curated OSS re
 Task({ subagent_type: "general-purpose", description: "Tech-stack review", prompt: "1. Identify tech stack from changed files. 2. Read 3-5 matching reviewers from .agents/skills-local/reviewers/reviewers/ (e.g., react-*, nest-*, bun-*). 3. Apply their guidelines to: [files]. Output VERDICT: PASS | NEEDS_FIXES with specific issues." })
 ```
 
-**GATE-6 Output (with parallel reviews):**
+**[GATE-6] Task Description (with parallel reviews):**
 ```
-GATE-6 CHECK:
-- [x] Simplicity review — PROOF: [VERDICT] - [key findings]
-- [x] Completeness review — PROOF: [VERDICT] - [requirements N/N]
-- [x] Quality review — PROOF: [VERDICT] - [P1: N, P2: N]
-- [ ] Tech-stack review (optional) — PROOF: [VERDICT] - [reviewers applied: react-*, nest-*, etc.]
-- [x] All review tasks completed — PROOF: TaskList shows R001-R003 done
-STATUS: PASS | BLOCKED
+PASS: Simplicity=[VERDICT] | Completeness=[VERDICT] | Quality=[VERDICT] | Tech=[optional VERDICT] | Reviews=R001-R003 done | Codex=P1:N,P2:N fixed
 ```
 
 See `.agents/skills-local/crew-claude/iterations/parallel-review-dispatch.md` for full dispatch template.
@@ -284,18 +283,17 @@ After parallel reviews complete, run codex for independent AI analysis:
    - If P1/P2 issues found → **MUST fix before proceeding**
    - If only P3/P4 → document and proceed
 
-**GATE-6 codex requirement (add to GATE-6 output):**
+**[GATE-6] codex requirement (include in task description):**
 ```
-- [x] Codex review executed — PROOF: `codex review --uncommitted` output shown
-- [x] P1/P2 issues resolved — PROOF: [count] P1, [count] P2 → all fixed OR none found
+... | Codex=P1:[count],P2:[count] fixed
 ```
 
-**Anti-pattern:** "My review skill passed" without running codex → **BLOCKED**. Both are required.
+**Anti-pattern:** "My review skill passed" without running codex → **BLOCKED** (gate stays in_progress). Both are required.
 
 ### Phase 7: Verification (iterations per classification)
-- **STOP: Output GATE-7 before proceeding.**
+- **STOP: Update [GATE-7] to in_progress, then completed with verification results.**
 - **REQUIRED:** Execute `Skill({ skill: "verification-before-completion" })` - not just load.
-- **REQUIRED:** Show verification output in gate.
+- **REQUIRED:** Include verification output in gate description.
 - **REQUIRED:** Run `TaskList` to verify all tasks are completed.
 - Run completion validation.
 - Document evidence (exit codes, test counts, warnings).
@@ -304,15 +302,15 @@ After parallel reviews complete, run codex for independent AI analysis:
 - **Iteration tracking:** Output "Verification Iteration N of M" for each pass.
 
 ### Phase 8: CI Validation ⚠️ MANDATORY FINAL STEP
-- **STOP: Output GATE-8 before claiming completion.**
+- **STOP: Update [GATE-8] to in_progress, then completed with CI results.**
 - **REQUIRED:** Run CI commands in this priority:
   1. `bun run ci` (if available)
   2. `npm run ci` / `pnpm run ci` (if bun unavailable)
   3. Fallback: `<pkg> run lint && <pkg> run test && <pkg> run build` (if no ci script, where `<pkg>` is bun/npm/pnpm)
 - **NOTE:** All CI commands use turborepo and must be run from the repository root folder.
 - **NOTE:** Infrastructure services may be required. Launch with `bun dev:up` (do not use docker-compose directly).
-- **REQUIRED:** Show full CI output with exit code 0 in gate.
-- If no CI/lint/test/build scripts exist: document this explicitly in GATE-8.
+- **REQUIRED:** Include CI exit code in gate description: `PASS: CI=bun run ci | Exit=0`
+- If no CI/lint/test/build scripts exist: document this explicitly in [GATE-8] description.
 - This phase runs AFTER Phase 7 verification - it is the absolute last check.
-- **No completion claim without GATE-8 passing.**
-- **GATE-DONE:** List all gates passed (1-8) + evidence + iteration counts + TaskList output before completion claim.
+- **No completion claim without [GATE-8] showing status: completed.**
+- **Completion verification:** Run `TaskList` and confirm all gate tasks ([GATE-1] through [GATE-8]) show status: completed with "PASS:" in description.
