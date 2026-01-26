@@ -26,17 +26,6 @@
         "mcp"
       ]
     },
-    "codex": {
-      "command": "codex",
-      "args": [
-        "-m",
-        "gpt-5.2-codex",
-        "-c",
-        "model_reasoning_effort=xhigh",
-        "mcp-server"
-      ],
-      "_note": "Claude Code only - do not configure in Codex"
-    },
     "restate-docs": {
       "type": "http",
       "url": "https://docs.restate.dev/mcp"

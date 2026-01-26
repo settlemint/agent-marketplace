@@ -699,7 +699,7 @@ Each is read by a parallel Task agent during review.
 - spawn agent/run in parallel -> direct `Task({ subagent_type: ... })`
 
 ### Code Quality (triggers: review/quality/clean/refactor/lint/unused)
-- /review, code review, review changes, deep review -> `Skill({ skill: "mcp__codex (Claude Code)" })`
+- /review, code review, review changes, deep review -> run `codex review` CLI directly
 - simplify/cleaner/reduce complexity -> `Skill({ skill: "code-simplifier" })`
 - AI slop/defensive comments/generated cleanup -> `Skill({ skill: "deslop" })`
 - unused/dead code/exports/deps -> `Skill({ skill: "knip" })`
