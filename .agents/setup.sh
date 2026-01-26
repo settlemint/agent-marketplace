@@ -331,10 +331,15 @@ install_skills() {
 
     local tmp_dir
     tmp_dir=$(mktemp -d)
-    trap "rm -rf '$tmp_dir'" RETURN
+
+    cleanup_tmp() {
+        rm -rf "$tmp_dir"
+    }
+    trap cleanup_tmp RETURN
 
     local pids=()
     local repos=()
+    local skill_args=()
 
     for ((i = 0; i < repo_count; i++)); do
         local repo
@@ -342,20 +347,25 @@ install_skills() {
         repos+=("$repo")
 
         local skills
-        skills=$(jq -r ".skills[$i].skills | map(\"--skill \\\"\" + . + \"\\\"\") | join(\" \")" "$CONFIG_FILE")
+        readarray -t skills < <(jq -r ".skills[$i].skills[]" "$CONFIG_FILE")
+        local skill_flags=""
+        for skill in "${skills[@]}"; do
+            skill_flags+=" --skill \"$skill\""
+        done
+        skill_args+=("$skill_flags")
 
         echo "Installing skills from $repo..."
 
         (
-            eval "npx -y skills@latest add \"$repo\" -y $agents $skills" > "$tmp_dir/$i.out" 2>&1
+            eval "npx -y skills@latest add \"$repo\" -y $agents ${skill_args[$i]}" > "$tmp_dir/$i.out" 2>&1
             echo $? > "$tmp_dir/$i.exit"
         ) &
-        pids+=($!)
+        pids+=("$!")
     done
 
     local failed=0
     for ((i = 0; i < repo_count; i++)); do
-        wait "${pids[$i]}"
+        wait "${pids[$i]}" || true
         local exit_code
         exit_code=$(cat "$tmp_dir/$i.exit")
 
@@ -367,6 +377,8 @@ install_skills() {
     done
 
     if [[ $failed -ne 0 ]]; then
+        cleanup_tmp
+        trap - RETURN
         exit 1
     fi
 
