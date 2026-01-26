@@ -108,10 +108,17 @@ ITERATIONS: Plan Refinement [1|5+] | Review [1|5+] | Verification [1|5+]
 
 ### Gate Task Creation (MANDATORY)
 
-Immediately after classification, create all 8 gate tasks with dependencies:
+Immediately after classification, create gate tasks per classification:
+
+| Classification | Gates to Create |
+|---------------|-----------------|
+| **Trivial** | GATE-3, GATE-7, GATE-8 (3 gates) |
+| **Simple** | GATE-1,2,3,5,6,7,8 (7 gates, skip GATE-4) |
+| **Standard** | All 8 gates |
+| **Plan Mode** | GATE-1,2 initially; GATE-3+ after approval |
 
 ```typescript
-// Create all gates upfront with dependency chain:
+// Standard example (all 8 gates with dependency chain):
 TaskCreate({ subject: "[GATE-1] Planning", description: "Awaiting start", activeForm: "Verifying planning requirements" })
 TaskCreate({ subject: "[GATE-2] Refinement", description: "Awaiting GATE-1", blockedBy: ["gate-1-id"], activeForm: "Verifying refinement requirements" })
 TaskCreate({ subject: "[GATE-3] Implementation", description: "Awaiting GATE-2", blockedBy: ["gate-2-id"], activeForm: "Verifying implementation requirements" })
@@ -120,6 +127,10 @@ TaskCreate({ subject: "[GATE-5] Testing", description: "Awaiting GATE-4", blocke
 TaskCreate({ subject: "[GATE-6] Review", description: "Awaiting GATE-5", blockedBy: ["gate-5-id"], activeForm: "Verifying review requirements" })
 TaskCreate({ subject: "[GATE-7] Verification", description: "Awaiting GATE-6", blockedBy: ["gate-6-id"], activeForm: "Verifying completion requirements" })
 TaskCreate({ subject: "[GATE-8] CI", description: "Awaiting GATE-7", blockedBy: ["gate-7-id"], activeForm: "Verifying CI requirements" })
+
+// Simple: skip GATE-4, adjust blockedBy (GATE-5 blockedBy GATE-3)
+// Trivial: only GATE-3,7,8 (GATE-7 blockedBy GATE-3, GATE-8 blockedBy GATE-7)
+// Plan Mode: create GATE-1,2 first; after approval create remaining gates
 ```
 
 ### Gate Task Lifecycle

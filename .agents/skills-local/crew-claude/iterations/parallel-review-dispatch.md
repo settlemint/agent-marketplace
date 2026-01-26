@@ -153,7 +153,7 @@ Update the gate task with review results:
 TaskUpdate({
   taskId: "gate-6-id",
   status: "completed",
-  description: "PASS: Simplicity=[VERDICT] | Completeness=[VERDICT] | Quality=[VERDICT] | Reviews=R001-R003 done | Fixes=[count] created"
+  description: "PASS: Simplicity=[VERDICT] | Completeness=[VERDICT] | Quality=[VERDICT] | Reviews=R001-R003 done | Codex=P1:[count],P2:[count] fixed | Fixes=[count] created"
 })
 ```
 
