@@ -33,19 +33,20 @@ These phrases in assistant messages = VIOLATION if not using the tool:
 - Questions in code comments or documentation
 - Questions quoting the user back to them
 
-### Gate Failures
-- Gate amnesia: output GATE-1, GATE-3, then forget the rest -> output ALL gates for your classification.
-- Gate rushing: GATE-N CHECK with all boxes checked without doing the work -> gates verify work, not skip it.
-- Proofless checkboxes: `[x] Requirement` without showing evidence -> add `— PROOF: [what you did]`.
-- Early gate only: stop at GATE-3 because "implementation is done" -> GATE-4 through GATE-7 still required.
-- False pass: marking STATUS: PASS when requirements not met -> BLOCKED until proof shown.
+### Gate Task Failures
+- Gate task amnesia: create [GATE-1], [GATE-3], then forget the rest -> create ALL gate tasks for your classification with blockedBy chain.
+- Gate task rushing: marking gate completed without doing the work -> gates verify work, not skip it.
+- Proofless completion: `status: completed` without proof in description -> add `PASS: [key]=[evidence] | ...` to description.
+- Early gate only: stop at [GATE-3] because "implementation is done" -> [GATE-4] through [GATE-9] still required.
+- False completion: marking gate completed when requirements not met -> keep in_progress with `BLOCKED: [reason]` in description.
+- Gate task skip: not creating gate tasks at all -> MUST create all required gates after classification.
 
 ### Phase Skipping
-- Phase 2 skip: "requirements are clear" -> Local: ask anyway. Remote: allowed if ambiguity ≤ 7 (still invoke skill, document assumptions).
+- Phase 2 skip: "requirements are clear" -> Local: ask anyway. Remote: allowed if ambiguity ≤ 7 (still invoke skill, document assumptions in [GATE-2] description).
 - Phase 6 skip: "code is simple, doesn't need review" -> run `/review` AND `codex review` regardless.
-- **Codex skip:** "my review skill passed" without running `codex review --uncommitted` -> BLOCKED. Both review skill AND codex are required (Simple+).
-- Implicit phases: doing phase work without outputting the gate -> gate output is mandatory.
-- Single iteration: doing 1 pass when classification requires 5+ -> track and show iteration count.
+- **Codex skip:** "my review skill passed" without running `codex review --uncommitted` -> BLOCKED ([GATE-6] stays in_progress). Both review skill AND codex are required (Simple+).
+- Implicit phases: doing phase work without updating gate task -> gate task update is mandatory.
+- Single iteration: doing 1 pass when classification requires 5+ -> track iteration count in gate description.
 - **Manual review substitution:** "reviewed manually" or "reviewed the code" instead of `Skill({ skill: "review" })` -> tool invocation required.
 - **Port rationalization:** "it's just a port/translation" to skip questions -> ports have ambiguity too (error handling, idioms, edge cases).
 
@@ -59,7 +60,7 @@ These phrases in assistant messages = VIOLATION if not using the tool:
 - Partial verification: "syntax check passed" as full verification -> run project CI if available.
 - Stale evidence: "tests passed earlier" -> run fresh verification before completion claim.
 - Load without execute: loaded verification skill but never ran it -> execute and show output.
-- CI skip: claiming done without running `bun run ci` or fallback -> GATE-8 is mandatory for all classifications.
+- CI skip: claiming done without running `bun run ci` or fallback -> [GATE-8] must be completed for all classifications.
 
 ### Implementation Failures
 - **Sequential when parallel possible:** executing 2+ independent tasks one-by-one with Bash -> use parallel Task agents.
@@ -94,16 +95,18 @@ Applies to: CI failures, test failures, lint errors, type errors, build failures
 
 Before each phase, ask yourself:
 
-**Before any action**: "Did I output classification?"
-**Before exploration**: "Did I output PLAN-GATE-1?" (if in plan mode)
-**Before writing plan**: "Did I output PLAN-GATE-2?" (if in plan mode)
-**Before Write/Edit**: "Did I output GATE-3 and create/update tasks?"
-**Before claiming done**: "Did I output all required gates and run TaskList?"
+**Before any action**: "Did I output classification and create gate tasks?"
+**Before exploration**: "Did I create [GATE-1] and update to in_progress?" (if in plan mode)
+**Before writing plan**: "Did I complete [GATE-1] and update [GATE-2] to in_progress?" (if in plan mode)
+**Before Write/Edit**: "Did I complete [GATE-3] and create implementation tasks?"
+**Before claiming done**: "Does TaskList show all gate tasks ([GATE-1] through [GATE-9]) as completed with PASS in description?"
 
-If the answer to any question is "no", STOP and output the missing gate/classification first.
+If the answer to any question is "no", STOP and create/update the missing gate tasks first.
 
 ### Task Management Failures
 - Orphan tasks: creating tasks without tracking completion -> run `TaskList` before claiming done.
 - Stale task list: not checking TaskList after subagent work -> always verify task status after delegation.
 - Missing dependencies: parallel tasks that should be sequential -> define blockedBy relationships.
 - Tool confusion: mixing Tasks and TodoWrite in same session -> use one system consistently per session.
+- Gate task orphans: creating gate tasks without completing them -> all gate tasks must show status: completed with "PASS:" before done.
+- Gate dependency skip: creating gates without blockedBy chain -> gates must have proper dependency order ([GATE-2] blockedBy [GATE-1], etc.).
