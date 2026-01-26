@@ -3,7 +3,6 @@ name: workflow-improver
 description: Evaluate session using OpenAI eval-skills framework (Outcome/Process/Style/Efficiency). Analyzes session transcript vs Claude Code config to score performance and generate improvement recommendations. Creates GitHub issue with rubric scores and actionable plan.
 context: fork
 agent: Explore
-disable-model-invocation: true
 allowed-tools:
   - Read
   - Glob
