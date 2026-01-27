@@ -1278,7 +1278,7 @@ Delegates to `scripts/pr-status.sh`:
 
 ## merge
 
-Merge the current PR via GitHub squash merge, clean up the worktree, and pull main.
+Merge the current PR via GitHub squash merge, then print cleanup commands for the user.
 
 ### Context
 
@@ -1294,9 +1294,7 @@ Merge the current PR via GitHub squash merge, clean up the worktree, and pull ma
 2. **If not ready** — Show reasons, then use `AskUserQuestion` to ask if the user wants to continue anyway
 3. **Squash merge via GitHub** — `gh pr merge --squash --delete-branch`
 4. **Determine main worktree path** — Parse `git worktree list --porcelain` for the first (main) worktree
-5. **Remove current worktree** — `git worktree remove <current-path>` (from the main worktree)
-6. **Pull main** — Run `git pull` in the main worktree
-7. **Print cd command** — Output the command the user needs to run to return to the main checkout
+5. **Print cleanup commands** — Output the commands the user needs to run to clean up the worktree and return to main
 
 ### Commands
 
@@ -1316,22 +1314,18 @@ MAIN_WORKTREE=$(git worktree list --porcelain | head -1 | sed 's/^worktree //')
 # Step 4: Get current worktree path
 CURRENT_WORKTREE=$(pwd)
 
-# Step 5: Remove current worktree (run from main worktree)
-git -C "$MAIN_WORKTREE" worktree remove "$CURRENT_WORKTREE"
-
-# Step 6: Pull latest main
-git -C "$MAIN_WORKTREE" pull
-
-# Step 7: Print the cd command for the user
+# Step 5: Print cleanup commands for the user
 echo ""
-echo "Run this to return to main:"
+echo "Run these commands to clean up:"
 echo "  cd $MAIN_WORKTREE"
+echo "  git worktree remove $CURRENT_WORKTREE"
+echo "  git pull"
 ```
 
 ### Important
 
-After removing the worktree, the agent's working directory no longer exists.
-The final output MUST include the `cd` command so the user can switch back.
+The agent cannot remove the worktree it is running in — the folder removal will fail.
+Instead, print the cleanup commands so the user can run them after the session.
 Use `AskUserQuestion` (not plain text) when asking whether to proceed despite failed status check.
 
 ### Constraints
@@ -1345,15 +1339,11 @@ Use `AskUserQuestion` (not plain text) when asking whether to proceed despite fa
 - Status check runs before merge
 - If status check fails, ask user via `AskUserQuestion` before continuing
 - Always squash merge via `gh pr merge --squash --delete-branch`
-- Remove the worktree after merge
-- Pull main in the main checkout
-- Print the `cd` command to return to main
+- Print cleanup commands (worktree remove, pull, cd) for the user to run manually
 
 ### Success Criteria
 
 - [ ] Status check ran
 - [ ] PR squash-merged via GitHub
 - [ ] Remote branch deleted
-- [ ] Worktree removed
-- [ ] Main checkout pulled up to date
-- [ ] `cd` command printed for user
+- [ ] Cleanup commands printed for user (worktree remove, pull, cd)
