@@ -178,7 +178,7 @@ git checkout -b user-authentication origin/main
 ### Slug Generation
 
 Convert description to kebab-case:
-- "Add user authentication" -> `user-authentication`
+- "Add user authentication" -> `add-user-authentication`
 - "Fix NULL pointer in login" -> `fix-null-pointer-in-login`
 - Truncate to 30 characters max
 
@@ -1299,10 +1299,7 @@ Merge the current PR after verifying readiness. Uses worktrunk when available.
 
 ```bash
 # Step 1: Check readiness
-STATUS_EXIT=0
-{baseDir}/scripts/pr-status.sh || STATUS_EXIT=$?
-
-if [[ "$STATUS_EXIT" -ne 0 ]]; then
+if ! {baseDir}/scripts/pr-status.sh; then
   echo "ERROR: PR is not ready to merge. Fix the issues above first."
   exit 1
 fi

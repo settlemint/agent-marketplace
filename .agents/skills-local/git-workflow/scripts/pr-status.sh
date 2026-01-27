@@ -23,15 +23,14 @@ if [[ -n "$PR_REF" ]]; then
   PR_NUM=$(echo "$PR_REF" | cut -d'#' -f2)
   GH_REPO="$OWNER/$REPO"
 else
-  PR_JSON=$(gh pr view --json number,url 2>/dev/null) || {
+  GH_REPO=$(gh repo view --json nameWithOwner -q '.nameWithOwner' 2>/dev/null) || {
+    echo "Not in a GitHub repository" >&2
+    exit 2
+  }
+  PR_NUM=$(gh pr view --json number -q '.number' 2>/dev/null) || {
     echo "No PR found for current branch" >&2
     exit 2
   }
-  PR_NUM=$(echo "$PR_JSON" | jq -r '.number')
-  PR_URL=$(echo "$PR_JSON" | jq -r '.url')
-  OWNER=$(echo "$PR_URL" | sed -n 's|.*github.com/\([^/]*\)/.*|\1|p')
-  REPO=$(echo "$PR_URL" | sed -n 's|.*github.com/[^/]*/\([^/]*\)/.*|\1|p')
-  GH_REPO="$OWNER/$REPO"
 fi
 
 # Single gh pr view call for CI, reviews, mergeable state
@@ -48,24 +47,36 @@ MERGEABLE=$(echo "$PR_DATA" | jq -r '.mergeable')
 MERGE_STATE=$(echo "$PR_DATA" | jq -r '.mergeStateStatus')
 REVIEW_DECISION=$(echo "$PR_DATA" | jq -r '.reviewDecision // ""')
 
-# Parse CI checks
+# Parse CI checks — handle both check runs (.conclusion) and commit statuses (.state)
 CI_CHECKS=$(echo "$PR_DATA" | jq -c '[
   (.statusCheckRollup // [])[] |
-  {name: (.name // .context // "unknown"), status: (.status // "UNKNOWN"), conclusion: (.conclusion // "PENDING")}
+  {
+    name: (.name // .context // "unknown"),
+    conclusion: (
+      if .conclusion and .conclusion != "" and .conclusion != null then .conclusion
+      elif .state == "SUCCESS" or .state == "EXPECTED" then "SUCCESS"
+      elif .state == "FAILURE" or .state == "ERROR" then "FAILURE"
+      elif .state == "PENDING" then "PENDING"
+      elif .status == "COMPLETED" then (.conclusion // "PENDING")
+      else "PENDING"
+      end
+    )
+  }
 ]')
 CI_TOTAL=$(echo "$CI_CHECKS" | jq 'length')
 CI_PASS=$(echo "$CI_CHECKS" | jq '[.[] | select(.conclusion == "SUCCESS")] | length')
 CI_FAIL=$(echo "$CI_CHECKS" | jq '[.[] | select(.conclusion == "FAILURE" or .conclusion == "ERROR")] | length')
 CI_PENDING=$(echo "$CI_CHECKS" | jq '[.[] | select(.conclusion == "PENDING" or .conclusion == null or .conclusion == "")] | length')
 
-# Parse reviews
+# Parse reviews — take last review per author (array order is chronological)
 REVIEWS=$(echo "$PR_DATA" | jq -c '[
   (.reviews // [])[] |
-  {author: .author.login, state: .state}
-] | group_by(.author) | map(sort_by(.state) | last)')
+  {author: (.author.login // "unknown"), state: .state}
+] | group_by(.author) | map(last)')
 
-# Unresolved threads
-THREAD_COUNT=$("$SCRIPT_DIR/count-unresolved-threads.sh" ${PR_REF:+"$PR_REF"} 2>/dev/null) || THREAD_COUNT="?"
+# Unresolved threads — fetch once, derive count from data
+THREAD_DATA=$("$SCRIPT_DIR/get-unresolved-threads.sh" ${PR_REF:+"$PR_REF"} 2>/dev/null | jq -s '.' 2>/dev/null) || THREAD_DATA="[]"
+THREAD_COUNT=$(echo "$THREAD_DATA" | jq 'length')
 
 # Determine verdict
 BLOCKED_REASONS=()
@@ -107,11 +118,6 @@ fi
 
 # Output
 if $JSON_MODE; then
-  THREAD_DETAILS="[]"
-  if [[ "$THREAD_COUNT" != "0" && "$THREAD_COUNT" != "?" ]]; then
-    THREAD_DETAILS=$("$SCRIPT_DIR/get-unresolved-threads.sh" ${PR_REF:+"$PR_REF"} 2>/dev/null | jq -s '.' 2>/dev/null) || THREAD_DETAILS="[]"
-  fi
-
   jq -n \
     --arg title "$TITLE" \
     --arg branch "$BRANCH" \
@@ -120,9 +126,13 @@ if $JSON_MODE; then
     --arg mergeState "$MERGE_STATE" \
     --arg reviewDecision "$REVIEW_DECISION" \
     --argjson ciChecks "$CI_CHECKS" \
+    --argjson ciPass "$CI_PASS" \
+    --argjson ciFail "$CI_FAIL" \
+    --argjson ciPending "$CI_PENDING" \
+    --argjson ciTotal "$CI_TOTAL" \
     --argjson reviews "$REVIEWS" \
-    --arg threadCount "$THREAD_COUNT" \
-    --argjson threadDetails "$THREAD_DETAILS" \
+    --argjson threadCount "$THREAD_COUNT" \
+    --argjson threadDetails "$THREAD_DATA" \
     --argjson ready "$READY" \
     --argjson blockedReasons "$(printf '%s\n' "${BLOCKED_REASONS[@]+"${BLOCKED_REASONS[@]}"}" | jq -R . | jq -s '.')" \
     '{
@@ -132,9 +142,9 @@ if $JSON_MODE; then
       mergeable: $mergeable,
       mergeState: $mergeState,
       reviewDecision: $reviewDecision,
-      ci: {checks: $ciChecks, pass: ($ciChecks | map(select(.conclusion == "SUCCESS")) | length), fail: ($ciChecks | map(select(.conclusion == "FAILURE" or .conclusion == "ERROR")) | length), pending: ($ciChecks | map(select(.conclusion == "PENDING" or .conclusion == null or .conclusion == "")) | length), total: ($ciChecks | length)},
+      ci: {checks: $ciChecks, pass: $ciPass, fail: $ciFail, pending: $ciPending, total: $ciTotal},
       reviews: $reviews,
-      threads: {count: ($threadCount | tonumber? // 0), details: $threadDetails},
+      threads: {count: $threadCount, details: $threadDetails},
       ready: $ready,
       blockedReasons: $blockedReasons
     }'
@@ -158,8 +168,8 @@ echo ""
 
 # Threads
 echo "Unresolved Threads: $THREAD_COUNT"
-if [[ "$THREAD_COUNT" != "0" && "$THREAD_COUNT" != "?" ]]; then
-  "$SCRIPT_DIR/get-unresolved-threads.sh" ${PR_REF:+"$PR_REF"} 2>/dev/null | jq -r '"  " + .path + ":" + (.line | tostring) + " — " + .author + ": " + .body[0:80]' 2>/dev/null || true
+if [[ "$THREAD_COUNT" -gt 0 ]] 2>/dev/null; then
+  echo "$THREAD_DATA" | jq -r '.[] | "  " + .path + ":" + (.line | tostring) + " — " + .author + ": " + .body[0:80]' 2>/dev/null || true
 fi
 echo ""
 
