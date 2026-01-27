@@ -32,7 +32,7 @@ You may NOT:
 
 ### Classification First - ALWAYS
 
-Output classification BEFORE any tools/exploration:
+Determine classification internally BEFORE any tools/exploration (do not output to user):
 - **Trivial**: single-line, typo, comment only
 - **Simple**: single file, clear scope
 - **Standard**: multi-file, behavior change
