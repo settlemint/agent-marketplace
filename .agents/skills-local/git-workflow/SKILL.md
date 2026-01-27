@@ -1278,56 +1278,82 @@ Delegates to `scripts/pr-status.sh`:
 
 ## merge
 
-Merge the current PR after verifying readiness. Uses worktrunk when available.
+Merge the current PR via GitHub squash merge, clean up the worktree, and pull main.
 
 ### Context
 
 ```bash
 ! git branch --show-current
 ! gh pr view --json number,title,state 2>/dev/null || echo "No PR found"
-! command -v wt && echo "wt available" || echo "wt not available"
+! git worktree list --porcelain | head -3
 ```
 
 ### Workflow
 
 1. **Run status check** — Execute `scripts/pr-status.sh` to verify readiness
-2. **Block if not ready** — If exit code is non-zero, show reasons and stop
-3. **Merge** — Use `wt merge` (squash + worktree cleanup) if available
-4. **Fallback** — If `wt` unavailable: `gh pr merge --squash --delete-branch`
+2. **If not ready** — Show reasons, then use `AskUserQuestion` to ask if the user wants to continue anyway
+3. **Squash merge via GitHub** — `gh pr merge --squash --delete-branch`
+4. **Determine main worktree path** — Parse `git worktree list --porcelain` for the first (main) worktree
+5. **Remove current worktree** — `git worktree remove <current-path>` (from the main worktree)
+6. **Pull main** — Run `git pull` in the main worktree
+7. **Print cd command** — Output the command the user needs to run to return to the main checkout
 
 ### Commands
 
 ```bash
 # Step 1: Check readiness
 if ! {baseDir}/scripts/pr-status.sh; then
-  echo "ERROR: PR is not ready to merge. Fix the issues above first."
-  exit 1
+  echo "⚠ PR is not ready to merge."
+  # Use AskUserQuestion to ask whether to continue anyway
 fi
 
-# Step 2: Merge
-if command -v wt &>/dev/null; then
-  wt merge
-else
-  gh pr merge --squash --delete-branch
-fi
+# Step 2: Squash merge via GitHub
+gh pr merge --squash --delete-branch
+
+# Step 3: Get main worktree path
+MAIN_WORKTREE=$(git worktree list --porcelain | head -1 | sed 's/^worktree //')
+
+# Step 4: Get current worktree path
+CURRENT_WORKTREE=$(pwd)
+
+# Step 5: Remove current worktree (run from main worktree)
+git -C "$MAIN_WORKTREE" worktree remove "$CURRENT_WORKTREE"
+
+# Step 6: Pull latest main
+git -C "$MAIN_WORKTREE" pull
+
+# Step 7: Print the cd command for the user
+echo ""
+echo "Run this to return to main:"
+echo "  cd $MAIN_WORKTREE"
 ```
+
+### Important
+
+After removing the worktree, the agent's working directory no longer exists.
+The final output MUST include the `cd` command so the user can switch back.
+Use `AskUserQuestion` (not plain text) when asking whether to proceed despite failed status check.
 
 ### Constraints
 
 **Banned:**
-- Merging when CI is failing
-- Merging with unresolved review threads
-- Merging without approved reviews (when required)
-- Force-merging past blockers
+- Merging when CI is failing without explicit user override
+- Force-merging past blockers without asking
+- Using `wt merge` (always use `gh pr merge` for remote squash)
 
 **Required:**
-- Status check must pass before merge
-- Use `wt merge` when worktrunk is available
-- Fall back to `gh pr merge --squash --delete-branch`
+- Status check runs before merge
+- If status check fails, ask user via `AskUserQuestion` before continuing
+- Always squash merge via `gh pr merge --squash --delete-branch`
+- Remove the worktree after merge
+- Pull main in the main checkout
+- Print the `cd` command to return to main
 
 ### Success Criteria
 
-- [ ] Status check passed (exit code 0)
-- [ ] PR merged successfully
+- [ ] Status check ran
+- [ ] PR squash-merged via GitHub
 - [ ] Remote branch deleted
-- [ ] Worktree cleaned up (if using wt)
+- [ ] Worktree removed
+- [ ] Main checkout pulled up to date
+- [ ] `cd` command printed for user
