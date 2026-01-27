@@ -54,9 +54,9 @@ CI_CHECKS=$(echo "$PR_DATA" | jq -c '[
     name: (.name // .context // "unknown"),
     conclusion: (
       if .conclusion and .conclusion != "" and .conclusion != null then .conclusion
-      elif .state == "SUCCESS" or .state == "EXPECTED" then "SUCCESS"
+      elif .state == "SUCCESS" then "SUCCESS"
       elif .state == "FAILURE" or .state == "ERROR" then "FAILURE"
-      elif .state == "PENDING" then "PENDING"
+      elif .state == "PENDING" or .state == "EXPECTED" then "PENDING"
       elif .status == "COMPLETED" then (.conclusion // "PENDING")
       else "PENDING"
       end
@@ -75,7 +75,8 @@ REVIEWS=$(echo "$PR_DATA" | jq -c '[
 ] | group_by(.author) | map(last)')
 
 # Unresolved threads — fetch once, derive count from data
-THREAD_DATA=$("$SCRIPT_DIR/get-unresolved-threads.sh" ${PR_REF:+"$PR_REF"} 2>/dev/null | jq -s '.' 2>/dev/null) || THREAD_DATA="[]"
+THREAD_FETCH_FAILED=false
+THREAD_DATA=$("$SCRIPT_DIR/get-unresolved-threads.sh" ${PR_REF:+"$PR_REF"} 2>/dev/null | jq -s '.' 2>/dev/null) || { THREAD_DATA="[]"; THREAD_FETCH_FAILED=true; }
 THREAD_COUNT=$(echo "$THREAD_DATA" | jq 'length')
 
 # Determine verdict
@@ -97,7 +98,7 @@ if [[ "$REVIEW_DECISION" != "APPROVED" && "$REVIEW_DECISION" != "" ]]; then
   BLOCKED_REASONS+=("Review decision: $REVIEW_DECISION")
 fi
 
-if [[ "$THREAD_COUNT" == "?" ]]; then
+if $THREAD_FETCH_FAILED; then
   BLOCKED_REASONS+=("Thread count unknown (API error)")
 elif [[ "$THREAD_COUNT" != "0" ]]; then
   BLOCKED_REASONS+=("$THREAD_COUNT unresolved thread(s)")
@@ -105,6 +106,8 @@ fi
 
 if [[ "$MERGEABLE" == "CONFLICTING" ]]; then
   BLOCKED_REASONS+=("Merge conflicts")
+elif [[ "$MERGEABLE" == "UNKNOWN" ]]; then
+  BLOCKED_REASONS+=("Mergeable state unknown (retry shortly)")
 fi
 
 if [[ "$MERGE_STATE" == "BLOCKED" ]]; then
@@ -169,7 +172,7 @@ echo ""
 # Threads
 echo "Unresolved Threads: $THREAD_COUNT"
 if [[ "$THREAD_COUNT" -gt 0 ]] 2>/dev/null; then
-  echo "$THREAD_DATA" | jq -r '.[] | "  " + .path + ":" + (.line | tostring) + " — " + .author + ": " + .body[0:80]' 2>/dev/null || true
+  echo "$THREAD_DATA" | jq -r '.[] | "  " + .path + ":" + (.line | tostring) + " — " + .author + ": " + (.body[0:80] | gsub("[\\n\\r\\t]"; " "))' 2>/dev/null || true
 fi
 echo ""
 
