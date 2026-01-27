@@ -1,6 +1,6 @@
 [metadata]
 name = "git-workflow"
-description = "Git workflow commands for commits, branches, PRs, and reviews"
+description = "Git workflow commands for commits, branches, PRs, reviews, and post-PR automation (status, merge)"
 icon = "git-branch"
 color = "#F05032"
 

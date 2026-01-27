@@ -1,6 +1,6 @@
 ---
 name: git-workflow
-description: "Git workflow commands: commit, branch, pr, push, sync, review, fixup, update-pr, commit-push, clean-gone. Use with command argument."
+description: "Git workflow commands: commit, branch, pr, push, sync, review, fixup, update-pr, commit-push, clean-gone, status, merge. Use with command argument."
 user-invocable: true
 argument-hint: <command> [options]
 allowed-tools:
@@ -38,6 +38,8 @@ Invoke with a command name as argument:
 | `update-pr` | Update PR title and body from commits |
 | `commit-push` | Create conventional commit and push |
 | `clean-gone` | Remove local branches deleted from remote |
+| `status` | Full PR dashboard: CI, reviews, threads, mergeable |
+| `merge` | Merge PR after readiness check |
 
 ---
 
@@ -140,52 +142,37 @@ Then re-run the commit.
 
 ## branch
 
-Create a new branch following the `username/type/slug` naming convention.
+Create a new branch using worktrunk (`wt switch`), falling back to git if `wt` is unavailable.
 
 ### Context
 
 ```bash
-! whoami
 ! git branch --show-current
-! git fetch origin main --dry-run 2>&1 | head -3
+! command -v wt && wt status 2>/dev/null || echo "wt not available"
 ! git branch --list | head -10
 ```
 
 ### Arguments
 
-- `type`: feat, fix, hotfix, or chore
-- `description`: Brief description (converted to kebab-case slug)
+- `description`: Brief description (converted to kebab-case slug, max 30 chars)
 
 ### Workflow
 
-1. **Validate type** - Must be: feat, fix, hotfix, or chore
-2. **Generate slug** - Convert description to kebab-case, max 30 chars
-3. **Fetch latest** - `git fetch origin main`
-4. **Create branch** - `git checkout -b ${USERNAME}/${TYPE}/${SLUG} origin/main`
-
-### Branch Types
-
-| Type | Use When |
-|------|----------|
-| `feat` | New feature or enhancement |
-| `fix` | Bug fix |
-| `hotfix` | Urgent production fix |
-| `chore` | Maintenance, dependencies, config |
+1. **Generate slug** - Convert description to kebab-case, max 30 chars
+2. **Create branch with worktree** - `wt switch -c ${SLUG} --base main`
+3. **Fallback** - If `wt` unavailable: `git fetch origin main && git checkout -b ${SLUG} origin/main`
 
 ### Examples
 
 ```bash
-# Feature branch
-git checkout -b roderik/feat/user-authentication origin/main
+# Using worktrunk (preferred)
+wt switch -c user-authentication --base main
+wt switch -c fix-balance-calc --base main
+wt switch -c update-dependencies --base main
 
-# Bug fix
-git checkout -b roderik/fix/balance-calculation origin/main
-
-# Hotfix
-git checkout -b roderik/hotfix/critical-security-patch origin/main
-
-# Chore
-git checkout -b roderik/chore/update-dependencies origin/main
+# Fallback (no worktrunk)
+git fetch origin main
+git checkout -b user-authentication origin/main
 ```
 
 ### Slug Generation
@@ -203,15 +190,15 @@ Convert description to kebab-case:
 - Starting work on main/master directly
 
 **Required:**
-- Always fetch origin/main first
-- Follow `username/type/slug` format
+- Use `wt switch -c` when available
 - Use kebab-case for slug
+- Max 30 characters
 
 ### Success Criteria
 
-- [ ] Branch follows `username/type/slug` pattern
-- [ ] Created from fresh origin/main
-- [ ] Currently on the new branch
+- [ ] Branch created with kebab-case slug
+- [ ] Based on fresh main
+- [ ] Currently on the new branch (in worktree if using wt)
 
 ---
 
@@ -234,7 +221,7 @@ Create a pull request with smart template selection based on commit type.
 
 ```bash
 BRANCH=$(git branch --show-current)
-[[ "$BRANCH" == "main" || "$BRANCH" == "master" ]] && echo "ERROR: Create feature branch first with /branch"
+[[ "$BRANCH" == "main" || "$BRANCH" == "master" ]] && echo "ERROR: Create feature branch first with wt switch -c <name> --base main (or /branch)"
 ```
 
 If on main -> stop and instruct to use `/branch` first.
@@ -330,6 +317,7 @@ gh pr view --json url -q '.url'
 
 **Banned:**
 - Creating PR from main/master branch
+- Creating branches or worktrees — if on main, stop and tell the user to run `/branch` first
 - PRs without meaningful description
 - Skipping template-based body
 
@@ -769,9 +757,9 @@ Fix all unresolved PR review comments and CI failures with educational feedback.
 ! gh pr view --json number,title,state,reviewDecision 2>/dev/null || echo "No PR found"
 ! gh pr checks 2>/dev/null | head -20 || echo "No checks"
 # Get unresolved review threads (uses GraphQL API - reviewThreads field doesn't exist in gh pr view)
-! .agents/skills-local/git-workflow/scripts/get-unresolved-threads.sh 2>/dev/null | head -30 || echo "No unresolved threads"
+! {baseDir}/scripts/get-unresolved-threads.sh 2>/dev/null | head -30 || echo "No unresolved threads"
 # Get PR issue comments (general comments like Codex/Gemini reviews, not inline threads)
-! .agents/skills-local/git-workflow/scripts/get-issue-comments.sh --actionable 2>/dev/null | head -30 || echo "No issue comments"
+! {baseDir}/scripts/get-issue-comments.sh --actionable 2>/dev/null | head -30 || echo "No issue comments"
 ```
 
 ### Workflow
@@ -841,11 +829,11 @@ For EACH unresolved thread, provide feedback using symbols:
 
 ```bash
 # Get thread IDs from context (already fetched above) or fetch again
-THREADS=$(.agents/skills-local/git-workflow/scripts/get-unresolved-threads.sh)
+THREADS=$({baseDir}/scripts/get-unresolved-threads.sh)
 THREAD_ID=$(echo "$THREADS" | jq -r '.id' | head -1)
 
 # Resolve the thread
-.agents/skills-local/git-workflow/scripts/resolve-thread.sh "$THREAD_ID"
+{baseDir}/scripts/resolve-thread.sh "$THREAD_ID"
 ```
 
 **Example feedback patterns:**
@@ -861,7 +849,7 @@ THREAD_ID=$(echo "$THREADS" | jq -r '.id' | head -1)
 #### 6. Verify All Threads Resolved
 
 ```bash
-.agents/skills-local/git-workflow/scripts/count-unresolved-threads.sh
+{baseDir}/scripts/count-unresolved-threads.sh
 ```
 
 Should return 0.
@@ -1176,15 +1164,19 @@ echo "$GONE_BRANCHES"
 
 # Remove each branch
 for branch in $GONE_BRANCHES; do
-  # Check for associated worktree
-  WORKTREE=$(git worktree list | grep "$branch" | awk '{print $1}')
-  if [ -n "$WORKTREE" ]; then
-    echo "Removing worktree: $WORKTREE"
-    git worktree remove "$WORKTREE" --force
+  if command -v wt &>/dev/null; then
+    echo "Removing via worktrunk: $branch"
+    wt remove "$branch" || git branch -D "$branch"
+  else
+    # Fallback: manual worktree + branch removal
+    WORKTREE=$(git worktree list | grep "$branch" | awk '{print $1}')
+    if [ -n "$WORKTREE" ]; then
+      echo "Removing worktree: $WORKTREE"
+      git worktree remove "$WORKTREE" --force
+    fi
+    echo "Deleting branch: $branch"
+    git branch -D "$branch"
   fi
-
-  echo "Deleting branch: $branch"
-  git branch -D "$branch"
 done
 
 echo "Cleanup complete"
@@ -1227,3 +1219,115 @@ It will NOT delete:
 - [ ] Removed associated worktrees
 - [ ] Deleted gone branches
 - [ ] Reported results to user
+
+---
+
+## status
+
+Full PR dashboard showing CI checks, reviews, unresolved threads, and mergeable state.
+
+### Context
+
+```bash
+! git branch --show-current
+! gh pr view --json number,title,state 2>/dev/null || echo "No PR found"
+```
+
+### Arguments
+
+- `--json`: Output machine-readable JSON instead of human-readable text
+- `owner/repo#pr`: Target a specific PR instead of the current branch
+
+### Workflow
+
+Delegates to `scripts/pr-status.sh`:
+
+```bash
+{baseDir}/scripts/pr-status.sh [--json] [owner/repo#pr]
+```
+
+### Output Sections
+
+1. **CI Checks** — Each check name with pass/fail/pending status
+2. **Reviews** — Each reviewer with their decision (approved/changes requested/commented)
+3. **Unresolved Threads** — Count + file:line and comment preview for each
+4. **Mergeable State** — Whether GitHub allows merging
+5. **Verdict** — `READY TO MERGE` or `BLOCKED` with specific reasons
+
+### Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Ready to merge |
+| `1` | Blocked (reasons listed) |
+| `2` | No PR found |
+
+### Constraints
+
+**Required:**
+- Always show all sections even if empty
+- Exit code must reflect actual readiness
+
+### Success Criteria
+
+- [ ] Dashboard shows CI, reviews, threads, mergeable state
+- [ ] Verdict accurately reflects readiness
+- [ ] Exit code matches verdict
+
+---
+
+## merge
+
+Merge the current PR after verifying readiness. Uses worktrunk when available.
+
+### Context
+
+```bash
+! git branch --show-current
+! gh pr view --json number,title,state 2>/dev/null || echo "No PR found"
+! command -v wt && echo "wt available" || echo "wt not available"
+```
+
+### Workflow
+
+1. **Run status check** — Execute `scripts/pr-status.sh` to verify readiness
+2. **Block if not ready** — If exit code is non-zero, show reasons and stop
+3. **Merge** — Use `wt merge` (squash + worktree cleanup) if available
+4. **Fallback** — If `wt` unavailable: `gh pr merge --squash --delete-branch`
+
+### Commands
+
+```bash
+# Step 1: Check readiness
+if ! {baseDir}/scripts/pr-status.sh; then
+  echo "ERROR: PR is not ready to merge. Fix the issues above first."
+  exit 1
+fi
+
+# Step 2: Merge
+if command -v wt &>/dev/null; then
+  wt merge
+else
+  gh pr merge --squash --delete-branch
+fi
+```
+
+### Constraints
+
+**Banned:**
+- Merging when CI is failing
+- Merging with unresolved review threads
+- Merging without approved reviews (when required)
+- Force-merging past blockers
+
+**Required:**
+- Status check must pass before merge
+- Use `wt merge` when worktrunk is available
+- Fall back to `gh pr merge --squash --delete-branch`
+
+### Success Criteria
+
+- [ ] Status check passed (exit code 0)
+- [ ] PR merged successfully
+- [ ] Remote branch deleted
+- [ ] Worktree cleaned up (if using wt)

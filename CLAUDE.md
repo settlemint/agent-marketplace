@@ -77,6 +77,10 @@ Skill({ skill: "verification-before-completion" })
 Skill({ skill: "ask-questions-if-underspecified" })
 ```
 
+### Banned Actions
+
+- Marking tasks as completed without performing the associated work
+
 ### Banned Phrases
 
 Never say: "looks good", "should work", "Done!", "requirements are clear" (without AskUserQuestion), "manual review", "code is simple"
