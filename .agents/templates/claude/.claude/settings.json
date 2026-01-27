@@ -18,15 +18,13 @@
             "prompt": "BLOCKED - SESSION START GATE\n\nYou CANNOT proceed with ANY user request until you:\n1. Invoke: Skill({ skill: \"crew-claude\" })\n2. Read all 6 workflow files listed in SKILL.md\n3. Output CREW-CLAUDE LOADED verification checklist\n\nThis is non-negotiable. Your FIRST action must be the Skill() invocation. Do NOT explore, read files, or start planning until the verification checklist is output."
           }
         ]
-      }
-    ],
-    "PreCompact": [
+      },
       {
         "matcher": "",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "BLOCKED - POST-COMPACTION GATE\n\nContext was compacted. You CANNOT continue work until you:\n1. Invoke: Skill({ skill: \"crew-claude\" })\n2. Read all 6 workflow files listed in SKILL.md\n3. Output CREW-CLAUDE LOADED verification checklist\n\nYour NEXT action must be the Skill() invocation. Do NOT continue previous work until verification is output."
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/scripts/session/post-compact-reload.sh"
           }
         ]
       }
