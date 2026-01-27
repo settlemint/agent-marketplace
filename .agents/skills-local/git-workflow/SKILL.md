@@ -757,9 +757,9 @@ Fix all unresolved PR review comments and CI failures with educational feedback.
 ! gh pr view --json number,title,state,reviewDecision 2>/dev/null || echo "No PR found"
 ! gh pr checks 2>/dev/null | head -20 || echo "No checks"
 # Get unresolved review threads (uses GraphQL API - reviewThreads field doesn't exist in gh pr view)
-! .agents/skills-local/git-workflow/scripts/get-unresolved-threads.sh 2>/dev/null | head -30 || echo "No unresolved threads"
+! {baseDir}/scripts/get-unresolved-threads.sh 2>/dev/null | head -30 || echo "No unresolved threads"
 # Get PR issue comments (general comments like Codex/Gemini reviews, not inline threads)
-! .agents/skills-local/git-workflow/scripts/get-issue-comments.sh --actionable 2>/dev/null | head -30 || echo "No issue comments"
+! {baseDir}/scripts/get-issue-comments.sh --actionable 2>/dev/null | head -30 || echo "No issue comments"
 ```
 
 ### Workflow
@@ -829,11 +829,11 @@ For EACH unresolved thread, provide feedback using symbols:
 
 ```bash
 # Get thread IDs from context (already fetched above) or fetch again
-THREADS=$(.agents/skills-local/git-workflow/scripts/get-unresolved-threads.sh)
+THREADS=$({baseDir}/scripts/get-unresolved-threads.sh)
 THREAD_ID=$(echo "$THREADS" | jq -r '.id' | head -1)
 
 # Resolve the thread
-.agents/skills-local/git-workflow/scripts/resolve-thread.sh "$THREAD_ID"
+{baseDir}/scripts/resolve-thread.sh "$THREAD_ID"
 ```
 
 **Example feedback patterns:**
@@ -849,7 +849,7 @@ THREAD_ID=$(echo "$THREADS" | jq -r '.id' | head -1)
 #### 6. Verify All Threads Resolved
 
 ```bash
-.agents/skills-local/git-workflow/scripts/count-unresolved-threads.sh
+{baseDir}/scripts/count-unresolved-threads.sh
 ```
 
 Should return 0.
@@ -1243,7 +1243,7 @@ Full PR dashboard showing CI checks, reviews, unresolved threads, and mergeable 
 Delegates to `scripts/pr-status.sh`:
 
 ```bash
-.agents/skills-local/git-workflow/scripts/pr-status.sh [--json] [owner/repo#pr]
+{baseDir}/scripts/pr-status.sh [--json] [owner/repo#pr]
 ```
 
 ### Output Sections
@@ -1300,7 +1300,7 @@ Merge the current PR after verifying readiness. Uses worktrunk when available.
 ```bash
 # Step 1: Check readiness
 STATUS_EXIT=0
-.agents/skills-local/git-workflow/scripts/pr-status.sh || STATUS_EXIT=$?
+{baseDir}/scripts/pr-status.sh || STATUS_EXIT=$?
 
 if [[ "$STATUS_EXIT" -ne 0 ]]; then
   echo "ERROR: PR is not ready to merge. Fix the issues above first."
