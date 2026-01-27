@@ -276,10 +276,12 @@ Before each phase, update the corresponding gate task. Do not proceed if BLOCKED
   - Requirements: `bun run ci` executed with exit code 0 shown.
   - **NOTE:** CI commands use turborepo—run from repository root folder.
   - **NOTE:** Infrastructure services may be required—launch with `bun dev:up`.
+  - **NOTE:** When `package.json` does not exist (non-Node repos), substitute: `shellcheck` for `.sh` files, `markdownlint` for `.md` files. Document the substitution.
 
 - **Integration**: `PASS: Integration=[Exit 0 or N/A]`
   - Requirements: `bun run test:integration` executed with exit code 0 (or N/A if unavailable).
   - **Prerequisite:** CI must pass first.
+  - **NOTE:** When `package.json` does not exist, document N/A with justification.
 
 - **Session End (Standard only)**: `PASS: Workflow-improver=[done]`
   - Requirements: "Run workflow-improver analysis" task completed with session analysis output shown.
@@ -324,6 +326,8 @@ When `system-reminder` indicates "Plan mode is active":
 - Classification avoidance: no classification before implementation -> state classification before first task creation.
 - Task dependency skip: ignoring task ordering -> use `TaskUpdate({ addBlockedBy: [...] })` for dependent tasks.
 - Task status neglect: not updating task status -> always set in_progress before work, completed after.
+- **False task completion:** marking a task as completed without performing the work -> NEVER mark a task completed without doing it. If not applicable, mark completed with clear N/A justification AND output why before marking.
+- **Rush-to-completion:** marking workflow-improver or any final-phase task as completed to finish faster -> final-phase tasks exist for a reason; skipping them is a violation.
 
 ### Text Checklist Theater (CRITICAL)
 
@@ -374,8 +378,9 @@ These phrases in assistant messages = VIOLATION if not using the tool:
 - Phase 6 skip: "code is simple, doesn't need review" → ALL review execution tasks must complete with evidence.
 - **Codex skip:** "Run codex review" task not completed with output shown → BLOCKED. Show the codex output.
 - **Deslop skip:** "Run deslop" task skipped "because code is clean" → run it anyway, show output.
-- **Codeql skip:** (Standard) "Run codeql scan" task skipped → BLOCKED for Standard tasks.
-- **Workflow-improver skip:** (Standard) "Run workflow-improver" task not completed at session end → session incomplete.
+- **Codeql skip:** (Standard) "Run codeql scan" task skipped → BLOCKED for Standard tasks. The skill itself determines applicability, not the agent pre-emptively.
+- **Reviewers skip:** (Standard) "Run reviewers skill prompts" skipped because "only shell/markdown changes" → invoke the skill; it determines relevance, not the agent.
+- **Workflow-improver skip:** (Standard) "Run workflow-improver" task not completed at session end → session incomplete. This must be the absolute last task completed.
 
 ### Verification Failures
 - Unverified completion: "Run verification commands" task not completed with exit code 0 shown → execute and show output.
@@ -633,12 +638,14 @@ Mark Verification completed.
 
 ### Phase 8: CI Validation
 Mark CI in_progress.
-- Run `bun run ci` from repository root
+- **First:** verify `package.json` exists at repository root. If not, substitute with `shellcheck` for `.sh` files and `markdownlint` for `.md` files. Document the substitution.
+- Run `bun run ci` from repository root (or substitutes)
 - Show exit code 0
 Mark CI completed.
 
 ### Phase 9: Integration Tests
 Mark Integration in_progress.
+- **First:** verify `package.json` exists. If not, mark N/A with documented justification.
 - Run `bun run test:integration` (if available)
 - Show exit code 0 or note N/A
 Mark Integration completed.
