@@ -55,7 +55,7 @@
     },
     {
       "repo": "vercel-labs/agent-skills",
-      "skills": ["vercel-react-best-practices"]
+      "skills": ["vercel-react-best-practices", "vercel-composition-patterns"]
     },
     {
       "repo": "anthropics/claude-plugins-official",
@@ -104,7 +104,7 @@
     },
     {
       "repo": "wshobson/agents",
-      "skills": ["typescript-advanced-types"]
+      "skills": ["typescript-advanced-types", "terraform-module-library", "bats-testing-patterns", "bash-defensive-patterns", "k8s-security-policies", "grafana-dashboards"]
     },
     {
       "repo": "simonwong/agent-skills",
@@ -121,6 +121,14 @@
     {
       "repo": "supabase/agent-skills",
       "skills": ["supabase-postgres-best-practices"]
+    },
+    {
+      "repo": "vercel-labs/skills",
+      "skills": ["find-skills"]
+    },
+    {
+      "repo": "jezweb/claude-skills",
+      "skills": ["tanstack-query", "tanstack-start", "tanstack-router", "tanstack-table"]
     }
   ]
 }
