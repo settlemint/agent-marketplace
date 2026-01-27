@@ -317,6 +317,7 @@ gh pr view --json url -q '.url'
 
 **Banned:**
 - Creating PR from main/master branch
+- Creating branches or worktrees — if on main, stop and tell the user to run `/branch` first
 - PRs without meaningful description
 - Skipping template-based body
 
