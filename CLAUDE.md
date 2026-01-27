@@ -2,21 +2,23 @@
 
 ## You Are BLOCKED Until Skill Loaded
 
-Before ANY other action (reading files, exploring, planning, answering):
+Before ANY other action (reading files, exploring, planning, answering), you MUST invoke the crew-claude skill using the Skill tool:
 
 ```
 Skill({ skill: "crew-claude" })
 ```
 
-The skill content loads inline. Output:
+The skill content loads inline. After loading, output:
 
 ```
 CREW-CLAUDE LOADED: ✓
 ```
 
+**WARNING: Do NOT fake this output.** You must actually call the Skill tool — printing the text without invoking the tool is a violation. The skill contains the full phase workflow, gate definitions, and classification rules that govern ALL subsequent work.
+
 ---
 
-## BLOCKED Actions (until verification above is output)
+## BLOCKED Actions (until Skill tool is invoked and verification output)
 
 You may NOT:
 - Explore codebase
@@ -28,11 +30,23 @@ You may NOT:
 
 ---
 
-## Critical Workflow Summary (backup if skill load fails)
+## Post-Compaction Reload
+
+If context was compacted, the skill content is lost. You MUST reload it immediately:
+
+```
+Skill({ skill: "crew-claude" })
+```
+
+Then check `TaskList` to see where you left off and resume from that point.
+
+---
+
+## Workflow Requirements (always enforced, skill or not)
 
 ### Classification First - ALWAYS
 
-Determine classification internally BEFORE any tools/exploration (do not output to user):
+Output classification BEFORE any tools/exploration:
 - **Trivial**: single-line, typo, comment only
 - **Simple**: single file, clear scope
 - **Standard**: multi-file, behavior change
@@ -40,20 +54,23 @@ Determine classification internally BEFORE any tools/exploration (do not output 
 
 ### 9 Mandatory Gates
 
-Every implementation requires gates. Output gate check before each phase:
-- Planning (classification + research complete)
-- Refinement (questions asked via AskUserQuestion)
-- Implementation (skills loaded, tasks created)
-- Cleanup
-- Testing (test output with exit code)
-- Review (Skill({ skill: "review" }) invoked)
-- Verification (verification skill executed)
-- CI (bun run ci with exit code 0)
-- Integration (bun run test:integration with exit code 0)
+Every implementation MUST pass through ALL gates in order. You may NOT skip gates. Output `GATE: <name> — PASSED` before proceeding to the next phase:
 
-### Skills Must Be INVOKED
+1. **Planning** — classification + research complete
+2. **Refinement** — questions asked via AskUserQuestion
+3. **Implementation** — skills loaded, TaskCreate used for all work items
+4. **Cleanup** — unused code removed, no leftover artifacts
+5. **Testing** — test output shown with exit code (`bun run test`)
+6. **Review** — `Skill({ skill: "review" })` invoked, findings addressed
+7. **Verification** — `Skill({ skill: "verification-before-completion" })` invoked
+8. **CI** — `bun run ci` with exit code 0
+9. **Integration** — `bun run test:integration` with exit code 0
 
-Listing skills is NOT loading. You must call:
+Skipping a gate or claiming a gate passed without evidence is a violation.
+
+### Skills Must Be INVOKED (not mentioned)
+
+Listing skills is NOT loading them. You must call the Skill tool:
 ```
 Skill({ skill: "test-driven-development" })
 Skill({ skill: "verification-before-completion" })
@@ -62,18 +79,16 @@ Skill({ skill: "ask-questions-if-underspecified" })
 
 ### Banned Phrases
 
-Never say: "looks good", "should work", "Done!", "requirements are clear" (local), "manual review", "code is simple"
+Never say: "looks good", "should work", "Done!", "requirements are clear" (without AskUserQuestion), "manual review", "code is simple"
 
 ### Task Tracking Required
 
 Before code: `TaskCreate` + `TaskUpdate({ status: "in_progress" })`
 After code: `TaskUpdate({ status: "completed" })`
-Before completion: `TaskList` to verify all done
+Before completion: `TaskList` to verify ALL tasks are completed
 
 ---
 
 ## Now Load The Skill
-
-This summary is a backup. The full workflow loads inline with the skill.
 
 **Your next action MUST be:** `Skill({ skill: "crew-claude" })`
