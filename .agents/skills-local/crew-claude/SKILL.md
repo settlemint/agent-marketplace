@@ -58,7 +58,7 @@ Classify before implementation. When in doubt, classify up.
 
 ### After Classification: Create Gate Tasks via TodoWrite
 
-Output only `CLASSIFICATION: [type]` then immediately create gate tasks. No verbose checklists.
+Determine classification internally, then immediately create gate tasks. No verbose checklists or classification output to the user.
 
 #### Trivial — gates + execution tasks
 ```typescript
@@ -146,7 +146,7 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - All other gates, skills, and quality requirements remain **unchanged**
 
 **ALWAYS**
-- **Output classification checklist as ABSOLUTE FIRST action** - before any tools, exploration, or planning.
+- **Determine classification as ABSOLUTE FIRST action** - before any tools, exploration, or planning. Classification is internal; do not output it to the user.
 - **If Plan Mode active, classification precedes exploration** - create gate tasks and update Planning after classification.
 - **Classification determines which gates are required** - Trivial needs fewer, Standard needs more.
 - **Task tracking before implementation:** Use `TaskCreate` to create tasks, `TaskUpdate({ status: "in_progress" })` before starting work.
@@ -167,8 +167,8 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - **Parallelize independent tasks** after plan approval — tasks without `blockedBy` can run in parallel via multiple `Task()` calls in one message. See `dispatching-parallel-agents` skill.
 
 **NEVER**
-- **Start exploration/planning without classification output** - classification is FIRST.
-- **Proceed with tool calls before stating classification** - no exceptions.
+- **Start exploration/planning without determining classification** - classification is FIRST.
+- **Proceed with tool calls before determining classification** - no exceptions.
 - Skip phases/gates because "simple" or "trivial".
 - Skip Phase 2 (Plan Refinement) or Phase 6 (Review) - commonly forgotten.
 - Write production code before creating/updating tasks (TaskCreate or TodoWrite fallback).
@@ -213,13 +213,9 @@ When modifying existing code:
 - Applies to: bug fixes, refactors, behavior changes, any file touch
 - TDD execution tasks ("Write failing tests", "Make tests pass") enforce this
 
-### Classification Output (MANDATORY)
+### Classification (MANDATORY)
 
-Output ONLY this single line, then create gate tasks via TodoWrite:
-
-```
-CLASSIFICATION: [Trivial|Simple|Standard]
-```
+Determine the classification internally, then create gate tasks via TodoWrite. Do not output the classification to the user.
 
 No verbose checklists. The task list IS the tracking mechanism.
 
