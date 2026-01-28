@@ -66,6 +66,7 @@ Determine classification internally, then immediately create gate tasks. No verb
 ```typescript
 TodoWrite([
   { content: "Implementation", status: "pending", activeForm: "Implementing" },
+  { content: "Drizzle migration reset (if migrations touched)", status: "pending", activeForm: "Resetting drizzle migrations" },
   { content: "Run verification commands", status: "pending", activeForm: "Running verification" },
   { content: "Verification", status: "pending", activeForm: "Verifying" },
   { content: "CI", status: "pending", activeForm: "Running CI" },
@@ -82,6 +83,7 @@ TodoWrite([
   { content: "Implementation", status: "pending", activeForm: "Implementing" },
   { content: "Make tests pass (TDD green)", status: "pending", activeForm: "Making tests pass" },
   { content: "Testing", status: "pending", activeForm: "Testing" },
+  { content: "Drizzle migration reset (if migrations touched)", status: "pending", activeForm: "Resetting drizzle migrations" },
   { content: "Dispatch codex review", status: "pending", activeForm: "Dispatching codex review" },
   { content: "Fix codex issues", status: "pending", activeForm: "Fixing codex issues" },
   { content: "Review", status: "pending", activeForm: "Reviewing" },
@@ -104,6 +106,7 @@ TodoWrite([
   { content: "Dispatch parallel cleanup (deslop, code-simplifier, knip)", status: "pending", activeForm: "Dispatching cleanup" },
   { content: "Cleanup", status: "pending", activeForm: "Cleaning up" },
   { content: "Testing", status: "pending", activeForm: "Testing" },
+  { content: "Drizzle migration reset (if migrations touched)", status: "pending", activeForm: "Resetting drizzle migrations" },
   { content: "Dispatch parallel reviewers (codex, codeql, 4 reviewers)", status: "pending", activeForm: "Dispatching reviewers" },
   { content: "Dispatch parallel fixes (codex, codeql, reviewer findings)", status: "pending", activeForm: "Dispatching fixes" },
   { content: "Re-run failed reviewers until all PASS", status: "pending", activeForm: "Re-running reviewers" },
@@ -262,6 +265,9 @@ Before each phase, update the corresponding gate task. Do not proceed if BLOCKED
 
 - **Testing**: `PASS: Tests=[N passed, N failed] | Exit=[code]`
   - Requirements: test output with exit code shown.
+
+- **Drizzle Migration Reset** (conditional): `PASS: Migrations=[reset+regenerated] | Skip=[no migrations touched]`
+  - Requirements: If git diff shows migration files changed OR >1 new migration, reset folder to main and run `bun run db:generate`. Evidence: show single clean migration diff. Skip if no migration files touched.
 
 - **Review**: `PASS: Reviewers=[dispatched] | Fixes=[dispatched] | Rerun=[done or N/A]`
   - Requirements (Simple): "Dispatch codex review" + "Fix codex issues" tasks completed with evidence.
@@ -607,6 +613,44 @@ Mark Testing in_progress.
 - Run `bun run ci` from repository root
 - Show exit code
 Mark Testing completed with test output.
+
+### Phase 5.5: Drizzle Migration Reset (Conditional)
+
+**Trigger condition:** Only runs if git diff shows changes to drizzle migration files (`.sql`, `_journal.json`, `.snapshot.json` in drizzle/ or migrations/ folders).
+
+**Detection:**
+```bash
+git diff --name-only main...HEAD | grep -E '.*(drizzle|migrations)/.*(\.sql|_journal\.json|\.snapshot\.json)$'
+```
+
+If no matches → skip this phase with `Skip: no migrations touched`.
+
+**If migrations were touched, run these checks:**
+
+1. **Count new migrations (must be ≤1):**
+```bash
+git diff --name-only main...HEAD | grep -E '\.sql$' | wc -l
+```
+If count > 1 → reset required.
+
+2. **Reset migration folder to main and regenerate:**
+```bash
+# Detect migration folder from diff
+MIGRATION_FOLDER=$(git diff --name-only main...HEAD | grep -oE '^[^/]+/' | sort -u | grep -E '(drizzle|migrations)' | head -1)
+
+# Reset to main branch state
+git checkout main -- "${MIGRATION_FOLDER}"
+
+# Regenerate clean migration
+bun run db:generate
+
+# Stage regenerated files
+git add "${MIGRATION_FOLDER}"
+```
+
+3. **Show evidence:** Display the regenerated migration diff.
+
+Mark "Drizzle migration reset" completed with `PASS: Migrations=[1 clean migration regenerated]` or `Skip: no migrations touched`.
 
 ### Phase 6: Review
 Mark Review in_progress.

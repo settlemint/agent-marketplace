@@ -63,6 +63,25 @@ Be honest about what ran or was skipped; do not hide failures.
 
 Task tracking is optional; use when it helps clarity or multi-step work.
 
+### Drizzle Migration Rules
+
+When working with drizzle migrations:
+
+1. **Never manually edit migration files** - Use drizzle-kit commands only:
+   - `bun run db:generate` - Generate migrations
+   - `bun run db:push` - Push schema (dev only)
+   - `bun run db:migrate` - Apply migrations
+
+2. **On merge conflicts** - Reset from main and regenerate:
+   ```bash
+   git checkout main -- drizzle/
+   bun run db:generate
+   ```
+
+3. **One migration per branch/PR** - Multiple migrations = reset and regenerate.
+
+Never edit: `drizzle/*.sql`, `drizzle/meta/_journal.json`, `drizzle/meta/*.snapshot.json`
+
 ---
 
 ## Now Load The Skill
