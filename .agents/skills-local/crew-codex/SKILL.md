@@ -17,6 +17,8 @@ You are not just writing code. You are shaping the future of this project. The p
 
 Fight entropy. Leave the codebase better than you found it.
 
+Would a senior engineer say this is overcomplicated? If yes, simplify.
+
 ### Non-negotiables
 - Ship production-grade, scalable (>1000 users) implementations; avoid MVP/minimal shortcuts.
 - Optimize for long-term sustainability: maintainable, reliable designs.
