@@ -5,7 +5,7 @@ description: Complete development workflow for Claude Code
 
 # Crew Claude
 
-Complete development workflow for Claude Code. Defines philosophy, task classification, hard requirements, anti-patterns, and 9-gate development process.
+Complete development workflow for Claude Code. Defines philosophy, hard requirements, anti-patterns, and 9-gate development process.
 
 ---
 
@@ -41,90 +41,119 @@ Would a senior engineer say this is overcomplicated? If yes, simplify.
 
 ---
 
-## 2. Task Classification
+## 2. Gate Tasks
 
-Classify before implementation. When in doubt, classify up.
+Every implementation task follows the same 9-gate workflow. Create all gate tasks at the start.
 
 **Execution Mode:** Check `CLAUDE_CODE_REMOTE` env var. If `true` → Remote Mode (autonomous). See Hard Requirements for adjustments.
 
-### Rules
-1. New file => at least Simple (never Trivial).
-2. Multiple files => Standard.
-3. Security/auth/payments => Standard (with extra security review).
-4. Uncertain => up.
+**Agent Legend:**
+| Agent | Type | Description |
+|-------|------|-------------|
+| `main` | orchestrator | You (the orchestrating agent) |
+| `test-engineer` | custom | TDD workflows (`.claude/agents/test-engineer.md`) |
+| `cleanup-agent` | custom | Cleanup phase (`.claude/agents/cleanup-agent.md`) |
+| `reviewer` | custom | Code review (`.claude/agents/reviewer.md`) |
+| `systems-architect` | custom | Architecture decisions (`.claude/agents/systems-architect.md`) |
+| `Bash` | built-in | CLI commands |
+| `Explore` | built-in | Codebase exploration |
+| `general-purpose` | built-in | General tasks, skill execution |
 
-### Categories
-- **Trivial:** single-line/typo/comment only. May skip: plan refinement, review.
-- **Simple:** single file, clear scope; new file ok. May skip: deep reasoning.
-- **Standard:** multi-file/behavior change/architectural/security-sensitive. Skip none.
+### Create All Gate Tasks
 
-### After Classification: Create Gate Tasks via TodoWrite
+**Execution order:** `[P]` = can run in parallel, `[S]` = must run sequentially
 
-Determine classification internally, then immediately create gate tasks. No verbose checklists or classification output to the user.
-
-#### Trivial — gates + execution tasks
 ```typescript
-TodoWrite([
-  { content: "Implementation", status: "pending", activeForm: "Implementing" },
-  { content: "Run verification commands", status: "pending", activeForm: "Running verification" },
-  { content: "Verification", status: "pending", activeForm: "Verifying" },
-  { content: "CI", status: "pending", activeForm: "Running CI" },
-  { content: "Integration", status: "pending", activeForm: "Running integration tests" },
-])
+// Phase 1: Planning [P] - parallel research
+TaskCreate({ subject: "Planning gate", description: "Agent: main + Explore + general-purpose. GATE: Research complete.", activeForm: "Planning" })
+
+// Phase 2: Refinement [P] - parallel questions + review
+TaskCreate({ subject: "Dispatch parallel refinement", description: "Agent: main. Dispatches: general-purpose. Questions + codex plan review.", activeForm: "Dispatching refinement" })
+TaskCreate({ subject: "Refinement gate", description: "Agent: main. GATE: Questions asked, concerns addressed.", activeForm: "Refining" })
+
+// Phase 3: Implementation [S] - sequential TDD cycle
+TaskCreate({ subject: "Write failing tests (TDD red)", description: "Agent: test-engineer. [S] Write test that fails.", activeForm: "Writing failing tests" })
+TaskCreate({ subject: "Implementation", description: "Agent: main. [S] Write the implementation code. Can parallelize across independent files.", activeForm: "Implementing" })
+TaskCreate({ subject: "Make tests pass (TDD green)", description: "Agent: test-engineer. [S] Run tests and verify they pass.", activeForm: "Making tests pass" })
+
+// Phase 4: Cleanup [P] - parallel cleanup tools
+TaskCreate({ subject: "Dispatch parallel cleanup", description: "Agent: main. Dispatches: cleanup-agent. [P] Run deslop, code-simplifier, knip.", activeForm: "Dispatching cleanup" })
+TaskCreate({ subject: "Cleanup gate", description: "Agent: main. GATE: All cleanup tools run with evidence.", activeForm: "Cleaning up" })
+
+// Phase 5: Testing [S]
+TaskCreate({ subject: "Testing gate", description: "Agent: Bash. [S] GATE: Run bun run ci, show exit code.", activeForm: "Testing" })
+
+// Phase 6: Review [P] reviews → [P] fixes → [P] re-run
+TaskCreate({ subject: "Dispatch parallel reviewers", description: "Agent: main. Dispatches: Bash, reviewer, general-purpose. [P] Run all 6 reviewers.", activeForm: "Dispatching reviewers" })
+TaskCreate({ subject: "Dispatch parallel fixes", description: "Agent: main. Dispatches: general-purpose. [P] Fix codex, codeql, reviewer findings.", activeForm: "Dispatching fixes" })
+TaskCreate({ subject: "Re-run failed reviewers", description: "Agent: main. Dispatches: Bash, reviewer, general-purpose. [P] Re-run until PASS.", activeForm: "Re-running reviewers" })
+TaskCreate({ subject: "Review gate", description: "Agent: main. GATE: All review checks pass.", activeForm: "Reviewing" })
+
+// Phase 7-9: Verification chain [S]
+TaskCreate({ subject: "Run verification commands", description: "Agent: Bash. [S] Execute verification-before-completion.", activeForm: "Running verification" })
+TaskCreate({ subject: "Verification gate", description: "Agent: main. [S] GATE: All checks pass with exit code 0.", activeForm: "Verifying" })
+TaskCreate({ subject: "CI gate", description: "Agent: Bash. [S] GATE: Run bun run ci with exit code 0.", activeForm: "Running CI" })
+TaskCreate({ subject: "Integration gate", description: "Agent: Bash. [S] GATE: Run bun run test:integration.", activeForm: "Running integration tests" })
+
+// Phase 10: Session end [S]
+TaskCreate({ subject: "Run workflow-improver analysis", description: "Agent: main. Skill: workflow-improver. [S] Analyze session.", activeForm: "Running workflow analysis" })
 ```
 
-#### Simple — gates + execution tasks (skip Cleanup)
-```typescript
-TodoWrite([
-  { content: "Planning", status: "pending", activeForm: "Planning" },
-  { content: "Refinement", status: "pending", activeForm: "Refining" },
-  { content: "Write failing tests (TDD red)", status: "pending", activeForm: "Writing failing tests" },
-  { content: "Implementation", status: "pending", activeForm: "Implementing" },
-  { content: "Make tests pass (TDD green)", status: "pending", activeForm: "Making tests pass" },
-  { content: "Testing", status: "pending", activeForm: "Testing" },
-  { content: "Dispatch codex review", status: "pending", activeForm: "Dispatching codex review" },
-  { content: "Fix codex issues", status: "pending", activeForm: "Fixing codex issues" },
-  { content: "Review", status: "pending", activeForm: "Reviewing" },
-  { content: "Run verification commands", status: "pending", activeForm: "Running verification" },
-  { content: "Verification", status: "pending", activeForm: "Verifying" },
-  { content: "CI", status: "pending", activeForm: "Running CI" },
-  { content: "Integration", status: "pending", activeForm: "Running integration tests" },
-])
-```
+### Set Task Dependencies
 
-#### Standard — 9 gates + ALL execution tasks
+After creating all tasks, establish the sequential dependencies:
+
 ```typescript
-TodoWrite([
-  { content: "Planning", status: "pending", activeForm: "Planning" },
-  { content: "Dispatch parallel refinement (questions + codex plan review)", status: "pending", activeForm: "Dispatching refinement" },
-  { content: "Refinement", status: "pending", activeForm: "Refining" },
-  { content: "Write failing tests (TDD red)", status: "pending", activeForm: "Writing failing tests" },
-  { content: "Implementation", status: "pending", activeForm: "Implementing" },
-  { content: "Make tests pass (TDD green)", status: "pending", activeForm: "Making tests pass" },
-  { content: "Dispatch parallel cleanup (deslop, code-simplifier, knip)", status: "pending", activeForm: "Dispatching cleanup" },
-  { content: "Cleanup", status: "pending", activeForm: "Cleaning up" },
-  { content: "Testing", status: "pending", activeForm: "Testing" },
-  { content: "Dispatch parallel reviewers (codex, codeql, 4 reviewers)", status: "pending", activeForm: "Dispatching reviewers" },
-  { content: "Dispatch parallel fixes (codex, codeql, reviewer findings)", status: "pending", activeForm: "Dispatching fixes" },
-  { content: "Re-run failed reviewers until all PASS", status: "pending", activeForm: "Re-running reviewers" },
-  { content: "Review", status: "pending", activeForm: "Reviewing" },
-  { content: "Run verification commands", status: "pending", activeForm: "Running verification" },
-  { content: "Verification", status: "pending", activeForm: "Verifying" },
-  { content: "CI", status: "pending", activeForm: "Running CI" },
-  { content: "Integration", status: "pending", activeForm: "Running integration tests" },
-  { content: "Run workflow-improver analysis", status: "pending", activeForm: "Running workflow analysis" },
-])
+// Phase transitions (each phase blocked by previous)
+TaskUpdate({ taskId: refinement-gate-id, addBlockedBy: [planning-gate-id] })
+TaskUpdate({ taskId: tdd-red-id, addBlockedBy: [refinement-gate-id] })
+
+// TDD cycle is sequential
+TaskUpdate({ taskId: implementation-id, addBlockedBy: [tdd-red-id] })
+TaskUpdate({ taskId: tdd-green-id, addBlockedBy: [implementation-id] })
+
+// Cleanup after implementation
+TaskUpdate({ taskId: cleanup-dispatch-id, addBlockedBy: [tdd-green-id] })
+TaskUpdate({ taskId: cleanup-gate-id, addBlockedBy: [cleanup-dispatch-id] })
+
+// Testing after cleanup
+TaskUpdate({ taskId: testing-gate-id, addBlockedBy: [cleanup-gate-id] })
+
+// Review chain
+TaskUpdate({ taskId: dispatch-reviewers-id, addBlockedBy: [testing-gate-id] })
+TaskUpdate({ taskId: dispatch-fixes-id, addBlockedBy: [dispatch-reviewers-id] })
+TaskUpdate({ taskId: rerun-reviewers-id, addBlockedBy: [dispatch-fixes-id] })
+TaskUpdate({ taskId: review-gate-id, addBlockedBy: [rerun-reviewers-id] })
+
+// Verification chain
+TaskUpdate({ taskId: verification-commands-id, addBlockedBy: [review-gate-id] })
+TaskUpdate({ taskId: verification-gate-id, addBlockedBy: [verification-commands-id] })
+TaskUpdate({ taskId: ci-gate-id, addBlockedBy: [verification-gate-id] })
+TaskUpdate({ taskId: integration-gate-id, addBlockedBy: [ci-gate-id] })
+
+// Session end
+TaskUpdate({ taskId: workflow-improver-id, addBlockedBy: [integration-gate-id] })
 ```
 
 **Execution tasks require evidence:** Each execution task must show command output, diff, or scan results before marking complete.
 
-#### Plan Mode — Planning and Refinement only; remaining gates after approval
+**Task status updates:**
 ```typescript
-TodoWrite([
-  { content: "Planning", status: "pending", activeForm: "Planning" },
-  { content: "Refinement", status: "pending", activeForm: "Refining" },
-])
-// After plan approval, create remaining gates + execution tasks based on classification
+// Before starting work on a task:
+TaskUpdate({ taskId: "task-id", status: "in_progress" })
+
+// After completing with evidence:
+TaskUpdate({ taskId: "task-id", status: "completed" })
+
+// To set dependencies (task B blocked by task A):
+TaskUpdate({ taskId: "task-B-id", addBlockedBy: ["task-A-id"] })
+```
+
+### Plan Mode — Planning and Refinement only; remaining gates after approval
+```typescript
+TaskCreate({ subject: "Planning gate", description: "Agent: main + Explore. GATE: Research complete.", activeForm: "Planning" })
+TaskCreate({ subject: "Refinement gate", description: "Agent: main. GATE: Plan written and reviewed.", activeForm: "Refining" })
+// After plan approval, create remaining gates + execution tasks
 ```
 
 ---
@@ -144,14 +173,10 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - All other gates, skills, and quality requirements remain **unchanged**
 
 **ALWAYS**
-- **Determine classification as ABSOLUTE FIRST action** - before any tools, exploration, or planning. Classification is internal; do not output it to the user.
-- **If Plan Mode active, classification precedes exploration** - create gate tasks and update Planning after classification.
-- **Classification determines which gates are required** - Trivial needs fewer, Standard needs more.
+- **Create all gate tasks FIRST** - before any implementation work begins.
 - **Task tracking before implementation:** Use `TaskCreate` to create tasks, `TaskUpdate({ status: "in_progress" })` before starting work.
 - **Task completion after implementation:** Use `TaskUpdate({ status: "completed" })` after each task is done.
 - **Task dependencies:** Use `TaskUpdate({ addBlockedBy: [...] })` to establish task ordering.
-- **Fallback:** If Tasks tools unavailable (older Conductor), use `TodoWrite({ status: "in_progress/completed" })`.
-- **Create gate tasks after classification** — see Task Classification section for exact TodoWrite patterns.
 - Provide verification evidence (command output/test results with exit code 0) before claiming done.
 - **Use `AskUserQuestion` tool for ALL clarifying questions** - never plain text questions.
 - **Use `AskUserQuestion` tool for ALL decision-seeking questions** - phrases that seek user input MUST use the tool:
@@ -165,11 +190,9 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 - **Parallelize independent tasks** after plan approval — tasks without `blockedBy` can run in parallel via multiple `Task()` calls in one message. See `dispatching-parallel-agents` skill.
 
 **NEVER**
-- **Start exploration/planning without determining classification** - classification is FIRST.
-- **Proceed with tool calls before determining classification** - no exceptions.
-- Skip phases/gates because "simple" or "trivial".
+- Skip phases/gates.
 - Skip Phase 2 (Plan Refinement) or Phase 6 (Review) - commonly forgotten.
-- Write production code before creating/updating tasks (TaskCreate or TodoWrite fallback).
+- Write production code before creating/updating tasks via TaskCreate/TaskUpdate.
 - Claim completion without evidence.
 - Skip task dependency setup when tasks have ordering requirements.
 - Skip skills or "acknowledge" them without loading via Skill() tool.
@@ -184,9 +207,9 @@ Check `CLAUDE_CODE_REMOTE` environment variable at session start:
 
 ### No Text Checklists (MANDATORY)
 
-**Text checklists don't work.** Claude forgets requirements that aren't tracked as Tasks/Todos.
+**Text checklists don't work.** Claude forgets requirements that aren't tracked as Tasks.
 
-Every required action MUST be a TodoWrite item. Never state requirements only in prose or markdown checkboxes.
+Every required action MUST be a TaskCreate item. Never state requirements only in prose or markdown checkboxes.
 
 **Wrong:**
 ```markdown
@@ -196,10 +219,8 @@ Every required action MUST be a TodoWrite item. Never state requirements only in
 
 **Right:**
 ```typescript
-TodoWrite([
-  { content: "Dispatch codex review", status: "pending", activeForm: "Dispatching codex review" },
-  { content: "Fix codex issues", status: "pending", activeForm: "Fixing codex issues" },
-])
+TaskCreate({ subject: "Dispatch codex review", description: "Agent: Bash. Run: codex review --uncommitted.", activeForm: "Dispatching codex review" })
+TaskCreate({ subject: "Fix codex issues", description: "Agent: general-purpose. Fix all P1, P2, P3 issues found.", activeForm: "Fixing codex issues" })
 ```
 
 **Execution tasks require evidence:** Each task must show command output, diff, or results before marking complete.
@@ -211,24 +232,11 @@ When modifying existing code:
 - Applies to: bug fixes, refactors, behavior changes, any file touch
 - TDD execution tasks ("Write failing tests", "Make tests pass") enforce this
 
-### Classification (MANDATORY)
-
-Determine the classification internally, then create gate tasks via TodoWrite. Do not output the classification to the user.
-
-No verbose checklists. The task list IS the tracking mechanism.
-
 ### Gate Task Creation (MANDATORY)
 
-Immediately after classification, create gate tasks AND execution tasks via TodoWrite. See Task Classification section for exact patterns per classification type.
+Create all gate tasks AND execution tasks via TaskCreate at the start. See Gate Tasks section for the complete list.
 
-| Classification | What to Create |
-|---------------|----------------|
-| **Trivial** | 4 gates + verification execution task |
-| **Simple** | 8 gates + TDD tasks + codex review tasks + verification task |
-| **Standard** | 9 gates + ALL execution tasks (TDD, deslop, code-simplifier, review skill, reviewers, codex review, codeql, verification, workflow-improver) |
-| **Plan Mode** | Planning, Refinement initially; remaining gates + execution tasks after approval |
-
-**Key principle:** If it's not a TodoWrite item, it won't happen.
+**Key principle:** If it's not a TaskCreate item, it won't happen.
 
 ### Gate Task Status
 
@@ -248,8 +256,8 @@ Before each phase, update the corresponding gate task. Do not proceed if BLOCKED
 
 **Gate requirements (gate cannot complete until execution tasks show evidence):**
 
-- **Planning**: `PASS: Classification=[type] | Research=[tools used]`
-  - Requirements: classification stated + research complete (mcp__octocode__* for code, mcp__context7__* for docs, mcp__exa__* for web).
+- **Planning**: `PASS: Research=[tools used]`
+  - Requirements: research complete (mcp__octocode__* for code, mcp__context7__* for docs, mcp__exa__* for web).
 
 - **Refinement**: `PASS: Questions=[count or N/A if Remote]`
   - Requirements: "Ask clarifying questions" task completed with evidence. **Local:** `AskUserQuestion` tool used. **Remote:** questions optional unless genuinely ambiguous.
@@ -258,14 +266,13 @@ Before each phase, update the corresponding gate task. Do not proceed if BLOCKED
   - Requirements: "Write failing tests (TDD red)" task completed + "Make tests pass (TDD green)" task completed + backfill check done.
 
 - **Cleanup**: `PASS: Deslop=[done] | Simplifier=[done]`
-  - Requirements: "Run deslop on changed files" task completed with diff shown + "Run code-simplifier" task completed (Standard only).
+  - Requirements: "Run deslop on changed files" task completed with diff shown + "Run code-simplifier" task completed.
 
 - **Testing**: `PASS: Tests=[N passed, N failed] | Exit=[code]`
   - Requirements: test output with exit code shown.
 
 - **Review**: `PASS: Reviewers=[dispatched] | Fixes=[dispatched] | Rerun=[done or N/A]`
-  - Requirements (Simple): "Dispatch codex review" + "Fix codex issues" tasks completed with evidence.
-  - Requirements (Standard): "Dispatch parallel reviewers" + "Dispatch parallel fixes" + "Re-run failed reviewers" all completed with evidence.
+  - Requirements: "Dispatch parallel reviewers" + "Dispatch parallel fixes" + "Re-run failed reviewers" all completed with evidence.
 
 - **Verification**: `PASS: Commands=[run] | Exit=[0]`
   - Requirements: "Run verification commands" task completed with exit code 0 shown.
@@ -281,7 +288,7 @@ Before each phase, update the corresponding gate task. Do not proceed if BLOCKED
   - **Prerequisite:** CI must pass first.
   - **NOTE:** When `package.json` does not exist, document N/A with justification.
 
-- **Session End (Standard only)**: `PASS: Workflow-improver=[done]`
+- **Session End**: `PASS: Workflow-improver=[done]`
   - Requirements: "Run workflow-improver analysis" task completed with session analysis output shown.
 
 **Execution ≠ Loading:** Calling `Skill()` just loads instructions. The execution task tracks actually DOING what the skill documents.
@@ -298,18 +305,18 @@ Before claiming done, the task list must show all gate tasks as completed. No ex
 
 When `system-reminder` indicates "Plan mode is active":
 
-1. **First**: Output classification checklist (same as always)
-2. **Then**: Create gate tasks and update Planning to in_progress, then completed when research done
-3. **Then**: Update Refinement to in_progress, then completed when plan written
+1. **First**: Create Planning and Refinement gate tasks
+2. **Then**: Update Planning to in_progress, do research, then completed
+3. **Then**: Update Refinement to in_progress, write plan, then completed
 4. **Finally**: Call ExitPlanMode when plan is complete
+5. **After approval**: Create remaining gate tasks
 
 **Plan Mode maps to workflow phases:**
 - Planning → Phase 1 (Planning)
 - Refinement → Phase 2 (Plan Refinement)
-- After approval → Phase 3+ (Implementation onwards, create remaining gate tasks)
+- After approval → Phase 3+ (Implementation onwards)
 
 **Plan Mode does NOT exempt you from:**
-- Classification output (still FIRST)
 - Gate task creation (create Planning and Refinement minimum, rest after approval)
 - Skill loading (ask-questions-if-underspecified before Refinement completion)
 - AskUserQuestion tool usage (never plain text questions)
@@ -319,9 +326,8 @@ When `system-reminder` indicates "Plan mode is active":
 ## 4. Anti-Patterns (Never)
 
 ### Workflow Bypass
-- Trivial bypass: "task is simple" to skip workflow -> classify first and follow minimum steps.
-- Direct implementation: code before task tracking -> call `TaskCreate` + `TaskUpdate({ status: "in_progress" })` first (or `TodoWrite` fallback).
-- Classification avoidance: no classification before implementation -> state classification before first task creation.
+- Workflow skip: "task is simple" to skip gates -> follow ALL gates, no exceptions.
+- Direct implementation: code before task tracking -> call `TaskCreate` + `TaskUpdate({ status: "in_progress" })` first.
 - Task dependency skip: ignoring task ordering -> use `TaskUpdate({ addBlockedBy: [...] })` for dependent tasks.
 - Task status neglect: not updating task status -> always set in_progress before work, completed after.
 - **False task completion:** marking a task as completed without performing the work -> NEVER mark a task completed without doing it. If not applicable, mark completed with clear N/A justification AND output why before marking.
@@ -329,16 +335,16 @@ When `system-reminder` indicates "Plan mode is active":
 
 ### Text Checklist Theater (CRITICAL)
 
-**Text checklists don't work.** Claude forgets requirements that aren't tracked as Tasks/Todos.
+**Text checklists don't work.** Claude forgets requirements that aren't tracked as Tasks.
 
-- **Text requirements:** stating requirements in prose without creating todos → EVERY requirement must be a TodoWrite item
-- **Markdown checkboxes:** outputting `- [ ] Do X` without calling TodoWrite → call TodoWrite, not markdown
-- **Self-check in context:** "search context for X" → use TodoWrite execution tasks, not context search
+- **Text requirements:** stating requirements in prose without creating tasks → EVERY requirement must be a TaskCreate item
+- **Markdown checkboxes:** outputting `- [ ] Do X` without calling TaskCreate → call TaskCreate, not markdown
+- **Self-check in context:** "search context for X" → use TaskCreate execution tasks, not context search
 - **Gate without execution tasks:** creating Review gate without "Run codex review" task → execution must be tracked
-- **Skill load without execute:** calling `Skill()` but not doing what it documents → TodoWrite tracks EXECUTION, not loading
+- **Skill load without execute:** calling `Skill()` but not doing what it documents → TaskCreate tracks EXECUTION, not loading
 - **Marking execution complete without evidence:** "Run codeql scan" marked done without showing output → must show results
 
-**The rule:** If it's not a TodoWrite item, it won't happen. Period.
+**The rule:** If it's not a TaskCreate item, it won't happen. Period.
 
 ### Skill Failures
 - Skill avoidance: no execution tasks for skills → create execution tasks like "Run codex review --uncommitted"
@@ -364,28 +370,28 @@ These phrases in assistant messages = VIOLATION if not using the tool:
 - Questions quoting the user back to them
 
 ### Gate Task Failures
-- Gate task amnesia: create Planning, Implementation, then forget the rest -> create ALL gate tasks for your classification with blockedBy chain.
+- Gate task amnesia: create Planning, Implementation, then forget the rest -> create ALL gate tasks at the start.
 - Gate task rushing: marking gate completed without doing the work -> gates verify work, not skip it.
 - Proofless completion: `status: completed` without proof in description -> add `PASS: [key]=[evidence] | ...` to description.
 - Early gate only: stop at Implementation because "implementation is done" -> Cleanup through Integration still required.
 - False completion: marking gate completed when requirements not met -> keep in_progress with `BLOCKED: [reason]` in description.
-- Gate task skip: not creating gate tasks at all -> MUST create all required gates after classification.
+- Gate task skip: not creating gate tasks at all -> MUST create all gate tasks at the start.
 
 ### Phase Skipping
 - Phase 2 skip: "requirements are clear" → Local: complete "Ask clarifying questions" task. Remote: mark N/A if ambiguity ≤ 7.
 - Phase 6 skip: "code is simple, doesn't need review" → ALL review execution tasks must complete with evidence.
 - **Codex skip:** "Run codex review" task not completed with output shown → BLOCKED. Show the codex output.
 - **Deslop skip:** "Run deslop" task skipped "because code is clean" → run it anyway, show output.
-- **Codeql skip:** (Standard) "Run codeql scan" task skipped → BLOCKED for Standard tasks. The skill itself determines applicability, not the agent pre-emptively.
-- **Reviewers skip:** (Standard) "Run reviewers skill prompts" skipped because "only shell/markdown changes" → invoke the skill; it determines relevance, not the agent.
-- **Workflow-improver skip:** (Standard) "Run workflow-improver" task not completed at session end → session incomplete. This must be the absolute last task completed.
+- **Codeql skip:** "Run codeql scan" task skipped → BLOCKED. The skill itself determines applicability, not the agent pre-emptively.
+- **Reviewers skip:** "Run reviewers skill prompts" skipped because "only shell/markdown changes" → invoke the skill; it determines relevance, not the agent.
+- **Workflow-improver skip:** "Run workflow-improver" task not completed at session end → session incomplete. This must be the absolute last task completed.
 
 ### Verification Failures
 - Unverified completion: "Run verification commands" task not completed with exit code 0 shown → execute and show output.
 - Partial verification: "syntax check passed" as full verification → run project CI, show full output.
 - Stale evidence: "tests passed earlier" → run fresh verification, show current output.
 - Execution task incomplete: "Run verification commands" marked complete without showing command output → evidence required.
-- CI skip: CI task not completed with `bun run ci` exit code 0 shown → CI must pass for all classifications.
+- CI skip: CI task not completed with `bun run ci` exit code 0 shown → CI must pass.
 
 ### Implementation Failures
 - **Sequential when parallel possible:** executing 2+ independent tasks one-by-one with Bash -> use parallel Task agents.
@@ -420,7 +426,7 @@ Applies to: CI failures, test failures, lint errors, type errors, build failures
 
 **Before claiming done, verify ALL execution tasks are completed with evidence:**
 
-Run through your TodoWrite list:
+Run `TaskList` and verify:
 - Every gate task (Planning → Integration) shows completed
 - Every execution task shows completed WITH evidence shown in conversation:
   - "Write failing tests" → test output showing failure
@@ -428,19 +434,19 @@ Run through your TodoWrite list:
   - "Run deslop" → diff or "no slop found"
   - "Dispatch codex review" → codex output shown
   - "Fix codex issues" → issues fixed or "none found"
-  - "Run codeql scan" → scan output shown (Standard)
+  - "Run codeql scan" → scan output shown
   - "Run verification" → commands with exit code 0
-  - "Run workflow-improver" → analysis output shown (Standard)
+  - "Run workflow-improver" → analysis output shown
 
 If ANY execution task lacks evidence, you are NOT done.
 
 ### Task Management Failures
 - Orphan tasks: creating tasks without tracking completion -> run `TaskList` before claiming done.
 - Stale task list: not checking TaskList after subagent work -> always verify task status after delegation.
-- Missing dependencies: parallel tasks that should be sequential -> define blockedBy relationships.
-- Tool confusion: mixing Tasks and TodoWrite in same session -> use one system consistently per session.
+- Missing dependencies: parallel tasks that should be sequential -> define blockedBy relationships via `TaskUpdate({ addBlockedBy: [...] })`.
 - Gate task orphans: creating gate tasks without completing them -> all gate tasks must show status: completed with "PASS:" before done.
 - Gate dependency skip: creating gates without blockedBy chain -> gates must have proper dependency order (Refinement blockedBy Planning, etc.).
+- Wrong agent: using main agent for tasks that should use specialized agents -> consult agent legend in Gate Tasks section.
 
 ---
 
@@ -452,27 +458,58 @@ Mandatory for implementation tasks. Creating any new file = implementation task.
 
 When `system-reminder` indicates "Plan mode is active":
 
-1. Output `CLASSIFICATION: [type]`
-2. Create gate tasks via TodoWrite: `Planning`, `Refinement`
-3. Mark Planning in_progress → do research → mark completed
-4. Mark Refinement in_progress → write plan → mark completed
-5. Call ExitPlanMode
-6. After approval: create remaining gates + ALL execution tasks based on classification (see Task Classification section)
+1. Create gate tasks via TaskCreate: `Planning gate`, `Refinement gate`
+2. `TaskUpdate({ taskId: planning-id, status: "in_progress" })` → do research → `TaskUpdate({ taskId: planning-id, status: "completed" })`
+3. `TaskUpdate({ taskId: refinement-id, status: "in_progress" })` → write plan → `TaskUpdate({ taskId: refinement-id, status: "completed" })`
+4. Call ExitPlanMode
+5. After approval: create remaining gate tasks (see Gate Tasks section)
 
 ---
 
 ### Task Management
 
-Use TodoWrite for all task tracking. Task list is the source of truth.
+Use TaskCreate/TaskUpdate for all task tracking. Task list is the source of truth.
 
-**Task format:** `[T001] [P] Description with file path`
-- `[P]` = parallelizable (different files, no dependencies)
+**Task lifecycle:**
+```typescript
+// 1. Create task with agent in description
+TaskCreate({
+  subject: "Task name",
+  description: "Agent: agent-type. What to do.",
+  activeForm: "Doing task"
+})
+
+// 2. Before starting work
+TaskUpdate({ taskId: "...", status: "in_progress" })
+
+// 3. After completing with evidence
+TaskUpdate({ taskId: "...", status: "completed" })
+```
+
+**Description format:**
+```
+Agent: <primary-agent>. [Dispatches: <agent1>, <agent2>.] [Skill: <skill-name>.] <task description>.
+```
 
 **Sub-agents:** Multiple `Task()` calls in one message = parallel execution
+
+**Agent assignment table:**
+| Task Type | Agent | Why |
+|-----------|-------|-----|
+| Codebase exploration | `Explore` | Built-in, optimized for search |
+| TDD (red/green) | `test-engineer` | Custom agent with TDD workflow |
+| Cleanup (deslop/simplify/knip) | `cleanup-agent` | Custom agent for Phase 4 |
+| Code review | `reviewer` | Custom agent with review modes |
+| Architecture decisions | `systems-architect` | Custom agent for design |
+| CLI commands (codex, bun, git) | `Bash` | Built-in shell execution |
+| Skill execution (codeql, etc.) | `general-purpose` | Built-in with skill loading |
+| Docs/web research | `general-purpose` | Uses MCP tools |
+| Fix tasks | `general-purpose` | Can read context and edit |
 
 **Principles**
 - Use latest package versions (@latest/:latest)
 - MANY small tasks > few large tasks
+- Always prefix description with `Agent: <type>.`
 
 ### Phase 1: Planning
 Mark Planning in_progress, then completed when done.
@@ -517,11 +554,10 @@ After research completes, draft plan with file paths and tasks.
 ### Phase 2: Plan Refinement
 Mark Refinement in_progress.
 
-**Parallel refinement dispatch (SINGLE message for Standard):**
+**Parallel refinement dispatch (SINGLE message):**
 
 ```typescript
-// BOTH Tasks in ONE message = parallel execution (Standard only)
-// For Simple: only ask questions, skip codex review
+// BOTH Tasks in ONE message = parallel execution
 Task({
   subagent_type: "general-purpose",
   description: "Ask clarifying questions",
@@ -546,39 +582,71 @@ Address any concerns before calling ExitPlanMode.
 Mark Refinement completed when both tasks done.
 
 ### Phase 3: Implementation
-Mark Implementation in_progress.
+`TaskUpdate({ taskId: implementation-gate-id, status: "in_progress" })`
 
-**Execution tasks (tracked via TodoWrite):**
+**Execution tasks (tracked via TaskCreate/TaskUpdate):**
 
-1. Mark "Write failing tests (TDD red)" in_progress
-   - `Skill({ skill: "test-driven-development" })` to load instructions
-   - Execute: write test that fails for the feature/fix
-   - Mark completed with evidence (test output showing failure)
+1. **TDD Red Phase** (Agent: `test-engineer`)
+   ```typescript
+   TaskUpdate({ taskId: tdd-red-task-id, status: "in_progress" })
+   Task({
+     subagent_type: "test-engineer",
+     description: "Write failing tests",
+     prompt: `Write tests that fail for: [FEATURE DESCRIPTION]
+   Output: Test code + test output showing failure.`
+   })
+   TaskUpdate({ taskId: tdd-red-task-id, status: "completed" })
+   ```
 
-2. Mark "Implementation" in_progress
-   - Write the implementation code
-   - Mark completed
+2. **Implementation** (Agent: `main` or `general-purpose` if parallel)
+   ```typescript
+   TaskUpdate({ taskId: implementation-task-id, status: "in_progress" })
+   // Write the implementation code directly, or dispatch parallel agents:
+   Task({
+     subagent_type: "general-purpose",
+     description: "Implement feature in file X",
+     prompt: `Implement: [SPECIFIC TASK]`
+   })
+   TaskUpdate({ taskId: implementation-task-id, status: "completed" })
+   ```
 
-3. Mark "Make tests pass (TDD green)" in_progress
-   - Execute: run tests, verify they pass
-   - Mark completed with evidence (test output showing pass)
+3. **TDD Green Phase** (Agent: `test-engineer`)
+   ```typescript
+   TaskUpdate({ taskId: tdd-green-task-id, status: "in_progress" })
+   Task({
+     subagent_type: "test-engineer",
+     description: "Make tests pass",
+     prompt: `Run tests and verify they pass.
+   Output: Test output showing all tests pass.`
+   })
+   TaskUpdate({ taskId: tdd-green-task-id, status: "completed" })
+   ```
 
-If 2+ implementation tasks marked `[P]`, dispatch parallel Task agents.
+If 2+ independent implementation tasks (marked parallelizable), dispatch parallel Task agents.
 
-### Phase 4: Cleanup (Standard only)
-Mark Cleanup in_progress.
+### Phase 4: Cleanup
+`TaskUpdate({ taskId: cleanup-gate-id, status: "in_progress" })`
 
-**Parallel cleanup dispatch (SINGLE message):**
-
-Launch ALL cleanup Tasks in parallel:
+**Parallel cleanup dispatch** (Dispatches: `cleanup-agent`)
 
 ```typescript
-// ALL cleanup Tasks in ONE message = parallel execution
+TaskUpdate({ taskId: dispatch-cleanup-task-id, status: "in_progress" })
+
+// Option 1: Use custom cleanup-agent (recommended)
+Task({
+  subagent_type: "cleanup-agent",
+  description: "Run all cleanup tools",
+  prompt: `Execute Phase 4 cleanup on changed files.
+Changed files: [LIST FILES]
+Run: deslop, code-simplifier, knip (if JS/TS)
+Output: Evidence for each tool.`
+})
+
+// Option 2: Dispatch individual tasks in parallel (general-purpose agents)
 Task({
   subagent_type: "general-purpose",
   description: "Run deslop",
   prompt: `Load Skill({ skill: "deslop" }) and execute on changed files.
-Identify and remove: AI slop, unnecessary comments, defensive checks, inconsistent style.
 Output: Diff of changes or "no slop found".`
 })
 
@@ -586,21 +654,20 @@ Task({
   subagent_type: "general-purpose",
   description: "Run code-simplifier",
   prompt: `Load Skill({ skill: "code-simplifier" }) and execute on changed files.
-Simplify complex code, reduce nesting, improve clarity.
 Output: Diff of changes or "no simplifications needed".`
 })
 
-// JS/TS projects only - include in same message
 Task({
   subagent_type: "general-purpose",
   description: "Run knip",
   prompt: `Load Skill({ skill: "knip" }) and execute.
-Find unused files, dependencies, and exports.
 Output: List of unused items or "no dead code found".`
 })
+
+TaskUpdate({ taskId: dispatch-cleanup-task-id, status: "completed" })
 ```
 
-Mark Cleanup completed when all Tasks done with evidence.
+`TaskUpdate({ taskId: cleanup-gate-id, status: "completed" })` when all Tasks done with evidence.
 
 ### Phase 5: Testing
 Mark Testing in_progress.
@@ -609,65 +676,68 @@ Mark Testing in_progress.
 Mark Testing completed with test output.
 
 ### Phase 6: Review
-Mark Review in_progress.
+`TaskUpdate({ taskId: review-gate-id, status: "in_progress" })`
 
 **Step 1: Parallel reviewer dispatch (SINGLE message)**
 
-Launch ALL reviewers in parallel via Task tool in ONE message. For Simple tasks, dispatch 1 Task (codex only). For Standard tasks, dispatch 6 Tasks:
+Launch ALL reviewers in parallel via Task tool in ONE message (6 Tasks):
 
 ```typescript
-// ALL SIX in ONE message = parallel execution (Standard)
-// For Simple: only dispatch the codex review Task
+TaskUpdate({ taskId: dispatch-reviewers-task-id, status: "in_progress" })
+
+// ALL SIX in ONE message = parallel execution
+
 Task({
-  subagent_type: "Bash",
+  subagent_type: "Bash",  // Built-in CLI agent
   description: "Run codex review",
-  prompt: `Run codex review on uncommitted changes.
-Stage untracked files first: git ls-files --others --exclude-standard -z | while IFS= read -r -d '' f; do git add -- "$f"; done
+  prompt: `Stage untracked files: git ls-files --others --exclude-standard -z | xargs -0 git add
 Run: codex review --uncommitted --config model_reasoning_effort=xhigh
 Output: Full codex output with issue counts.`,
-  timeout: DIFFICULT_TASK ? 1800000 : 600000  // 30min if ≥10 files or ≥500 changes, else 10min
+  timeout: 600000  // 10min (use 1800000 for ≥10 files or ≥500 changes)
 })
 
-// Standard only: add these 5 Tasks in the SAME message
+// Additional 5 Tasks in the SAME message
+
 Task({
-  subagent_type: "general-purpose",
+  subagent_type: "general-purpose",  // Built-in with skill loading
   description: "Run codeql scan",
-  prompt: `Load Skill({ skill: "codeql" }) and execute codeql analysis on changed files.
+  prompt: `Load Skill({ skill: "codeql" }) and execute on changed files.
 Output: Scan results with security findings.`
 })
 
 Task({
-  subagent_type: "general-purpose",
+  subagent_type: "reviewer",  // Custom agent: .claude/agents/reviewer.md
   description: "Simplicity review",
-  prompt: `Read iterations/simplicity-reviewer.md and apply to changed files.
+  prompt: `Focus: simplicity
+Apply SIMPLICITY MODE checklist to changed files.
 Output: VERDICT: PASS | NEEDS_SIMPLIFICATION with findings.`
 })
 
 Task({
-  subagent_type: "general-purpose",
+  subagent_type: "reviewer",
   description: "Completeness review",
-  prompt: `Read iterations/completeness-reviewer.md.
+  prompt: `Focus: completeness
 Original request: [QUOTE REQUEST]
 Output: VERDICT: PASS | INCOMPLETE | OVERBUILT with findings.`
 })
 
 Task({
-  subagent_type: "general-purpose",
+  subagent_type: "reviewer",
   description: "Quality review",
-  prompt: `Read iterations/quality-reviewer.md and apply to changed files.
+  prompt: `Focus: quality
+Apply QUALITY MODE checklist to changed files.
 Output: VERDICT: PASS | NEEDS_FIXES with findings.`
 })
 
 Task({
-  subagent_type: "general-purpose",
+  subagent_type: "reviewer",
   description: "Test coverage review",
-  prompt: `Read iterations/comprehensive-test-reviewer.md.
-For each file to be modified, verify:
-1. Adequate test coverage exists
-2. Current tests pass (green phase)
-Only allow modifications after green phase confirmed.
+  prompt: `Focus: test-coverage
+Verify adequate test coverage and tests pass (green phase).
 Output: VERDICT: PASS | NEEDS_TESTS | TESTS_FAILING with file list.`
 })
+
+TaskUpdate({ taskId: dispatch-reviewers-task-id, status: "completed" })
 ```
 
 **Step 2: Parallel fix dispatch (SINGLE message)**
@@ -687,7 +757,6 @@ Fix all issues found (P1, P2, P3, suggestions).
 Output: Issues fixed or "no issues found".`
 })
 
-// Standard only: add these 2 Tasks in the SAME message
 Task({
   subagent_type: "general-purpose",
   description: "Fix codeql findings",
@@ -739,9 +808,10 @@ Required: Output must show "no findings" or all previous findings fixed.`
 })
 
 Task({
-  subagent_type: "general-purpose",
+  subagent_type: "reviewer",
   description: "Re-run simplicity review",
-  prompt: `Read iterations/simplicity-reviewer.md and apply to changed files.
+  prompt: `Focus: simplicity
+Apply SIMPLICITY MODE checklist to changed files.
 Output: VERDICT: PASS | NEEDS_SIMPLIFICATION with findings.`
 })
 // ... add other affected checks to the same message
@@ -749,7 +819,7 @@ Output: VERDICT: PASS | NEEDS_SIMPLIFICATION with findings.`
 
 **Completion criteria:** Review is ONLY marked completed when ALL of the following pass:
 - Codex review: no issues (or "no issues found")
-- CodeQL scan: no findings (Standard only)
+- CodeQL scan: no findings
 - All 4 reviewers: VERDICT = PASS
 
 Repeat the fix→re-run cycle until all checks pass. Each iteration should dispatch all failing checks in parallel.
@@ -780,7 +850,7 @@ Mark Integration in_progress.
 - Show exit code 0 or note N/A
 Mark Integration completed.
 
-### Phase 10: Session End (Standard only)
+### Phase 10: Session End
 
 **Execution task:** "Run workflow-improver analysis"
 1. `Skill({ skill: "workflow-improver" })` to load instructions
@@ -788,16 +858,6 @@ Mark Integration completed.
 3. Mark completed with evidence (analysis output shown)
 
 **Completion:** Task list must show ALL gates AND execution tasks completed with evidence before claiming done.
-
-### Reviewer Prompts (Standard tasks)
-
-The `iterations/` folder contains reviewer prompt files for Phase 6:
-- `simplicity-reviewer.md` - YAGNI, LOC reduction focus
-- `completeness-reviewer.md` - spec compliance verification
-- `quality-reviewer.md` - patterns, security, performance checks
-- `comprehensive-test-reviewer.md` - test coverage + green phase enforcement
-
-Each is read by a parallel Task agent during review.
 
 ---
 

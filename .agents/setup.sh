@@ -161,6 +161,21 @@ copy_templates() {
             cp "$claude_templates/.claude/commands/"*.md "$PROJECT_ROOT/.claude/commands/" 2>/dev/null || true
             echo "  Installed Claude commands"
         fi
+
+        # Copy agents if they exist
+        if [[ -d "$claude_templates/.claude/agents" ]]; then
+            mkdir -p "$PROJECT_ROOT/.claude/agents"
+            cp "$claude_templates/.claude/agents/"*.md "$PROJECT_ROOT/.claude/agents/" 2>/dev/null || true
+            echo "  Installed Claude agents"
+        fi
+
+        # Copy session scripts if they exist
+        if [[ -d "$claude_templates/.claude/scripts/session" ]]; then
+            mkdir -p "$PROJECT_ROOT/.claude/scripts/session"
+            cp "$claude_templates/.claude/scripts/session/"*.sh "$PROJECT_ROOT/.claude/scripts/session/" 2>/dev/null || true
+            chmod +x "$PROJECT_ROOT/.claude/scripts/session/"*.sh 2>/dev/null || true
+            echo "  Installed session scripts"
+        fi
     fi
 
     # Compose CLAUDE.md from claude/ templates
