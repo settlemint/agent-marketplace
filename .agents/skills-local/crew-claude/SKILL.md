@@ -559,8 +559,6 @@ Launch ALL reviewers in parallel via Task tool in ONE message. For Simple tasks,
 ```typescript
 // ALL SIX in ONE message = parallel execution (Standard)
 // For Simple: only dispatch the codex review Task
-// Note: For codex review, check if difficult task (≥10 files or ≥500 changes).
-// Use timeout: 1800000 (30min) for difficult tasks, 600000 (10min) otherwise.
 Task({
   subagent_type: "Bash",
   description: "Run codex review",
@@ -568,7 +566,7 @@ Task({
 Stage untracked files first: git ls-files --others --exclude-standard -z | while IFS= read -r -d '' f; do git add -- "$f"; done
 Run: codex review --uncommitted --config model_reasoning_effort=xhigh
 Output: Full codex output with issue counts.`,
-  timeout: 1800000
+  timeout: [DIFFICULT_TASK ? 1800000 : 600000]  // 30min if ≥10 files or ≥500 changes, else 10min
 })
 
 // Standard only: add these 5 Tasks in the SAME message
@@ -619,10 +617,13 @@ After all parallel review Tasks complete, launch fix Tasks in parallel:
 
 ```typescript
 // ALL FIX TASKS in ONE message = parallel execution
+// Note: Paste the actual outputs from Step 1 into the placeholders below
 Task({
   subagent_type: "general-purpose",
   description: "Fix codex issues",
-  prompt: `Review codex output from Step 1.
+  prompt: `Codex review output:
+[PASTE CODEX OUTPUT HERE]
+
 Fix all issues found (P1, P2, P3, suggestions).
 Output: Issues fixed or "no issues found".`
 })
@@ -631,7 +632,9 @@ Output: Issues fixed or "no issues found".`
 Task({
   subagent_type: "general-purpose",
   description: "Fix codeql findings",
-  prompt: `Review codeql scan results from Step 1.
+  prompt: `CodeQL scan results:
+[PASTE CODEQL OUTPUT HERE]
+
 Fix all findings.
 Output: Findings fixed or "no findings".`
 })
@@ -639,7 +642,12 @@ Output: Findings fixed or "no findings".`
 Task({
   subagent_type: "general-purpose",
   description: "Fix reviewer findings",
-  prompt: `Review verdicts from simplicity, completeness, quality, and test coverage reviewers.
+  prompt: `Reviewer verdicts:
+[PASTE SIMPLICITY VERDICT HERE]
+[PASTE COMPLETENESS VERDICT HERE]
+[PASTE QUALITY VERDICT HERE]
+[PASTE TEST COVERAGE VERDICT HERE]
+
 For any NEEDS_* verdict, apply the recommended fixes.
 Output: List of fixes applied or "all reviewers passed".`
 })
