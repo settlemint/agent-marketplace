@@ -96,13 +96,12 @@ TodoWrite([
 ```typescript
 TodoWrite([
   { content: "Planning", status: "pending", activeForm: "Planning" },
-  { content: "Ask clarifying questions", status: "pending", activeForm: "Asking questions" },
+  { content: "Dispatch parallel refinement (questions + codex plan review)", status: "pending", activeForm: "Dispatching refinement" },
   { content: "Refinement", status: "pending", activeForm: "Refining" },
   { content: "Write failing tests (TDD red)", status: "pending", activeForm: "Writing failing tests" },
   { content: "Implementation", status: "pending", activeForm: "Implementing" },
   { content: "Make tests pass (TDD green)", status: "pending", activeForm: "Making tests pass" },
-  { content: "Run deslop on changed files", status: "pending", activeForm: "Running deslop" },
-  { content: "Run code-simplifier", status: "pending", activeForm: "Running code-simplifier" },
+  { content: "Dispatch parallel cleanup (deslop, code-simplifier, knip)", status: "pending", activeForm: "Dispatching cleanup" },
   { content: "Cleanup", status: "pending", activeForm: "Cleaning up" },
   { content: "Testing", status: "pending", activeForm: "Testing" },
   { content: "Dispatch parallel reviewers (codex, codeql, 4 reviewers)", status: "pending", activeForm: "Dispatching reviewers" },
@@ -477,32 +476,74 @@ Use TodoWrite for all task tracking. Task list is the source of truth.
 
 ### Phase 1: Planning
 Mark Planning in_progress, then completed when done.
-- Gather context (Explore Task for large codebases)
-- Check docs (mcp__context7__*) and web (mcp__exa__*)
-- Draft plan with file paths and tasks
+
+**Parallel research dispatch (SINGLE message):**
+
+Launch research Tasks in parallel where applicable:
+
+```typescript
+// Up to 3 Tasks in ONE message = parallel execution
+Task({
+  subagent_type: "Explore",
+  description: "Explore codebase",
+  prompt: `Explore the codebase to understand:
+- Existing patterns and conventions
+- Files relevant to [TASK DESCRIPTION]
+- Dependencies and imports
+Output: Summary of findings with file paths.`
+})
+
+Task({
+  subagent_type: "general-purpose",
+  description: "Query library docs",
+  prompt: `Use mcp__context7__resolve-library-id and mcp__context7__query-docs to find:
+- API documentation for [RELEVANT LIBRARIES]
+- Usage patterns and best practices
+Output: Relevant documentation excerpts.`
+})
+
+Task({
+  subagent_type: "general-purpose",
+  description: "Web search for current info",
+  prompt: `Use mcp__exa__web_search_exa to find:
+- Latest version info for [LIBRARIES]
+- Current best practices for [TECHNOLOGY]
+Output: Relevant findings with sources.`
+})
+```
+
+After research completes, draft plan with file paths and tasks.
 
 ### Phase 2: Plan Refinement
 Mark Refinement in_progress.
 
-**Execution task:** "Ask clarifying questions"
-1. `Skill({ skill: "ask-questions-if-underspecified" })` to load instructions
-2. Execute: Use `AskUserQuestion` tool (Local: always; Remote: only if ambiguous)
-3. Mark "Ask clarifying questions" completed with evidence (questions asked or N/A)
-
-**Codex plan review Task (Standard):** Get second opinion on plan:
+**Parallel refinement dispatch (SINGLE message for Standard):**
 
 ```typescript
+// BOTH Tasks in ONE message = parallel execution (Standard only)
+// For Simple: only ask questions, skip codex review
+Task({
+  subagent_type: "general-purpose",
+  description: "Ask clarifying questions",
+  prompt: `Load Skill({ skill: "ask-questions-if-underspecified" }).
+Execution mode: [LOCAL or REMOTE from CLAUDE_CODE_REMOTE env]
+If Local: Use AskUserQuestion tool to clarify ambiguities.
+If Remote: Only ask if ambiguity score > 7/10.
+Output: Questions asked and answers received, or "N/A - requirements clear".`
+})
+
 Task({
   subagent_type: "general-purpose",
   description: "Codex plan review",
-  prompt: `Run codex review on the plan file (path from system-reminder).
-Report any P1/P2 concerns that should be addressed before implementation.`
+  prompt: `Run codex review on the plan file: [PLAN_FILE_PATH]
+Report any concerns that should be addressed before implementation.
+Output: Concerns list or "no concerns".`
 })
 ```
 
-Address any P1/P2 concerns before calling ExitPlanMode.
+Address any concerns before calling ExitPlanMode.
 
-Mark Refinement completed when execution task done.
+Mark Refinement completed when both tasks done.
 
 ### Phase 3: Implementation
 Mark Implementation in_progress.
@@ -527,21 +568,39 @@ If 2+ implementation tasks marked `[P]`, dispatch parallel Task agents.
 ### Phase 4: Cleanup (Standard only)
 Mark Cleanup in_progress.
 
-**Execution tasks (each requires evidence):**
+**Parallel cleanup dispatch (SINGLE message):**
 
-1. Mark "Run deslop on changed files" in_progress
-   - `Skill({ skill: "deslop" })` to load instructions
-   - Execute: identify/remove AI slop, unnecessary comments, defensive checks
-   - Mark completed with evidence (diff of changes or "no slop found")
+Launch ALL cleanup Tasks in parallel:
 
-2. Mark "Run code-simplifier" in_progress
-   - `Skill({ skill: "code-simplifier" })` to load instructions
-   - Execute: simplify complex code, reduce nesting
-   - Mark completed with evidence (diff or "no simplifications needed")
+```typescript
+// ALL cleanup Tasks in ONE message = parallel execution
+Task({
+  subagent_type: "general-purpose",
+  description: "Run deslop",
+  prompt: `Load Skill({ skill: "deslop" }) and execute on changed files.
+Identify and remove: AI slop, unnecessary comments, defensive checks, inconsistent style.
+Output: Diff of changes or "no slop found".`
+})
 
-3. (JS/TS only) Run knip for dead code
+Task({
+  subagent_type: "general-purpose",
+  description: "Run code-simplifier",
+  prompt: `Load Skill({ skill: "code-simplifier" }) and execute on changed files.
+Simplify complex code, reduce nesting, improve clarity.
+Output: Diff of changes or "no simplifications needed".`
+})
 
-Mark Cleanup completed when all execution tasks done with evidence.
+// JS/TS projects only - include in same message
+Task({
+  subagent_type: "general-purpose",
+  description: "Run knip",
+  prompt: `Load Skill({ skill: "knip" }) and execute.
+Find unused files, dependencies, and exports.
+Output: List of unused items or "no dead code found".`
+})
+```
+
+Mark Cleanup completed when all Tasks done with evidence.
 
 ### Phase 5: Testing
 Mark Testing in_progress.
@@ -653,9 +712,30 @@ Output: List of fixes applied or "all reviewers passed".`
 })
 ```
 
-**Step 3: Re-run failed reviewers (if needed)**
+**Step 3: Re-run failed reviewers in parallel (if needed)**
 
-If any fixes were applied, re-run only the affected reviewers to verify fixes. Repeat until all PASS.
+If any fixes were applied, identify which reviewers need re-running and dispatch them in parallel:
+
+```typescript
+// Example: if codex and simplicity had issues, re-run BOTH in ONE message
+Task({
+  subagent_type: "Bash",
+  description: "Re-run codex review",
+  prompt: `Run: codex review --uncommitted --config model_reasoning_effort=xhigh
+Output: Full codex output - verify previous issues are resolved.`,
+  timeout: [DIFFICULT_TASK ? 1800000 : 600000]
+})
+
+Task({
+  subagent_type: "general-purpose",
+  description: "Re-run simplicity review",
+  prompt: `Read iterations/simplicity-reviewer.md and apply to changed files.
+Output: VERDICT: PASS | NEEDS_SIMPLIFICATION with findings.`
+})
+// ... add other affected reviewers to the same message
+```
+
+Repeat until all reviewers return PASS. Each iteration should dispatch all failing reviewers in parallel.
 
 Mark Review completed when all reviewers pass.
 
