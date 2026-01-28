@@ -17,6 +17,8 @@ You are not just writing code. You are shaping the future of this project. The p
 
 Fight entropy. Leave the codebase better than you found it.
 
+**Linters are your allies.** When a linter, formatter, or static analyzer finds an issue - fix it. All of them. No "pre-existing issues." No "I didn't introduce this." If you see it, you fix it. This is how codebases improve.
+
 Would a senior engineer say this is overcomplicated? If yes, simplify.
 
 ### Non-negotiables
@@ -210,11 +212,12 @@ Before each phase, update the corresponding gate task. Do not proceed if BLOCKED
 - **Verification**: `PASS: Commands=[run] | Exit=[0]`
   - Requirements: "Run verification commands" task completed with exit code 0 shown.
 
-- **CI**: `PASS: CI=[command] | Exit=[0]`
-  - Requirements: `bun run ci` executed with exit code 0 shown.
+- **CI**: `PASS: CI=[command] | Exit=[0] | Warnings=[0]`
+  - Requirements: `bun run ci` executed with exit code 0 AND zero warnings shown.
+  - **FIX ALL WARNINGS:** Warnings are not acceptable. Fix every single one. No "pre-existing" excuses.
   - **NOTE:** CI commands use turborepo—run from repository root folder.
   - **NOTE:** Infrastructure services may be required—launch with `bun dev:up`.
-  - **NOTE:** When `package.json` does not exist (non-Node repos), substitute: `shellcheck` for `.sh` files, `markdownlint` for `.md` files. Document the substitution.
+  - **NOTE:** When `package.json` does not exist (non-Node repos), substitute: `shellcheck` for `.sh` files, `markdownlint` for `.md` files. Fix ALL findings.
 
 - **Integration**: `PASS: Integration=[Exit 0 or N/A]`
   - Requirements: `bun run test:integration` executed with exit code 0 (or N/A if unavailable).
@@ -230,7 +233,7 @@ Before each phase, update the corresponding gate task. Do not proceed if BLOCKED
 
 Before claiming done, the task list must show all gate tasks as completed. No exceptions.
 
-**Banned phrases:** "looks good", "should work", "Done!", "it's just a port", "manual review", "pre-existing", "not related to my changes"
+**Banned phrases:** "looks good", "should work", "Done!", "it's just a port", "manual review", "pre-existing", "not related to my changes", "I didn't introduce", "these are not errors I", "just warnings"
 
 **Failure deflection (ZERO TOLERANCE):** Any claim that failures are "pre-existing" or "not related to my changes" is FORBIDDEN. Main always passes. If anything fails, you broke it.
 
@@ -337,17 +340,32 @@ These phrases in assistant messages = VIOLATION if not using the tool:
 
 **THIS IS THE MOST SEVERE ANTI-PATTERN. ZERO TOLERANCE.**
 
-Applies to: CI failures, test failures, lint errors, type errors, build failures, ANY verification failure.
+Applies to: CI failures, test failures, lint errors, lint warnings, type errors, build failures, ANY verification output.
 
-- **"Pre-existing issues":** claiming failures are "not related to my changes" or "pre-existing in the codebase" -> ABSOLUTELY FORBIDDEN. Main branch ALWAYS passes (otherwise PRs cannot merge). If anything fails, YOUR changes broke it.
-- **"My tests pass":** claiming success because "the specific tests I created pass" while ignoring other failures -> UNACCEPTABLE. ALL tests must pass. 19 passing tests mean nothing if 1 test fails.
-- **"Module resolution issues":** claiming type errors or import failures are "pre-existing module issues" -> LIES. The codebase compiles on main. You broke it.
-- **Blame shifting:** any variation of "those errors existed before" or "that's a different module" -> LIES. You own the ENTIRE outcome. Fix it or revert your changes.
-- **Scope limitation:** "not in scope of this PR" for ANY failure -> WRONG. If it fails, it IS in scope. Period.
-- **Partial success claims:** "implementation is complete, just some unrelated issues" -> NOTHING is complete until everything passes.
-- **Selective reporting:** showing only your passing tests while hiding lint/type/other failures -> DISHONEST. Show ALL output.
+**Core principle: Leave the codebase better than you found it.**
 
-**The rule is absolute:** If ANY verification (tests, lint, types, build, CI) does not pass, you have NOT completed the task. There are no exceptions. There are no "pre-existing issues" in a working main branch. If it fails now, you fix it now.
+Linters, formatters, and static analyzers are your allies. They find issues. You fix them. Every single one. No deflection, no excuses, no "but I didn't introduce it."
+
+**BANNED deflection patterns:**
+
+- **"Pre-existing issues":** claiming warnings/errors are "not related to my changes" or "pre-existing" -> ABSOLUTELY FORBIDDEN. If you see it, you fix it.
+- **"These are not errors I introduced":** -> IRRELEVANT. You touched the file, you own every issue in it. You ran the linter, you fix what it finds.
+- **"Just warnings, not errors":** -> Warnings ARE errors waiting to happen. Fix them all.
+- **"My tests pass":** claiming success while ignoring other failures -> UNACCEPTABLE. ALL checks must pass. 19 passing tests mean nothing if 1 test fails.
+- **"Module resolution issues":** claiming type errors or import failures are "pre-existing" -> Fix them.
+- **"That's a different module":** -> If the linter flagged it, fix it.
+- **"Not in scope of this PR":** -> If a linter found it in files you're touching, it IS in scope.
+- **"The codebase had these issues before":** -> Then you're the one who gets to fix them. Congratulations.
+- **Selective reporting:** showing only passing checks while hiding warnings/errors -> DISHONEST. Show ALL output.
+
+**The rule is absolute:**
+
+1. Run linters/formatters/checks
+2. See warnings or errors? Fix ALL of them
+3. No exceptions. No "pre-existing." No "I didn't introduce this."
+4. Leave the codebase better than you found it
+
+**Why this matters:** Every "pre-existing" issue you skip stays broken. Every warning you ignore becomes someone else's problem. The codebase accumulates debt. You are the one who can stop that cycle. Fix what the tools find.
 
 ### Evidence Failures
 - Implied evidence: "I ran the tests" without showing output -> paste actual command output.
