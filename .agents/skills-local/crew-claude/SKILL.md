@@ -80,8 +80,8 @@ TodoWrite([
   { content: "Implementation", status: "pending", activeForm: "Implementing" },
   { content: "Make tests pass (TDD green)", status: "pending", activeForm: "Making tests pass" },
   { content: "Testing", status: "pending", activeForm: "Testing" },
-  { content: "Run codex review --uncommitted", status: "pending", activeForm: "Running codex review" },
-  { content: "Fix P1/P2 codex issues", status: "pending", activeForm: "Fixing codex issues" },
+  { content: "Dispatch codex review", status: "pending", activeForm: "Dispatching codex review" },
+  { content: "Fix codex issues", status: "pending", activeForm: "Fixing codex issues" },
   { content: "Review", status: "pending", activeForm: "Reviewing" },
   { content: "Run verification commands", status: "pending", activeForm: "Running verification" },
   { content: "Verification", status: "pending", activeForm: "Verifying" },
@@ -103,12 +103,9 @@ TodoWrite([
   { content: "Run code-simplifier", status: "pending", activeForm: "Running code-simplifier" },
   { content: "Cleanup", status: "pending", activeForm: "Cleaning up" },
   { content: "Testing", status: "pending", activeForm: "Testing" },
-  { content: "Run review skill workflow", status: "pending", activeForm: "Running review workflow" },
-  { content: "Run reviewers skill prompts", status: "pending", activeForm: "Running reviewers prompts" },
-  { content: "Run codex review --uncommitted", status: "pending", activeForm: "Running codex review" },
-  { content: "Fix P1/P2 codex issues", status: "pending", activeForm: "Fixing codex issues" },
-  { content: "Run codeql security scan", status: "pending", activeForm: "Running codeql scan" },
-  { content: "Fix codeql findings", status: "pending", activeForm: "Fixing codeql findings" },
+  { content: "Dispatch parallel reviewers (codex, codeql, 4 reviewers)", status: "pending", activeForm: "Dispatching reviewers" },
+  { content: "Dispatch parallel fixes (codex, codeql, reviewer findings)", status: "pending", activeForm: "Dispatching fixes" },
+  { content: "Re-run failed reviewers until all PASS", status: "pending", activeForm: "Re-running reviewers" },
   { content: "Review", status: "pending", activeForm: "Reviewing" },
   { content: "Run verification commands", status: "pending", activeForm: "Running verification" },
   { content: "Verification", status: "pending", activeForm: "Verifying" },
@@ -193,14 +190,14 @@ Every required action MUST be a TodoWrite item. Never state requirements only in
 **Wrong:**
 ```markdown
 - [ ] Run codex review
-- [ ] Fix P1/P2 issues
+- [ ] Fix issues
 ```
 
 **Right:**
 ```typescript
 TodoWrite([
-  { content: "Run codex review --uncommitted", status: "pending", activeForm: "Running codex review" },
-  { content: "Fix P1/P2 codex issues", status: "pending", activeForm: "Fixing codex issues" },
+  { content: "Dispatch codex review", status: "pending", activeForm: "Dispatching codex review" },
+  { content: "Fix codex issues", status: "pending", activeForm: "Fixing codex issues" },
 ])
 ```
 
@@ -265,9 +262,9 @@ Before each phase, update the corresponding gate task. Do not proceed if BLOCKED
 - **Testing**: `PASS: Tests=[N passed, N failed] | Exit=[code]`
   - Requirements: test output with exit code shown.
 
-- **Review**: `PASS: Review=[done] | Reviewers=[done] | Codex=[P1:N P2:N fixed] | CodeQL=[done]`
-  - Requirements (Simple): "Run codex review --uncommitted" + "Fix P1/P2 codex issues" tasks completed with evidence.
-  - Requirements (Standard): Above + "Run review skill workflow" + "Run reviewers skill prompts" + "Run codeql security scan" + "Fix codeql findings" all completed with evidence.
+- **Review**: `PASS: Reviewers=[dispatched] | Fixes=[dispatched] | Rerun=[done or N/A]`
+  - Requirements (Simple): "Dispatch codex review" + "Fix codex issues" tasks completed with evidence.
+  - Requirements (Standard): "Dispatch parallel reviewers" + "Dispatch parallel fixes" + "Re-run failed reviewers" all completed with evidence.
 
 - **Verification**: `PASS: Commands=[run] | Exit=[0]`
   - Requirements: "Run verification commands" task completed with exit code 0 shown.
@@ -428,8 +425,8 @@ Run through your TodoWrite list:
   - "Write failing tests" → test output showing failure
   - "Make tests pass" → test output showing pass
   - "Run deslop" → diff or "no slop found"
-  - "Run codex review" → codex output shown
-  - "Fix P1/P2 issues" → issues fixed or "none found"
+  - "Dispatch codex review" → codex output shown
+  - "Fix codex issues" → issues fixed or "none found"
   - "Run codeql scan" → scan output shown (Standard)
   - "Run verification" → commands with exit code 0
   - "Run workflow-improver" → analysis output shown (Standard)
@@ -553,41 +550,32 @@ Mark Testing completed with test output.
 ### Phase 6: Review
 Mark Review in_progress.
 
-**Execution tasks (Simple):**
+**Step 1: Parallel reviewer dispatch (SINGLE message)**
 
-1. Mark "Run codex review --uncommitted" in_progress
-   - Execute: run the command, capture output
-   - Mark completed with evidence (codex output shown)
-
-2. Mark "Fix P1/P2 codex issues" in_progress
-   - Execute: address all P1 (critical) and P2 (important) issues
-   - Mark completed with evidence (issues fixed or "no P1/P2 issues")
-
-**Additional execution tasks (Standard):**
-
-3. Mark "Run review skill workflow" in_progress
-   - `Skill({ skill: "review" })` to load instructions
-   - Execute: follow the review skill's documented workflow
-   - Mark completed with evidence (review findings addressed)
-
-4. Mark "Run reviewers skill prompts" in_progress
-   - `Skill({ skill: "reviewers" })` to load curated prompts
-   - Execute: apply relevant review prompts from the 4400+ collection
-   - Mark completed with evidence (prompts applied, findings addressed)
-
-5. Mark "Run codeql security scan" in_progress
-   - `Skill({ skill: "codeql" })` to load instructions
-   - Execute: run codeql analysis on changed files
-   - Mark completed with evidence (scan output shown)
-
-6. Mark "Fix codeql findings" in_progress
-   - Execute: address security findings
-   - Mark completed with evidence (findings fixed or "no findings")
-
-**Parallel reviewer Tasks (Standard):** Dispatch 4 reviewer Tasks in SINGLE message:
+Launch ALL reviewers in parallel via Task tool in ONE message. For Simple tasks, dispatch 1 Task (codex only). For Standard tasks, dispatch 6 Tasks:
 
 ```typescript
-// ALL FOUR in ONE message = parallel execution
+// ALL SIX in ONE message = parallel execution (Standard)
+// For Simple: only dispatch the codex review Task
+Task({
+  subagent_type: "Bash",
+  description: "Run codex review",
+  prompt: `Run codex review on uncommitted changes.
+Check if difficult task (≥10 files or ≥500 changes): use 30min timeout, else 10min.
+Stage untracked files first: git ls-files --others --exclude-standard -z | while IFS= read -r -d '' f; do git add -- "$f"; done
+Run: codex review --uncommitted --config model_reasoning_effort=xhigh
+Output: Full codex output with issue counts.`,
+  timeout: 1800000
+})
+
+// Standard only: add these 5 Tasks in the SAME message
+Task({
+  subagent_type: "general-purpose",
+  description: "Run codeql scan",
+  prompt: `Load Skill({ skill: "codeql" }) and execute codeql analysis on changed files.
+Output: Scan results with security findings.`
+})
+
 Task({
   subagent_type: "general-purpose",
   description: "Simplicity review",
@@ -607,7 +595,7 @@ Task({
   subagent_type: "general-purpose",
   description: "Quality review",
   prompt: `Read iterations/quality-reviewer.md and apply to changed files.
-Output: VERDICT: PASS | NEEDS_FIXES with P1/P2 counts.`
+Output: VERDICT: PASS | NEEDS_FIXES with findings.`
 })
 
 Task({
@@ -622,9 +610,43 @@ Output: VERDICT: PASS | NEEDS_TESTS | TESTS_FAILING with file list.`
 })
 ```
 
-Aggregate verdicts, fix any NEEDS_* findings, re-run failed reviewers until all PASS.
+**Step 2: Parallel fix dispatch (SINGLE message)**
 
-Mark Review completed when ALL execution tasks done with evidence.
+After all parallel review Tasks complete, launch fix Tasks in parallel:
+
+```typescript
+// ALL FIX TASKS in ONE message = parallel execution
+Task({
+  subagent_type: "general-purpose",
+  description: "Fix codex issues",
+  prompt: `Review codex output from Step 1.
+Fix all issues found (P1, P2, P3, suggestions).
+Output: Issues fixed or "no issues found".`
+})
+
+// Standard only: add these 2 Tasks in the SAME message
+Task({
+  subagent_type: "general-purpose",
+  description: "Fix codeql findings",
+  prompt: `Review codeql scan results from Step 1.
+Fix all findings.
+Output: Findings fixed or "no findings".`
+})
+
+Task({
+  subagent_type: "general-purpose",
+  description: "Fix reviewer findings",
+  prompt: `Review verdicts from simplicity, completeness, quality, and test coverage reviewers.
+For any NEEDS_* verdict, apply the recommended fixes.
+Output: List of fixes applied or "all reviewers passed".`
+})
+```
+
+**Step 3: Re-run failed reviewers (if needed)**
+
+If any fixes were applied, re-run only the affected reviewers to verify fixes. Repeat until all PASS.
+
+Mark Review completed when all reviewers pass.
 
 ### Phase 7: Verification
 Mark Verification in_progress.
