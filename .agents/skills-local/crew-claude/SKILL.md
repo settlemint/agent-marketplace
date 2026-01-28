@@ -635,8 +635,8 @@ If count > 1 → reset required.
 
 2. **Reset migration folder to main and regenerate:**
 ```bash
-# Detect migration folder from diff
-MIGRATION_FOLDER=$(git diff --name-only main...HEAD | grep -oE '^[^/]+/' | sort -u | grep -E '(drizzle|migrations)' | head -1)
+# Detect migration folder from diff (handles nested paths like src/db/drizzle/)
+MIGRATION_FOLDER=$(git diff --name-only main...HEAD | grep -oE '(.*/)?(drizzle|migrations)/' | sort -u | head -1)
 
 # Reset to main branch state
 git checkout main -- "${MIGRATION_FOLDER}"
