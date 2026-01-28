@@ -17,6 +17,8 @@ You are not just writing code. You are shaping the future of this project. The p
 
 Fight entropy. Leave the codebase better than you found it.
 
+Would a senior engineer say this is overcomplicated? If yes, simplify.
+
 ### Non-negotiables
 - Ship production-grade, scalable (>1000 users) implementations; avoid MVP/minimal shortcuts.
 - Optimize for long-term sustainability: maintainable, reliable designs.
@@ -80,8 +82,8 @@ TodoWrite([
   { content: "Implementation", status: "pending", activeForm: "Implementing" },
   { content: "Make tests pass (TDD green)", status: "pending", activeForm: "Making tests pass" },
   { content: "Testing", status: "pending", activeForm: "Testing" },
-  { content: "Run codex review --uncommitted", status: "pending", activeForm: "Running codex review" },
-  { content: "Fix P1/P2 codex issues", status: "pending", activeForm: "Fixing codex issues" },
+  { content: "Dispatch codex review", status: "pending", activeForm: "Dispatching codex review" },
+  { content: "Fix codex issues", status: "pending", activeForm: "Fixing codex issues" },
   { content: "Review", status: "pending", activeForm: "Reviewing" },
   { content: "Run verification commands", status: "pending", activeForm: "Running verification" },
   { content: "Verification", status: "pending", activeForm: "Verifying" },
@@ -94,21 +96,17 @@ TodoWrite([
 ```typescript
 TodoWrite([
   { content: "Planning", status: "pending", activeForm: "Planning" },
-  { content: "Ask clarifying questions", status: "pending", activeForm: "Asking questions" },
+  { content: "Dispatch parallel refinement (questions + codex plan review)", status: "pending", activeForm: "Dispatching refinement" },
   { content: "Refinement", status: "pending", activeForm: "Refining" },
   { content: "Write failing tests (TDD red)", status: "pending", activeForm: "Writing failing tests" },
   { content: "Implementation", status: "pending", activeForm: "Implementing" },
   { content: "Make tests pass (TDD green)", status: "pending", activeForm: "Making tests pass" },
-  { content: "Run deslop on changed files", status: "pending", activeForm: "Running deslop" },
-  { content: "Run code-simplifier", status: "pending", activeForm: "Running code-simplifier" },
+  { content: "Dispatch parallel cleanup (deslop, code-simplifier, knip)", status: "pending", activeForm: "Dispatching cleanup" },
   { content: "Cleanup", status: "pending", activeForm: "Cleaning up" },
   { content: "Testing", status: "pending", activeForm: "Testing" },
-  { content: "Run review skill workflow", status: "pending", activeForm: "Running review workflow" },
-  { content: "Run reviewers skill prompts", status: "pending", activeForm: "Running reviewers prompts" },
-  { content: "Run codex review --uncommitted", status: "pending", activeForm: "Running codex review" },
-  { content: "Fix P1/P2 codex issues", status: "pending", activeForm: "Fixing codex issues" },
-  { content: "Run codeql security scan", status: "pending", activeForm: "Running codeql scan" },
-  { content: "Fix codeql findings", status: "pending", activeForm: "Fixing codeql findings" },
+  { content: "Dispatch parallel reviewers (codex, codeql, 4 reviewers)", status: "pending", activeForm: "Dispatching reviewers" },
+  { content: "Dispatch parallel fixes (codex, codeql, reviewer findings)", status: "pending", activeForm: "Dispatching fixes" },
+  { content: "Re-run failed reviewers until all PASS", status: "pending", activeForm: "Re-running reviewers" },
   { content: "Review", status: "pending", activeForm: "Reviewing" },
   { content: "Run verification commands", status: "pending", activeForm: "Running verification" },
   { content: "Verification", status: "pending", activeForm: "Verifying" },
@@ -193,14 +191,14 @@ Every required action MUST be a TodoWrite item. Never state requirements only in
 **Wrong:**
 ```markdown
 - [ ] Run codex review
-- [ ] Fix P1/P2 issues
+- [ ] Fix issues
 ```
 
 **Right:**
 ```typescript
 TodoWrite([
-  { content: "Run codex review --uncommitted", status: "pending", activeForm: "Running codex review" },
-  { content: "Fix P1/P2 codex issues", status: "pending", activeForm: "Fixing codex issues" },
+  { content: "Dispatch codex review", status: "pending", activeForm: "Dispatching codex review" },
+  { content: "Fix codex issues", status: "pending", activeForm: "Fixing codex issues" },
 ])
 ```
 
@@ -265,9 +263,9 @@ Before each phase, update the corresponding gate task. Do not proceed if BLOCKED
 - **Testing**: `PASS: Tests=[N passed, N failed] | Exit=[code]`
   - Requirements: test output with exit code shown.
 
-- **Review**: `PASS: Review=[done] | Reviewers=[done] | Codex=[P1:N P2:N fixed] | CodeQL=[done]`
-  - Requirements (Simple): "Run codex review --uncommitted" + "Fix P1/P2 codex issues" tasks completed with evidence.
-  - Requirements (Standard): Above + "Run review skill workflow" + "Run reviewers skill prompts" + "Run codeql security scan" + "Fix codeql findings" all completed with evidence.
+- **Review**: `PASS: Reviewers=[dispatched] | Fixes=[dispatched] | Rerun=[done or N/A]`
+  - Requirements (Simple): "Dispatch codex review" + "Fix codex issues" tasks completed with evidence.
+  - Requirements (Standard): "Dispatch parallel reviewers" + "Dispatch parallel fixes" + "Re-run failed reviewers" all completed with evidence.
 
 - **Verification**: `PASS: Commands=[run] | Exit=[0]`
   - Requirements: "Run verification commands" task completed with exit code 0 shown.
@@ -428,8 +426,8 @@ Run through your TodoWrite list:
   - "Write failing tests" → test output showing failure
   - "Make tests pass" → test output showing pass
   - "Run deslop" → diff or "no slop found"
-  - "Run codex review" → codex output shown
-  - "Fix P1/P2 issues" → issues fixed or "none found"
+  - "Dispatch codex review" → codex output shown
+  - "Fix codex issues" → issues fixed or "none found"
   - "Run codeql scan" → scan output shown (Standard)
   - "Run verification" → commands with exit code 0
   - "Run workflow-improver" → analysis output shown (Standard)
@@ -478,32 +476,74 @@ Use TodoWrite for all task tracking. Task list is the source of truth.
 
 ### Phase 1: Planning
 Mark Planning in_progress, then completed when done.
-- Gather context (Explore Task for large codebases)
-- Check docs (mcp__context7__*) and web (mcp__exa__*)
-- Draft plan with file paths and tasks
+
+**Parallel research dispatch (SINGLE message):**
+
+Launch research Tasks in parallel where applicable:
+
+```typescript
+// Up to 3 Tasks in ONE message = parallel execution
+Task({
+  subagent_type: "Explore",
+  description: "Explore codebase",
+  prompt: `Explore the codebase to understand:
+- Existing patterns and conventions
+- Files relevant to [TASK DESCRIPTION]
+- Dependencies and imports
+Output: Summary of findings with file paths.`
+})
+
+Task({
+  subagent_type: "general-purpose",
+  description: "Query library docs",
+  prompt: `Use mcp__context7__resolve-library-id and mcp__context7__query-docs to find:
+- API documentation for [RELEVANT LIBRARIES]
+- Usage patterns and best practices
+Output: Relevant documentation excerpts.`
+})
+
+Task({
+  subagent_type: "general-purpose",
+  description: "Web search for current info",
+  prompt: `Use mcp__exa__web_search_exa to find:
+- Latest version info for [LIBRARIES]
+- Current best practices for [TECHNOLOGY]
+Output: Relevant findings with sources.`
+})
+```
+
+After research completes, draft plan with file paths and tasks.
 
 ### Phase 2: Plan Refinement
 Mark Refinement in_progress.
 
-**Execution task:** "Ask clarifying questions"
-1. `Skill({ skill: "ask-questions-if-underspecified" })` to load instructions
-2. Execute: Use `AskUserQuestion` tool (Local: always; Remote: only if ambiguous)
-3. Mark "Ask clarifying questions" completed with evidence (questions asked or N/A)
-
-**Codex plan review Task (Standard):** Get second opinion on plan:
+**Parallel refinement dispatch (SINGLE message for Standard):**
 
 ```typescript
+// BOTH Tasks in ONE message = parallel execution (Standard only)
+// For Simple: only ask questions, skip codex review
+Task({
+  subagent_type: "general-purpose",
+  description: "Ask clarifying questions",
+  prompt: `Load Skill({ skill: "ask-questions-if-underspecified" }).
+Execution mode: [LOCAL or REMOTE from CLAUDE_CODE_REMOTE env]
+If Local: Use AskUserQuestion tool to clarify ambiguities.
+If Remote: Only ask if ambiguity score > 7/10.
+Output: Questions asked and answers received, or "N/A - requirements clear".`
+})
+
 Task({
   subagent_type: "general-purpose",
   description: "Codex plan review",
-  prompt: `Run codex review on the plan file (path from system-reminder).
-Report any P1/P2 concerns that should be addressed before implementation.`
+  prompt: `Run codex review on the plan file: [PLAN_FILE_PATH]
+Report any concerns that should be addressed before implementation.
+Output: Concerns list or "no concerns".`
 })
 ```
 
-Address any P1/P2 concerns before calling ExitPlanMode.
+Address any concerns before calling ExitPlanMode.
 
-Mark Refinement completed when execution task done.
+Mark Refinement completed when both tasks done.
 
 ### Phase 3: Implementation
 Mark Implementation in_progress.
@@ -528,21 +568,39 @@ If 2+ implementation tasks marked `[P]`, dispatch parallel Task agents.
 ### Phase 4: Cleanup (Standard only)
 Mark Cleanup in_progress.
 
-**Execution tasks (each requires evidence):**
+**Parallel cleanup dispatch (SINGLE message):**
 
-1. Mark "Run deslop on changed files" in_progress
-   - `Skill({ skill: "deslop" })` to load instructions
-   - Execute: identify/remove AI slop, unnecessary comments, defensive checks
-   - Mark completed with evidence (diff of changes or "no slop found")
+Launch ALL cleanup Tasks in parallel:
 
-2. Mark "Run code-simplifier" in_progress
-   - `Skill({ skill: "code-simplifier" })` to load instructions
-   - Execute: simplify complex code, reduce nesting
-   - Mark completed with evidence (diff or "no simplifications needed")
+```typescript
+// ALL cleanup Tasks in ONE message = parallel execution
+Task({
+  subagent_type: "general-purpose",
+  description: "Run deslop",
+  prompt: `Load Skill({ skill: "deslop" }) and execute on changed files.
+Identify and remove: AI slop, unnecessary comments, defensive checks, inconsistent style.
+Output: Diff of changes or "no slop found".`
+})
 
-3. (JS/TS only) Run knip for dead code
+Task({
+  subagent_type: "general-purpose",
+  description: "Run code-simplifier",
+  prompt: `Load Skill({ skill: "code-simplifier" }) and execute on changed files.
+Simplify complex code, reduce nesting, improve clarity.
+Output: Diff of changes or "no simplifications needed".`
+})
 
-Mark Cleanup completed when all execution tasks done with evidence.
+// JS/TS projects only - include in same message
+Task({
+  subagent_type: "general-purpose",
+  description: "Run knip",
+  prompt: `Load Skill({ skill: "knip" }) and execute.
+Find unused files, dependencies, and exports.
+Output: List of unused items or "no dead code found".`
+})
+```
+
+Mark Cleanup completed when all Tasks done with evidence.
 
 ### Phase 5: Testing
 Mark Testing in_progress.
@@ -553,41 +611,31 @@ Mark Testing completed with test output.
 ### Phase 6: Review
 Mark Review in_progress.
 
-**Execution tasks (Simple):**
+**Step 1: Parallel reviewer dispatch (SINGLE message)**
 
-1. Mark "Run codex review --uncommitted" in_progress
-   - Execute: run the command, capture output
-   - Mark completed with evidence (codex output shown)
-
-2. Mark "Fix P1/P2 codex issues" in_progress
-   - Execute: address all P1 (critical) and P2 (important) issues
-   - Mark completed with evidence (issues fixed or "no P1/P2 issues")
-
-**Additional execution tasks (Standard):**
-
-3. Mark "Run review skill workflow" in_progress
-   - `Skill({ skill: "review" })` to load instructions
-   - Execute: follow the review skill's documented workflow
-   - Mark completed with evidence (review findings addressed)
-
-4. Mark "Run reviewers skill prompts" in_progress
-   - `Skill({ skill: "reviewers" })` to load curated prompts
-   - Execute: apply relevant review prompts from the 4400+ collection
-   - Mark completed with evidence (prompts applied, findings addressed)
-
-5. Mark "Run codeql security scan" in_progress
-   - `Skill({ skill: "codeql" })` to load instructions
-   - Execute: run codeql analysis on changed files
-   - Mark completed with evidence (scan output shown)
-
-6. Mark "Fix codeql findings" in_progress
-   - Execute: address security findings
-   - Mark completed with evidence (findings fixed or "no findings")
-
-**Parallel reviewer Tasks (Standard):** Dispatch 4 reviewer Tasks in SINGLE message:
+Launch ALL reviewers in parallel via Task tool in ONE message. For Simple tasks, dispatch 1 Task (codex only). For Standard tasks, dispatch 6 Tasks:
 
 ```typescript
-// ALL FOUR in ONE message = parallel execution
+// ALL SIX in ONE message = parallel execution (Standard)
+// For Simple: only dispatch the codex review Task
+Task({
+  subagent_type: "Bash",
+  description: "Run codex review",
+  prompt: `Run codex review on uncommitted changes.
+Stage untracked files first: git ls-files --others --exclude-standard -z | while IFS= read -r -d '' f; do git add -- "$f"; done
+Run: codex review --uncommitted --config model_reasoning_effort=xhigh
+Output: Full codex output with issue counts.`,
+  timeout: DIFFICULT_TASK ? 1800000 : 600000  // 30min if ≥10 files or ≥500 changes, else 10min
+})
+
+// Standard only: add these 5 Tasks in the SAME message
+Task({
+  subagent_type: "general-purpose",
+  description: "Run codeql scan",
+  prompt: `Load Skill({ skill: "codeql" }) and execute codeql analysis on changed files.
+Output: Scan results with security findings.`
+})
+
 Task({
   subagent_type: "general-purpose",
   description: "Simplicity review",
@@ -607,7 +655,7 @@ Task({
   subagent_type: "general-purpose",
   description: "Quality review",
   prompt: `Read iterations/quality-reviewer.md and apply to changed files.
-Output: VERDICT: PASS | NEEDS_FIXES with P1/P2 counts.`
+Output: VERDICT: PASS | NEEDS_FIXES with findings.`
 })
 
 Task({
@@ -622,9 +670,91 @@ Output: VERDICT: PASS | NEEDS_TESTS | TESTS_FAILING with file list.`
 })
 ```
 
-Aggregate verdicts, fix any NEEDS_* findings, re-run failed reviewers until all PASS.
+**Step 2: Parallel fix dispatch (SINGLE message)**
 
-Mark Review completed when ALL execution tasks done with evidence.
+After all parallel review Tasks complete, launch fix Tasks in parallel:
+
+```typescript
+// ALL FIX TASKS in ONE message = parallel execution
+// Note: Paste the actual outputs from Step 1 into the placeholders below
+Task({
+  subagent_type: "general-purpose",
+  description: "Fix codex issues",
+  prompt: `Codex review output:
+[PASTE CODEX OUTPUT HERE]
+
+Fix all issues found (P1, P2, P3, suggestions).
+Output: Issues fixed or "no issues found".`
+})
+
+// Standard only: add these 2 Tasks in the SAME message
+Task({
+  subagent_type: "general-purpose",
+  description: "Fix codeql findings",
+  prompt: `CodeQL scan results:
+[PASTE CODEQL OUTPUT HERE]
+
+Fix all findings.
+Output: Findings fixed or "no findings".`
+})
+
+Task({
+  subagent_type: "general-purpose",
+  description: "Fix reviewer findings",
+  prompt: `Reviewer verdicts:
+[PASTE SIMPLICITY VERDICT HERE]
+[PASTE COMPLETENESS VERDICT HERE]
+[PASTE QUALITY VERDICT HERE]
+[PASTE TEST COVERAGE VERDICT HERE]
+
+For any NEEDS_* verdict, apply the recommended fixes.
+Output: List of fixes applied or "all reviewers passed".`
+})
+```
+
+**Step 3: Re-run ALL failed checks in parallel (if needed)**
+
+If any fixes were applied, identify which checks need re-running and dispatch them ALL in parallel. This includes:
+- **Codex review** - if codex had findings that were fixed
+- **CodeQL scan** - if codeql had findings that were fixed
+- **Any reviewer** - if any reviewer returned NEEDS_* verdict
+
+```typescript
+// Example: if codex, codeql, and simplicity had issues, re-run ALL THREE in ONE message
+Task({
+  subagent_type: "Bash",
+  description: "Re-run codex review",
+  prompt: `Run: codex review --uncommitted --config model_reasoning_effort=xhigh
+Output: Full codex output - verify previous issues are resolved.
+Required: Output must show "no issues found" or all previous issues fixed.`,
+  timeout: DIFFICULT_TASK ? 1800000 : 600000
+})
+
+Task({
+  subagent_type: "general-purpose",
+  description: "Re-run codeql scan",
+  prompt: `Load Skill({ skill: "codeql" }) and execute codeql analysis on changed files.
+Output: Scan results - verify previous findings are resolved.
+Required: Output must show "no findings" or all previous findings fixed.`
+})
+
+Task({
+  subagent_type: "general-purpose",
+  description: "Re-run simplicity review",
+  prompt: `Read iterations/simplicity-reviewer.md and apply to changed files.
+Output: VERDICT: PASS | NEEDS_SIMPLIFICATION with findings.`
+})
+// ... add other affected checks to the same message
+```
+
+**Completion criteria:** Review is ONLY marked completed when ALL of the following pass:
+- Codex review: no issues (or "no issues found")
+- CodeQL scan: no findings (Standard only)
+- All 4 reviewers: VERDICT = PASS
+
+Repeat the fix→re-run cycle until all checks pass. Each iteration should dispatch all failing checks in parallel.
+
+Mark Review completed when all checks pass with evidence.
 
 ### Phase 7: Verification
 Mark Verification in_progress.
