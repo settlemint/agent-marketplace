@@ -87,32 +87,6 @@ Before code: `TaskCreate` + `TaskUpdate({ status: "in_progress" })`
 After code: `TaskUpdate({ status: "completed" })`
 Before completion: `TaskList` to verify ALL tasks are completed
 
-### Drizzle Migration Rules
-
-When working with drizzle migrations:
-
-1. **Never manually edit migration files** - Always use drizzle-kit tooling:
-   - `bun run db:generate` - Generate migrations from schema changes
-   - `bun run db:push` - Push schema directly (dev only)
-   - `bun run db:migrate` - Apply pending migrations
-
-2. **On merge conflicts** - Reset and regenerate:
-   ```bash
-   git checkout main -- drizzle/
-   bun run db:generate
-   ```
-
-3. **One migration per branch/PR** - If your branch has multiple new migrations, reset and regenerate to keep history clean:
-   ```bash
-   git checkout main -- drizzle/
-   bun run db:generate
-   ```
-
-Files that MUST NOT be manually edited:
-- `drizzle/*.sql` - migration files
-- `drizzle/meta/_journal.json` - migration journal
-- `drizzle/meta/*.snapshot.json` - schema snapshots
-
 ---
 
 ## Now Load The Skill
