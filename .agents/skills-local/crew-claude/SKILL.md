@@ -625,7 +625,7 @@ Task({
 Stage untracked files first: git ls-files --others --exclude-standard -z | while IFS= read -r -d '' f; do git add -- "$f"; done
 Run: codex review --uncommitted --config model_reasoning_effort=xhigh
 Output: Full codex output with issue counts.`,
-  timeout: [DIFFICULT_TASK ? 1800000 : 600000]  // 30min if ≥10 files or ≥500 changes, else 10min
+  timeout: DIFFICULT_TASK ? 1800000 : 600000  // 30min if ≥10 files or ≥500 changes, else 10min
 })
 
 // Standard only: add these 5 Tasks in the SAME message
@@ -712,18 +712,30 @@ Output: List of fixes applied or "all reviewers passed".`
 })
 ```
 
-**Step 3: Re-run failed reviewers in parallel (if needed)**
+**Step 3: Re-run ALL failed checks in parallel (if needed)**
 
-If any fixes were applied, identify which reviewers need re-running and dispatch them in parallel:
+If any fixes were applied, identify which checks need re-running and dispatch them ALL in parallel. This includes:
+- **Codex review** - if codex had findings that were fixed
+- **CodeQL scan** - if codeql had findings that were fixed
+- **Any reviewer** - if any reviewer returned NEEDS_* verdict
 
 ```typescript
-// Example: if codex and simplicity had issues, re-run BOTH in ONE message
+// Example: if codex, codeql, and simplicity had issues, re-run ALL THREE in ONE message
 Task({
   subagent_type: "Bash",
   description: "Re-run codex review",
   prompt: `Run: codex review --uncommitted --config model_reasoning_effort=xhigh
-Output: Full codex output - verify previous issues are resolved.`,
-  timeout: [DIFFICULT_TASK ? 1800000 : 600000]
+Output: Full codex output - verify previous issues are resolved.
+Required: Output must show "no issues found" or all previous issues fixed.`,
+  timeout: DIFFICULT_TASK ? 1800000 : 600000
+})
+
+Task({
+  subagent_type: "general-purpose",
+  description: "Re-run codeql scan",
+  prompt: `Load Skill({ skill: "codeql" }) and execute codeql analysis on changed files.
+Output: Scan results - verify previous findings are resolved.
+Required: Output must show "no findings" or all previous findings fixed.`
 })
 
 Task({
@@ -732,12 +744,17 @@ Task({
   prompt: `Read iterations/simplicity-reviewer.md and apply to changed files.
 Output: VERDICT: PASS | NEEDS_SIMPLIFICATION with findings.`
 })
-// ... add other affected reviewers to the same message
+// ... add other affected checks to the same message
 ```
 
-Repeat until all reviewers return PASS. Each iteration should dispatch all failing reviewers in parallel.
+**Completion criteria:** Review is ONLY marked completed when ALL of the following pass:
+- Codex review: no issues (or "no issues found")
+- CodeQL scan: no findings (Standard only)
+- All 4 reviewers: VERDICT = PASS
 
-Mark Review completed when all reviewers pass.
+Repeat the fix→re-run cycle until all checks pass. Each iteration should dispatch all failing checks in parallel.
+
+Mark Review completed when all checks pass with evidence.
 
 ### Phase 7: Verification
 Mark Verification in_progress.
