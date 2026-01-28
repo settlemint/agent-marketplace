@@ -115,21 +115,6 @@ Files that MUST NOT be manually edited:
 
 ---
 
-## Bash Guidelines
-
-### Avoid output buffering issues
-- DO NOT pipe through `head`, `tail`, `less`, `more` when monitoring output
-- DO NOT use `| head -n X` or `| tail -n X` - these cause buffering problems
-- Let commands complete fully, or use command-specific flags (e.g., `git log -n 10`)
-- For log monitoring, read files directly rather than piping through filters
-
-### When checking output
-- Run commands directly without pipes when possible
-- Use command-specific flags to limit output
-- Avoid chained pipes that can buffer indefinitely
-
----
-
 ## Now Load The Skill
 
 **Your next action MUST be:** `Skill({ skill: "crew-claude" })`
