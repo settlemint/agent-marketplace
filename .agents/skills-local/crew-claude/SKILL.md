@@ -559,11 +559,12 @@ Launch ALL reviewers in parallel via Task tool in ONE message. For Simple tasks,
 ```typescript
 // ALL SIX in ONE message = parallel execution (Standard)
 // For Simple: only dispatch the codex review Task
+// Note: For codex review, check if difficult task (≥10 files or ≥500 changes).
+// Use timeout: 1800000 (30min) for difficult tasks, 600000 (10min) otherwise.
 Task({
   subagent_type: "Bash",
   description: "Run codex review",
   prompt: `Run codex review on uncommitted changes.
-Check if difficult task (≥10 files or ≥500 changes): use 30min timeout, else 10min.
 Stage untracked files first: git ls-files --others --exclude-standard -z | while IFS= read -r -d '' f; do git add -- "$f"; done
 Run: codex review --uncommitted --config model_reasoning_effort=xhigh
 Output: Full codex output with issue counts.`,
